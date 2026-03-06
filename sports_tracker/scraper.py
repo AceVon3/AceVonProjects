@@ -14,6 +14,7 @@ import argparse
 import getpass
 from datetime import datetime, date
 from pathlib import Path
+from typing import Optional
 
 # ---------------------------------------------------------------------------
 # Configuration — adjust selectors here if the site ever changes
@@ -25,7 +26,7 @@ OUTPUT_FILE          = Path(__file__).parent / "betting_dashboard.html"
 SCREENSHOT_FILE      = Path(__file__).parent / "debug_screenshot.png"
 
 # CSS/text selectors (update if site restructures)
-BALANCE_SELECTOR     = '[class*="balance"], [class*="Balance"], #balance, [class*="account"], [class*="Account"]'
+BALANCE_SELECTOR     = '[data-action="get-figure"]'
 TRANSACTIONS_TAB     = "My Transactions"
 WEEKLY_FIGURES_TAB   = "Weekly Figures"
 
@@ -36,7 +37,7 @@ FORBIDDEN_BUTTON_TEXT = ["place", "wager", "submit bet", "bet now", "place bet",
 # Parsing helpers
 # ---------------------------------------------------------------------------
 
-def parse_american_odds(text: str) -> int | None:
+def parse_american_odds(text: str) -> Optional[int]:
     """Convert '+150', '-110', '150' → integer American odds."""
     if not text:
         return None
@@ -47,7 +48,7 @@ def parse_american_odds(text: str) -> int | None:
         return None
 
 
-def parse_money(text: str) -> float | None:
+def parse_money(text: str) -> Optional[float]:
     """Convert '$25.00', '-$10.50', '25' → float dollars."""
     if not text:
         return None
@@ -58,7 +59,7 @@ def parse_money(text: str) -> float | None:
         return None
 
 
-def parse_date(text: str) -> str | None:
+def parse_date(text: str) -> Optional[str]:
     """Attempt to parse a date string into ISO format YYYY-MM-DD."""
     if not text:
         return None
@@ -153,6 +154,7 @@ def scrape_transactions(page) -> list[dict]:
 
     # Try common table selectors
     table_selectors = [
+        "table tr",
         "table tbody tr",
         '[class*="transaction"] [class*="row"]',
         '[class*="bet"] [class*="item"]',
@@ -185,7 +187,7 @@ def scrape_transactions(page) -> list[dict]:
     return rows
 
 
-def parse_row_to_bet(raw: dict) -> dict | None:
+def parse_row_to_bet(raw: dict) -> Optional[dict]:
     """
     Convert a raw scraped row into a structured bet dict.
     This is inherently heuristic — adjust column indices to match actual site layout.
@@ -232,6 +234,89 @@ def parse_row_to_bet(raw: dict) -> dict | None:
     }
 
 
+def parse_modal_bet_row(cells: list, bet_date: str = "") -> Optional[dict]:
+    """
+    Parse a 2-column modal row from the Weekly Figures detail modal.
+    Format: [description/odds, P/L amount]
+    e.g. ['Louisville -14½ -110', '+$50']
+         ['Alabama/GeorgiaO 179 -110', '+$50']
+         ['G287004691 - Basketball - TeamA vs TeamB / Game / Winner / Pick +290', '-$30']
+    """
+    import re
+    if not cells:
+        return None
+
+    desc = cells[0].strip() if cells else ""
+    pl_str = cells[1].strip() if len(cells) > 1 else ""
+
+    if not desc:
+        return None
+
+    # Skip non-bet rows
+    skip_keywords = ["credit", "adjustment", "bonus", "deposit", "withdrawal",
+                     "carry", "balance", "transactions", "week"]
+    if any(k in desc.lower() for k in skip_keywords):
+        return None
+
+    # Parse P/L
+    pl: Optional[float] = None
+    if pl_str:
+        raw_pl = pl_str.replace("+", "").replace("$", "").replace(",", "").strip()
+        try:
+            pl = float(raw_pl)
+            if pl_str.startswith("-"):
+                pl = -abs(pl)
+            else:
+                pl = abs(pl)
+        except ValueError:
+            pass
+
+    # Result from P/L sign
+    if pl is not None:
+        result = "Win" if pl > 0 else "Loss" if pl < 0 else "Push"
+    else:
+        result = "Pending"
+
+    # Extract odds — last token matching +/-NNN or NNN at end of description
+    odds: Optional[int] = None
+    odds_match = re.search(r'([+-]?\d{2,4})\s*(?:-\s*1st Half|$)', desc)
+    if odds_match:
+        odds = parse_american_odds(odds_match.group(1))
+
+    # Detect bet type from description
+    is_half = "1st Half" in desc or "2nd Half" in desc or "Half" in desc
+    if re.search(r'\bO\s+\d|\bOver\b', desc, re.IGNORECASE):
+        bet_type = "Over/Under"
+        pick = "Over"
+    elif re.search(r'\bU\s+\d|\bUnder\b', desc, re.IGNORECASE):
+        bet_type = "Over/Under"
+        pick = "Under"
+    elif re.search(r'[+-]\d+[½¼¾]?\s+[+-]\d{2,3}', desc):
+        bet_type = "Spread"
+        pick = ""
+    else:
+        bet_type = "Moneyline"
+        pick = ""
+
+    # Game description — strip trailing odds from display
+    game = re.sub(r'\s+[+-]?\d{2,4}\s*$', '', desc).strip()
+    if is_half:
+        game = game.rstrip(" -").strip()
+
+    return {
+        "date":        bet_date,
+        "sport":       infer_sport(desc),
+        "bet_type":    bet_type,
+        "wager_type":  "Straight",
+        "game":        game,
+        "pick":        pick,
+        "odds":        odds,
+        "amount":      None,
+        "result":      result,
+        "profit_loss": pl,
+    }
+
+
 def filter_by_start_date(bets: list[dict], start: str) -> list[dict]:
     """Keep only bets on or after start date (ISO string)."""
     cutoff = date.fromisoformat(start)
@@ -245,14 +330,26 @@ def filter_by_start_date(bets: list[dict], start: str) -> list[dict]:
     return filtered
 
 
+DEBUG_LOG = Path(__file__).parent / "debug.log"
+
+
+def dlog(msg: str):
+    """Write a debug line to debug.log with flush."""
+    with open(DEBUG_LOG, "a", encoding="utf-8") as f:
+        f.write(msg + "\n")
+    print(msg, flush=True)
+
+
 def run_scraper(username: str, password: str, headed: bool = False) -> list[dict]:
     """Main scraping routine. Returns list of parsed bet dicts."""
+    # Clear debug log for this run
+    DEBUG_LOG.write_text("", encoding="utf-8")
+    dlog("=== run_scraper started ===")
+
     try:
         from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
     except ImportError:
-        print("ERROR: Playwright not installed.")
-        print("Run:  pip install playwright && playwright install chromium")
-        sys.exit(1)
+        raise RuntimeError("Playwright not installed. Run: pip install playwright && playwright install chromium")
 
     bets = []
 
@@ -279,9 +376,7 @@ def run_scraper(username: str, password: str, headed: bool = False) -> list[dict
                 page.fill(password_sel, password)
             except PlaywrightTimeout:
                 page.screenshot(path=str(SCREENSHOT_FILE))
-                print(f"ERROR: Login form not found. Screenshot saved to {SCREENSHOT_FILE}")
-                print("Hint: Update 'username_sel' in scraper.py to match the actual input selector.")
-                sys.exit(1)
+                raise RuntimeError(f"Login form not found. Screenshot saved to {SCREENSHOT_FILE}. Hint: Update 'username_sel' in scraper.py.")
 
             # Submit via Enter key (avoids clicking any labeled "Place Bet" button)
             page.press(password_sel, "Enter")
@@ -297,73 +392,178 @@ def run_scraper(username: str, password: str, headed: bool = False) -> list[dict
                 current = page.url
                 page_text = page.inner_text("body").lower()
                 if any(e in page_text for e in ["invalid", "incorrect", "failed", "error", "wrong"]):
-                    print("ERROR: Login failed — invalid credentials or account issue.")
                     page.screenshot(path=str(SCREENSHOT_FILE))
-                    sys.exit(1)
+                    raise RuntimeError("Login failed — invalid credentials or account issue.")
                 print(f"  Still on: {current} — continuing...")
 
-            print("Login successful. Waiting for page to fully load...")
-            try:
-                page.wait_for_selector(BALANCE_SELECTOR, timeout=20000)
-                print("  Balance element found.")
-            except PlaywrightTimeout:
-                page.screenshot(path=str(SCREENSHOT_FILE))
-                print(f"ERROR: Balance/account element not found.")
-                print(f"Hint: Update BALANCE_SELECTOR in scraper.py. Screenshot saved to {SCREENSHOT_FILE}")
-                print(f"Current selectors tried: {BALANCE_SELECTOR}")
-                sys.exit(1)
+            dlog("Login successful. Waiting for page to fully load...")
+            page.wait_for_timeout(3000)
+            dlog(f"  Current URL after login: {page.url}")
 
             # ----------------------------------------------------------------
             # 3. Open account/history panel
             # ----------------------------------------------------------------
-            print("Opening account history panel...")
-            balance_el = page.query_selector(BALANCE_SELECTOR)
-            if not balance_el:
+            dlog("Opening account history panel...")
+            dlog(f"  Total frames: {len(page.frames)}")
+            for i, frame in enumerate(page.frames):
+                dlog(f"  Frame {i}: {frame.url}")
+
+            # Try clicking via JavaScript across all frames
+            clicked = False
+            selectors_to_try = [
+                '[data-action="get-figure"]',
+                '[data-field="balance"]',
+                '[data-language="L-403"]',
+            ]
+
+            for frame in page.frames:
+                if clicked:
+                    break
+                for sel in selectors_to_try:
+                    try:
+                        result = frame.evaluate(f"""
+                            (() => {{
+                                const el = document.querySelector('{sel}');
+                                if (el) {{ el.click(); return el.outerHTML; }}
+                                return null;
+                            }})()
+                        """)
+                        if result:
+                            dlog(f"  Clicked via JS in frame '{frame.url}' using: {sel}")
+                            dlog(f"  Element: {result[:200]}")
+                            clicked = True
+                            break
+                    except Exception as e:
+                        dlog(f"  JS eval failed for {sel} in frame {frame.url}: {e}")
+
+            if not clicked:
+                # Dump all data-* elements across all frames to help debug
+                for i, frame in enumerate(page.frames):
+                    try:
+                        all_data = frame.evaluate("""
+                            [...document.querySelectorAll('[data-action],[data-field],[data-language]')]
+                                .map(e => e.outerHTML.slice(0,150))
+                                .slice(0,30)
+                        """)
+                        dlog(f"  Frame {i} data-* elements ({len(all_data)}):")
+                        for el in all_data:
+                            dlog(f"    {el}")
+                        # Also dump body snippet
+                        body = frame.evaluate("document.body?.innerHTML?.slice(0,500) || ''")
+                        dlog(f"  Frame {i} body snippet: {body[:300]}")
+                    except Exception as e:
+                        dlog(f"  Could not inspect frame {i}: {e}")
+
                 page.screenshot(path=str(SCREENSHOT_FILE))
-                print(f"ERROR: Could not locate balance element to click. Screenshot: {SCREENSHOT_FILE}")
-                sys.exit(1)
+                raise RuntimeError(
+                    f"Could not find or click the balance button. "
+                    f"Check {DEBUG_LOG} for details."
+                )
 
-            balance_el.click()
-            page.wait_for_timeout(1500)  # let the panel animate open
+            page.wait_for_timeout(1500)
 
             # ----------------------------------------------------------------
-            # 4. Click "My Transactions" tab
+            # 4. Click "Weekly Figures" tab
             # ----------------------------------------------------------------
-            print('Navigating to "My Transactions" tab...')
+            dlog('Navigating to "Weekly Figures" tab...')
             try:
-                page.get_by_text(TRANSACTIONS_TAB, exact=False).first.click()
+                page.get_by_text(WEEKLY_FIGURES_TAB, exact=False).first.click()
                 page.wait_for_timeout(2000)
             except Exception:
                 page.screenshot(path=str(SCREENSHOT_FILE))
-                print(f'ERROR: Could not find "{TRANSACTIONS_TAB}" tab. Screenshot: {SCREENSHOT_FILE}')
-                sys.exit(1)
+                raise RuntimeError(f'Could not find "{WEEKLY_FIGURES_TAB}" tab. Screenshot: {SCREENSHOT_FILE}')
 
             # ----------------------------------------------------------------
-            # 5. Scrape transactions
+            # 5. Click "Week" total to open the full-week bet detail modal
             # ----------------------------------------------------------------
-            print("Scraping bet history...")
-            raw_rows = scrape_transactions(page)
-            print(f"  Raw rows captured: {len(raw_rows)}")
+            dlog('Clicking "Week" total to open bet detail modal...')
+            try:
+                week_handle = page.evaluate_handle("""
+                    () => {
+                        function findWeek(root) {
+                            for (const td of root.querySelectorAll('td')) {
+                                const lines = td.innerText.trim().split('\\n');
+                                if (lines[0].trim() === 'Week') {
+                                    for (const child of td.querySelectorAll('*')) {
+                                        if (child.innerText.trim().startsWith('$') &&
+                                            child.children.length === 0) {
+                                            return child;
+                                        }
+                                    }
+                                    return td;
+                                }
+                            }
+                            for (const el of root.querySelectorAll('*')) {
+                                if (el.shadowRoot) {
+                                    const r = findWeek(el.shadowRoot);
+                                    if (r) return r;
+                                }
+                            }
+                            return null;
+                        }
+                        return findWeek(document);
+                    }
+                """)
+                week_el = week_handle.as_element()
+                if week_el:
+                    txt = week_el.inner_text()
+                    dlog(f"  Found Week element: {txt}")
+                    week_el.click()
+                    dlog("  Clicked Week.")
+                else:
+                    raise RuntimeError("Week element not found in shadow DOM")
+            except Exception as e:
+                dlog(f"  Week click failed: {e}")
+                raise RuntimeError(f"Could not click Week total: {e}")
 
-            for raw in raw_rows:
-                if raw.get("fallback"):
-                    print("  Warning: fallback text mode — structured parsing skipped.")
-                    print("  Tip: Run with --headed to inspect the page, then update selectors.")
-                    break
-                bet = parse_row_to_bet(raw)
+            # Wait for the bet-detail modal (#myModal) to appear
+            dlog("Waiting for bet detail modal...")
+            try:
+                page.wait_for_selector('#myModal', state='visible', timeout=10000)
+                dlog("  Modal is visible.")
+            except Exception as e:
+                dlog(f"  Modal did not appear: {e}")
+            page.wait_for_timeout(2000)
+
+            # Scrape all bet rows from the modal
+            dlog("Scraping bet rows from #myModal...")
+            modal_rows = page.evaluate("""
+                () => {
+                    const modal = document.querySelector('#myModal');
+                    if (!modal) return [];
+                    const rows = [];
+                    modal.querySelectorAll('tr').forEach(tr => {
+                        const cells = [...tr.querySelectorAll('td')].map(c => c.innerText.trim());
+                        if (cells.length >= 1 && cells[0]) rows.push(cells);
+                    });
+                    return rows;
+                }
+            """)
+            dlog(f"  Modal rows found: {len(modal_rows)}")
+            for i, cells in enumerate(modal_rows):
+                dlog(f"    Row {i}: {cells}")
+
+            # Use current week's Monday as the bet date (best approximation without per-row dates)
+            from datetime import timedelta
+            today = date.today()
+            week_start = today - timedelta(days=today.weekday())  # Monday
+            bet_date = week_start.isoformat()
+            dlog(f"  Using week start date: {bet_date}")
+
+            for cells in modal_rows:
+                bet = parse_modal_bet_row(cells, bet_date)
                 if bet:
                     bets.append(bet)
+                    dlog(f"  -> Bet: {bet['game'][:60]} | {bet['result']} | P/L: {bet['profit_loss']}")
 
-            # ----------------------------------------------------------------
-            # 6. Also check Weekly Figures (optional summary — informational only)
-            # ----------------------------------------------------------------
+            dlog(f"Total bets collected from modal: {len(bets)}")
+
+            # Close the modal
             try:
-                page.get_by_text(WEEKLY_FIGURES_TAB, exact=False).first.click()
-                page.wait_for_timeout(1500)
-                weekly_text = page.inner_text("body")
-                print("  Weekly Figures tab loaded (data embedded in transactions).")
+                page.keyboard.press("Escape")
+                page.wait_for_timeout(500)
             except Exception:
-                pass  # Non-critical
+                pass
 
         except Exception as exc:
             page.screenshot(path=str(SCREENSHOT_FILE))
