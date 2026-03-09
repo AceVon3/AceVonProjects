@@ -10,9 +10,10 @@ Usage:
 
 import sys
 import json
+import re
 import argparse
 import getpass
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -330,6 +331,22 @@ def filter_by_start_date(bets: list[dict], start: str) -> list[dict]:
     return filtered
 
 
+def filter_by_date_range(bets: list[dict], start: str, end: str) -> list[dict]:
+    """Keep only bets between start and end dates (ISO strings, inclusive)."""
+    start_d = date.fromisoformat(start)
+    end_d   = date.fromisoformat(end)
+    filtered = []
+    for b in bets:
+        try:
+            if b.get("date"):
+                d = date.fromisoformat(b["date"])
+                if start_d <= d <= end_d:
+                    filtered.append(b)
+        except ValueError:
+            filtered.append(b)  # keep bets with unparseable dates
+    return filtered
+
+
 DEBUG_LOG = Path(__file__).parent / "debug.log"
 
 
@@ -340,11 +357,17 @@ def dlog(msg: str):
     print(msg, flush=True)
 
 
-def run_scraper(username: str, password: str, headed: bool = False) -> list[dict]:
+def run_scraper(username: str, password: str, headed: bool = False,
+                start_date: str = START_DATE,
+                end_date: str = None) -> list[dict]:
     """Main scraping routine. Returns list of parsed bet dicts."""
+    if end_date is None:
+        end_date = date.today().isoformat()
+
     # Clear debug log for this run
     DEBUG_LOG.write_text("", encoding="utf-8")
     dlog("=== run_scraper started ===")
+    dlog(f"Date range: {start_date} to {end_date}")
 
     try:
         from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
@@ -474,96 +497,176 @@ def run_scraper(username: str, password: str, headed: bool = False) -> list[dict
                 raise RuntimeError(f'Could not find "{WEEKLY_FIGURES_TAB}" tab. Screenshot: {SCREENSHOT_FILE}')
 
             # ----------------------------------------------------------------
-            # 5. Click "Week" total to open the full-week bet detail modal
+            # 5. Enumerate weeks via dropdown and scrape each day's modal
             # ----------------------------------------------------------------
-            dlog('Clicking "Week" total to open bet detail modal...')
-            try:
-                week_handle = page.evaluate_handle("""
-                    () => {
-                        function findWeek(root) {
-                            for (const td of root.querySelectorAll('td')) {
-                                const lines = td.innerText.trim().split('\\n');
-                                if (lines[0].trim() === 'Week') {
-                                    for (const child of td.querySelectorAll('*')) {
-                                        if (child.innerText.trim().startsWith('$') &&
-                                            child.children.length === 0) {
-                                            return child;
-                                        }
-                                    }
-                                    return td;
-                                }
-                            }
-                            for (const el of root.querySelectorAll('*')) {
-                                if (el.shadowRoot) {
-                                    const r = findWeek(el.shadowRoot);
-                                    if (r) return r;
-                                }
-                            }
-                            return null;
-                        }
-                        return findWeek(document);
-                    }
-                """)
-                week_el = week_handle.as_element()
-                if week_el:
-                    txt = week_el.inner_text()
-                    dlog(f"  Found Week element: {txt}")
-                    week_el.click()
-                    dlog("  Clicked Week.")
-                else:
-                    raise RuntimeError("Week element not found in shadow DOM")
-            except Exception as e:
-                dlog(f"  Week click failed: {e}")
-                raise RuntimeError(f"Could not click Week total: {e}")
+            today = date.today()
+            start_d = date.fromisoformat(start_date)
+            end_d   = date.fromisoformat(end_date)
 
-            # Wait for the bet-detail modal (#myModal) to appear
-            dlog("Waiting for bet detail modal...")
-            try:
-                page.wait_for_selector('#myModal', state='visible', timeout=10000)
-                dlog("  Modal is visible.")
-            except Exception as e:
-                dlog(f"  Modal did not appear: {e}")
-            page.wait_for_timeout(2000)
+            dlog(f"Scraping per-day modals for {start_date} to {end_date}")
 
-            # Scrape all bet rows from the modal
-            dlog("Scraping bet rows from #myModal...")
-            modal_rows = page.evaluate("""
+            # Read the week-selection dropdown (find first <select> with >1 option)
+            dropdown_info = page.evaluate("""
                 () => {
-                    const modal = document.querySelector('#myModal');
-                    if (!modal) return [];
-                    const rows = [];
-                    modal.querySelectorAll('tr').forEach(tr => {
-                        const cells = [...tr.querySelectorAll('td')].map(c => c.innerText.trim());
-                        if (cells.length >= 1 && cells[0]) rows.push(cells);
-                    });
-                    return rows;
+                    for (const sel of document.querySelectorAll('select')) {
+                        if (sel.options.length >= 2) {
+                            return {
+                                options: [...sel.options].map((o, i) => ({
+                                    index: i,
+                                    value: o.value,
+                                    text: o.text.trim()
+                                }))
+                            };
+                        }
+                    }
+                    return null;
                 }
             """)
-            dlog(f"  Modal rows found: {len(modal_rows)}")
-            for i, cells in enumerate(modal_rows):
-                dlog(f"    Row {i}: {cells}")
 
-            # Use current week's Monday as the bet date (best approximation without per-row dates)
-            from datetime import timedelta
-            today = date.today()
-            week_start = today - timedelta(days=today.weekday())  # Monday
-            bet_date = week_start.isoformat()
-            dlog(f"  Using week start date: {bet_date}")
+            if dropdown_info:
+                dlog(f"  Dropdown found with {len(dropdown_info['options'])} options:")
+                for o in dropdown_info['options']:
+                    dlog(f"    [{o['index']}] value={o['value']!r} text={o['text']!r}")
+            else:
+                dlog("  No week dropdown found — scraping current week only")
 
-            for cells in modal_rows:
-                bet = parse_modal_bet_row(cells, bet_date)
-                if bet:
-                    bets.append(bet)
-                    dlog(f"  -> Bet: {bet['game'][:60]} | {bet['result']} | P/L: {bet['profit_loss']}")
+            def parse_week_from_option(text: str):
+                """Try to extract a week-start date from option label text."""
+                m = re.search(r'(\d{1,2})/(\d{1,2})(?:/(\d{2,4}))?', text)
+                if m:
+                    mon = int(m.group(1))
+                    day_n = int(m.group(2))
+                    yr_s = m.group(3)
+                    yr = int(yr_s) + (2000 if yr_s and len(yr_s) == 2 else 0) if yr_s else today.year
+                    try:
+                        return date(yr, mon, day_n)
+                    except ValueError:
+                        pass
+                return None
 
-            dlog(f"Total bets collected from modal: {len(bets)}")
+            # Determine which dropdown options to visit
+            if dropdown_info:
+                opts_to_visit = []
+                for opt in dropdown_info['options']:
+                    week_start_d = parse_week_from_option(opt['text'])
+                    if week_start_d is None:
+                        # Can't parse date — include it (may be "This Week" label)
+                        opts_to_visit.append(opt)
+                    else:
+                        week_end_d = week_start_d + timedelta(days=6)
+                        if week_end_d >= start_d and week_start_d <= end_d:
+                            opts_to_visit.append(opt)
+                dlog(f"  Visiting {len(opts_to_visit)} option(s) out of {len(dropdown_info['options'])}")
+            else:
+                opts_to_visit = [None]  # None = don't change dropdown, just use current view
 
-            # Close the modal
-            try:
-                page.keyboard.press("Escape")
-                page.wait_for_timeout(500)
-            except Exception:
-                pass
+            def scrape_day_rows_for_current_view():
+                """Find all day rows visible in the current weekly panel, click each in range."""
+                # Collect day row texts, e.g. "Tue(3/3)", "Fri(3/6)"
+                day_texts = page.evaluate("""
+                    () => {
+                        const results = [];
+                        document.querySelectorAll('td').forEach(td => {
+                            const t = td.innerText.trim();
+                            if (/^\\w{2,3}\\(\\d+\\/\\d+\\)/.test(t)) {
+                                results.push(t);
+                            }
+                        });
+                        return results;
+                    }
+                """)
+                dlog(f"  Day rows visible: {day_texts}")
+
+                for row_text in day_texts:
+                    m = re.search(r'\((\d+)/(\d+)\)', row_text)
+                    if not m:
+                        continue
+                    mon, day_n = int(m.group(1)), int(m.group(2))
+                    bet_year = today.year if mon <= today.month else today.year - 1
+                    try:
+                        row_date = date(bet_year, mon, day_n)
+                    except ValueError:
+                        dlog(f"  Bad date in row text: {row_text}")
+                        continue
+
+                    if row_date < start_d or row_date > end_d:
+                        dlog(f"  Skipping {row_text} ({row_date}) — outside range")
+                        continue
+
+                    bet_date_str = row_date.isoformat()
+                    dlog(f"  Clicking day row: {row_text} → {bet_date_str}")
+
+                    # Click the dollar-amount child inside the day cell (or the cell itself)
+                    clicked = page.evaluate(f"""
+                        () => {{
+                            for (const td of document.querySelectorAll('td')) {{
+                                if (td.innerText.trim().startsWith({repr(row_text)})) {{
+                                    // Prefer a leaf child starting with '$'
+                                    for (const ch of td.querySelectorAll('*')) {{
+                                        if (ch.children.length === 0 && ch.innerText.trim().startsWith('$')) {{
+                                            ch.click();
+                                            return ch.innerText.trim();
+                                        }}
+                                    }}
+                                    td.click();
+                                    return td.innerText.trim();
+                                }}
+                            }}
+                            return null;
+                        }}
+                    """)
+                    if not clicked:
+                        dlog(f"  Could not find element for {row_text}")
+                        continue
+                    dlog(f"  Clicked element text: {clicked}")
+
+                    # Wait for modal
+                    try:
+                        page.wait_for_selector('#myModal', state='visible', timeout=8000)
+                        dlog("  Modal visible.")
+                    except Exception as e:
+                        dlog(f"  Modal did not appear for {row_text}: {e}")
+                        continue
+                    page.wait_for_timeout(1500)
+
+                    # Scrape modal rows
+                    modal_rows = page.evaluate("""
+                        () => {
+                            const modal = document.querySelector('#myModal');
+                            if (!modal) return [];
+                            const rows = [];
+                            modal.querySelectorAll('tr').forEach(tr => {
+                                const cells = [...tr.querySelectorAll('td')].map(c => c.innerText.trim());
+                                if (cells.length >= 1 && cells[0]) rows.push(cells);
+                            });
+                            return rows;
+                        }
+                    """)
+                    dlog(f"  Modal rows for {row_text}: {len(modal_rows)}")
+                    for i, cells in enumerate(modal_rows):
+                        dlog(f"    Row {i}: {cells}")
+
+                    for cells in modal_rows:
+                        bet = parse_modal_bet_row(cells, bet_date_str)
+                        if bet:
+                            bets.append(bet)
+                            dlog(f"  -> Bet: {bet['game'][:60]} | {bet['result']} | P/L: {bet['profit_loss']}")
+
+                    # Close modal
+                    try:
+                        page.keyboard.press("Escape")
+                        page.wait_for_timeout(800)
+                    except Exception:
+                        pass
+
+            for opt in opts_to_visit:
+                if opt is not None and dropdown_info:
+                    dlog(f"  Selecting dropdown option: {opt['text']!r}")
+                    page.select_option('select', value=opt['value'])
+                    page.wait_for_timeout(2000)
+                scrape_day_rows_for_current_view()
+
+            dlog(f"Total bets collected: {len(bets)}")
 
         except Exception as exc:
             page.screenshot(path=str(SCREENSHOT_FILE))
@@ -573,9 +676,7 @@ def run_scraper(username: str, password: str, headed: bool = False) -> list[dict
         finally:
             browser.close()
 
-    # Filter to start date
-    bets = filter_by_start_date(bets, START_DATE)
-    print(f"Bets after {START_DATE} filter: {len(bets)}")
+    print(f"Bets in range {start_date}–{end_date}: {len(bets)}")
     return bets
 
 

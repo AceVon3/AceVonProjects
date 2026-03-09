@@ -9,6 +9,7 @@ Usage:
 
 import os
 import sys
+from datetime import date
 from flask import Flask, request, jsonify
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -48,7 +49,8 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
   .creds-card .field { display: flex; flex-direction: column; gap: 6px; }
   .creds-card .field label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
   .creds-card input[type="text"],
-  .creds-card input[type="password"] { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 8px 12px; font-size: 0.875rem; width: 210px; }
+  .creds-card input[type="password"],
+  .creds-card input[type="date"] { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 8px 12px; font-size: 0.875rem; width: 210px; }
   .creds-card input:focus { outline: 1px solid var(--accent); }
   .headed-label { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--muted); cursor: pointer; padding-bottom: 2px; }
   .headed-label input { accent-color: var(--accent); }
@@ -136,6 +138,14 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
     <label class="headed-label">
       <input type="checkbox" id="headed"> Headed mode
     </label>
+    <div class="field">
+      <label>From Date</label>
+      <input type="date" id="scrapeStart" value="2026-03-02">
+    </div>
+    <div class="field">
+      <label>To Date</label>
+      <input type="date" id="scrapeEnd">
+    </div>
     <button class="btn-primary" id="scrapeBtn" onclick="runScraper()">Scrape &amp; Refresh</button>
   </div>
 
@@ -264,7 +274,9 @@ let charts = {};
 // Init
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('fEndDate').value = new Date().toISOString().slice(0, 10);
+  const todayISO = new Date().toISOString().slice(0, 10);
+  document.getElementById('fEndDate').value = todayISO;
+  document.getElementById('scrapeEnd').value = todayISO;
   ['username', 'password'].forEach(id => {
     document.getElementById(id).addEventListener('keydown', e => {
       if (e.key === 'Enter') runScraper();
@@ -276,9 +288,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // Scraper
 // ============================================================
 async function runScraper() {
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const headed   = document.getElementById('headed').checked;
+  const username    = document.getElementById('username').value.trim();
+  const password    = document.getElementById('password').value.trim();
+  const headed      = document.getElementById('headed').checked;
+  const scrapeStart = document.getElementById('scrapeStart').value;
+  const scrapeEnd   = document.getElementById('scrapeEnd').value;
 
   if (!username || !password) {
     showStatus('error', 'Please enter your username and password.');
@@ -293,7 +307,7 @@ async function runScraper() {
     const resp = await fetch('/api/scrape', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password, headed }),
+      body: JSON.stringify({ username, password, headed, start_date: scrapeStart, end_date: scrapeEnd }),
     });
     const json = await resp.json();
 
@@ -573,16 +587,19 @@ def api_scrape():
         print(f"Failed to load scraper: {e}", flush=True)
         return jsonify({'error': f'Failed to load scraper: {e}'}), 500
 
-    data     = request.get_json(force=True)
-    username = (data.get('username') or '').strip()
-    password = (data.get('password') or '').strip()
-    headed   = bool(data.get('headed', False))
+    data       = request.get_json(force=True)
+    username   = (data.get('username')   or '').strip()
+    password   = (data.get('password')   or '').strip()
+    headed     = bool(data.get('headed', False))
+    start_date = (data.get('start_date') or '').strip() or '2026-03-02'
+    end_date   = (data.get('end_date')   or '').strip() or date.today().isoformat()
 
     if not username or not password:
         return jsonify({'error': 'Username and password are required.'}), 400
 
     try:
-        bets = run_scraper(username, password, headed=headed)
+        bets = run_scraper(username, password, headed=headed,
+                           start_date=start_date, end_date=end_date)
         return jsonify({'bets': bets})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
