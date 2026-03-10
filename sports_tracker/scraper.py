@@ -203,6 +203,54 @@ def infer_sport(text: str) -> str:
         "miami ohio", "miami (oh)", "western michigan", "western mich",
         "nebraska", "san francisco",
         "mississippi st", "mississippi state", "smu",
+        # Sun Belt
+        "troy", "south alabama", "louisiana", "arkansas state", "ark state",
+        "georgia southern", "app state", "appalachian st", "coastal carolina",
+        "old dominion", "marshall", "georgia state", "texas state", "texas st",
+        "south carolina state", "south carolina st",
+        # Big Sky
+        "northern colorado", "montana", "eastern washington", "idaho",
+        "idaho state", "northern arizona", "sacramento state", "sacramento st",
+        "southern utah", "weber state", "weber st", "portland state",
+        "north dakota", "north dakota state",
+        # MAC
+        "kent state", "kent st", "ohio university", "bowling green",
+        "ball state", "ball st", "buffalo", "akron", "central michigan",
+        "eastern michigan", "northern illinois", "toledo",
+        # CUSA / Sun Belt overlap
+        "florida international", "fiu", "florida atlantic", "fau",
+        "utsa", "utep", "rice", "charlotte", "middle tennessee", "middle tenn",
+        "louisiana tech", "la tech", "western kentucky", "western ky",
+        "unt", "north texas",
+        # Southern / SoCon
+        "furman", "wofford", "samford", "citadel", "western carolina",
+        "chattanooga", "mercer", "vmI", "etsu", "east tennessee",
+        # Southland / WAC
+        "incarnate word", "lamar", "mcneese", "nicholls", "nicholls state",
+        "northwestern state", "se louisiana", "southeastern louisiana",
+        "stephen f austin", "sfa", "tarleton",
+        "utah valley", "utah tech", "dixie state", "grand canyon", "gcu",
+        "seattle u",
+        # Horizon / Summit
+        "iupui", "wright state", "wright st", "green bay", "cleveland state",
+        "cleveland st", "youngstown state", "youngstown st", "detroit mercy",
+        "oakland", "northern kentucky", "nku",
+        "south dakota", "western illinois", "oral roberts", "omaha",
+        # America East
+        "umbc", "albany", "maine", "new hampshire", "vermont", "hartford",
+        "binghamton", "stony brook",
+        # Patriot League
+        "bucknell", "colgate", "lehigh", "holy cross", "american university",
+        "boston university", "bu",
+        # Colonial (CAA)
+        "delaware", "drexel", "elon", "hampton", "monmouth", "stony brook",
+        "towson", "unc wilmington", "william & mary", "william and mary",
+        # Atlantic 10
+        "richmond", "george mason", "vcu", "davidson", "fordham", "umass",
+        "la salle", "duquesne", "st josephs", "st joseph",
+        # WCC (beyond what's listed)
+        "loyola marymount", "lmu", "pacific", "san diego",
+        "brigham young", "byu",
     ]):
         return "NCAAB"
 
