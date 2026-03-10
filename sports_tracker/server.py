@@ -337,7 +337,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
         <canvas id="chartSport"></canvas>
       </div>
       <div class="chart-card">
-        <h3>Bet Type Breakdown</h3>
+        <h3>Wager Type Breakdown</h3>
         <canvas id="chartType"></canvas>
       </div>
     </div>
@@ -677,7 +677,7 @@ function renderSportChart() {
 
 function renderTypeChart() {
   const counts = {};
-  filteredBets.forEach(b => { const t = b.bet_type || 'Unknown'; counts[t] = (counts[t] || 0) + 1; });
+  filteredBets.forEach(b => { const t = b.wager_type || 'Straight'; counts[t] = (counts[t] || 0) + 1; });
   const labels = Object.keys(counts);
   const data   = labels.map(l => counts[l]);
   const colors = ['#4f8ef7', '#22c55e', '#f59e0b', '#ec4899', '#8b5cf6'];
