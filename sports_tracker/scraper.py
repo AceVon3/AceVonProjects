@@ -93,7 +93,26 @@ def infer_sport(text: str) -> str:
     """Guess sport from team/league name text."""
     low = text.lower()
 
-    # Explicit league/sport indicators (checked first)
+    # G-format bet IDs include explicit sport label: "G123456 - Basketball - TeamA vs TeamB"
+    g_sport = re.search(r'- (basketball|football|baseball|hockey|soccer) -', low)
+    if g_sport:
+        sport_word = g_sport.group(1)
+        if sport_word == "basketball":
+            if any(k in low for k in [
+                "lakers", "celtics", "warriors", "bulls", "heat", "nets", "knicks", "bucks",
+                "suns", "clippers", "nuggets", "jazz", "thunder", "rockets", "wizards",
+                "pistons", "cavaliers", "cavs", "spurs", "raptors", "hawks", "hornets",
+                "pelicans", "grizzlies", "timberwolves", "trail blazers", "blazers", "kings",
+                "magic", "pacers", "76ers", "sixers", "mavericks", "mavs",
+            ]):
+                return "NBA"
+            return "NCAAB"
+        if sport_word == "football": return "NFL"
+        if sport_word == "baseball": return "MLB"
+        if sport_word == "hockey":   return "NHL"
+        if sport_word == "soccer":   return "Soccer"
+
+    # Explicit league/sport indicators
     if any(k in low for k in ["ncaamb", "ncaab", "college basketball", "cbb", "march madness"]):
         return "NCAAB"
     if any(k in low for k in ["ncaaw", "women's basketball"]):
@@ -106,11 +125,6 @@ def infer_sport(text: str) -> str:
         return "MLB"
     if any(k in low for k in ["nhl", "hockey"]):
         return "NHL"
-    if any(k in low for k in ["pga", "lpga", "golf", "masters", "cognizant", "rbc heritage",
-                               "the players", "genesis invitational", "farmers insurance",
-                               "arnold palmer", "memorial", "us open golf", "british open",
-                               "odds to win"]):
-        return "Golf"
     if any(k in low for k in ["soccer", "mls", "epl", "premier league", "champions league",
                                "fifa", "la liga", "bundesliga", "serie a", "ligue 1"]):
         return "Soccer"
@@ -118,6 +132,35 @@ def infer_sport(text: str) -> str:
         return "UFC/MMA"
     if any(k in low for k in ["boxing", "bout"]):
         return "Boxing"
+
+    # Golf-specific tournaments and terms (before generic "odds to win" check)
+    if any(k in low for k in ["pga", "lpga", "golf", "masters", "cognizant", "rbc heritage",
+                               "the players", "genesis invitational", "farmers insurance",
+                               "arnold palmer", "memorial", "us open golf", "british open",
+                               "tour championship", "fedex cup"]):
+        return "Golf"
+
+    # "Odds to win" futures — classify by context before defaulting to Golf
+    if "odds to win" in low:
+        # Basketball conference/tournament futures
+        if any(k in low for k in [
+            "atlantic sun", "ohio valley", "west coast", "big ten", "big 12",
+            "big east", "sec tournament", "acc tournament", "pac-12", "pac 12",
+            "mac tournament", "sun belt", "mountain west", "conference usa",
+            "horizon league", "america east", "southern conference", "colonial",
+            "patriot league", "ivy league", "wac tournament", "a-sun",
+        ]):
+            return "NCAAB"
+        # Golf player names → Golf futures
+        if any(k in low for k in [
+            "meissner", "bezuidenhout", "hojgaard", "mcilroy", "spieth", "koepka",
+            "scheffler", "morikawa", "fleetwood", "hovland", "schauffele", "fitzpatrick",
+            "cantlay", "thomas", "johnson", "scott", "rose", "fowler", "finau",
+            "lowry", "rahm", "burns", "english", "young", "kim", "macintyre",
+            "bourne", "td scorer", "first td", "coin toss",
+        ]):
+            return "Golf"
+        return "Golf"  # default "odds to win" to Golf when no other context
 
     # NBA teams
     if any(k in low for k in [
@@ -139,7 +182,17 @@ def infer_sport(text: str) -> str:
         "alabama", "auburn", "lsu", "tennessee", "arkansas", "ole miss", "vanderbilt",
         "nc state", "north carolina st", "geo washington", "montana st",
         "marquette", "creighton", "xavier", "butler", "dayton", "wichita st",
-        "seattle u", "seattle redhawks",
+        "seattle u", "seattle redhawks", "morehead st", "high point",
+        "north florida", "fla gulf coast", "florida gulf coast", "bellarmine",
+        "central arkansas", "ark little rock", "lindenwood", "se missouri",
+        "southern illinois", "eastern illinois", "eastern kentucky",
+        "james madison", "southern miss", "indiana st", "valparaiso",
+        "evansville", "northern iowa", "south dakota st", "st thomas",
+        "manhattan", "fairfield", "portland", "pepperdine", "drake",
+        "stetson", "north alabama", "jacksonville", "north carolina a&t",
+        "northeastern", "murray st", "illinois chicago", "sacred heart",
+        "merrimack", "longwood", "west georgia", "campbell", "drexel",
+        "alcorn st", "alabama st", "nebraska omaha",
     ]):
         return "NCAAB"
 
@@ -158,7 +211,8 @@ def infer_sport(text: str) -> str:
         "meissner", "bezuidenhout", "hojgaard", "mcilroy", "spieth", "koepka",
         "scheffler", "morikawa", "fleetwood", "hovland", "schauffele", "fitzpatrick",
         "cantlay", "thomas", "johnson", "scott", "rose", "fowler", "finau",
-        "lowry", "rahm", "burns", "english", "young", "kim", "im ",
+        "lowry", "rahm", "burns", "english", "young", "macintyre",
+        "s woo kim", "woo kim",
     ]):
         return "Golf"
 
@@ -309,9 +363,10 @@ def parse_modal_bet_row(cells: list, bet_date: str = "") -> Optional[dict]:
     if not desc:
         return None
 
-    # Skip non-bet rows
+    # Skip non-bet rows (empty days, accounting entries, etc.)
     skip_keywords = ["credit", "adjustment", "bonus", "deposit", "withdrawal",
-                     "carry", "balance", "transactions", "week"]
+                     "carry", "balance", "transactions", "week",
+                     "no data available"]
     if any(k in desc.lower() for k in skip_keywords):
         return None
 
@@ -348,27 +403,44 @@ def parse_modal_bet_row(cells: list, bet_date: str = "") -> Optional[dict]:
     else:
         wager_type = "Straight"
 
+    # Use only the first line for bet type / pick detection
+    # (parlays and futures may have multi-line descriptions)
+    desc_first = desc.split('\n')[0].strip()
+
     # Detect bet type from description
     # Site appends O/U directly to team name (e.g. "PistonsU 220½", "TexasO 158"),
     # so don't require a word boundary — just O or U followed by whitespace + digit.
-    is_half = "1st Half" in desc or "2nd Half" in desc or "Half" in desc
-    if re.search(r'O\s+\d+[½¼¾]?|\bOver\b|\bover\s+\d', desc, re.IGNORECASE):
+    is_half = "1st Half" in desc_first or "2nd Half" in desc_first
+    total_match_o = re.search(r'O\s+(\d+[½¼¾]?)|\bOver\s+(\d+[½¼¾]?)', desc_first, re.IGNORECASE)
+    total_match_u = re.search(r'U\s+(\d+[½¼¾]?)|\bUnder\s+(\d+[½¼¾]?)', desc_first, re.IGNORECASE)
+    spread_match  = re.search(r'(.+?)\s+([+-]\d+[½¼¾]?)\s+[+-]\d{2,3}', desc_first)
+
+    if total_match_o:
         bet_type = "Over/Under"
-        pick = "Over"
-    elif re.search(r'U\s+\d+[½¼¾]?|\bUnder\b|\bunder\s+\d', desc, re.IGNORECASE):
+        total = (total_match_o.group(1) or total_match_o.group(2) or "").strip()
+        pick = f"Over {total}" if total else "Over"
+    elif total_match_u:
         bet_type = "Over/Under"
-        pick = "Under"
-    elif re.search(r'[+-]\d+[½¼¾]?\s+[+-]\d{2,3}', desc):
+        total = (total_match_u.group(1) or total_match_u.group(2) or "").strip()
+        pick = f"Under {total}" if total else "Under"
+    elif spread_match:
         bet_type = "Spread"
-        pick = ""
+        pick = f"{spread_match.group(1).strip()} {spread_match.group(2)}"
     else:
         bet_type = "Moneyline"
-        pick = ""
+        # Strip trailing ML suffix and odds to get just the team/player name
+        ml_clean = re.sub(r'\s*ML\s*[+-]?\d+[½¼¾]?\s*$', '', desc_first, flags=re.IGNORECASE)
+        ml_clean = re.sub(r'\s+[+-]\d{2,4}\s*$', '', ml_clean).strip()
+        pick = ml_clean
 
-    # Game description — strip trailing odds from display
-    game = re.sub(r'\s+[+-]?\d{2,4}\s*$', '', desc).strip()
+    # Game description — first line, stripped of trailing odds
+    game = re.sub(r'\s+[+-]?\d{2,4}\s*$', '', desc_first).strip()
     if is_half:
-        game = game.rstrip(" -").strip()
+        game = re.sub(r'\s*-?\s*1st Half\s*$', '', game, flags=re.IGNORECASE).strip()
+    # For parlays, use the header line as a tidy label
+    if wager_type == "Parlay":
+        game = desc_first  # e.g. "Parlay - 8 Teams"
+        pick = ""
 
     return {
         "date":        bet_date,
