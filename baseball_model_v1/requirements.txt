@@ -1,0 +1,7 @@
+pybaseball
+MLB-StatsAPI
+requests
+pandas
+numpy
+schedule
+python-dotenv
