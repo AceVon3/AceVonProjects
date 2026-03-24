@@ -8,6 +8,7 @@ seasonal blend logic (prior season → blended → current season).
 import os
 import logging
 from datetime import datetime, date
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -108,9 +109,9 @@ def _blend_dict(prior: dict, current: dict, sample_size: int) -> dict:
 def build_pitcher_profile(
     pitcher_id: int,
     name: str = "",
-    start_dt: str | None = None,
-    end_dt: str | None = None,
-) -> dict | None:
+    start_dt: Optional[str] = None,
+    end_dt: Optional[str] = None,
+) -> Optional[dict]:
     """Build a pitcher profile from Statcast data.
 
     Returns profile dict or None if no data available.
@@ -304,9 +305,9 @@ def _build_splits(df: pd.DataFrame, batter_hand: str) -> dict:
 def build_batter_profile(
     batter_id: int,
     name: str = "",
-    start_dt: str | None = None,
-    end_dt: str | None = None,
-) -> dict | None:
+    start_dt: Optional[str] = None,
+    end_dt: Optional[str] = None,
+) -> Optional[dict]:
     """Build a batter profile from Statcast data."""
     if start_dt is None:
         start_dt = f"{CURRENT_SEASON}-03-01"
