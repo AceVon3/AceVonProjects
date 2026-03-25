@@ -89,6 +89,10 @@ def evaluate_side_signal(
         "line_win_prob": None,
         "value_edge": None,
         "rl_alert": False,
+        "rl_plus_signal": "NO BET",
+        "rl_plus_prob": None,
+        "rl_plus_line_prob": None,
+        "rl_plus_value_edge": None,
         "unconfirmed": False,
     }
 
@@ -99,8 +103,13 @@ def evaluate_side_signal(
         return result
 
     # Determine which side has the edge
-    # Home pitching edge = home team advantage (home pitcher dominates away lineup)
-    # Away pitching edge = away team advantage
+    # Two paths:
+    #   1. High edge (>= threshold): that pitcher dominates, bet that side
+    #   2. Low edge (<= 25): that pitcher is getting crushed, bet the OTHER side
+    #      Invert the score so signal strength scales correctly:
+    #      edge 25 → inverted 0 (barely qualifies), edge 0 → inverted 25 (max)
+    inverted = False
+
     if home_edge >= ML_EDGE_THRESHOLD:
         bet_side = "HOME"
         edge = home_edge
@@ -112,50 +121,91 @@ def evaluate_side_signal(
         ml = away_moneyline
         rl = away_run_line
     elif home_edge <= 25:
-        # Low pitching edge for home = away batting team has edge
+        # Home pitcher getting crushed → bet AWAY
         bet_side = "AWAY"
-        edge = home_edge
+        edge = 25 - home_edge  # invert: lower score = stronger signal
         ml = away_moneyline
         rl = away_run_line
+        inverted = True
     elif away_edge <= 25:
+        # Away pitcher getting crushed → bet HOME
         bet_side = "HOME"
-        edge = away_edge
+        edge = 25 - away_edge
         ml = home_moneyline
         rl = home_run_line
+        inverted = True
     else:
         return result
 
-    model_prob = edge_to_win_prob(edge)
+    # For inverted signals, use a separate win prob mapping:
+    # edge 0 (barely bad) → ~52%, edge 25 (terrible) → ~65%
+    if inverted:
+        model_prob = 0.52 + (edge / 25) * 0.13
+        model_prob = max(0.10, min(0.90, round(model_prob, 4)))
+    else:
+        model_prob = edge_to_win_prob(edge)
+
     line_prob = moneyline_to_implied_prob(ml)
 
     result["model_win_prob"] = model_prob
     result["line_win_prob"] = line_prob
     result["bet_side"] = bet_side
 
+    # For inverted signals, any edge <= 25 qualifies (inverted edge >= 0)
+    # The value edge check is the real gatekeeper
+    INVERTED_THRESHOLD = 0
+
     # Value check
     if line_prob is not None:
         value_edge = model_prob - line_prob
         result["value_edge"] = round(value_edge, 4)
 
-        if edge >= ML_EDGE_THRESHOLD and value_edge >= VALUE_EDGE_MIN:
-            result["bet_signal"] = bet_side
-            result["bet_market"] = "ML"
+        if inverted:
+            if edge >= INVERTED_THRESHOLD and value_edge >= VALUE_EDGE_MIN:
+                result["bet_signal"] = bet_side
+                result["bet_market"] = "ML"
+        else:
+            if edge >= ML_EDGE_THRESHOLD and value_edge >= VALUE_EDGE_MIN:
+                result["bet_signal"] = bet_side
+                result["bet_market"] = "ML"
 
-            if edge >= RL_EDGE_THRESHOLD:
-                result["rl_alert"] = True
-                result["bet_market"] = "ML"  # ML fires; RL is alert only
-        elif edge >= ML_EDGE_THRESHOLD:
-            # Edge met but no value
-            result["bet_signal"] = "NO BET"
-            result["bet_market"] = "NO BET"
+                if edge >= RL_EDGE_THRESHOLD:
+                    result["rl_alert"] = True
+                    result["bet_market"] = "ML"  # ML fires; RL is alert only
+            elif edge >= ML_EDGE_THRESHOLD:
+                # Edge met but no value
+                result["bet_signal"] = "NO BET"
+                result["bet_market"] = "NO BET"
     else:
         # No odds available — show signal as UNCONFIRMED
-        if edge >= ML_EDGE_THRESHOLD:
+        threshold = INVERTED_THRESHOLD if inverted else ML_EDGE_THRESHOLD
+        if edge >= threshold:
             result["bet_signal"] = bet_side
             result["bet_market"] = "ML"
             result["unconfirmed"] = True
-            if edge >= RL_EDGE_THRESHOLD:
+            if not inverted and edge >= RL_EDGE_THRESHOLD:
                 result["rl_alert"] = True
+
+    # +1.5 Run Line evaluation
+    # When the model identifies a side, also check if +1.5 offers value.
+    # +1.5 probability = win_prob + (lose_prob * one_run_loss_rate)
+    # ~30% of MLB losses are by exactly 1 run historically.
+    ONE_RUN_LOSS_RATE = 0.30
+
+    if model_prob is not None and rl is not None:
+        rl_plus_prob = model_prob + ((1 - model_prob) * ONE_RUN_LOSS_RATE)
+        rl_plus_prob = max(0.10, min(0.95, round(rl_plus_prob, 4)))
+        rl_line_prob = moneyline_to_implied_prob(rl)
+
+        result["rl_plus_prob"] = rl_plus_prob
+        result["rl_plus_line_prob"] = rl_line_prob
+
+        if rl_line_prob is not None:
+            rl_plus_value = rl_plus_prob - rl_line_prob
+            result["rl_plus_value_edge"] = round(rl_plus_value, 4)
+
+            if rl_plus_value >= VALUE_EDGE_MIN:
+                result["rl_plus_signal"] = bet_side
 
     return result
 

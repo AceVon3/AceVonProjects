@@ -83,7 +83,10 @@ def blend_profiles(prior: dict, current: dict, sample_size: int) -> dict:
             blended[key] = c_val if c_val is not None else p_val
 
     blended["data_source"] = data_source
-    blended["sample_size"] = sample_size
+    # Store combined sample size (prior + current) so profile reflects total data
+    prior_samples = prior.get("sample_size", 0)
+    blended["sample_size"] = prior_samples + sample_size
+    blended["current_season_pitches"] = sample_size
     blended["last_updated"] = date.today().isoformat()
     return blended
 
@@ -114,6 +117,9 @@ def build_pitcher_profile(
 ) -> Optional[dict]:
     """Build a pitcher profile from Statcast data.
 
+    Fetches current season data first. If sample size is under 200 pitches,
+    also fetches the prior season to build a proper blended profile.
+
     Returns profile dict or None if no data available.
     """
     if start_dt is None:
@@ -122,20 +128,42 @@ def build_pitcher_profile(
         end_dt = date.today().isoformat()
 
     df = fetch_statcast_pitcher(pitcher_id, start_dt, end_dt)
+
+    # If current season data is thin (< 200 pitches), fetch prior season
+    current_pitches = len(df) if df is not None and not df.empty else 0
+    prior_profile = load_cached_profile("pitchers", str(pitcher_id))
+
+    if current_pitches < 200 and prior_profile is None:
+        prior_year = CURRENT_SEASON - 1
+        logger.info("Fetching %d prior season data for pitcher %s (%s)",
+                     prior_year, pitcher_id, name)
+        prior_df = fetch_statcast_pitcher(
+            pitcher_id,
+            f"{prior_year}-03-20",
+            f"{prior_year}-11-05",
+        )
+        if prior_df is not None and not prior_df.empty:
+            prior_profile = _aggregate_pitcher_data(prior_df, pitcher_id, name)
+            prior_profile["data_source"] = "prior_season"
+            logger.info("  Prior season: %d pitches for %s",
+                         prior_profile["sample_size"], name)
+
+    if (df is None or df.empty) and prior_profile is None:
+        return None
+
     if df is None or df.empty:
-        cached = load_cached_profile("pitchers", str(pitcher_id))
-        if cached:
-            logger.info("Using cached profile for pitcher %s", pitcher_id)
-            return cached
+        # Only prior season data available
+        if prior_profile:
+            save_cached_profile("pitchers", str(pitcher_id), prior_profile)
+            return prior_profile
         return None
 
     profile = _aggregate_pitcher_data(df, pitcher_id, name)
 
-    # Check for prior season data and blend
-    prior = load_cached_profile("pitchers", str(pitcher_id))
-    if prior and prior.get("data_source") in ("prior_season", "blended_early", "blended_late"):
+    # Blend with prior season if available
+    if prior_profile:
         sample_size = profile.get("sample_size", 0)
-        profile = blend_profiles(prior, profile, sample_size)
+        profile = blend_profiles(prior_profile, profile, sample_size)
     else:
         sample_size = profile.get("sample_size", 0)
         _, _, data_source = _get_blend_weights(sample_size)
@@ -308,27 +336,52 @@ def build_batter_profile(
     start_dt: Optional[str] = None,
     end_dt: Optional[str] = None,
 ) -> Optional[dict]:
-    """Build a batter profile from Statcast data."""
+    """Build a batter profile from Statcast data.
+
+    Fetches current season data first. If sample size is under 200 pitches seen,
+    also fetches the prior season to build a proper blended profile.
+    """
     if start_dt is None:
         start_dt = f"{CURRENT_SEASON}-03-01"
     if end_dt is None:
         end_dt = date.today().isoformat()
 
     df = fetch_statcast_batter(batter_id, start_dt, end_dt)
+
+    # If current season data is thin, fetch prior season
+    current_pitches = len(df) if df is not None and not df.empty else 0
+    prior_profile = load_cached_profile("batters", str(batter_id))
+
+    if current_pitches < 200 and prior_profile is None:
+        prior_year = CURRENT_SEASON - 1
+        logger.info("Fetching %d prior season data for batter %s",
+                     prior_year, batter_id)
+        prior_df = fetch_statcast_batter(
+            batter_id,
+            f"{prior_year}-03-20",
+            f"{prior_year}-11-05",
+        )
+        if prior_df is not None and not prior_df.empty:
+            prior_profile = _aggregate_batter_data(prior_df, batter_id, name)
+            prior_profile["data_source"] = "prior_season"
+            logger.info("  Prior season: %d PA for batter %s",
+                         prior_profile["sample_size"], batter_id)
+
+    if (df is None or df.empty) and prior_profile is None:
+        return None
+
     if df is None or df.empty:
-        cached = load_cached_profile("batters", str(batter_id))
-        if cached:
-            logger.info("Using cached profile for batter %s", batter_id)
-            return cached
+        if prior_profile:
+            save_cached_profile("batters", str(batter_id), prior_profile)
+            return prior_profile
         return None
 
     profile = _aggregate_batter_data(df, batter_id, name)
 
-    # Blend with prior season if applicable
-    prior = load_cached_profile("batters", str(batter_id))
-    if prior and prior.get("data_source") in ("prior_season", "blended_early", "blended_late"):
+    # Blend with prior season if available
+    if prior_profile:
         sample_size = profile.get("sample_size", 0)
-        profile = blend_profiles(prior, profile, sample_size)
+        profile = blend_profiles(prior_profile, profile, sample_size)
     else:
         sample_size = profile.get("sample_size", 0)
         _, _, data_source = _get_blend_weights(sample_size)

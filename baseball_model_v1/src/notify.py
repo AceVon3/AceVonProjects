@@ -32,6 +32,7 @@ def print_report(date_str: str, games: List[dict], pass_version: str = "morning"
     # Separate bet signals from no-bet games
     ml_signals = []
     rl_alerts = []
+    rl_plus_signals = []
     ou_signals = []
     no_bet_games = []
 
@@ -42,6 +43,9 @@ def print_report(date_str: str, games: List[dict], pass_version: str = "morning"
             has_signal = True
         if g.get("rl_alert"):
             rl_alerts.append(g)
+        if g.get("rl_plus_signal") not in (None, "NO BET"):
+            rl_plus_signals.append(g)
+            has_signal = True
         if g.get("ou_signal") not in (None, "NO BET"):
             ou_signals.append(g)
             has_signal = True
@@ -66,7 +70,8 @@ def print_report(date_str: str, games: List[dict], pass_version: str = "morning"
         f"Value >= +{int(_get_threshold('VALUE_EDGE_MIN', 0.04) * 100)}%"
     )
     lines.append(
-        f"Signals: {len(ml_signals)} ML  |  {len(rl_alerts)} RL ALERT  |  "
+        f"Signals: {len(ml_signals)} ML  |  {len(rl_plus_signals)} RL+1.5  |  "
+        f"{len(rl_alerts)} RL ALERT  |  "
         f"{len(ou_signals)} O/U  |  {len(no_bet_games)} no bet"
     )
     lines.append(divider)
@@ -76,6 +81,11 @@ def print_report(date_str: str, games: List[dict], pass_version: str = "morning"
     for g in ml_signals:
         lines.extend(_format_ml_signal(g))
         lines.append("")
+
+    for g in rl_plus_signals:
+        if g not in ml_signals:  # avoid double printing games already shown as ML
+            lines.extend(_format_rl_plus_signal(g))
+            lines.append("")
 
     for g in ou_signals:
         if g not in ml_signals:  # avoid double printing
@@ -165,6 +175,70 @@ def _format_ml_signal(g: dict) -> List[str]:
         lines.append(f"  Model prob:     {model_prob * 100:.1f}%")
     if value_edge is not None:
         lines.append(f"  Value edge:     {value_edge * 100:+.1f}%")
+
+    # Show +1.5 run line if it also has value
+    rl_plus = g.get("rl_plus_signal")
+    if rl_plus not in (None, "NO BET"):
+        if bet_side == "HOME":
+            rl_odds = g.get("home_run_line")
+        else:
+            rl_odds = g.get("away_run_line")
+        rl_str = _format_line(rl_odds)
+        rl_prob = g.get("rl_plus_prob")
+        rl_ve = g.get("rl_plus_value_edge")
+        lines.append(f"  +1.5 Run Line:  {ml_team} +1.5 ({rl_str})")
+        if rl_prob is not None:
+            lines.append(f"  +1.5 Model:     {rl_prob * 100:.1f}%")
+        if rl_ve is not None:
+            lines.append(f"  +1.5 Value:     {rl_ve * 100:+.1f}%")
+
+    return lines
+
+
+def _format_rl_plus_signal(g: dict) -> List[str]:
+    """Format an expanded +1.5 run line signal row."""
+    lines = []
+
+    unconf = " (UNCONFIRMED)" if g.get("unconfirmed") else ""
+    low_conf = " ** LOW CONFIDENCE **" if g.get("data_confidence") == "LOW CONFIDENCE" else ""
+
+    away = g.get("away_abbrev", g.get("away_team", "???"))
+    home = g.get("home_abbrev", g.get("home_team", "???"))
+    game_time = _format_time(g.get("game_time", ""))
+
+    bet_side = g.get("bet_side", "")
+    if bet_side == "HOME":
+        rl_team = home
+        rl_odds = g.get("home_run_line")
+    else:
+        rl_team = away
+        rl_odds = g.get("away_run_line")
+
+    rl_str = _format_line(rl_odds)
+
+    lines.append(f"[BET {rl_team} +1.5{unconf}]{low_conf} {away} @ {home}  {game_time}")
+
+    away_sp = g.get("away_starter_name", "TBD")
+    home_sp = g.get("home_starter_name", "TBD")
+    venue = g.get("venue", "")
+    lines.append(f"  {away_sp} vs. {home_sp}  |  {venue}")
+
+    home_edge = g.get("home_edge_score", 0)
+    away_edge = g.get("away_edge_score", 0)
+    lines.append(f"  Edge score:     {max(home_edge, away_edge):.0f}")
+
+    lines.append(f"  +1.5 Run Line:  {rl_team} +1.5 ({rl_str})")
+
+    rl_prob = g.get("rl_plus_prob")
+    rl_line_prob = g.get("rl_plus_line_prob")
+    rl_ve = g.get("rl_plus_value_edge")
+
+    if rl_line_prob is not None:
+        lines.append(f"  Line implied:   {rl_line_prob * 100:.1f}%")
+    if rl_prob is not None:
+        lines.append(f"  +1.5 Model:     {rl_prob * 100:.1f}%")
+    if rl_ve is not None:
+        lines.append(f"  +1.5 Value:     {rl_ve * 100:+.1f}%")
 
     return lines
 
