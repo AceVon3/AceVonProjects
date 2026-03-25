@@ -73,45 +73,62 @@ def zone_alignment_score(pitcher: dict, lineup: List[dict]) -> float:
 def pitch_type_mismatch_score(pitcher: dict, lineup: List[dict]) -> float:
     """Score how well the pitcher's pitch mix exploits batter weaknesses.
 
-    Primary pitch = batter's worst pitch type → +4 pts
-    Primary pitch = batter's best pitch type → -3 pts
-    60%+ of a struggling pitch type → +2 pts bonus
+    Weighted approach: for each pitch type the pitcher throws, multiply
+    usage % by how much the batter struggles against that pitch (inverted
+    wOBA). Sum across all pitch types to get a composite mismatch score
+    per batter, then average across the lineup with position weights.
+
+    League average wOBA is ~0.320. A batter with 0.200 wOBA against a pitch
+    is weak; 0.450 is strong. We invert so weakness = positive for pitcher.
     """
-    primary = pitcher.get("primary_pitch", "")
     pitch_mix = pitcher.get("pitch_mix", {})
-    if not primary:
+    if not pitch_mix:
         return 15.0  # neutral
+
+    LEAGUE_AVG_WOBA = 0.320
 
     total_score = 0.0
     total_weight = 0.0
 
     for i, batter in enumerate(lineup[:9], 1):
         weight = POSITION_WEIGHTS.get(i, 1.0)
-        worst = batter.get("worst_pitch_type", "")
-        best = batter.get("best_pitch_type", "")
+        perf = batter.get("pitch_type_perf", {})
 
-        batter_score = 0
-        if primary == worst:
-            batter_score += 4
-        if primary == best:
-            batter_score -= 3
+        if not perf:
+            # No pitch type data for this batter — neutral
+            total_weight += weight
+            continue
 
-        # Bonus: pitcher throws 60%+ of a pitch the batter struggles with
+        # For each pitch the pitcher throws, score how much the batter
+        # struggles against it, weighted by usage %
+        batter_mismatch = 0.0
+        usage_matched = 0.0
+
         for ptype, usage in pitch_mix.items():
-            if usage >= 0.60 and ptype == worst:
-                batter_score += 2
-                break
+            batter_woba = perf.get(ptype)
+            if batter_woba is None:
+                # Batter has no data against this pitch type — assume neutral
+                batter_woba = LEAGUE_AVG_WOBA
 
-        total_score += batter_score * weight
+            # Invert: lower batter wOBA = pitcher advantage
+            # (league_avg - batter_woba) is positive when batter is weak
+            advantage = LEAGUE_AVG_WOBA - batter_woba
+            batter_mismatch += usage * advantage
+            usage_matched += usage
+
+        # batter_mismatch ranges roughly from -0.15 (batter crushes everything)
+        # to +0.15 (batter is weak against this mix)
+        total_score += batter_mismatch * weight
         total_weight += weight
 
     if total_weight == 0:
         return 15.0
 
-    # Normalize to 0-30 range
-    raw = total_score / total_weight
-    # raw ranges roughly from -3 to +6, normalize to 0-30
-    normalized = ((raw + 3) / 9) * 30
+    # Average mismatch across lineup
+    avg_mismatch = total_score / total_weight
+    # avg_mismatch ranges roughly from -0.12 to +0.12
+    # Normalize to 0-30: center at 15, scale so ±0.12 maps to 0-30
+    normalized = 15.0 + (avg_mismatch / 0.12) * 15.0
     return max(0, min(30, round(normalized, 2)))
 
 
