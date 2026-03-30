@@ -266,13 +266,19 @@ def _get_lineup_profiles(
 
 
 def _build_odds_lookup(all_odds: List[dict]) -> dict:
-    """Build a lookup dict from odds data keyed by team names."""
+    """Build a lookup dict from odds data keyed by team names + date.
+
+    The Odds API returns upcoming games across multiple days, so the same
+    team pair can appear more than once (e.g. a 3-game series).  Keying by
+    the commence date prevents tomorrow's line from overwriting today's.
+    """
     lookup = {}
     for odds in all_odds:
         home = odds.get("home_team", "")
         away = odds.get("away_team", "")
+        commence = odds.get("commence_time", "")[:10]  # "YYYY-MM-DD"
         if home and away:
-            lookup[(home, away)] = odds
+            lookup[(home, away, commence)] = odds
     return lookup
 
 
@@ -280,11 +286,14 @@ def _match_odds(game: dict, odds_lookup: dict) -> dict:
     """Match a game to its odds data."""
     home = game.get("home_team", "")
     away = game.get("away_team", "")
+    game_date = game.get("game_time", "")[:10]  # "YYYY-MM-DD"
 
-    odds = odds_lookup.get((home, away), {})
+    odds = odds_lookup.get((home, away, game_date), {})
     if not odds:
-        # Try abbreviation matching
+        # Try abbreviation matching (with date)
         for key, val in odds_lookup.items():
+            if key[2] != game_date:
+                continue
             if home in key[0] or key[0] in home:
                 if away in key[1] or key[1] in away:
                     odds = val

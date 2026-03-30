@@ -301,8 +301,13 @@ def _parse_odds_response(data: list[dict]) -> List[dict]:
             "ou_over_odds": None,
             "ou_under_odds": None,
         }
-        # Use first available bookmaker
-        for bookmaker in game.get("bookmakers", []):
+        # Prefer DraftKings, fall back to first available
+        bookmakers = game.get("bookmakers", [])
+        bookmakers_sorted = sorted(
+            bookmakers,
+            key=lambda b: 0 if b.get("key") == "draftkings" else 1,
+        )
+        for bookmaker in bookmakers_sorted:
             for market in bookmaker.get("markets", []):
                 key = market["key"]
                 outcomes = {o["name"]: o for o in market.get("outcomes", [])}
