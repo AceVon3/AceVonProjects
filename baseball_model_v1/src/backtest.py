@@ -4,9 +4,11 @@ backtest.py — Historical validation and calibration.
 Runs the model over a full historical season day-by-day:
 1. Reconstruct actual lineups from boxscore data
 2. Build pitcher/batter profiles from prior season (no look-ahead bias)
-3. Score each game using the full model pipeline
-4. Compare signals to actual results
-5. Build calibration curves for ML, DIFF, O/U, and RL
+3. Monthly profile refresh: blend accumulating current-season data with
+   the prior-season baseline, mirroring how the live model operates
+4. Score each game using the full model pipeline
+5. Compare signals to actual results
+6. Build calibration curves for ML, DIFF, O/U, and RL
 """
 
 import os
@@ -28,7 +30,7 @@ from dotenv import load_dotenv
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from src.fetch import fetch_park_factors, fetch_lineup, fetch_statcast_pitcher, fetch_statcast_batter
-from src.profile import _aggregate_pitcher_data, _aggregate_batter_data, get_league_avg_pitcher, get_league_avg_batter
+from src.profile import _aggregate_pitcher_data, _aggregate_batter_data, get_league_avg_pitcher, get_league_avg_batter, blend_profiles
 from src.bullpen import build_bullpen_profile
 from src.weather import fetch_historical_weather, STADIUM_COORDS
 from src.score import score_matchup
@@ -84,6 +86,8 @@ def _build_bt_pitcher(cache_dir: str, pitcher_id: int, name: str, prior_season: 
 
     Fetches Statcast data for the prior season only — no fallback to other
     seasons, no blending, no writing to the live cache. Times out after 45s.
+    Also saves a copy to pitchers_prior/ as the raw baseline for mid-season
+    blending.
     """
     pid = str(pitcher_id)
     cached = _load_bt_profile(cache_dir, "pitchers", pid)
@@ -98,6 +102,10 @@ def _build_bt_pitcher(cache_dir: str, pitcher_id: int, name: str, prior_season: 
             profile = _aggregate_pitcher_data(df, pitcher_id, name)
             profile["data_source"] = "backtest_prior_season"
             _save_bt_profile(cache_dir, "pitchers", pid, profile)
+            # Save raw prior baseline for mid-season refresh blending
+            prior_dir = os.path.join(cache_dir, "pitchers_prior")
+            os.makedirs(prior_dir, exist_ok=True)
+            _save_bt_profile(cache_dir, "pitchers_prior", pid, profile)
             return profile
     except Exception as e:
         logger.debug("Could not build pitcher profile %s — %s", pid, e)
@@ -115,7 +123,8 @@ def _build_bt_batter(cache_dir: str, batter_id: int, prior_season: int) -> dict:
     """Build or load a batter profile for backtest using prior season data.
 
     Fetches Statcast data for the prior season only — no fallback, no blending.
-    Times out after 45s.
+    Times out after 45s. Also saves a copy to batters_prior/ as the raw
+    baseline for mid-season blending.
     """
     bid = str(batter_id)
     cached = _load_bt_profile(cache_dir, "batters", bid)
@@ -130,6 +139,10 @@ def _build_bt_batter(cache_dir: str, batter_id: int, prior_season: int) -> dict:
             profile = _aggregate_batter_data(df, batter_id, "")
             profile["data_source"] = "backtest_prior_season"
             _save_bt_profile(cache_dir, "batters", bid, profile)
+            # Save raw prior baseline for mid-season refresh blending
+            prior_dir = os.path.join(cache_dir, "batters_prior")
+            os.makedirs(prior_dir, exist_ok=True)
+            _save_bt_profile(cache_dir, "batters_prior", bid, profile)
             return profile
     except Exception as e:
         logger.debug("Could not build batter profile %s — %s", bid, e)
@@ -140,6 +153,152 @@ def _build_bt_batter(cache_dir: str, batter_id: int, prior_season: int) -> dict:
     avg["data_source"] = "league_avg"
     _save_bt_profile(cache_dir, "batters", bid, avg)
     return avg
+
+
+# ---------------------------------------------------------------------------
+# Mid-season profile refresh (blends current season data with prior baseline)
+# ---------------------------------------------------------------------------
+
+# Refresh on the 1st of each month from May through September
+REFRESH_MONTHS = [5, 6, 7, 8, 9]
+
+
+def _get_refresh_dates(season: int) -> List[str]:
+    """Return list of profile refresh dates for the season."""
+    return [f"{season}-{m:02d}-01" for m in REFRESH_MONTHS]
+
+
+def _refresh_profiles(season: int, cache_dir: str, cutoff_date: str,
+                      schedule_cache: dict, lineup_cache: dict):
+    """Rebuild profiles by blending prior-season baseline with current-season
+    data accumulated up to cutoff_date.
+
+    Fetches current-season Statcast data from season start to cutoff_date,
+    aggregates it, and blends with the prior-season profile (stored in the
+    pitchers_prior/batters_prior subdirectories of cache_dir). No look-ahead:
+    only data before cutoff_date is used.
+    """
+    prior_season = season - 1
+    season_start = f"{season}-03-01"
+
+    # Collect all player IDs from games before the cutoff date
+    pitcher_ids = {}  # id -> name
+    batter_ids = set()
+    cutoff = datetime.strptime(cutoff_date, "%Y-%m-%d")
+
+    for date_str, games in schedule_cache.items():
+        if datetime.strptime(date_str, "%Y-%m-%d") >= cutoff:
+            continue
+        for game in games:
+            game_id = str(game["game_id"])
+            # Pitchers
+            for side in ("home", "away"):
+                pid = game.get(f"{side}_probable_pitcher_id")
+                name = game.get(f"{side}_probable_pitcher", "")
+                if pid:
+                    pitcher_ids[int(pid)] = name
+            # Batters
+            if game_id in lineup_cache:
+                for bid in lineup_cache[game_id].get("home_lineup", []):
+                    batter_ids.add(int(bid))
+                for bid in lineup_cache[game_id].get("away_lineup", []):
+                    batter_ids.add(int(bid))
+
+    logger.info("REFRESH %s: %d pitchers, %d batters to update",
+                cutoff_date, len(pitcher_ids), len(batter_ids))
+
+    # Check for a refresh cache to avoid re-fetching within the same run
+    refresh_tag = cutoff_date.replace("-", "")
+    refresh_cache_dir = os.path.join(cache_dir, f"refresh_{refresh_tag}")
+    os.makedirs(os.path.join(refresh_cache_dir, "pitchers"), exist_ok=True)
+    os.makedirs(os.path.join(refresh_cache_dir, "batters"), exist_ok=True)
+
+    # Refresh pitchers
+    refreshed_p = 0
+    for pid, name in pitcher_ids.items():
+        spid = str(pid)
+        # Check if already refreshed
+        cached_refresh = _load_bt_profile(refresh_cache_dir, "pitchers", spid)
+        if cached_refresh:
+            _save_bt_profile(cache_dir, "pitchers", spid, cached_refresh)
+            refreshed_p += 1
+            continue
+
+        prior = _load_bt_profile(cache_dir, "pitchers_prior", spid)
+        if prior is None:
+            continue  # No prior baseline — keep existing profile
+
+        try:
+            df = _fetch_with_timeout(fetch_statcast_pitcher, pid, season_start, cutoff_date)
+            if df is not None and not df.empty and len(df) >= 50:
+                current = _aggregate_pitcher_data(df, pid, name)
+                blended = blend_profiles(prior, current, current.get("sample_size", 0))
+                blended["data_source"] = "backtest_blended"
+                _save_bt_profile(cache_dir, "pitchers", spid, blended)
+                _save_bt_profile(refresh_cache_dir, "pitchers", spid, blended)
+                refreshed_p += 1
+        except Exception:
+            pass
+
+        if refreshed_p % 25 == 0 and refreshed_p > 0:
+            logger.info("REFRESH: %d/%d pitchers done", refreshed_p, len(pitcher_ids))
+
+    # Refresh batters
+    refreshed_b = 0
+    for bid in batter_ids:
+        sbid = str(bid)
+        cached_refresh = _load_bt_profile(refresh_cache_dir, "batters", sbid)
+        if cached_refresh:
+            _save_bt_profile(cache_dir, "batters", sbid, cached_refresh)
+            refreshed_b += 1
+            continue
+
+        prior = _load_bt_profile(cache_dir, "batters_prior", sbid)
+        if prior is None:
+            continue
+
+        try:
+            df = _fetch_with_timeout(fetch_statcast_batter, bid, season_start, cutoff_date)
+            if df is not None and not df.empty and len(df) >= 50:
+                current = _aggregate_batter_data(df, bid, "")
+                blended = blend_profiles(prior, current, current.get("sample_size", 0))
+                blended["data_source"] = "backtest_blended"
+                _save_bt_profile(cache_dir, "batters", sbid, blended)
+                _save_bt_profile(refresh_cache_dir, "batters", sbid, blended)
+                refreshed_b += 1
+        except Exception:
+            pass
+
+        if refreshed_b % 50 == 0 and refreshed_b > 0:
+            logger.info("REFRESH: %d/%d batters done", refreshed_b, len(batter_ids))
+
+    logger.info("REFRESH %s complete: %d pitchers, %d batters updated",
+                cutoff_date, refreshed_p, refreshed_b)
+
+
+def _seed_prior_baselines(cache_dir: str):
+    """Copy prior-season profiles into pitchers_prior/batters_prior if not
+    already present, so mid-season refresh has clean baselines to blend against.
+    """
+    import shutil
+    for profile_type in ("pitchers", "batters"):
+        src_dir = os.path.join(cache_dir, profile_type)
+        dst_dir = os.path.join(cache_dir, f"{profile_type}_prior")
+        os.makedirs(dst_dir, exist_ok=True)
+        if not os.path.exists(src_dir):
+            continue
+        seeded = 0
+        for f in os.listdir(src_dir):
+            if not f.endswith(".json"):
+                continue
+            dst = os.path.join(dst_dir, f)
+            if os.path.exists(dst):
+                continue
+            src = os.path.join(src_dir, f)
+            shutil.copy2(src, dst)
+            seeded += 1
+        if seeded:
+            logger.info("Seeded %d %s prior baselines", seeded, profile_type)
 
 
 def _prewarm_profiles(season: int, prior_season: int, cache_dir: str,
@@ -297,6 +456,10 @@ def run_backtest(season: int, start_date: Optional[str] = None, end_date: Option
         season, prior_season, cache_dir, start_date, end_date
     )
 
+    # Seed prior baseline directories from existing profiles if needed.
+    # This ensures mid-season refresh has raw prior data to blend against.
+    _seed_prior_baselines(cache_dir)
+
     # Load park factors for the season
     park_factors = fetch_park_factors(season)
 
@@ -310,12 +473,24 @@ def run_backtest(season: int, start_date: Optional[str] = None, end_date: Option
     skip_count = 0
     os.makedirs(BACKTEST_DIR, exist_ok=True)
 
+    # Set up mid-season profile refresh dates
+    refresh_dates = set(_get_refresh_dates(season))
+    refreshed = set()
+
     current = datetime.strptime(start_date, "%Y-%m-%d")
     end = datetime.strptime(end_date, "%Y-%m-%d")
     bt_start = time.time()
 
     while current <= end:
         date_str = current.strftime("%Y-%m-%d")
+
+        # Mid-season profile refresh: blend current-season data with prior
+        if date_str in refresh_dates and date_str not in refreshed:
+            logger.info("=" * 40)
+            _refresh_profiles(season, cache_dir, date_str,
+                              schedule_cache, lineup_cache)
+            refreshed.add(date_str)
+            logger.info("=" * 40)
 
         day_games = schedule_cache.get(date_str, [])
         if not day_games:
