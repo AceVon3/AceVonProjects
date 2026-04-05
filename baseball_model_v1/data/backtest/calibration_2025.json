@@ -1,0 +1,184 @@
+{
+  "season": 2025,
+  "ml_buckets": {
+    "70": {
+      "total": 74,
+      "wins": 43
+    },
+    "45": {
+      "total": 11,
+      "wins": 7
+    },
+    "35": {
+      "total": 14,
+      "wins": 7
+    },
+    "80": {
+      "total": 15,
+      "wins": 9
+    },
+    "75": {
+      "total": 21,
+      "wins": 14
+    },
+    "40": {
+      "total": 15,
+      "wins": 9
+    },
+    "50": {
+      "total": 10,
+      "wins": 7
+    },
+    "30": {
+      "total": 3,
+      "wins": 2
+    },
+    "60": {
+      "total": 2,
+      "wins": 0
+    },
+    "85": {
+      "total": 4,
+      "wins": 1
+    },
+    "55": {
+      "total": 2,
+      "wins": 1
+    },
+    "65": {
+      "total": 2,
+      "wins": 2
+    }
+  },
+  "ou_buckets": {
+    "7.0": {
+      "total": 3,
+      "correct": 0
+    },
+    "4.0": {
+      "total": 2,
+      "correct": 0
+    },
+    "0.0": {
+      "total": 7,
+      "correct": 1
+    },
+    "3.0": {
+      "total": 6,
+      "correct": 0
+    },
+    "1.0": {
+      "total": 3,
+      "correct": 0
+    },
+    "-3.0": {
+      "total": 3,
+      "correct": 3
+    },
+    "2.0": {
+      "total": 5,
+      "correct": 0
+    },
+    "-3.5": {
+      "total": 1,
+      "correct": 1
+    },
+    "9.0": {
+      "total": 2,
+      "correct": 0
+    },
+    "3.5": {
+      "total": 1,
+      "correct": 0
+    },
+    "6.0": {
+      "total": 1,
+      "correct": 0
+    },
+    "-0.5": {
+      "total": 1,
+      "correct": 1
+    },
+    "-5.0": {
+      "total": 1,
+      "correct": 1
+    },
+    "-1.0": {
+      "total": 3,
+      "correct": 3
+    },
+    "6.5": {
+      "total": 1,
+      "correct": 0
+    },
+    "5.0": {
+      "total": 4,
+      "correct": 0
+    },
+    "1.5": {
+      "total": 1,
+      "correct": 0
+    },
+    "-7.0": {
+      "total": 1,
+      "correct": 1
+    },
+    "8.0": {
+      "total": 1,
+      "correct": 0
+    },
+    "-8.0": {
+      "total": 1,
+      "correct": 1
+    },
+    "-10.0": {
+      "total": 1,
+      "correct": 1
+    }
+  },
+  "rl_data": {
+    "total": 49,
+    "win_by_2": 14
+  },
+  "diff_buckets": {
+    "16": {
+      "total": 218,
+      "wins": 121
+    },
+    "24": {
+      "total": 102,
+      "wins": 54
+    },
+    "20": {
+      "total": 171,
+      "wins": 90
+    },
+    "36": {
+      "total": 13,
+      "wins": 7
+    },
+    "12": {
+      "total": 305,
+      "wins": 153
+    },
+    "28": {
+      "total": 55,
+      "wins": 22
+    },
+    "40": {
+      "total": 3,
+      "wins": 3
+    },
+    "32": {
+      "total": 26,
+      "wins": 16
+    }
+  },
+  "convergence_data": {
+    "over_total": 0,
+    "over_correct": 0,
+    "under_total": 134,
+    "under_correct": 73
+  },
+  "total_games": 2414
+}

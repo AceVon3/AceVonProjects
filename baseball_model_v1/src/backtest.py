@@ -56,8 +56,13 @@ def _load_bt_profile(cache_dir: str, profile_type: str, player_id: str) -> Optio
     """Load a profile from the backtest cache."""
     path = os.path.join(cache_dir, profile_type, f"{player_id}.json")
     if os.path.exists(path):
-        with open(path) as f:
-            return json.load(f)
+        try:
+            with open(path) as f:
+                data = json.load(f)
+            return data
+        except (json.JSONDecodeError, ValueError):
+            os.remove(path)
+            return None
     return None
 
 
@@ -159,13 +164,21 @@ def _build_bt_batter(cache_dir: str, batter_id: int, prior_season: int) -> dict:
 # Mid-season profile refresh (blends current season data with prior baseline)
 # ---------------------------------------------------------------------------
 
-# Refresh on the 1st of each month from May through September
-REFRESH_MONTHS = [5, 6, 7, 8, 9]
+# Refresh every 2 weeks from mid-April through September to match the live
+# pipeline's continuous per-player blending as closely as possible.
+REFRESH_INTERVAL_DAYS = 14
 
 
 def _get_refresh_dates(season: int) -> List[str]:
-    """Return list of profile refresh dates for the season."""
-    return [f"{season}-{m:02d}-01" for m in REFRESH_MONTHS]
+    """Return bi-weekly profile refresh dates for the season."""
+    start = date(season, 4, 15)
+    end = date(season, 9, 29)
+    dates = []
+    current = start
+    while current <= end:
+        dates.append(current.isoformat())
+        current += timedelta(days=REFRESH_INTERVAL_DAYS)
+    return dates
 
 
 def _refresh_profiles(season: int, cache_dir: str, cutoff_date: str,
