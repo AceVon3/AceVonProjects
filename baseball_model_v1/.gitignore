@@ -6,3 +6,5 @@ data/pitchers/
 data/batters/
 data/bullpens/
 data/games/
+data/backtest/profiles_2025/
+data/backtest/weight_sweep_roi_results.csv

@@ -1,0 +1,22 @@
+{
+  "contact_rate": 0.875,
+  "hand": "L",
+  "name": "",
+  "worst_pitch_type": "FF",
+  "bb_pct": 0.0,
+  "vulnerable_zones": [],
+  "batter_id": "702693",
+  "preferred_hit_zones": [],
+  "best_pitch_type": "FF",
+  "k_pct": 0.25,
+  "chase_rate": 0.0,
+  "zone_hot_spots": {},
+  "zone_cold_spots": {},
+  "pitch_type_perf": {
+    "FF": 0.0
+  },
+  "data_source": "prior_season",
+  "sample_size": 19,
+  "current_season_pitches": 15,
+  "last_updated": "2026-03-25"
+}

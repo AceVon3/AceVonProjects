@@ -1,11 +1,11 @@
 """
 score.py — 4-component matchup scoring engine.
 
-Components:
-  1. Zone Alignment Score (0-40 pts)
-  2. Pitch Type Mismatch Score (0-30 pts)
-  3. Walk Rate Interaction Score (0-15 pts)
-  4. Handedness Adjustment (0-15 pts)
+Components (raw → weighted):
+  1. Zone Alignment Score (0-40 raw, weighted to 49%)
+  2. Pitch Type Mismatch Score (0-30 raw, weighted to 22%)
+  3. Walk Rate Interaction Score (0-15 raw, weighted to 19%)
+  4. Handedness Adjustment (0-15 raw, weighted to 10%)
 
 Plus: park/weather adjustments, bullpen modifier, O/U model total, O/U score.
 """
@@ -203,10 +203,12 @@ def calculate_edge_score(pitcher: dict, lineup: List[dict]) -> dict:
     Raw Edge Score range: 0 to 100.
     Higher = pitching team advantage.
     """
-    zone = zone_alignment_score(pitcher, lineup)
-    pitch = pitch_type_mismatch_score(pitcher, lineup)
-    walk = walk_rate_score(pitcher, lineup)
-    hand = handedness_score(pitcher, lineup)
+    # Component weights tuned via 2025 backtest ROI sweep (176k combos)
+    # (zone 49%, pitch 22%, walk 19%, hand 10%)
+    zone = zone_alignment_score(pitcher, lineup) * (49 / 40)
+    pitch = pitch_type_mismatch_score(pitcher, lineup) * (22 / 30)
+    walk = walk_rate_score(pitcher, lineup) * (19 / 15)
+    hand = handedness_score(pitcher, lineup) * (10 / 15)
 
     raw = zone + pitch + walk + hand
     # Clamp to spec range
@@ -332,88 +334,95 @@ def calculate_ou(
 ) -> dict:
     """Calculate O/U model total and O/U directional score.
 
-    Model total formula from spec. O/U score starts at baseline 50.
+    Model total baseline 8.7 (2025 MLB avg ~8.9, slight conservative lean).
+    O/U score centered at 50 — above = OVER lean, below = UNDER lean.
     """
-    # Use the average of both edge scores as a combined pitcher dominance measure
     avg_edge = (home_edge + away_edge) / 2
 
-    # Model total — 50 is neutral; above 50 = dominant pitching (fewer runs),
-    # below 50 = weak pitching (more runs)
-    model_total = 9.0
+    # --- Model Total ---
+    # Baseline: 8.7 (closer to actual MLB avg than old 9.0)
+    model_total = 8.7
+
+    # Pitcher dominance: stronger pitching = fewer runs
+    # avg_edge 50 = neutral, 70 = dominant (-1.0 run), 30 = weak (+1.0 run)
     model_total -= ((avg_edge - 50) / 50) * 2.5
+
+    # Park factor
     model_total += (park_factor - 1.0) * 3.0
+
+    # Weather
     model_total += weather_adj.get("run_adj", 0.0)
 
+    # Bullpen: linear, centered at 50
     avg_bullpen = (home_bullpen_score + away_bullpen_score) / 2
-    # Linear bullpen adjustment: 70+ = -0.5, 50 = 0, 30- = +0.5
-    if avg_bullpen >= 70:
-        model_total -= 0.5
-    elif avg_bullpen <= 30:
-        model_total += 0.5
-    else:
-        # Linear between 30 and 70 (midpoint 50 = 0)
-        model_total += ((50 - avg_bullpen) / 40) * 0.5
+    model_total -= ((avg_bullpen - 50) / 40) * 0.5  # 70 = -0.25, 30 = +0.25
 
-    # Spread bonus for lopsided pitching matchups
-    spread = abs(home_edge - away_edge)
-    model_total += (spread / 50) * 0.3  # max +0.3 runs for a 50-pt gap
+    # Spread: lopsided matchups are volatile but NOT directionally biased.
+    # Removed the old one-directional spread bonus that always added runs.
 
-    # O/U Score (baseline 50, always applied)
+    # --- O/U Score (baseline 50) ---
     ou_score = 50.0
 
     # Edge score factor: -20 to +20
-    # Edge 100 = -20 (strong UNDER), Edge 50 = 0 (neutral), Edge 0 = +20 (OVER lean)
+    # High avg edge (dominant pitching) → UNDER, low avg edge → OVER
     edge_factor = -((avg_edge - 50) / 50) * 20
     ou_score += edge_factor
 
     # Park factor: -10 to +10
-    park_ou = (park_factor - 1.0) * 100  # e.g., 1.05 → 5
+    park_ou = (park_factor - 1.0) * 100
     park_ou = max(-10, min(10, park_ou))
     ou_score += park_ou
 
     # Wind: -8 to +8
     wind_adj = weather_adj.get("run_adj", 0.0)
-    wind_ou = max(-8, min(8, wind_adj * 16))  # scale run_adj to ±8
+    wind_ou = max(-8, min(8, wind_adj * 16))
     ou_score += wind_ou
 
-    # Avg bullpen score: -10 to +10
-    # avg >= 70 = -10 (UNDER), avg < 50 = +10 (OVER), linear between
-    if avg_bullpen >= 70:
-        bp_ou = -10
-    elif avg_bullpen < 50:
-        bp_ou = 10
-    else:
-        bp_ou = 10 - ((avg_bullpen - 50) / 20) * 20
+    # Bullpen: linear centered at 50, range -10 to +10
+    # 70 = strong pen = -10 (UNDER), 30 = weak pen = +10 (OVER)
+    bp_ou = -((avg_bullpen - 50) / 20) * 10
+    bp_ou = max(-10, min(10, bp_ou))
     ou_score += bp_ou
 
-    # Lopsided pitching spread bonus: 0 to +5 OVER
-    # When one pitcher is much weaker, run scoring is right-skewed —
-    # bad pitchers give up crooked innings (unbounded upside) while
-    # good pitchers can only suppress to 0 (bounded floor).
+    # Spread factor: lopsided matchups add volatility in BOTH directions.
+    # High spread with low avg edge (one bad pitcher) → mild OVER
+    # High spread with high avg edge (one dominant pitcher) → mild UNDER
+    # This replaces the old one-directional +0 to +5 OVER bonus.
     spread = abs(home_edge - away_edge)
-    spread_bonus = (spread / 50) * 5  # max +5 for a 50-pt gap
-    ou_score += spread_bonus
+    if avg_edge >= 55:
+        # Dominant side drives the total down
+        spread_factor = -(spread / 50) * 3  # max -3 UNDER
+    elif avg_edge <= 45:
+        # Weak side drives the total up
+        spread_factor = (spread / 50) * 3   # max +3 OVER
+    else:
+        # Neutral — spread adds slight volatility but no direction
+        spread_factor = 0
+    ou_score += spread_factor
 
-    # Pitcher convergence boost (UNDER only):
-    # Both dominant → pitchers' duel. Backtested at 62.5%.
+    # Pitcher convergence boost:
+    # Both dominant → pitchers' duel (UNDER)
+    # Both weak → high-scoring game (OVER)
     convergence_boost = 0.0
     low_edge = min(home_edge, away_edge)
     high_edge = max(home_edge, away_edge)
 
     if low_edge >= 60:
-        convergence_boost = -15.0  # both dominant → UNDER
+        convergence_boost = -15.0  # both dominant → strong UNDER
     elif low_edge >= 55 and high_edge >= 55:
         convergence_boost = -8.0   # both solid → mild UNDER
+    elif high_edge <= 40:
+        convergence_boost = 10.0   # both weak → OVER
+    elif high_edge <= 45 and low_edge <= 40:
+        convergence_boost = 5.0    # both below avg → mild OVER
 
     ou_score += convergence_boost
 
-    # Apply convergence to model total as well
-    if convergence_boost > 0:
-        model_total += convergence_boost / 15 * 0.5  # up to +0.5 runs
-    elif convergence_boost < 0:
-        model_total += convergence_boost / 15 * 0.5  # down to -0.5 runs
-    model_total = round(max(4.0, min(15.0, model_total)), 1)
+    # Apply convergence to model total
+    if convergence_boost != 0:
+        model_total += convergence_boost / 15 * 0.5
 
+    model_total = round(max(4.0, min(15.0, model_total)), 1)
     ou_score = max(0, min(100, round(ou_score, 1)))
 
     return {

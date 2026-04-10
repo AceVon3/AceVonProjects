@@ -1,0 +1,22 @@
+{
+  "vulnerable_zones": [],
+  "hand": "L",
+  "k_pct": 0.4828,
+  "best_pitch_type": "",
+  "contact_rate": 0.5821,
+  "worst_pitch_type": "",
+  "pitch_type_perf": {
+    "FF": 0.138
+  },
+  "zone_hot_spots": {},
+  "name": "",
+  "zone_cold_spots": {},
+  "bb_pct": 0.069,
+  "batter_id": "669398",
+  "chase_rate": 0.5663,
+  "preferred_hit_zones": [],
+  "data_source": "prior_season",
+  "sample_size": 33,
+  "current_season_pitches": 4,
+  "last_updated": "2026-03-30"
+}

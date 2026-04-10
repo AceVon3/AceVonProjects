@@ -16,7 +16,6 @@ load_dotenv()
 logger = logging.getLogger("pipeline")
 
 ML_EDGE_THRESHOLD = int(os.getenv("ML_EDGE_THRESHOLD", 65))
-RL_EDGE_THRESHOLD = int(os.getenv("RL_EDGE_THRESHOLD", 75))
 OU_EDGE_THRESHOLD = int(os.getenv("OU_EDGE_THRESHOLD", 65))
 DIFF_EDGE_THRESHOLD = int(os.getenv("DIFF_EDGE_THRESHOLD", 12))
 VALUE_EDGE_MIN = float(os.getenv("VALUE_EDGE_MIN", 0.04))
@@ -92,12 +91,8 @@ def evaluate_side_signal(
     away_edge: float,
     home_moneyline: Optional[int],
     away_moneyline: Optional[int],
-    home_run_line: Optional[int] = None,
-    away_run_line: Optional[int] = None,
-    home_spread_point: Optional[float] = None,
-    away_spread_point: Optional[float] = None,
 ) -> dict:
-    """Evaluate moneyline and run line signals.
+    """Evaluate moneyline signals.
 
     Returns dict with signal details.
     """
@@ -108,11 +103,6 @@ def evaluate_side_signal(
         "model_win_prob": None,
         "line_win_prob": None,
         "value_edge": None,
-        "rl_alert": False,
-        "rl_plus_signal": "NO BET",
-        "rl_plus_prob": None,
-        "rl_plus_line_prob": None,
-        "rl_plus_value_edge": None,
         "unconfirmed": False,
     }
 
@@ -130,39 +120,22 @@ def evaluate_side_signal(
     #      edge 25 → inverted 0 (barely qualifies), edge 0 → inverted 25 (max)
     inverted = False
 
-    # Helper: resolve the +1.5 run line price for a given side.
-    # The Odds API always puts -1.5 on the favorite and +1.5 on the underdog.
-    # If our bet side is the underdog (spread_point > 0), their price IS the
-    # +1.5 price.  If our bet side is the favorite (spread_point < 0), the
-    # +1.5 price for them doesn't exist in the API — set to None so the
-    # +1.5 signal won't fire (favorites on +1.5 have no real market).
-    def _resolve_rl_plus(side: str) -> Optional[int]:
-        if side == "HOME":
-            pt = home_spread_point
-            return home_run_line if pt is not None and pt > 0 else None
-        else:
-            pt = away_spread_point
-            return away_run_line if pt is not None and pt > 0 else None
-
     if home_edge >= ML_EDGE_THRESHOLD:
         bet_side = "HOME"
         edge = home_edge
         ml = home_moneyline
         ml_opp = away_moneyline
-        rl = _resolve_rl_plus("HOME")
     elif away_edge >= ML_EDGE_THRESHOLD:
         bet_side = "AWAY"
         edge = away_edge
         ml = away_moneyline
         ml_opp = home_moneyline
-        rl = _resolve_rl_plus("AWAY")
     elif home_edge <= 25:
         # Home pitcher getting crushed → bet AWAY
         bet_side = "AWAY"
         edge = 25 - home_edge  # invert: lower score = stronger signal
         ml = away_moneyline
         ml_opp = home_moneyline
-        rl = _resolve_rl_plus("AWAY")
         inverted = True
     elif away_edge <= 25:
         # Away pitcher getting crushed → bet HOME
@@ -170,7 +143,6 @@ def evaluate_side_signal(
         edge = 25 - away_edge
         ml = home_moneyline
         ml_opp = away_moneyline
-        rl = _resolve_rl_plus("HOME")
         inverted = True
     else:
         # No side qualifies — compute value for the stronger side for display
@@ -219,10 +191,6 @@ def evaluate_side_signal(
             if edge >= ML_EDGE_THRESHOLD and value_edge >= VALUE_EDGE_MIN:
                 result["bet_signal"] = bet_side
                 result["bet_market"] = "ML"
-
-                if edge >= RL_EDGE_THRESHOLD:
-                    result["rl_alert"] = True
-                    result["bet_market"] = "ML"  # ML fires; RL is alert only
             elif edge >= ML_EDGE_THRESHOLD:
                 # Edge met but no value
                 result["bet_signal"] = "NO BET"
@@ -234,31 +202,6 @@ def evaluate_side_signal(
             result["bet_signal"] = bet_side
             result["bet_market"] = "ML"
             result["unconfirmed"] = True
-            if not inverted and edge >= RL_EDGE_THRESHOLD:
-                result["rl_alert"] = True
-
-    # +1.5 Run Line evaluation
-    # When the model identifies a side, also check if +1.5 offers value.
-    # +1.5 probability = win_prob + (lose_prob * one_run_loss_rate)
-    # ~30% of MLB losses are by exactly 1 run historically.
-    ONE_RUN_LOSS_RATE = 0.30
-
-    if model_prob is not None and rl is not None:
-        rl_plus_prob = model_prob + ((1 - model_prob) * ONE_RUN_LOSS_RATE)
-        rl_plus_prob = max(0.10, min(0.95, round(rl_plus_prob, 4)))
-        # Opponent's run line is the other side of the spread market
-        rl_opp = away_run_line if bet_side == "HOME" else home_run_line
-        rl_line_prob = no_vig_prob(rl, rl_opp)
-
-        result["rl_plus_prob"] = rl_plus_prob
-        result["rl_plus_line_prob"] = rl_line_prob
-
-        if rl_line_prob is not None:
-            rl_plus_value = rl_plus_prob - rl_line_prob
-            result["rl_plus_value_edge"] = round(rl_plus_value, 4)
-
-            if rl_plus_value >= VALUE_EDGE_MIN:
-                result["rl_plus_signal"] = bet_side
 
     return result
 
@@ -359,8 +302,12 @@ def evaluate_ou_signal(
         "unconfirmed": False,
     }
 
+    # O/U strength = distance from neutral (50). Score 35 and 65 are equally strong.
+    ou_strength = abs(ou_score - 50)
+    ou_threshold_strength = OU_EDGE_THRESHOLD - 50  # e.g., 65 - 50 = 15
+
     if ou_line is None:
-        if ou_score >= OU_EDGE_THRESHOLD:
+        if ou_strength >= ou_threshold_strength:
             result["ou_signal"] = "OVER" if ou_score >= 50 else "UNDER"
             result["ou_direction"] = result["ou_signal"]
             result["unconfirmed"] = True
@@ -391,16 +338,16 @@ def evaluate_ou_signal(
             value_edge = model_prob - book_prob
             result["ou_value_edge"] = round(value_edge, 4)
 
-            if ou_score >= OU_EDGE_THRESHOLD and value_edge >= VALUE_EDGE_MIN:
+            if ou_strength >= ou_threshold_strength and value_edge >= VALUE_EDGE_MIN:
                 result["ou_signal"] = direction
             else:
                 result["ou_signal"] = "NO BET"
         else:
-            if ou_score >= OU_EDGE_THRESHOLD:
+            if ou_strength >= ou_threshold_strength:
                 result["ou_signal"] = direction
                 result["unconfirmed"] = True
     else:
-        if ou_score >= OU_EDGE_THRESHOLD:
+        if ou_strength >= ou_threshold_strength:
             result["ou_signal"] = direction
             result["unconfirmed"] = True
 
@@ -456,10 +403,6 @@ def evaluate_game(game_scoring: dict, odds: dict, players: dict) -> dict:
         away_edge=game_scoring["away_edge_score"],
         home_moneyline=odds.get("home_moneyline"),
         away_moneyline=odds.get("away_moneyline"),
-        home_run_line=odds.get("home_run_line"),
-        away_run_line=odds.get("away_run_line"),
-        home_spread_point=odds.get("home_spread_point"),
-        away_spread_point=odds.get("away_spread_point"),
     )
 
     # Differential signal — only when standard side signal didn't fire

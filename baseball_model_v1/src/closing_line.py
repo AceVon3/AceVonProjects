@@ -22,7 +22,7 @@ RESULTS_COLUMNS = [
     "date", "game_id", "signal_type", "bet_side",
     "home_team", "away_team", "home_starter", "away_starter",
     "edge_score", "ou_score", "home_bullpen_score", "away_bullpen_score",
-    "data_confidence", "moneyline", "run_line_odds", "ou_line", "ou_odds",
+    "data_confidence", "moneyline", "ou_line", "ou_odds",
     "model_prob", "line_implied_prob", "value_edge", "signal_version",
     "closing_line", "closing_line_value", "result", "profit_loss", "notes",
 ]
@@ -79,7 +79,6 @@ def log_signal(game: dict, signal_type: str, pass_version: str = "final") -> Non
         "away_bullpen_score": game.get("away_bullpen_score", ""),
         "data_confidence": game.get("data_confidence", "NORMAL"),
         "moneyline": _get_moneyline(game, signal_type),
-        "run_line_odds": _get_run_line(game, signal_type),
         "ou_line": game.get("ou_line", "") if signal_type in ("OVER", "UNDER") else "",
         "ou_odds": _get_ou_odds(game, signal_type),
         "model_prob": game.get("model_win_prob", game.get("ou_model_prob", "")),
@@ -174,17 +173,6 @@ def _get_moneyline(game: dict, signal_type: str) -> str:
         return str(game.get("home_moneyline", ""))
     elif side == "AWAY":
         return str(game.get("away_moneyline", ""))
-    return ""
-
-
-def _get_run_line(game: dict, signal_type: str) -> str:
-    if signal_type != "RL_ALERT":
-        return ""
-    side = game.get("bet_side", "")
-    if side == "HOME":
-        return str(game.get("home_run_line", ""))
-    elif side == "AWAY":
-        return str(game.get("away_run_line", ""))
     return ""
 
 

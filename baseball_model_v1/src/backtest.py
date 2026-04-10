@@ -627,6 +627,10 @@ def _backtest_game(
     # Determine diff signal result
     diff_gap = abs(scoring["home_edge_score"] - scoring["away_edge_score"])
 
+    # Extract raw component scores for weight sweep analysis
+    home_comp = scoring.get("home_edge_components", {})
+    away_comp = scoring.get("away_edge_components", {})
+
     return {
         "date": date_str,
         "game_id": str(game_id),
@@ -652,6 +656,22 @@ def _backtest_game(
         "ml_result": _get_ml_result(signals, home_won),
         "diff_result": _get_diff_result(signals, home_won),
         "ou_result": _get_ou_result(signals, total_runs, scoring["ou_model_total"]),
+        # Raw component scores for weight sweep
+        "home_zone": home_comp.get("zone_alignment", 0),
+        "home_pitch": home_comp.get("pitch_mismatch", 0),
+        "home_walk": home_comp.get("walk_rate", 0),
+        "home_hand": home_comp.get("handedness", 0),
+        "away_zone": away_comp.get("zone_alignment", 0),
+        "away_pitch": away_comp.get("pitch_mismatch", 0),
+        "away_walk": away_comp.get("walk_rate", 0),
+        "away_hand": away_comp.get("handedness", 0),
+        # Modifiers needed to reconstruct final edge from raw
+        "park_factor": park_factor,
+        "park_weather_adj": scoring.get("park_weather_adjustment", 0),
+        "home_bp_mod": scoring.get("home_bullpen_modifier", 0),
+        "away_bp_mod": scoring.get("away_bullpen_modifier", 0),
+        "home_bullpen_score": home_bp_score,
+        "away_bullpen_score": away_bp_score,
     }
 
 

@@ -1,48 +1,52 @@
 {
   "season": 2025,
   "ml_buckets": {
-    "70": {
-      "total": 74,
-      "wins": 43
-    },
-    "45": {
-      "total": 11,
-      "wins": 7
-    },
     "35": {
-      "total": 14,
-      "wins": 7
+      "total": 10,
+      "wins": 5
     },
-    "80": {
-      "total": 15,
-      "wins": 9
+    "90": {
+      "total": 1,
+      "wins": 1
+    },
+    "85": {
+      "total": 6,
+      "wins": 2
+    },
+    "70": {
+      "total": 79,
+      "wins": 44
     },
     "75": {
-      "total": 21,
-      "wins": 14
+      "total": 26,
+      "wins": 18
     },
     "40": {
-      "total": 15,
+      "total": 18,
+      "wins": 12
+    },
+    "60": {
+      "total": 3,
+      "wins": 1
+    },
+    "80": {
+      "total": 12,
       "wins": 9
     },
     "50": {
       "total": 10,
       "wins": 7
     },
-    "30": {
-      "total": 3,
-      "wins": 2
-    },
-    "60": {
-      "total": 2,
-      "wins": 0
-    },
-    "85": {
-      "total": 4,
-      "wins": 1
+    "45": {
+      "total": 8,
+      "wins": 4
     },
     "55": {
       "total": 2,
+      "wins": 1
+    },
+    "30": {
+      "total": 1,
       "wins": 1
     },
     "65": {
@@ -51,24 +55,8 @@
     }
   },
   "ou_buckets": {
-    "7.0": {
-      "total": 3,
-      "correct": 0
-    },
-    "4.0": {
-      "total": 2,
-      "correct": 0
-    },
-    "0.0": {
-      "total": 7,
-      "correct": 1
-    },
     "3.0": {
       "total": 6,
-      "correct": 0
-    },
-    "1.0": {
-      "total": 3,
       "correct": 0
     },
     "-3.0": {
@@ -79,10 +67,6 @@
       "total": 5,
       "correct": 0
     },
-    "-3.5": {
-      "total": 1,
-      "correct": 1
-    },
     "9.0": {
       "total": 2,
       "correct": 0
@@ -91,13 +75,13 @@
       "total": 1,
       "correct": 0
     },
-    "6.0": {
+    "4.0": {
       "total": 1,
       "correct": 0
     },
-    "-0.5": {
+    "6.0": {
       "total": 1,
-      "correct": 1
+      "correct": 0
     },
     "-5.0": {
       "total": 1,
@@ -111,8 +95,16 @@
       "total": 1,
       "correct": 0
     },
+    "0.0": {
+      "total": 6,
+      "correct": 1
+    },
     "5.0": {
       "total": 4,
+      "correct": 0
+    },
+    "7.0": {
+      "total": 2,
       "correct": 0
     },
     "1.5": {
@@ -134,51 +126,55 @@
     "-10.0": {
       "total": 1,
       "correct": 1
+    },
+    "1.0": {
+      "total": 1,
+      "correct": 0
     }
   },
   "rl_data": {
-    "total": 49,
-    "win_by_2": 14
+    "total": 55,
+    "win_by_2": 19
   },
   "diff_buckets": {
-    "16": {
-      "total": 218,
-      "wins": 121
-    },
-    "24": {
-      "total": 102,
-      "wins": 54
-    },
-    "20": {
-      "total": 171,
-      "wins": 90
-    },
-    "36": {
-      "total": 13,
-      "wins": 7
-    },
     "12": {
-      "total": 305,
-      "wins": 153
+      "total": 312,
+      "wins": 159
     },
     "28": {
-      "total": 55,
-      "wins": 22
+      "total": 60,
+      "wins": 26
+    },
+    "32": {
+      "total": 25,
+      "wins": 17
+    },
+    "20": {
+      "total": 165,
+      "wins": 89
+    },
+    "24": {
+      "total": 107,
+      "wins": 53
+    },
+    "16": {
+      "total": 207,
+      "wins": 115
     },
     "40": {
       "total": 3,
-      "wins": 3
+      "wins": 2
     },
-    "32": {
-      "total": 26,
-      "wins": 16
+    "36": {
+      "total": 11,
+      "wins": 7
     }
   },
   "convergence_data": {
     "over_total": 0,
     "over_correct": 0,
-    "under_total": 134,
-    "under_correct": 73
+    "under_total": 155,
+    "under_correct": 86
   },
   "total_games": 2414
 }

@@ -1,0 +1,21 @@
+{
+  "batter_id": "672960",
+  "name": "",
+  "hand": "R",
+  "zone_hot_spots": {},
+  "zone_cold_spots": {},
+  "preferred_hit_zones": [],
+  "vulnerable_zones": [],
+  "pitch_type_perf": {
+    "FF": 0.4486
+  },
+  "best_pitch_type": "FF",
+  "worst_pitch_type": "FF",
+  "bb_pct": 0.2308,
+  "k_pct": 0.1538,
+  "chase_rate": 0.2667,
+  "contact_rate": 0.72,
+  "sample_size": 13,
+  "last_updated": "2026-03-27",
+  "data_source": "prior_season"
+}
