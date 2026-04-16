@@ -1,36 +1,55 @@
 """
 backtest_ou_real.py — Backtest O/U formula against actual DraftKings lines.
 
-Uses backtest_2025_with_ou.csv which has real O/U lines from The Odds API.
+Uses backtest_{season}_with_ou.csv which has real O/U lines from The Odds API.
 
 Usage:
-    python -m src.backtest_ou_real
+    python -m src.backtest_ou_real [season]
 """
 
 import csv
 import os
+import sys
 from collections import defaultdict
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "backtest")
-BACKTEST_CSV = os.path.join(DATA_DIR, "backtest_2025_with_ou.csv")
 
-# 2025 season team offensive stats (OPS, runs/game) for backtest
-TEAM_OFFENSE_2025 = {
-    "ATH": {"ops": 0.749, "rpg": 4.52}, "PIT": {"ops": 0.655, "rpg": 3.60},
-    "SD":  {"ops": 0.711, "rpg": 4.33}, "SEA": {"ops": 0.740, "rpg": 4.73},
-    "SF":  {"ops": 0.697, "rpg": 4.35}, "STL": {"ops": 0.693, "rpg": 4.25},
-    "TB":  {"ops": 0.714, "rpg": 4.41}, "TEX": {"ops": 0.683, "rpg": 4.22},
-    "TOR": {"ops": 0.760, "rpg": 4.93}, "MIN": {"ops": 0.707, "rpg": 4.19},
-    "PHI": {"ops": 0.759, "rpg": 4.80}, "ATL": {"ops": 0.719, "rpg": 4.47},
-    "CWS": {"ops": 0.675, "rpg": 3.99}, "MIA": {"ops": 0.707, "rpg": 4.38},
-    "NYY": {"ops": 0.787, "rpg": 5.24}, "MIL": {"ops": 0.735, "rpg": 4.98},
-    "LAA": {"ops": 0.695, "rpg": 4.15}, "AZ":  {"ops": 0.758, "rpg": 4.88},
-    "BAL": {"ops": 0.699, "rpg": 4.18}, "BOS": {"ops": 0.745, "rpg": 4.85},
-    "CHC": {"ops": 0.750, "rpg": 4.90}, "CIN": {"ops": 0.706, "rpg": 4.42},
-    "CLE": {"ops": 0.669, "rpg": 3.97}, "COL": {"ops": 0.679, "rpg": 3.69},
-    "DET": {"ops": 0.729, "rpg": 4.68}, "HOU": {"ops": 0.714, "rpg": 4.23},
-    "KC":  {"ops": 0.706, "rpg": 4.02}, "LAD": {"ops": 0.768, "rpg": 5.09},
-    "WSH": {"ops": 0.693, "rpg": 4.24}, "NYM": {"ops": 0.753, "rpg": 4.73},
+# Season team offensive stats (OPS, runs/game)
+TEAM_OFFENSE = {
+    2025: {
+        "ATH": {"ops": 0.749, "rpg": 4.52}, "PIT": {"ops": 0.655, "rpg": 3.60},
+        "SD":  {"ops": 0.711, "rpg": 4.33}, "SEA": {"ops": 0.740, "rpg": 4.73},
+        "SF":  {"ops": 0.697, "rpg": 4.35}, "STL": {"ops": 0.693, "rpg": 4.25},
+        "TB":  {"ops": 0.714, "rpg": 4.41}, "TEX": {"ops": 0.683, "rpg": 4.22},
+        "TOR": {"ops": 0.760, "rpg": 4.93}, "MIN": {"ops": 0.707, "rpg": 4.19},
+        "PHI": {"ops": 0.759, "rpg": 4.80}, "ATL": {"ops": 0.719, "rpg": 4.47},
+        "CWS": {"ops": 0.675, "rpg": 3.99}, "MIA": {"ops": 0.707, "rpg": 4.38},
+        "NYY": {"ops": 0.787, "rpg": 5.24}, "MIL": {"ops": 0.735, "rpg": 4.98},
+        "LAA": {"ops": 0.695, "rpg": 4.15}, "AZ":  {"ops": 0.758, "rpg": 4.88},
+        "BAL": {"ops": 0.699, "rpg": 4.18}, "BOS": {"ops": 0.745, "rpg": 4.85},
+        "CHC": {"ops": 0.750, "rpg": 4.90}, "CIN": {"ops": 0.706, "rpg": 4.42},
+        "CLE": {"ops": 0.669, "rpg": 3.97}, "COL": {"ops": 0.679, "rpg": 3.69},
+        "DET": {"ops": 0.729, "rpg": 4.68}, "HOU": {"ops": 0.714, "rpg": 4.23},
+        "KC":  {"ops": 0.706, "rpg": 4.02}, "LAD": {"ops": 0.768, "rpg": 5.09},
+        "WSH": {"ops": 0.693, "rpg": 4.24}, "NYM": {"ops": 0.753, "rpg": 4.73},
+    },
+    2024: {
+        "AZ":  {"ops": 0.727, "rpg": 4.71}, "ATL": {"ops": 0.739, "rpg": 4.57},
+        "BAL": {"ops": 0.755, "rpg": 4.83}, "BOS": {"ops": 0.733, "rpg": 4.60},
+        "CHC": {"ops": 0.704, "rpg": 4.28}, "CWS": {"ops": 0.639, "rpg": 3.47},
+        "CIN": {"ops": 0.716, "rpg": 4.40}, "CLE": {"ops": 0.699, "rpg": 4.06},
+        "COL": {"ops": 0.698, "rpg": 4.45}, "DET": {"ops": 0.682, "rpg": 3.87},
+        "HOU": {"ops": 0.723, "rpg": 4.46}, "KC":  {"ops": 0.716, "rpg": 4.41},
+        "LAA": {"ops": 0.703, "rpg": 4.25}, "LAD": {"ops": 0.776, "rpg": 5.18},
+        "MIA": {"ops": 0.664, "rpg": 3.66}, "MIL": {"ops": 0.725, "rpg": 4.58},
+        "MIN": {"ops": 0.726, "rpg": 4.53}, "NYM": {"ops": 0.721, "rpg": 4.43},
+        "NYY": {"ops": 0.752, "rpg": 5.07}, "ATH": {"ops": 0.679, "rpg": 3.83},
+        "PHI": {"ops": 0.738, "rpg": 4.69}, "PIT": {"ops": 0.685, "rpg": 3.98},
+        "SD":  {"ops": 0.714, "rpg": 4.33}, "SF":  {"ops": 0.701, "rpg": 4.12},
+        "SEA": {"ops": 0.695, "rpg": 4.01}, "STL": {"ops": 0.688, "rpg": 3.97},
+        "TB":  {"ops": 0.699, "rpg": 4.13}, "TEX": {"ops": 0.720, "rpg": 4.50},
+        "TOR": {"ops": 0.700, "rpg": 4.13}, "WSH": {"ops": 0.709, "rpg": 4.30},
+    },
 }
 
 # Team name → abbreviation mapping for backtest CSV
@@ -164,10 +183,13 @@ def profit_from_odds(won, american_odds):
         return round(100 / abs(american_odds) * 100) if won else -100
 
 
-def run():
+def run(season=2025):
+    backtest_csv = os.path.join(DATA_DIR, f"backtest_{season}_with_ou.csv")
+    team_offense = TEAM_OFFENSE.get(season, TEAM_OFFENSE[2025])
+
     # Load data
     rows = []
-    with open(BACKTEST_CSV, newline="") as f:
+    with open(backtest_csv, newline="") as f:
         for r in csv.DictReader(f):
             # Skip games without actual O/U lines
             if not r.get("actual_ou_line"):
@@ -196,8 +218,8 @@ def run():
         # Look up team offense scores
         home_abbrev = TEAM_ABBREV.get(r["home_team"], "")
         away_abbrev = TEAM_ABBREV.get(r["away_team"], "")
-        home_off = TEAM_OFFENSE_2025.get(home_abbrev, {"ops": 0.710, "rpg": 4.45})
-        away_off = TEAM_OFFENSE_2025.get(away_abbrev, {"ops": 0.710, "rpg": 4.45})
+        home_off = team_offense.get(home_abbrev, {"ops": 0.710, "rpg": 4.45})
+        away_off = team_offense.get(away_abbrev, {"ops": 0.710, "rpg": 4.45})
         home_off_score = _offense_score(home_off["ops"], home_off["rpg"])
         away_off_score = _offense_score(away_off["ops"], away_off["rpg"])
         mt, ou, conv = calculate_ou(he, ae, r["park_factor"],
@@ -391,4 +413,5 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    season = int(sys.argv[1]) if len(sys.argv) > 1 else 2025
+    run(season)
