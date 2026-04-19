@@ -1,0 +1,794 @@
+{
+  "results" :
+    [
+      {
+        "resource" :
+          {
+            "name" : "Aberdeen Flood Depths 11-27-18",
+            "id" : "7yy6-89nx",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "1.  This dataset provides summary data needed to help determine the premium for a flood insurance policy.\n\n2.  The elevation and depth data come from approximate methods and could be one foot or more off. A FEMA Elevation Certificate is needed to provide the more accurate data required to write a policy. The dataset was compiled by French & Associates with support from the Washington State Department of Ecology. The source elevation information came from the Federal Emergency Management Agency’s Flood Depth Grid for Grays Harbor County. Property information came from Grays Harbor County, with help from the City of Aberdeen.\n\n3.  Download instructions for getting a floor level for flood insurance elevation rating at https://bit.ly/2BJDdTi.",
+            "attribution" : "French Wetmore, CFM; French & Associates, Ltd.; 253/753-6811",
+            "attribution_link" : null,
+            "contact_email" : null,
+            "type" : "dataset",
+            "updatedAt" : "2018-11-30T16:37:50.000Z",
+            "createdAt" : "2018-11-29T13:28:23.000Z",
+            "metadata_updated_at" : "2018-11-30T16:37:50.000Z",
+            "data_updated_at" : "2018-11-29T13:39:03.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 7,
+                "page_views_last_month" : 26,
+                "page_views_total" : 691,
+                "page_views_last_week_log" : 3.0,
+                "page_views_last_month_log" : 4.754887502163469,
+                "page_views_total_log" : 9.434628227636724
+              },
+            "columns_name" :
+              [
+                "Ground BFE Depth",
+                "BFE",
+                "Occupancy",
+                "Year   Built",
+                "Name",
+                "Address",
+                "LiDAR Elevation",
+                "Parcel Number",
+                "Number Stories",
+                "FIRM Zone"
+              ],
+            "columns_field_name" :
+              [
+                "ground_bfe_depth",
+                "bfe",
+                "occupancy",
+                "year_built",
+                "name",
+                "address",
+                "lidar_elevation",
+                "parcel_number",
+                "number_stories",
+                "firm_zone"
+              ],
+            "columns_datatype" :
+              [
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text"
+              ],
+            "columns_description" :
+              [
+                "The depth of the base flood above the average ground level at the building. This number is the result of subtracting the LiDAR elevation from the base flood elevation. If the ground BFE depth is a positive number, the base flood elevation is higher than the ground. If the result is a negative number, the ground is higher than the base flood elevation.  ",
+                "The base flood elevation for the property, as shown on the Flood Insurance Rate Map for Grays Harbor County. ",
+                "The primary use of the main building, e.g., single-family residence, commercial, etc.",
+                "The year the main structure on the property was built.",
+                "The owner of record for the property. Because the source data is several years old, this listing may be a previous owner.",
+                "The street address of the property.",
+                "The average elevation of the ground at points around the main building from LiDAR data provided by FEMA. With LiDAR, an airplane equipped with special instrumentation uses a laser to bounce light off the ground to obtain a map of the shape and features of the Earth’s surface.",
+                "The 12 digit number used by the Grays Harbor County Assessor to identify each property.",
+                "The number of floors in the building. This number may include a basement.",
+                "The flood zone for the property as shown on the Flood Insurance Rate Map for Grays Harbor County. "
+              ],
+            "columns_format" : [ {}, {}, {}, {}, {}, {}, {}, {}, {}, {} ],
+            "download_count" : 2492,
+            "provenance" : "official",
+            "lens_view_type" : "tabular",
+            "lens_display_type" : "table",
+            "locked" : false,
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2018-11-29T13:39:03.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [ "environment", "infrastructure" ],
+            "tags" : [],
+            "domain_category" : "Natural Resources & Environment",
+            "domain_tags" : [
+                              "chehalis basin",
+                              "flooding",
+                              "flood insurance"
+                            ],
+            "domain_metadata" : []
+          },
+        "metadata" : { "domain" : "data.wa.gov" },
+        "permalink" : "https://data.wa.gov/d/7yy6-89nx",
+        "link" : "https://data.wa.gov/Natural-Resources-Environment/Aberdeen-Flood-Depths-11-27-18/7yy6-89nx",
+        "owner" :
+          {
+            "id" : "ugen-sv2k",
+            "user_type" : "interactive",
+            "display_name" : "Scott Boettcher"
+          },
+        "creator" :
+          {
+            "id" : "ugen-sv2k",
+            "user_type" : "interactive",
+            "display_name" : "Scott Boettcher"
+          }
+      },
+      {
+        "resource" :
+          {
+            "name" : "Hoquiam Flood Depths 11-29-18",
+            "id" : "vhe5-ishr",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "1.  This dataset provides summary data needed to help determine the premium for a flood insurance policy.\n\n2.  The elevation and depth data come from approximate methods and could be one foot or more off. A FEMA Elevation Certificate is needed to provide the more accurate data required to write a policy. The dataset was compiled by French & Associates with support from the Washington State Department of Ecology. The source elevation information came from the Federal Emergency Management Agency’s Flood Depth Grid for Grays Harbor County. Property information came from Grays Harbor County.\n\n3.  Download instructions for getting a floor level for flood insurance elevation rating at https://bit.ly/2BHNa3o.",
+            "attribution" : "French Wetmore, CFM; French & Associates, Ltd.; 253/753-6811",
+            "attribution_link" : null,
+            "contact_email" : null,
+            "type" : "dataset",
+            "updatedAt" : "2018-11-30T16:39:56.000Z",
+            "createdAt" : "2018-11-29T13:41:53.000Z",
+            "metadata_updated_at" : "2018-11-30T16:39:56.000Z",
+            "data_updated_at" : "2018-11-30T14:27:15.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 2,
+                "page_views_last_month" : 15,
+                "page_views_total" : 539,
+                "page_views_last_week_log" : 1.5849625007211563,
+                "page_views_last_month_log" : 4.0,
+                "page_views_total_log" : 9.076815597050832
+              },
+            "columns_name" :
+              [
+                "Year   Built",
+                "Ground BFE Depth",
+                "BFE",
+                "Occupancy",
+                "Name",
+                "Parcel Number",
+                "Address",
+                "LiDAR Elevation",
+                "FIRM Zone",
+                "Number Stories"
+              ],
+            "columns_field_name" :
+              [
+                "year_built",
+                "ground_bfe_depth",
+                "bfe",
+                "occupancy",
+                "name",
+                "parcel_number",
+                "address",
+                "lidar_elevation",
+                "firm_zone",
+                "number_stories"
+              ],
+            "columns_datatype" :
+              [
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text"
+              ],
+            "columns_description" :
+              [
+                "The year the main structure on the property was built.",
+                "The depth of the base flood above the average ground level at the building. This number is the result of subtracting the LiDAR elevation from the base flood elevation. If the ground BFE depth is a positive number, the base flood elevation is higher than the ground. If the result is a negative number, the ground is higher than the base flood elevation.  ",
+                "The base flood elevation for the property, as shown on the Flood Insurance Rate Map for Grays Harbor County. ",
+                "The primary use of the main building, e.g., single-family residence, commercial, etc.",
+                "The owner of record for the property. Because the source data is several years old, this listing may be a previous owner.",
+                "The 12 digit number used by the Grays Harbor County Assessor to identify each property.",
+                "The street address of the property.",
+                "The average elevation of the ground at points around the main building from LiDAR data provided by FEMA. With LiDAR, an airplane equipped with special instrumentation uses a laser to bounce light off the ground to obtain a map of the shape and features of the Earth’s surface.",
+                "The flood zone for the property as shown on the Flood Insurance Rate Map for Grays Harbor County. ",
+                "The number of floors in the building. This number may include a basement."
+              ],
+            "columns_format" : [ {}, {}, {}, {}, {}, {}, {}, {}, {}, {} ],
+            "download_count" : 1991,
+            "provenance" : "official",
+            "lens_view_type" : "tabular",
+            "lens_display_type" : "table",
+            "locked" : false,
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2018-11-30T14:25:32.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [ "environment", "infrastructure" ],
+            "tags" : [],
+            "domain_category" : "Natural Resources & Environment",
+            "domain_tags" : [
+                              "flood insurance",
+                              "flooding",
+                              "chehalis basin"
+                            ],
+            "domain_metadata" : []
+          },
+        "metadata" : { "domain" : "data.wa.gov" },
+        "permalink" : "https://data.wa.gov/d/vhe5-ishr",
+        "link" : "https://data.wa.gov/Natural-Resources-Environment/Hoquiam-Flood-Depths-11-29-18/vhe5-ishr",
+        "owner" :
+          {
+            "id" : "ugen-sv2k",
+            "user_type" : "interactive",
+            "display_name" : "Scott Boettcher"
+          },
+        "creator" :
+          {
+            "id" : "ugen-sv2k",
+            "user_type" : "interactive",
+            "display_name" : "Scott Boettcher"
+          }
+      },
+      {
+        "resource" :
+          {
+            "name" : "WA Ground Ambulance Locally Set Rates",
+            "id" : "r9b2-b8ff",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "This dataset provides the locally established and contracted rates for local governmental ground ambulance service organizations. RCW 48.49.205 Requires the WA Office of the Insurance Commissioner to collect and post the local rate data.\n\nFor more information visit: https://www.insurance.wa.gov/about-us/current-initiatives/protections-surprise-medical-billing/ground-ambulance-services-and-surprise-billing",
+            "attribution" : "WA Office of the Insurance Commissioner",
+            "attribution_link" : null,
+            "contact_email" : null,
+            "type" : "dataset",
+            "updatedAt" : "2026-02-27T22:25:40.000Z",
+            "createdAt" : "2024-08-14T23:06:47.000Z",
+            "metadata_updated_at" : "2026-02-27T22:25:40.000Z",
+            "data_updated_at" : "2025-11-17T21:41:05.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 89,
+                "page_views_last_month" : 370,
+                "page_views_total" : 8714,
+                "page_views_last_week_log" : 6.491853096329675,
+                "page_views_last_month_log" : 8.535275376620802,
+                "page_views_total_log" : 13.089284949013047
+              },
+            "columns_name" :
+              [
+                "Rate Type",
+                "A0428 (BLS-NE)",
+                "A0426 (ALS1-NE)",
+                "A0427 (ALS1-E)",
+                "Recorded Date",
+                "GASO Name",
+                "GASO NPI",
+                "Service ZIPs",
+                "Contracted Ambulance Provider NPI",
+                "Contracted Ambulance Provider Name",
+                "Effective Date",
+                "A0425 (Mileage)",
+                "A0998 (Non-TX)",
+                "A0434 (SCT)",
+                "A0433 (ALS2)",
+                "A0429 (BLS-E)",
+                "Additional Comments",
+                "Service Counties"
+              ],
+            "columns_field_name" :
+              [
+                "rate_type",
+                "a0428_bls_ne",
+                "a0426_als1_ne",
+                "a0427_als1_e",
+                "recorded_date",
+                "gaso_name",
+                "gaso_npi",
+                "service_zips",
+                "contracted_ambulance_provider",
+                "contracted_ambulance_provider_name",
+                "effective_date",
+                "a0425_mileage",
+                "a0998_non_tx",
+                "a0434_sct",
+                "a0433_als2",
+                "a0429_bls_e",
+                "additional_comments",
+                "service_counties"
+              ],
+            "columns_datatype" :
+              [
+                "Text",
+                "Number",
+                "Number",
+                "Number",
+                "Calendar date",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Calendar date",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Text",
+                "Text"
+              ],
+            "columns_description" :
+              [
+                "The rate type, either resident, nonresident, or contract",
+                "Rate for base transport code A0428 (basic life support, non-emergency)",
+                "Rate for base transport code A0426 (advanced life support, non-emergency, level 1)",
+                "Rate for base transport code A0427 (advanced life support, emergency, level 1)",
+                "Date the rate was submitted to the OIC",
+                "Ground ambulance service organization name",
+                "Ground ambulance service organization 10-digit national provider identifier (NPI)",
+                "The service zip codes for the submitting GASO",
+                "If the submitting GASO indicates the contract with a private provider, the NPI of the private ambulance provider",
+                "Name of the contracted private ground ambulance provider.",
+                "Date the rate went into effect",
+                "Ground mileage code A0425 (per statute mile)",
+                "Rate for base transport code A0998 (response and treatment, no transport)",
+                "Rate for base transport code A0434 (specialty care transport)",
+                "Rate for base transport code A0433 (advanced life support, level 2)",
+                "Rate for base transport code A0429 (basic life support, emergency)",
+                "Additional comments submitted by the GASO",
+                "The service counties for the submitting GASO"
+              ],
+            "columns_format" :
+              [
+                {},
+                {
+                  "precisionStyle" : "currency",
+                  "decimalSeparator" : ".",
+                  "groupSeparator" : ","
+                },
+                {
+                  "precisionStyle" : "currency",
+                  "decimalSeparator" : ".",
+                  "groupSeparator" : ","
+                },
+                {
+                  "precisionStyle" : "currency",
+                  "decimalSeparator" : ".",
+                  "groupSeparator" : ","
+                },
+                { "view" : "date" },
+                {},
+                { "decimalSeparator" : ".", "noCommas" : "true" },
+                { "decimalSeparator" : ".", "groupSeparator" : "," },
+                { "decimalSeparator" : ".", "noCommas" : "true" },
+                {},
+                { "view" : "date" },
+                {
+                  "precisionStyle" : "currency",
+                  "decimalSeparator" : ".",
+                  "groupSeparator" : ","
+                },
+                {
+                  "precisionStyle" : "currency",
+                  "decimalSeparator" : ".",
+                  "groupSeparator" : ","
+                },
+                {
+                  "precisionStyle" : "currency",
+                  "decimalSeparator" : ".",
+                  "groupSeparator" : ","
+                },
+                {
+                  "precisionStyle" : "currency",
+                  "decimalSeparator" : ".",
+                  "groupSeparator" : ","
+                },
+                {
+                  "precisionStyle" : "currency",
+                  "decimalSeparator" : ".",
+                  "groupSeparator" : ","
+                },
+                {},
+                {}
+              ],
+            "download_count" : 1563,
+            "provenance" : "official",
+            "lens_view_type" : "tabular",
+            "lens_display_type" : "table",
+            "locked" : false,
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2024-10-28T21:27:40.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [],
+            "tags" : [],
+            "domain_category" : "health",
+            "domain_tags" :
+              [
+                "insurance",
+                "balance bill",
+                "financial",
+                "surprise bill",
+                "insurance commissioner",
+                "ambulance"
+              ],
+            "domain_metadata" :
+              [
+                {
+                  "key" : "Notes_1.-",
+                  "value" : "2024 is the first year data is available. In subsequent years, GASOs will submit updated rate information if new rates go into effect."
+                },
+                {
+                  "key" : "Notes_2.-",
+                  "value" : "To find a GASO's most recent rates, filter for the most recent effective date."
+                },
+                {
+                  "key" : "Temporal_Period-of-Time",
+                  "value" : "2024-2025 submission dates"
+                },
+                {
+                  "key" : "Temporal_Posting-Frequency",
+                  "value" : "Annually, and when rates submitted to OIC"
+                }
+              ]
+          },
+        "metadata" : { "domain" : "data.wa.gov" },
+        "permalink" : "https://data.wa.gov/d/r9b2-b8ff",
+        "link" : "https://data.wa.gov/health/WA-Ground-Ambulance-Locally-Set-Rates/r9b2-b8ff",
+        "owner" :
+          {
+            "id" : "i63m-vs6i",
+            "user_type" : "interactive",
+            "display_name" : "Simon Casson"
+          },
+        "creator" :
+          {
+            "id" : "i63m-vs6i",
+            "user_type" : "interactive",
+            "display_name" : "Simon Casson"
+          }
+      },
+      {
+        "resource" :
+          {
+            "name" : "Health Plan Prior Authorization Data",
+            "id" : "fysr-7kwx",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "In 2020, the Washington State Legislature enacted Engrossed Substitute Senate Bill (ESSB) 6404 (Chapter 316, Laws of 2020, codified at RCW 48.43.0161), which requires that health carriers with at least one percent of the market share in Washington State annually report certain aggregated and de-identified data related to prior authorization to the Office of the Insurance Commissioner (OIC). Prior authorization is a utilization review tool used by carriers to review the medical necessity of requested health care services for specific health plan enrollees. Carriers choose the services that are subject to prior authorization review. The reported data includes prior authorization information for the following categories of health services:<br>\n•\tInpatient medical/surgical <br>\n•\tOutpatient medical/surgical <br>\n•\tInpatient mental health and substance use disorder <br>\n•\tOutpatient mental health and substance use disorder <br>\n•\tDiabetes supplies and equipment <br>\n•\tDurable medical equipment <br><br>\n\nThe carriers must report the following information for the prior plan year (PY) for their individual and group health plans for each category of services:<br>\n•\tThe 10 codes with the highest number of prior authorization requests and the percent of approved requests.<br>\n•\tThe 10 codes with the highest percentage of approved prior authorization requests and the total number of requests.<br>\n•\tThe 10 codes with the highest percentage of prior authorization requests that were initially denied and then approved on appeal and the total number of such requests. <br><br>\n\nCarriers also must include the average response time in hours for prior authorization requests and the number of requests for each covered service in the lists above for:<br>\n•\tExpedited decisions. <br>\n•\tStandard decisions. <br>\n•\tExtenuating-circumstances decisions.<br><br>\n\nEngrossed Second Substitute House Bill 1357 added additional prescription drug prior authorization reporting requirements for health carriers beginning in reporting year 2024.",
+            "attribution" : "Washington Office of the Insurance Commissioner",
+            "attribution_link" : "https://www.insurance.wa.gov/sites/default/files/documents/2022-health-plan-prior-authorization-report01232023.pdf",
+            "contact_email" : null,
+            "type" : "dataset",
+            "updatedAt" : "2025-12-29T22:27:54.000Z",
+            "createdAt" : "2023-12-13T17:25:48.000Z",
+            "metadata_updated_at" : "2025-12-29T22:27:53.000Z",
+            "data_updated_at" : "2025-12-29T22:27:54.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 36,
+                "page_views_last_month" : 107,
+                "page_views_total" : 1803,
+                "page_views_last_week_log" : 5.20945336562895,
+                "page_views_last_month_log" : 6.754887502163469,
+                "page_views_total_log" : 10.81698362325538
+              },
+            "columns_name" :
+              [
+                "Standard - Avg response time",
+                "Approval rate",
+                "Extenuating circumstances - Avg response time",
+                "Code",
+                "Description of service",
+                "Extenuating circumstances - Number of requests",
+                "Expedited - Number of requests",
+                "Year",
+                "Standard - Number of requests",
+                "Index",
+                "Service category",
+                "Drug name",
+                "Drug brand names",
+                "Carrier",
+                "Initially denied then approved - approval rate",
+                "Code type",
+                "Request",
+                "Expedited - Avg response time",
+                "Number of requests per code"
+              ],
+            "columns_field_name" :
+              [
+                "standard_avg_response_time",
+                "approval_rate",
+                "extenuating_circumstances",
+                "code",
+                "description_of_service",
+                "extenuating_circumstances_requests",
+                "expedited_number_of_requests",
+                "year",
+                "standard_number_of_requests",
+                "index",
+                "service_category",
+                "drug_name",
+                "drug_brand_names",
+                "carrier",
+                "initially_denied_then_approved",
+                "code_type",
+                "request",
+                "expedited_avg_response_time",
+                "number_of_requests_per_code"
+              ],
+            "columns_datatype" :
+              [
+                "Number",
+                "Number",
+                "Number",
+                "Text",
+                "Text",
+                "Number",
+                "Number",
+                "Text",
+                "Number",
+                "Number",
+                "Text",
+                "Text",
+                "Text",
+                "Text",
+                "Number",
+                "Text",
+                "Text",
+                "Number",
+                "Number"
+              ],
+            "columns_description" :
+              [
+                "The averaged response time in hours for standard requests",
+                "The prior authorization approval rate per code",
+                "The averaged response time in hours for extenuating circumstances requests",
+                "The procedure code associated with the prior authorization requests",
+                "The description associated with the procedure code as submitted by carriers.",
+                "The number of extenuating circumstances requests (began collecting this field in 2021)",
+                "The number of expedited requests (began collecting this field in 2021)",
+                "Years from 2020 - 2024",
+                "The number of standard requests (began collecting this field in 2021)",
+                "",
+                "The type of service category, as described in the annual report.",
+                "Drug name (ingredient name)",
+                "Drug brand names associated with the GPI-10/NDC-9 that had applicable prior authorization requests.",
+                "Each deidentified submitting carrier.",
+                "The prior authorization approval rate for requests that were initially denied and the approved on appeal",
+                "Code type (HCPCS, CPT, Revenue, GPI10, NDC9 or in some cases, NA/Blank or Internal)",
+                "One of three requests: 1. The codes with the highest number of PA requests, 2: the codes with the highest PA approval rates, 3: codes with the highest approval rates that were initially denied and then approved on appeal.",
+                "The averaged response time in hours for expedited requests",
+                "The number of prior authorization requests per code"
+              ],
+            "columns_format" :
+              [
+                {},
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "1",
+                  "decimalSeparator" : ".",
+                  "groupSeparator" : ","
+                },
+                {},
+                {},
+                {},
+                {},
+                {},
+                { "decimalSeparator" : ".", "groupSeparator" : "," },
+                {},
+                { "precisionStyle" : "standard", "noCommas" : "true" },
+                {},
+                {},
+                {},
+                {},
+                { "precisionStyle" : "percentage", "percentScale" : "1" },
+                {},
+                {},
+                {},
+                { "decimalSeparator" : ".", "groupSeparator" : "," }
+              ],
+            "download_count" : 3621,
+            "provenance" : "official",
+            "lens_view_type" : "tabular",
+            "lens_display_type" : "table",
+            "locked" : false,
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2024-12-17T23:14:18.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [],
+            "tags" : [],
+            "domain_category" : "health",
+            "domain_tags" :
+              [
+                "prior authorization",
+                "health",
+                "insurance",
+                "insurance commissioner"
+              ],
+            "domain_metadata" :
+              [
+                {
+                  "key" : "Notes_1.-",
+                  "value" : "Prescription drug prior authorization data was only submitted for plan year 2022 on a voluntary basis. Plan year 2023 was the first required reporting period."
+                },
+                {
+                  "key" : "Notes_2.-",
+                  "value" : "Several carriers submitted values for 'Codes' and 'Code types' as NA, as there was no corresponding procedure code for the service (generally for behavioral health services)"
+                },
+                {
+                  "key" : "Notes_3.-",
+                  "value" : "See the 'Findings' section of the 2025 Health Plan Prior Authorization Report for further findings and limitations."
+                },
+                { "key" : "Temporal_Period-of-Time", "value" : "2020 - 2024" },
+                { "key" : "Temporal_Posting-Frequency", "value" : "Annually" }
+              ]
+          },
+        "metadata" : { "domain" : "data.wa.gov" },
+        "permalink" : "https://data.wa.gov/d/fysr-7kwx",
+        "link" : "https://data.wa.gov/health/Health-Plan-Prior-Authorization-Data/fysr-7kwx",
+        "owner" :
+          {
+            "id" : "i63m-vs6i",
+            "user_type" : "interactive",
+            "display_name" : "Simon Casson"
+          },
+        "creator" :
+          {
+            "id" : "i63m-vs6i",
+            "user_type" : "interactive",
+            "display_name" : "Simon Casson"
+          }
+      },
+      {
+        "resource" :
+          {
+            "name" : "Work-Related Musculoskeletal Disorder Claim Rate and Rate Ratios; Washington State, by Risk Classification and North American Industry Classification",
+            "id" : "7w96-mhxh",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "These data are collected from Washington Workers' Compensation system files (State Fund and Self-Insured).  They provide industry specific Work-related Musculoskeletal Disorder (WMSD) claim rates.  Risks for WMSDs vary across industries. The rates are for ‘compensable’ claims which are those that typically involve expenses beyond medical treatment such as wage replacement, or disability payments.  The rate of compensable claims, expressed as the number of compensable claims per 1,000 full-time equivalent workers, is provided for the Washington workers’ compensation risk classifications, and four levels of the North American Industry Classification System - industry sector, industry sub-sector, industry group and industry. A comparison measure of the industry’s rate to the overall state workers’ compensable WMSD claim rate, a ‘rate ratio’ is provided.",
+            "attribution" : "Washington State Department of Labor & Industries",
+            "attribution_link" : "https://lni.wa.gov/safety-health/safety-research/sharp-publications/?pg=1&index=SHARP",
+            "contact_email" : null,
+            "type" : "dataset",
+            "updatedAt" : "2023-01-30T20:05:30.000Z",
+            "createdAt" : "2023-01-25T22:06:38.000Z",
+            "metadata_updated_at" : "2023-01-30T20:05:29.000Z",
+            "data_updated_at" : "2023-01-30T20:05:30.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 19,
+                "page_views_last_month" : 36,
+                "page_views_total" : 618,
+                "page_views_last_week_log" : 4.321928094887363,
+                "page_views_last_month_log" : 5.20945336562895,
+                "page_views_total_log" : 9.273795599214266
+              },
+            "columns_name" :
+              [
+                "Industry Code - Description",
+                "Compensable claims per 1000 full time equivalent employees",
+                "Average Annual number of full time equivalent employees",
+                "Average Annual Count of Compensable Claims",
+                "Industry Description",
+                "Industry Scope",
+                "Industry claims per fte / all state claims per fte",
+                "Industry Codes"
+              ],
+            "columns_field_name" :
+              [
+                "industry_code_description",
+                "compensable_claims_per_1000",
+                "average_annual_number_of",
+                "average_annual_count_of",
+                "industry_description",
+                "industry_scope",
+                "industry_claims_per_fte_all",
+                "industry_codes"
+              ],
+            "columns_datatype" :
+              [
+                "Text",
+                "Number",
+                "Number",
+                "Number",
+                "Text",
+                "Text",
+                "Number",
+                "Text"
+              ],
+            "columns_description" :
+              [
+                "This field combines the classification code and description.  Some users may find it easier to search or display data based on a combination of these elements.",
+                "The number of \"Compensable\" claims per 2,000,000 reported hours",
+                "A full time equivalent (fte) is defined as 2,000 hours reported to workers' compensation.",
+                "\"Compensable\" includes serveral claim types: \"time loss\", \"kept on salary\", \"loss of earning power\", \"permanent partial disability\", \"total permanent disability(pension)\", and \"fatality\".",
+                "Industry title description.  More complete description of the industry is available in the appropriate references.  NAICS is based on the 2007 edition.",
+                "Two different industry classification systems are presented. North American Industry Classification System(NAICS) is presented at Sector, Sub-Sector, Industry Group, and Industry levels (2,3,4,and 5 digit).  Washington State Risk Classifications are presented as Risk Main (4 digit).  Baseline records are available for each system.",
+                "The industry compensable wmsd rate (claims per 1000 fte) divided by the base rate (all industry)- provides a \"rate ratio\".  ",
+                "Two \"baselines\" and the numeric codes defined within the industrial classification systems presented"
+              ],
+            "columns_format" :
+              [
+                {},
+                { "decimalSeparator" : ".", "groupSeparator" : "," },
+                { "decimalSeparator" : ".", "groupSeparator" : "," },
+                { "decimalSeparator" : ".", "groupSeparator" : "," },
+                {},
+                {},
+                { "decimalSeparator" : ".", "groupSeparator" : "," },
+                { "decimalSeparator" : ".", "groupSeparator" : "," }
+              ],
+            "download_count" : 1927,
+            "provenance" : "official",
+            "lens_view_type" : "tabular",
+            "lens_display_type" : "table",
+            "locked" : false,
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2023-01-27T18:15:21.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [],
+            "tags" : [],
+            "domain_category" : "health",
+            "domain_tags" : [ "labor & industries" ],
+            "domain_metadata" :
+              [
+                {
+                  "key" : "Notes_3.-",
+                  "value" : "The NAICS code represents the employer’s primary economic activity although some employers have business activities that may encompass multiple industry classifications. The industrial classification of some businesses may evolve over time."
+                },
+                {
+                  "key" : "Notes_4.-",
+                  "value" : "One full-time equivalent employee (FTE) is 2,000 hours. Rate ratios were calculated from unrounded rate data (rates presented in table are rounded to tenths place). These are not actuarial estimates."
+                },
+                {
+                  "key" : "Notes_5.-",
+                  "value" : "NAICS reference edition is 2007 (https://www.census.gov/naics/?58967?yearbck=2007).  Washington State Risk Classifications are similar in concept to NCCI Coding.  Washington classifications are defined in administrative code -  https://apps.leg.wa.gov/WAC/default.aspx?cite=296-17A"
+                },
+                {
+                  "key" : "Notes_2.-",
+                  "value" : "State level estimates of the overall compensable claim rate by risk classification and North American Industry Classification are slightly different due to a small number of workers’ compensation accounts without NAICS codes. If these data are used for legislation the overall compensable claim rate will be based on the final language of the legislation."
+                },
+                {
+                  "key" : "Notes_1.-",
+                  "value" : "Research reports describing the WMSD case definition and WMSD claim data are available at https://lni.wa.gov/safety-health/safety-research/ongoing-projects/wmsd-claim-tracking#publications"
+                },
+                {
+                  "key" : "Temporal_Period-of-Time",
+                  "value" : "Calendar Year 2016 - 2020"
+                },
+                { "key" : "Temporal_Posting-Frequency", "value" : "1 Time" }
+              ]
+          },
+        "metadata" : { "domain" : "data.wa.gov" },
+        "permalink" : "https://data.wa.gov/d/7w96-mhxh",
+        "link" : "https://data.wa.gov/health/Work-Related-Musculoskeletal-Disorder-Claim-Rate-a/7w96-mhxh",
+        "owner" :
+          {
+            "id" : "y2s8-p8dz",
+            "user_type" : "interactive",
+            "display_name" : "Darrin Adams"
+          },
+        "creator" :
+          {
+            "id" : "y2s8-p8dz",
+            "user_type" : "interactive",
+            "display_name" : "Darrin Adams"
+          }
+      }
+    ],
+  "resultSetSize" : 5,
+  "timings" : { "serviceMillis" : 20, "searchMillis" : [ 2, 6 ] },
+  "warnings" : []
+}

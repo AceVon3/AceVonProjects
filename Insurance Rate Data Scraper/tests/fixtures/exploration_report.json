@@ -1,0 +1,69 @@
+{
+  "notes": [
+    "GET https://filingaccess.serff.com/sfa/home/WA",
+    "Click 'Begin Search' link",
+    "Click 'Accept'",
+    "  URL: https://filingaccess.serff.com/sfa/search/filingSearch.xhtml",
+    "Set Business Type = Property & Casualty",
+    "  selected: True",
+    "Fill Company Name = 'State Farm'",
+    "Fill Start Submission Date = 01/01/2025",
+    "Fill End Submission Date = 04/17/2026",
+    "Click Search button",
+    "  post-search wait outcome: timeout",
+    "  URL: https://filingaccess.serff.com/sfa/search/filingSearchResults.xhtml",
+    "Results table id='' class=''",
+    "  rowCount=20, headers=['Company Name', 'NAIC Company Code', 'Insurance Product Name', 'Sub Type Of Insurance', 'Filing Type', 'Filing Status', 'SERFF Tracking Number']",
+    "  sample[0] = ['Multiple', '', 'CV-47995', '20.0000 Commercial Auto Combinations', 'Rate/Rule', 'Closed - Approved', 'SFMA-134559519']",
+    "  sample[1] = ['Multiple', '', 'CV-48699', '20.0000 Commercial Auto Combinations', 'Form', 'Re-Open', 'SFMA-134571854']",
+    "  sample[2] = ['Multiple', '', 'INS-2026-WA', '35.0000 Personal/Commercial Interline Filings', 'Form', 'Active Suspense', 'SFMA-134827718']",
+    "  first result link href=''",
+    "Attempt 1: click SERFF Tracking Number cell, data-rk='134559519'",
+    "  -> navigation occurred",
+    "  URL after row cell click: https://filingaccess.serff.com/sfa/search/filingSummary.xhtml?filingId=134559519",
+    "Attempt 2: click row-toggler to expand row",
+    "  no row-toggler element found"
+  ],
+  "results_columns": [
+    "Company Name",
+    "NAIC Company Code",
+    "Insurance Product Name",
+    "Sub Type Of Insurance",
+    "Filing Type",
+    "Filing Status",
+    "SERFF Tracking Number"
+  ],
+  "results_row_count": 20,
+  "results_sample_rows": [
+    [
+      "Multiple",
+      "",
+      "CV-47995",
+      "20.0000 Commercial Auto Combinations",
+      "Rate/Rule",
+      "Closed - Approved",
+      "SFMA-134559519"
+    ],
+    [
+      "Multiple",
+      "",
+      "CV-48699",
+      "20.0000 Commercial Auto Combinations",
+      "Form",
+      "Re-Open",
+      "SFMA-134571854"
+    ],
+    [
+      "Multiple",
+      "",
+      "INS-2026-WA",
+      "35.0000 Personal/Commercial Interline Filings",
+      "Form",
+      "Active Suspense",
+      "SFMA-134827718"
+    ]
+  ],
+  "detail_sections": [],
+  "detail_labels": [],
+  "errors": []
+}

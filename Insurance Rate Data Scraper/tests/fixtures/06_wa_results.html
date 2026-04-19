@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head id="j_idt3"><script type="text/javascript" src="/sfa/ruxitagentjs_ICANVfghqru_10333260303165926.js" data-dtconfig="app=b0d446983abdf4bc|ssc=1|owasp=1|featureHash=ICANVfghqru|rdnt=1|uxrgce=1|cuc=75ov4p5b|mel=100000|dpvc=1|md=mdcc2=a[name='x-dynatrace']@content,mdcc3=a#myDropdown ^rb div.dropdown-footer ^rb div.user-fullname|lastModification=1775661502326|tp=500,50,0|srbbv=2|agentUri=/sfa/ruxitagentjs_ICANVfghqru_10333260303165926.js|reportUrl=/sfa/rb_bf34584xzn|rid=RID_692787758|rpid=-95994227|domain=serff.com"></script><link type="text/css" rel="stylesheet" href="/sfa/javax.faces.resource/theme.css.xhtml?ln=primefaces-flatly"><link type="text/css" rel="stylesheet" href="/sfa/javax.faces.resource/bootstrap.flatly.min.css.xhtml?ln=css"><link type="text/css" rel="stylesheet" href="/sfa/javax.faces.resource/sfa.css.xhtml?ln=css"><link type="text/css" rel="stylesheet" href="/sfa/javax.faces.resource/naic-common-ui.css.xhtml?ln=css"><link type="text/css" rel="stylesheet" href="/sfa/javax.faces.resource/components.css.xhtml?ln=primefaces&amp;v=6.0"><script type="text/javascript" src="/sfa/javax.faces.resource/jquery/jquery.js.xhtml?ln=primefaces&amp;v=6.0"></script><script type="text/javascript" src="/sfa/javax.faces.resource/core.js.xhtml?ln=primefaces&amp;v=6.0"></script><script type="text/javascript" src="/sfa/javax.faces.resource/components.js.xhtml?ln=primefaces&amp;v=6.0"></script><script type="text/javascript" src="/sfa/javax.faces.resource/jquery/jquery-plugins.js.xhtml?ln=primefaces&amp;v=6.0"></script><script type="text/javascript">if(window.PrimeFaces){PrimeFaces.settings.locale='en';}</script>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>SERFF Filing Access - Washington</title><script type="text/javascript" src="/sfa/javax.faces.resource/bootstrap.min.js.xhtml?ln=js"></script></head><body id="entirePage">
+<div class="naic-navbar">
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="container">			
+			<div class="navbar-header">
+				<div class="logo-naic">
+				    <img class="brandmark" src="/sfa/static-web/images/naicLogo_brandmark-nav.png">
+				    <img class="tagline" src="/sfa/static-web/images/naicLogo_tagline-nav.png">
+			    </div>
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div class="navbar-collapse collapse" id="navbar-main">
+				<ul class="nav navbar-nav navbar-right">
+					<li style="padding-left: 1em;"><a href="#" onclick="accessHelp(); return false;">Help</a></li>
+				</ul>
+			</div>
+		</div>	
+		<div class="sfa-state-header">
+			<div class="container">
+				<div class="serffLogo">
+					<img width="200px" src="/sfa/static-web/images/serffLogoTransparent.png">
+				</div>
+				<div class="headerText">
+					<div class="navbar-brand-text">
+						SERFF Filing Access
+					</div><div id="j_idt10" class="ui-outputpanel ui-widget" style="margin-bottom:15px">
+						<div class="siteSubTitle">
+							You are currently operating in the state of Washington.
+						</div></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	function accessHelp() {
+		var windowObjectReference = null;
+		var helpUrl = '/sfa/static-web/OnlineHelp.pdf';
+		var features = 'location=no,menubar=no,toolbar=no,resizable=yes,scrollbars=yes,status=yes,height=500,width=800';
+		windowObjectReference = window.open(helpUrl, 'sfaHelp', features);
+		windowObjectReference.focus();
+	}
+</script>
+	    
+	    <div class="container">
+		<ol class="breadcrumb">
+			<li><a href="filingSearch.xhtml">Filing Search</a></li>
+			<li class="active">Filing Search Results</li>
+		</ol>
+	
+			<div id="content">
+				<div id="main">
+					<div id="pageInfo">
+					</div>
+					<div id="bodyContentWrapper">
+	
+		<div class="buttonBar"><button id="j_idt19" name="j_idt19" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only quickButton" onclick="PrimeFaces.ab({s:&quot;j_idt19&quot;});return false;" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">New Search</span></button><button id="j_idt20" name="j_idt20" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only quickButton" onclick="window.open('/sfa/search/filingSearch.xhtml','_self')" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Refine Search</span></button><button id="j_idt21" name="j_idt21" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only quickButton" onclick="window.open('/sfa/search/binderSearch.xhtml','_self')" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Health Plan Binder Search</span></button>
+		</div>
+	
+	<h2>Search Results</h2>
+		
+	<div class="row">
+		<span class="col-sm-6 text-left" style="font-size:1.2em"><span style="font-weight:bold">28</span>
+			 Filing(s) matching your criteria
+		</span>
+	</div>
+<form id="j_idt25" name="j_idt25" method="post" action="/sfa/search/filingSearchResults.xhtml" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="j_idt25" value="j_idt25">
+
+			<div class="row">
+				<span class="col-sm-12">
+					<h5>... where Business Type is 'Property &amp; Casualty' and Company Name like 'State Farm*' and Submission Date between '01-01-25' and '04-17-26'</h5>
+				</span>
+			</div><div id="j_idt25:filingTable" class="ui-datatable ui-widget"><div id="j_idt25:filingTable_paginator_top" class="ui-paginator ui-paginator-top ui-widget-header ui-corner-top" role="navigation" aria-label="Pagination">Pages: <span class="ui-paginator-current">(1 of 2)</span> <a href="#" class="ui-paginator-first ui-state-default ui-corner-all ui-state-disabled" aria-label="First Page"><span class="ui-icon ui-icon-seek-first">p</span></a><a href="#" class="ui-paginator-prev ui-state-default ui-corner-all ui-state-disabled" aria-label="Previous Page"><span class="ui-icon ui-icon-seek-prev">p</span></a><span class="ui-paginator-pages"><a class="ui-paginator-page ui-state-default ui-state-active ui-corner-all" tabindex="0" href="#" aria-label="Page 1">1</a><a class="ui-paginator-page ui-state-default ui-corner-all" tabindex="0" href="#" aria-label="Page 2">2</a></span><a href="#" class="ui-paginator-next ui-state-default ui-corner-all" aria-label="Next Page" tabindex="0"><span class="ui-icon ui-icon-seek-next">p</span></a><a href="#" class="ui-paginator-last ui-state-default ui-corner-all" aria-label="Last Page" tabindex="0"><span class="ui-icon ui-icon-seek-end">p</span></a>  Show: <label id="j_idt25:filingTable_rppLabel" for="j_idt25:filingTable:j_id2" class="ui-paginator-rpp-label ui-helper-hidden">Rows Per Page</label><select id="j_idt25:filingTable:j_id2" name="j_idt25:filingTable_rppDD" aria-labelledby="j_idt25:filingTable_rppLabel" class="ui-paginator-rpp-options ui-widget ui-state-default ui-corner-left" value="20" autocomplete="off"><option value="20" selected="selected">20</option><option value="50">50</option><option value="100">100</option></select></div><div class="ui-datatable-tablewrapper"><table role="grid"><thead id="j_idt25:filingTable_head"><tr role="row"><th id="j_idt25:filingTable:j_idt29" class="ui-state-default ui-sortable-column" role="columnheader" aria-label="Company Name: activate to sort column ascending" tabindex="0" aria-sort="other"><span class="ui-column-title">Company Name</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span></th><th id="j_idt25:filingTable:j_idt32" class="ui-state-default ui-sortable-column" role="columnheader" aria-label="NAIC Company Code: activate to sort column ascending" style="width:100px" tabindex="0" aria-sort="other"><span class="ui-column-title">NAIC Company Code</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span></th><th id="j_idt25:filingTable:j_idt34" class="ui-state-default ui-sortable-column" role="columnheader" aria-label="Insurance Product Name: activate to sort column ascending" tabindex="0" aria-sort="other"><span class="ui-column-title">Insurance Product Name</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span></th><th id="j_idt25:filingTable:j_idt36" class="ui-state-default ui-sortable-column ui-state-hover" role="columnheader" aria-label="Sub Type Of Insurance: activate to sort column ascending" tabindex="0" aria-sort="other"><span class="ui-column-title">Sub Type Of Insurance</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span></th><th id="j_idt25:filingTable:j_idt38" class="ui-state-default ui-sortable-column" role="columnheader" aria-label="Filing Type: activate to sort column ascending" tabindex="0" aria-sort="other"><span class="ui-column-title">Filing Type</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span></th><th id="j_idt25:filingTable:j_idt40" class="ui-state-default ui-sortable-column" role="columnheader" aria-label="Filing Status: activate to sort column ascending" tabindex="0" aria-sort="other"><span class="ui-column-title">Filing Status</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span></th><th id="j_idt25:filingTable:j_idt42" class="ui-state-default ui-sortable-column" role="columnheader" aria-label="SERFF Tracking Number: activate to sort column ascending" tabindex="0" aria-sort="other"><span class="ui-column-title">SERFF Tracking Number</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span></th></tr></thead><tbody id="j_idt25:filingTable_data" class="ui-datatable-data ui-widget-content" tabindex="0"><tr data-ri="0" data-rk="134559519" class="ui-widget-content ui-datatable-even ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell"><div class="ui-row-toggler ui-icon ui-icon-circle-triangle-e" tabindex="0" role="button" aria-expanded="false" aria-label="Toggle Row"></div>Multiple</td><td role="gridcell" style="width:100px"></td><td role="gridcell">CV-47995</td><td role="gridcell">20.0000 Commercial Auto Combinations</td><td role="gridcell">Rate/Rule</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134559519</td></tr><tr data-ri="1" data-rk="134571854" class="ui-widget-content ui-datatable-odd ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell"><div class="ui-row-toggler ui-icon ui-icon-circle-triangle-e" tabindex="0" role="button" aria-expanded="false" aria-label="Toggle Row"></div>Multiple</td><td role="gridcell" style="width:100px"></td><td role="gridcell">CV-48699</td><td role="gridcell">20.0000 Commercial Auto Combinations</td><td role="gridcell">Form</td><td role="gridcell">Re-Open</td><td role="gridcell">SFMA-134571854</td></tr><tr data-ri="2" data-rk="134827718" class="ui-widget-content ui-datatable-even ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell"><div class="ui-row-toggler ui-icon ui-icon-circle-triangle-e" tabindex="0" role="button" aria-expanded="false" aria-label="Toggle Row"></div>Multiple</td><td role="gridcell" style="width:100px"></td><td role="gridcell">INS-2026-WA</td><td role="gridcell">35.0000 Personal/Commercial Interline Filings</td><td role="gridcell">Form</td><td role="gridcell">Active Suspense</td><td role="gridcell">SFMA-134827718</td></tr><tr data-ri="3" data-rk="134419600" class="ui-widget-content ui-datatable-odd ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell"><div class="ui-row-toggler ui-icon ui-icon-circle-triangle-e" tabindex="0" role="button" aria-expanded="false" aria-label="Toggle Row"></div>Multiple</td><td role="gridcell" style="width:100px"></td><td role="gridcell">PV-48094</td><td role="gridcell">19.0000 Personal Auto Combinations</td><td role="gridcell">Form</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134419600</td></tr><tr data-ri="4" data-rk="134571872" class="ui-widget-content ui-datatable-even ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell"><div class="ui-row-toggler ui-icon ui-icon-circle-triangle-e" tabindex="0" role="button" aria-expanded="false" aria-label="Toggle Row"></div>Multiple</td><td role="gridcell" style="width:100px"></td><td role="gridcell">PV-48744</td><td role="gridcell">19.0000 Personal Auto Combinations</td><td role="gridcell">Form</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134571872</td></tr><tr data-ri="5" data-rk="134574836" class="ui-widget-content ui-datatable-odd ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell"><div class="ui-row-toggler ui-icon ui-icon-circle-triangle-e" tabindex="0" role="button" aria-expanded="false" aria-label="Toggle Row"></div>Multiple</td><td role="gridcell" style="width:100px"></td><td role="gridcell">PV-48749</td><td role="gridcell">19.0000 Personal Auto Combinations</td><td role="gridcell">Form</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134574836</td></tr><tr data-ri="6" data-rk="134395246" class="ui-widget-content ui-datatable-even ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Classic Insurance Company</td><td role="gridcell" style="width:100px">17133</td><td role="gridcell">State Farm Classic+®</td><td role="gridcell">19.0000 Personal Auto Combinations</td><td role="gridcell">Scoring Model</td><td role="gridcell">Closed - Acceptable Model</td><td role="gridcell">SFCI-134395246</td></tr><tr data-ri="7" data-rk="134394865" class="ui-widget-content ui-datatable-odd ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Classic Insurance Company</td><td role="gridcell" style="width:100px">17133</td><td role="gridcell">State Farm Classic+®</td><td role="gridcell">19.0000 Personal Auto Combinations</td><td role="gridcell">Form</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFCI-134394865</td></tr><tr data-ri="8" data-rk="134394868" class="ui-widget-content ui-datatable-even ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Classic Insurance Company</td><td role="gridcell" style="width:100px">17133</td><td role="gridcell">State Farm Classic+®</td><td role="gridcell">19.0000 Personal Auto Combinations</td><td role="gridcell">Rate/Rule</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFCI-134394868</td></tr><tr data-ri="9" data-rk="134655712" class="ui-widget-content ui-datatable-odd ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Classic Insurance Company</td><td role="gridcell" style="width:100px">17133</td><td role="gridcell">State Farm Classic+® </td><td role="gridcell">19.0000 Personal Auto Combinations</td><td role="gridcell">Form</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFCI-134655712</td></tr><tr data-ri="10" data-rk="134373707" class="ui-widget-content ui-datatable-even ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Fire and Casualty Company</td><td role="gridcell" style="width:100px">25143</td><td role="gridcell">BO-47928</td><td role="gridcell">09.0010 Boatowners/Personal Watercraft</td><td role="gridcell">Form</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134373707</td></tr><tr data-ri="11" data-rk="134561088" class="ui-widget-content ui-datatable-odd ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Fire and Casualty Company</td><td role="gridcell" style="width:100px">25143</td><td role="gridcell">CL-48233</td><td role="gridcell">05.0000 CMP Sub-TOI Combinations</td><td role="gridcell">Rate/Rule</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134561088</td></tr><tr data-ri="12" data-rk="134909309" class="ui-widget-content ui-datatable-even ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Fire and Casualty Company</td><td role="gridcell" style="width:100px">25143</td><td role="gridcell">CL-50246</td><td role="gridcell">05.0000 CMP Sub-TOI Combinations</td><td role="gridcell">Form</td><td role="gridcell">Review Pending</td><td role="gridcell">SFMA-134909309</td></tr><tr data-ri="13" data-rk="134909176" class="ui-widget-content ui-datatable-odd ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Fire and Casualty Company</td><td role="gridcell" style="width:100px">25143</td><td role="gridcell">CM-50203</td><td role="gridcell">09.0005 Other Commercial Inland Marine</td><td role="gridcell">Form</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134909176</td></tr><tr data-ri="14" data-rk="134909235" class="ui-widget-content ui-datatable-even ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Fire and Casualty Company</td><td role="gridcell" style="width:100px">25143</td><td role="gridcell">CU-50230</td><td role="gridcell">17.0020 Commercial Umbrella and Excess</td><td role="gridcell">Form</td><td role="gridcell">Review Pending</td><td role="gridcell">SFMA-134909235</td></tr><tr data-ri="15" data-rk="134369926" class="ui-widget-content ui-datatable-odd ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Fire and Casualty Company</td><td role="gridcell" style="width:100px">25143</td><td role="gridcell">HO-47661</td><td role="gridcell">04.0000 Homeowners Sub-TOI Combinations</td><td role="gridcell">Rate/Rule</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134369926</td></tr><tr data-ri="16" data-rk="134422784" class="ui-widget-content ui-datatable-even ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Fire and Casualty Company</td><td role="gridcell" style="width:100px">25143</td><td role="gridcell">MH-47765</td><td role="gridcell">04.0002 Mobile Homeowners</td><td role="gridcell">Rate/Rule</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134422784</td></tr><tr data-ri="17" data-rk="134382972" class="ui-widget-content ui-datatable-odd ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Fire and Casualty Company</td><td role="gridcell" style="width:100px">25143</td><td role="gridcell">ML-47987</td><td role="gridcell">35.0000 Personal/Commercial Interline Filings</td><td role="gridcell">Rate/Rule</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134382972</td></tr><tr data-ri="18" data-rk="134474400" class="ui-widget-content ui-datatable-even ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Fire and Casualty Company</td><td role="gridcell" style="width:100px">25143</td><td role="gridcell">ML-48264</td><td role="gridcell">04.0000 Homeowners Sub-TOI Combinations</td><td role="gridcell">Form</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134474400</td></tr><tr data-ri="19" data-rk="134657089" class="ui-widget-content ui-datatable-odd ui-datatable-selectable" role="row" aria-selected="false"><td role="gridcell">State Farm Fire and Casualty Company</td><td role="gridcell" style="width:100px">25143</td><td role="gridcell">ML-49160</td><td role="gridcell">04.0000 Homeowners Sub-TOI Combinations</td><td role="gridcell">Form</td><td role="gridcell">Closed - Approved</td><td role="gridcell">SFMA-134657089</td></tr></tbody></table></div><div id="j_idt25:filingTable_paginator_bottom" class="ui-paginator ui-paginator-bottom ui-widget-header ui-corner-bottom" role="navigation" aria-label="Pagination">Pages: <span class="ui-paginator-current">(1 of 2)</span> <a href="#" class="ui-paginator-first ui-state-default ui-corner-all ui-state-disabled" aria-label="First Page"><span class="ui-icon ui-icon-seek-first">p</span></a><a href="#" class="ui-paginator-prev ui-state-default ui-corner-all ui-state-disabled" aria-label="Previous Page"><span class="ui-icon ui-icon-seek-prev">p</span></a><span class="ui-paginator-pages"><a class="ui-paginator-page ui-state-default ui-state-active ui-corner-all" tabindex="0" href="#" aria-label="Page 1">1</a><a class="ui-paginator-page ui-state-default ui-corner-all" tabindex="0" href="#" aria-label="Page 2">2</a></span><a href="#" class="ui-paginator-next ui-state-default ui-corner-all" aria-label="Next Page" tabindex="0"><span class="ui-icon ui-icon-seek-next">p</span></a><a href="#" class="ui-paginator-last ui-state-default ui-corner-all" aria-label="Last Page" tabindex="0"><span class="ui-icon ui-icon-seek-end">p</span></a>  Show: <label id="j_idt25:filingTable_rppLabel" for="j_idt25:filingTable:j_id3" class="ui-paginator-rpp-label ui-helper-hidden">Rows Per Page</label><select id="j_idt25:filingTable:j_id3" name="j_idt25:filingTable_rppDD" aria-labelledby="j_idt25:filingTable_rppLabel" class="ui-paginator-rpp-options ui-widget ui-state-default ui-corner-left" value="20" autocomplete="off"><option value="20" selected="selected">20</option><option value="50">50</option><option value="100">100</option></select></div><input type="hidden" id="j_idt25:filingTable_selection" name="j_idt25:filingTable_selection" autocomplete="off" value=""></div><script type="text/javascript">persistRows = function() {PrimeFaces.ab({s:"j_idt25:j_idt46",f:"j_idt25",p:"j_idt25:j_idt46",g:false,pa:arguments[0]});}</script>
+
+			<script>
+				jQuery(document).ready(function() {
+					PF('dtVar').paginator.rppSelect.change(function() {
+						persistRows([ {
+							name : 'rows',
+							value : this.value
+						} ]);
+					});
+				});
+			</script><input type="hidden" name="javax.faces.ViewState" id="javax.faces.ViewState" value="-5148751956530646216:5296556259158145435" autocomplete="off">
+</form>
+					</div>
+				</div>
+			</div>
+		</div>		
+		<div class="row help-global">
+			<div class="container sfa-help">
+				<div class="col col-sm-3 clearfix">
+					<span><b>SERFF Filing Access Help Desk</b></span><br>
+					<span class="smallText">(816) 783-8500</span><br>
+					<span class="smallText"><a href="mailto:sfahelp@naic.org">sfahelp@naic.org</a></span>
+				</div>
+				<div class="col col-sm-offset-2 col-sm-1 text-left">
+					<span><b>Related Sites</b></span><br>
+					<span class="smallText"><a href="https://www.naic.org" target="_blank">www.naic.org</a></span><br>
+					<span class="smallText"><a href="https://www.serff.com" target="_blank">www.serff.com</a></span>
+				</div>
+			</div>	
+		</div>
+		<div class="footer-global">
+				<div class="footer-contact clearfix">
+					<div class="container">
+						<div class="col col-sm-6 clearfix">
+							<img class="footer-logo-naic" src="/sfa/static-web/images/naicLogo-footer.png" alt="NAIC Logo">
+							<div class="contactBlock">
+								<span><b>NAIC Central Office</b></span>
+								<span>1100 Walnut St.</span>
+								<span>Suite 1500</span>
+								<span>Kansas City, MO 64108</span>
+							</div>
+							<div class="contactBlock">
+								<span><b>Phone:</b> (816) 842-3600</span>
+								<span><b>Fax:</b> (816) 783-8175</span>
+								<span>8 a.m. to 5 p.m. (CST)</span>
+								<span>Monday - Friday</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="footer-copyright">
+					<div class="container">
+						<span>Copyright © 2017 National Association of Insurance Commissioners. All Rights Reserved.</span>
+					</div>
+				</div>
+			</div>
+
+<div id="textarea_simulator" style="position: absolute; top: 0px; left: 0px; visibility: hidden;"></div></body></html>

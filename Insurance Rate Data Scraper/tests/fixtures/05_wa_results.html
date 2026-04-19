@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head id="j_idt3"><script type="text/javascript" src="/sfa/ruxitagentjs_ICANVfghqru_10333260303165926.js" data-dtconfig="app=b0d446983abdf4bc|ssc=1|owasp=1|featureHash=ICANVfghqru|rdnt=1|uxrgce=1|cuc=75ov4p5b|mel=100000|dpvc=1|md=mdcc2=a[name='x-dynatrace']@content,mdcc3=a#myDropdown ^rb div.dropdown-footer ^rb div.user-fullname|lastModification=1775661502326|tp=500,50,0|srbbv=2|agentUri=/sfa/ruxitagentjs_ICANVfghqru_10333260303165926.js|reportUrl=/sfa/rb_bf34584xzn|rid=RID_-1781333100|rpid=-686384622|domain=serff.com"></script><link type="text/css" rel="stylesheet" href="/sfa/javax.faces.resource/theme.css.xhtml?ln=primefaces-flatly"><link type="text/css" rel="stylesheet" href="/sfa/javax.faces.resource/bootstrap.flatly.min.css.xhtml?ln=css"><link type="text/css" rel="stylesheet" href="/sfa/javax.faces.resource/sfa.css.xhtml?ln=css"><link type="text/css" rel="stylesheet" href="/sfa/javax.faces.resource/naic-common-ui.css.xhtml?ln=css"><link type="text/css" rel="stylesheet" href="/sfa/javax.faces.resource/components.css.xhtml?ln=primefaces&amp;v=6.0"><script type="text/javascript" src="/sfa/javax.faces.resource/jquery/jquery.js.xhtml?ln=primefaces&amp;v=6.0"></script><script type="text/javascript" src="/sfa/javax.faces.resource/core.js.xhtml?ln=primefaces&amp;v=6.0"></script><script type="text/javascript" src="/sfa/javax.faces.resource/components.js.xhtml?ln=primefaces&amp;v=6.0"></script><script type="text/javascript" src="/sfa/javax.faces.resource/jquery/jquery-plugins.js.xhtml?ln=primefaces&amp;v=6.0"></script><script type="text/javascript">if(window.PrimeFaces){PrimeFaces.settings.locale='en';}</script>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>SERFF Filing Access - Washington</title><script type="text/javascript" src="/sfa/javax.faces.resource/bootstrap.min.js.xhtml?ln=js"></script></head><body id="entirePage">
+<div class="naic-navbar">
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="container">			
+			<div class="navbar-header">
+				<div class="logo-naic">
+				    <img class="brandmark" src="/sfa/static-web/images/naicLogo_brandmark-nav.png">
+				    <img class="tagline" src="/sfa/static-web/images/naicLogo_tagline-nav.png">
+			    </div>
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div class="navbar-collapse collapse" id="navbar-main">
+				<ul class="nav navbar-nav navbar-right">
+					<li style="padding-left: 1em;"><a href="#" onclick="accessHelp(); return false;">Help</a></li>
+				</ul>
+			</div>
+		</div>	
+		<div class="sfa-state-header">
+			<div class="container">
+				<div class="serffLogo">
+					<img width="200px" src="/sfa/static-web/images/serffLogoTransparent.png">
+				</div>
+				<div class="headerText">
+					<div class="navbar-brand-text">
+						SERFF Filing Access
+					</div><div id="j_idt10" class="ui-outputpanel ui-widget" style="margin-bottom:15px">
+						<div class="siteSubTitle">
+							You are currently operating in the state of Washington.
+						</div></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	function accessHelp() {
+		var windowObjectReference = null;
+		var helpUrl = '/sfa/static-web/OnlineHelp.pdf';
+		var features = 'location=no,menubar=no,toolbar=no,resizable=yes,scrollbars=yes,status=yes,height=500,width=800';
+		windowObjectReference = window.open(helpUrl, 'sfaHelp', features);
+		windowObjectReference.focus();
+	}
+</script>
+	    
+	    <div class="container">
+		<ol class="breadcrumb">
+			<li class="active">Filing Search</li>
+		</ol>
+	
+			<div id="content">
+				<div id="main">
+					<div id="pageInfo">
+					</div>
+					<div id="bodyContentWrapper">
+			<div class="row">
+				<div class="col-md-12">
+<form id="simpleSearch" name="simpleSearch" method="post" action="/sfa/search/filingSearch.xhtml" enctype="application/x-www-form-urlencoded" aria-busy="false" style="position: relative;">
+<input type="hidden" name="simpleSearch" value="simpleSearch">
+
+					
+						<div class="buttonBar"><button id="simpleSearch:j_idt19" name="simpleSearch:j_idt19" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only quickButton ui-state-focus ui-state-hover" onclick="PrimeFaces.ab({s:&quot;simpleSearch:j_idt19&quot;,u:&quot;simpleSearch:panel&quot;});return false;" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Clear Search</span></button><button id="simpleSearch:j_idt20" name="simpleSearch:j_idt20" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only quickButton" onclick="window.open('/sfa/search/binderSearch.xhtml','_self')" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Health Plan Binder Search</span></button>
+						</div>
+						
+						<h2>Filing Search</h2>
+						
+						<div class="panel panel-success">
+							<div class="panel-heading">
+								<h3 class="panel-title">Search Options</h3>
+							</div><span id="simpleSearch:panel"><div id="simpleSearch:messages" class="ui-messages ui-widget" aria-live="polite"></div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label text-right">Business Type:</label>
+								<div class="col-md-9"><div id="simpleSearch:businessType" class="ui-selectonemenu ui-widget ui-state-default ui-corner-all" style="min-width: 290px;"><div class="ui-helper-hidden-accessible"><input id="simpleSearch:businessType_focus" name="simpleSearch:businessType_focus" type="text" autocomplete="off" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="1" aria-autocomplete="list" aria-owns="simpleSearch:businessType_items" aria-activedescendant="simpleSearch:businessType_0" aria-describedby="simpleSearch:businessType_0" aria-disabled="false"></div><div class="ui-helper-hidden-accessible"><select id="simpleSearch:businessType_input" name="simpleSearch:businessType_input" tabindex="-1" onchange="PrimeFaces.ab({s:&quot;simpleSearch:businessType&quot;,e:&quot;change&quot;,p:&quot;simpleSearch:businessType&quot;,u:&quot;simpleSearch&quot;});"><option value="" selected="selected">-- Select --</option><option value="P">Property &amp; Casualty</option><option value="L">Life, Accident/Health, Annuity, Credit</option></select></div><label id="simpleSearch:businessType_label" class="ui-selectonemenu-label ui-inputfield ui-corner-all">-- Select --</label><div class="ui-selectonemenu-trigger ui-state-default ui-corner-right"><span class="ui-icon ui-icon-triangle-1-s ui-c"></span></div></div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-md-3 control-label text-right">Product Coding Matrix:</label>
+								<div class="col-md-9">
+									<a href="https://serff.com/serff_participation_map.htm">https://serff.com/serff_participation_map.htm</a>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label text-right">Type of Insurance:</label>									
+								<div class="col-md-9"><span style="font-style:italic;">Must first select a Business Type</span>
+								</div>
+							</div>
+						
+							
+							<style>
+							 	.ui-selectcheckboxmenu-close.ui-corner-all:hover {font-weight: bold;}
+							</style>
+							<script>
+								function addCloseText() {
+									jQuery(".ui-icon.ui-icon-circle-close").text("Close").removeClass("ui-icon").addClass("close-button");
+								}
+							</script>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label text-right">Company Name:</label>
+								<div class="col-md-7"><input id="simpleSearch:companyName" name="simpleSearch:companyName" type="text" tabindex="3" style="width:100%" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" role="textbox" aria-disabled="false" aria-readonly="false"><table id="simpleSearch:companyNameOptions" role="presentation" class="ui-selectoneradio ui-widget"><tbody><tr><td><div class="ui-radiobutton ui-widget"><div class="ui-helper-hidden-accessible"><input id="simpleSearch:companyNameOptions:0" name="simpleSearch:companyNameOptions" type="radio" value="BEGINS_MATCH" tabindex="4" checked="checked"></div><div class="ui-radiobutton-box ui-widget ui-corner-all ui-state-default ui-state-active"><span class="ui-radiobutton-icon ui-icon ui-icon-bullet ui-c"></span></div></div></td><td><label for="simpleSearch:companyNameOptions:0">Begins With</label></td><td><div class="ui-radiobutton ui-widget"><div class="ui-helper-hidden-accessible"><input id="simpleSearch:companyNameOptions:1" name="simpleSearch:companyNameOptions" type="radio" value="CONTAINS_MATCH" tabindex="4"></div><div class="ui-radiobutton-box ui-widget ui-corner-all ui-state-default"><span class="ui-radiobutton-icon ui-icon ui-icon-blank ui-c"></span></div></div></td><td><label for="simpleSearch:companyNameOptions:1">Contains</label></td></tr></tbody></table>
+								</div>
+							</div>
+	
+							<div class="form-group">
+								<label class="col-md-3 control-label text-right">NAIC Company Code:</label>
+								<div class="col-md-9"><input id="simpleSearch:companyCode" name="simpleSearch:companyCode" type="text" tabindex="5" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" role="textbox" aria-disabled="false" aria-readonly="false"><div id="simpleSearch:j_idt45" aria-live="polite" class="ui-message"></div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label text-right">Insurance Product Name:</label>
+								<div class="col-md-7"><input id="simpleSearch:productName" name="simpleSearch:productName" type="text" tabindex="6" style="width:100%" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" role="textbox" aria-disabled="false" aria-readonly="false"><table id="simpleSearch:productNameOptions" role="presentation" class="ui-selectoneradio ui-widget"><tbody><tr><td><div class="ui-radiobutton ui-widget"><div class="ui-helper-hidden-accessible"><input id="simpleSearch:productNameOptions:0" name="simpleSearch:productNameOptions" type="radio" value="BEGINS_MATCH" tabindex="7" checked="checked"></div><div class="ui-radiobutton-box ui-widget ui-corner-all ui-state-default ui-state-active"><span class="ui-radiobutton-icon ui-icon ui-icon-bullet ui-c"></span></div></div></td><td><label for="simpleSearch:productNameOptions:0">Begins With</label></td><td><div class="ui-radiobutton ui-widget"><div class="ui-helper-hidden-accessible"><input id="simpleSearch:productNameOptions:1" name="simpleSearch:productNameOptions" type="radio" value="CONTAINS_MATCH" tabindex="7"></div><div class="ui-radiobutton-box ui-widget ui-corner-all ui-state-default"><span class="ui-radiobutton-icon ui-icon ui-icon-blank ui-c"></span></div></div></td><td><label for="simpleSearch:productNameOptions:1">Contains</label></td></tr></tbody></table>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label text-right">SERFF Tracking Number:</label>
+								<div class="col-md-7"><input id="simpleSearch:serffTrackingNumber" name="simpleSearch:serffTrackingNumber" type="text" tabindex="8" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" role="textbox" aria-disabled="false" aria-readonly="false"><div id="simpleSearch:j_idt50" aria-live="polite" class="ui-message"></div>
+								</div>
+							</div>
+	
+							<div class="form-group">
+								<label class="col-md-3 control-label text-right">Start Submission Date:</label>
+								<div class="col-md-3"><span id="simpleSearch:submissionStartDate" class="ui-calendar datePicker ui-trigger-calendar"><input id="simpleSearch:submissionStartDate_input" name="simpleSearch:submissionStartDate_input" type="text" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" tabindex="9" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><div id="simpleSearch:j_idt52" aria-live="polite" class="ui-message"></div>
+								</div>
+								<label class="col-md-3 control-label text-right">Start Disposition Date:</label>
+								<div class="col-md-3"><span id="simpleSearch:dispositionStartDate" class="ui-calendar datePicker ui-trigger-calendar"><input id="simpleSearch:dispositionStartDate_input" name="simpleSearch:dispositionStartDate_input" type="text" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" tabindex="10" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><div id="simpleSearch:j_idt54" aria-live="polite" class="ui-message"></div>
+								</div>								
+							</div>
+							
+							<div class="form-group">								
+								<label class="col-md-3 control-label text-right">End Submission Date:</label>
+								<div class="col-md-3"><span id="simpleSearch:submissionEndDate" class="ui-calendar datePicker ui-trigger-calendar"><input id="simpleSearch:submissionEndDate_input" name="simpleSearch:submissionEndDate_input" type="text" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" tabindex="11" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><div id="simpleSearch:j_idt56" aria-live="polite" class="ui-message"></div>
+								</div>
+								<label class="col-md-3 control-label text-right">End Disposition Date:</label>
+								<div class="col-md-3"><span id="simpleSearch:dispositionEndDate" class="ui-calendar datePicker ui-trigger-calendar"><input id="simpleSearch:dispositionEndDate_input" name="simpleSearch:dispositionEndDate_input" type="text" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" tabindex="12" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><div id="simpleSearch:j_idt58" aria-live="polite" class="ui-message"></div>
+								</div>
+							</div>
+							
+							<br>
+							<br>
+
+							<div class="row">
+								<div class="col-md-12">
+									<div style="text-align: center;"><button id="simpleSearch:saveBtn" name="simpleSearch:saveBtn" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only btn btn-success" onclick="PrimeFaces.ab({s:&quot;simpleSearch:saveBtn&quot;,u:&quot;simpleSearch:panel&quot;});return false;" style="width: 150px; padding: 6px;" tabindex="13" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Search</span></button>
+									</div>
+								</div>
+							</div>
+
+							<br></span>
+					</div><input type="hidden" name="javax.faces.ViewState" id="javax.faces.ViewState" value="-3537832859924539999:533595216607318101" autocomplete="off">
+<div id="simpleSearch:j_idt22_blocker" class="ui-blockui ui-widget-overlay ui-helper-hidden"></div><div id="simpleSearch:j_idt22" class="ui-blockui-content ui-widget ui-widget-content ui-corner-all ui-helper-hidden ui-shadow">
+							<div style="padding: 20px;">
+							<h3>Now Searching...</h3>
+							<br><br><img id="simpleSearch:j_idt24" src="/sfa/static-web/images/activity_indicator.gif?pfdrid_c=true" alt="">
+							<br><br><br><button id="simpleSearch:j_idt26" name="simpleSearch:j_idt26" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onclick="window.open('/sfa/search/filingSearch.xhtml','_self')" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Cancel Search</span></button>
+							</div></div><div id="simpleSearch:j_idt28_blocker" class="ui-blockui ui-widget-overlay ui-helper-hidden"></div><div id="simpleSearch:j_idt28" class="ui-blockui-content ui-widget ui-widget-content ui-corner-all ui-helper-hidden ui-shadow">
+							<div style="padding: 20px;">
+							<h3>Please Wait...</h3>
+							<br><br><img id="simpleSearch:j_idt30" src="/sfa/static-web/images/activity_indicator.gif?pfdrid_c=true" alt="">
+							</div></div></form>
+				</div>
+			</div>
+					</div>
+				</div>
+			</div>
+		</div>		
+		<div class="row help-global">
+			<div class="container sfa-help">
+				<div class="col col-sm-3 clearfix">
+					<span><b>SERFF Filing Access Help Desk</b></span><br>
+					<span class="smallText">(816) 783-8500</span><br>
+					<span class="smallText"><a href="mailto:sfahelp@naic.org">sfahelp@naic.org</a></span>
+				</div>
+				<div class="col col-sm-offset-2 col-sm-1 text-left">
+					<span><b>Related Sites</b></span><br>
+					<span class="smallText"><a href="https://www.naic.org" target="_blank">www.naic.org</a></span><br>
+					<span class="smallText"><a href="https://www.serff.com" target="_blank">www.serff.com</a></span>
+				</div>
+			</div>	
+		</div>
+		<div class="footer-global">
+				<div class="footer-contact clearfix">
+					<div class="container">
+						<div class="col col-sm-6 clearfix">
+							<img class="footer-logo-naic" src="/sfa/static-web/images/naicLogo-footer.png" alt="NAIC Logo">
+							<div class="contactBlock">
+								<span><b>NAIC Central Office</b></span>
+								<span>1100 Walnut St.</span>
+								<span>Suite 1500</span>
+								<span>Kansas City, MO 64108</span>
+							</div>
+							<div class="contactBlock">
+								<span><b>Phone:</b> (816) 842-3600</span>
+								<span><b>Fax:</b> (816) 783-8175</span>
+								<span>8 a.m. to 5 p.m. (CST)</span>
+								<span>Monday - Friday</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="footer-copyright">
+					<div class="container">
+						<span>Copyright © 2017 National Association of Insurance Commissioners. All Rights Reserved.</span>
+					</div>
+				</div>
+			</div>
+
+<div id="textarea_simulator" style="position: absolute; top: 0px; left: 0px; visibility: hidden;"></div><div id="simpleSearch:businessType_panel" class="ui-selectonemenu-panel ui-widget ui-widget-content ui-corner-all ui-helper-hidden ui-shadow"><div class="ui-selectonemenu-items-wrapper" style="height:auto"><ul id="simpleSearch:businessType_items" class="ui-selectonemenu-items ui-selectonemenu-list ui-widget-content ui-widget ui-corner-all ui-helper-reset" role="listbox" aria-activedescendant="simpleSearch:businessType_0"><li class="ui-selectonemenu-item ui-selectonemenu-list-item ui-corner-all ui-state-highlight" data-label="-- Select --" tabindex="-1" role="option" id="simpleSearch:businessType_0">-- Select --</li><li class="ui-selectonemenu-item ui-selectonemenu-list-item ui-corner-all" data-label="Property &amp; Casualty" tabindex="-1" role="option" id="simpleSearch:businessType_1">Property &amp; Casualty</li><li class="ui-selectonemenu-item ui-selectonemenu-list-item ui-corner-all" data-label="Life, Accident/Health, Annuity, Credit" tabindex="-1" role="option" id="simpleSearch:businessType_2">Life, Accident/Health, Annuity, Credit</li></ul></div></div><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-shadow"></div></body></html>

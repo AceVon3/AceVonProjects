@@ -1,0 +1,807 @@
+{
+  "results" :
+    [
+      {
+        "resource" :
+          {
+            "name" : "USA Flood Hazard Areas",
+            "id" : "yhcy-2z36",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "This feature layer displays Flood Hazard Areas from the Flood Insurance Rate Map created by the Federal Emergency Management Agency, updated annually.",
+            "attribution" : null,
+            "attribution_link" : null,
+            "contact_email" : "{{orgContactEmail}}",
+            "type" : "federated_href",
+            "updatedAt" : "2026-03-12T19:25:47.000Z",
+            "createdAt" : "2026-02-24T19:14:13.000Z",
+            "metadata_updated_at" : "2026-03-12T19:25:47.000Z",
+            "data_updated_at" : "2026-02-24T19:14:13.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 4,
+                "page_views_last_month" : 35,
+                "page_views_total" : 76,
+                "page_views_last_week_log" : 2.321928094887362,
+                "page_views_last_month_log" : 5.169925001442312,
+                "page_views_total_log" : 6.266786540694902
+              },
+            "columns_name" : [],
+            "columns_field_name" : [],
+            "columns_datatype" : [],
+            "columns_description" : [],
+            "columns_format" : [],
+            "download_count" : 0,
+            "provenance" : "official",
+            "lens_view_type" : "href",
+            "lens_display_type" : "federated",
+            "locked" : false,
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2026-02-24T19:14:13.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [],
+            "tags" : [],
+            "domain_tags" :
+              [
+                "zone",
+                "flood zone",
+                "floods",
+                "floodplains",
+                "flood plain",
+                "floodplain",
+                "flood insurance rate map",
+                "flood insurance",
+                "flooding",
+                "flood hazard",
+                "flood",
+                "firms",
+                "firm",
+                "fema",
+                "federal emergency management agency",
+                "esri_environment",
+                "dfirm",
+                "500 year flood",
+                "national flood hazard layer",
+                "nfhl",
+                "risk",
+                "sfha",
+                "sfhas",
+                "s_fld_haz_ar",
+                "special flood hazard area",
+                "100 year flood",
+                "hazards",
+                "hosted",
+                "insurance",
+                "hazard",
+                "flood zones",
+                "landscape",
+                "national flood insurance program"
+              ],
+            "domain_metadata" :
+              [
+                {
+                  "key" : "Common-Core_Contact-Email",
+                  "value" : "{{orgContactEmail}}"
+                },
+                {
+                  "key" : "Common-Core_Last-Update",
+                  "value" : "2026-03-11T17:21:46.873Z"
+                },
+                {
+                  "key" : "Common-Core_License",
+                  "value" : "https://creativecommons.org/licenses/by/4.0/"
+                },
+                {
+                  "key" : "Common-Core_Public-Access-Level",
+                  "value" : "public"
+                },
+                {
+                  "key" : "Common-Core_Geographic-Coverage",
+                  "value" : "-170.8484,-14.3752,145.8322,64.9375"
+                },
+                {
+                  "key" : "Common-Core_Unique-Identifier",
+                  "value" : "https://www.arcgis.com/home/item.html?id=2b245b7f816044d7a779a61a5844be23&sublayer=0"
+                },
+                { "key" : "Common-Core_Publisher", "value" : "Esri" },
+                {
+                  "key" : "Common-Core_Homepage",
+                  "value" : "https://geodata.colorado.gov/datasets/esri::usa-flood-hazard-areas-2"
+                },
+                { "key" : "Common-Core_Theme", "value" : "geospatial" },
+                {
+                  "key" : "Common-Core_Issued",
+                  "value" : "2018-10-21T18:04:12.000Z"
+                },
+                {
+                  "key" : "Common-Core_Contact-Name",
+                  "value" : "esri_landscape2"
+                }
+              ]
+          },
+        "metadata" :
+          {
+            "domain" : "data.colorado.gov",
+            "additional_access_points" :
+              [
+                {
+                  "urls" :
+                    {
+                      "text/html" : "https://geodata.colorado.gov/datasets/esri::usa-flood-hazard-areas-2"
+                    },
+                  "title" : "ArcGIS Hub Dataset"
+                },
+                {
+                  "urls" :
+                    {
+                      "application/json" : "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Flood_Hazard_Reduced_Set_gdb/FeatureServer/0"
+                    },
+                  "title" : "ArcGIS GeoService"
+                },
+                {
+                  "urls" :
+                    {
+                      "text/csv" : "https://geodata.colorado.gov/api/download/v1/items/2b245b7f816044d7a779a61a5844be23/csv?layers=0"
+                    },
+                  "title" : "CSV"
+                },
+                {
+                  "urls" :
+                    {
+                      "application/zip" : "https://geodata.colorado.gov/api/download/v1/items/2b245b7f816044d7a779a61a5844be23/shapefile?layers=0"
+                    },
+                  "title" : "Shapefile"
+                },
+                {
+                  "urls" :
+                    {
+                      "application/vnd.geo+json" : "https://geodata.colorado.gov/api/download/v1/items/2b245b7f816044d7a779a61a5844be23/geojson?layers=0"
+                    },
+                  "title" : "GeoJSON"
+                },
+                {
+                  "urls" :
+                    {
+                      "application/vnd.google-earth.kml+xml" : "https://geodata.colorado.gov/api/download/v1/items/2b245b7f816044d7a779a61a5844be23/kml?layers=0"
+                    },
+                  "title" : "KML"
+                },
+                {
+                  "urls" :
+                    {
+                      "application/zip" : "https://geodata.colorado.gov/api/download/v1/items/2b245b7f816044d7a779a61a5844be23/filegdb?layers=0"
+                    },
+                  "title" : "File Geodatabase"
+                },
+                {
+                  "urls" :
+                    {
+                      "text/plain" : "https://geodata.colorado.gov/api/download/v1/items/2b245b7f816044d7a779a61a5844be23/featureCollection?layers=0"
+                    },
+                  "title" : "Feature Collection"
+                },
+                {
+                  "urls" :
+                    {
+                      "application/vnd.ms-excel" : "https://geodata.colorado.gov/api/download/v1/items/2b245b7f816044d7a779a61a5844be23/excel?layers=0"
+                    },
+                  "title" : "Excel"
+                },
+                {
+                  "urls" :
+                    {
+                      "application/geopackage+sqlite3" : "https://geodata.colorado.gov/api/download/v1/items/2b245b7f816044d7a779a61a5844be23/geoPackage?layers=0"
+                    },
+                  "title" : "GeoPackage"
+                },
+                {
+                  "urls" :
+                    {
+                      "application/geopackage+sqlite3" : "https://geodata.colorado.gov/api/download/v1/items/2b245b7f816044d7a779a61a5844be23/sqlite?layers=0"
+                    },
+                  "title" : "SQLite Geodatabase"
+                }
+              ],
+            "access_points" :
+              {
+                "text/html" : "https://geodata.colorado.gov/datasets/esri::usa-flood-hazard-areas-2"
+              }
+          },
+        "permalink" : "https://data.colorado.gov/d/yhcy-2z36",
+        "link" : "https://data.colorado.gov/dataset/USA-Flood-Hazard-Areas/yhcy-2z36",
+        "owner" :
+          {
+            "id" : "d6g4-ka5e",
+            "user_type" : "interactive",
+            "display_name" : "Colorado Geospatial Data Portal"
+          },
+        "creator" :
+          {
+            "id" : "d6g4-ka5e",
+            "user_type" : "interactive",
+            "display_name" : "Colorado Geospatial Data Portal"
+          }
+      },
+      {
+        "resource" :
+          {
+            "name" : "2009 Health Disparities Report and Data",
+            "id" : "a498-a63g",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "Racial and Ethnic Health Disparities in Colorado - 2009",
+            "attribution" : "CDPHE - Department of Public Health and Environment",
+            "attribution_link" : "https://www.colorado.gov/cs/Satellite?c=Page&childpagename=CDPHE-Main%2FCBONLayout&cid=1251588186034&pagename=CBONWrapper",
+            "contact_email" : null,
+            "type" : "dataset",
+            "updatedAt" : "2026-02-19T00:52:59.000Z",
+            "createdAt" : "2014-03-06T21:18:34.000Z",
+            "metadata_updated_at" : "2026-02-19T00:52:59.000Z",
+            "data_updated_at" : "2014-06-09T15:28:56.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 5,
+                "page_views_last_month" : 50,
+                "page_views_total" : 1643,
+                "page_views_last_week_log" : 2.584962500721156,
+                "page_views_last_month_log" : 5.672425341971496,
+                "page_views_total_log" : 10.682994583681683
+              },
+            "columns_name" :
+              [
+                "HIV/AIDS (Incidence rates per 100,000 population)",
+                "Gonorrhea (Incidence rates per 100,000 population)",
+                "Tuberculosis (Incidence rates per 100,000 population)",
+                "Chronic Hepatitis B  (Incidence rates per 100,000 population)",
+                "Have asthma",
+                "Women who have not had a pap test in last 3 years",
+                "Women 40+ who have not had a mammogram in last 2 years",
+                "High school graduation rate",
+                "Unintended pregnancy",
+                "Women who drank during last three months of pregnancy",
+                "Median household income",
+                "Have diabetes",
+                "Low birth weight births",
+                "Births to teens ages 15-17 (births per 1,000 population, 2006)",
+                "Childhood obesity (ages 2-14)",
+                "Eat fewer than 5 fruits and vegetables per day",
+                "Women who smoked during last three months of pregnancy",
+                "Women reporting 3 or more stressors during pregnancy",
+                "Infant mortality (infant deaths per 1,000 live births)",
+                "Have high blood pressure",
+                "Mental health was not good 8 or more days (in the past 30 days)",
+                "Race & Ethnicity",
+                "Percent of population living below poverty",
+                "Cigarette smoking",
+                "Binge drinking (5 or more drinks in one sitting)",
+                "No physical activity",
+                "No health insurance",
+                "Overweight (BMI>=25)",
+                "Obese (BMI>=30)"
+              ],
+            "columns_field_name" :
+              [
+                "hiv_aids_incidence_rates_per_100_000_population",
+                "gonorrhea_incidence_rates_per_100_000_population",
+                "tuberculosis_incidence_rates_per_100_000_population",
+                "chronic_hepatitis_b_incidence_rates_per_100_000_population",
+                "have_asthma",
+                "women_who_have_not_had_a_pap_test_in_last_3_years",
+                "women_40_who_have_not_had_a_mammogram_in_last_2_years",
+                "high_school_graduation_rate",
+                "unintended_pregnancy",
+                "women_who_drank_during_last_three_months_of_pregnancy",
+                "median_household_income",
+                "have_diabetes",
+                "low_birth_weight_births",
+                "births_to_teens_ages_15_17_births_per_1_000_population_2006",
+                "childhood_obesity_ages_2_14",
+                "eat_fewer_than_5_fruits_and_vegetables_per_day",
+                "women_who_smoked_during_last_three_months_of_pregnancy",
+                "women_reporting_3_or_more_stressors_during_pregnancy",
+                "infant_mortality_infant_deaths_per_1_000_live_births",
+                "have_high_blood_pressure",
+                "mental_health_was_not_good_8_or_more_days_in_the_past_30_days",
+                "race_ethnicity",
+                "percent_of_population_living_below_poverty",
+                "cigarette_smoking",
+                "binge_drinking_5_or_more_drinks_in_one_sitting",
+                "no_physical_activity",
+                "no_health_insurance",
+                "overweight_bmi_25",
+                "obese_bmi_30"
+              ],
+            "columns_datatype" :
+              [
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Text",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number",
+                "Number"
+              ],
+            "columns_description" :
+              [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ],
+            "columns_format" :
+              [
+                {},
+                {},
+                {},
+                {},
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "currency",
+                  "currencyStyle" : "USD",
+                  "precision" : "2"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {},
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {},
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {},
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                },
+                {
+                  "precisionStyle" : "percentage",
+                  "percentScale" : "100",
+                  "view" : "percent_bar_and_text"
+                }
+              ],
+            "download_count" : 4234,
+            "provenance" : "official",
+            "lens_view_type" : "tabular",
+            "lens_display_type" : "table",
+            "locked" : false,
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2014-06-09T15:29:59.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [],
+            "tags" : [],
+            "domain_category" : "Health",
+            "domain_tags" :
+              [
+                "health disparities",
+                "colorado department of health and environment",
+                "2009",
+                "african american",
+                "american indian",
+                "asian",
+                "racial",
+                "pacific islanders",
+                "native american",
+                "latino",
+                "hispanic",
+                "ethical"
+              ],
+            "domain_metadata" :
+              [
+                {
+                  "key" : "Additional-Dataset-Documentation_Data-Dictionary",
+                  "value" : "https://data.colorado.gov/api/views/a498-a63g.json"
+                }
+              ]
+          },
+        "metadata" : { "domain" : "data.colorado.gov" },
+        "permalink" : "https://data.colorado.gov/d/a498-a63g",
+        "link" : "https://data.colorado.gov/Health/2009-Health-Disparities-Report-and-Data/a498-a63g",
+        "owner" :
+          {
+            "id" : "xksg-xhsw",
+            "user_type" : "interactive",
+            "display_name" : "April Broome"
+          },
+        "creator" :
+          {
+            "id" : "xksg-xhsw",
+            "user_type" : "interactive",
+            "display_name" : "April Broome"
+          }
+      },
+      {
+        "resource" :
+          {
+            "name" : "CDPHE Composite Socio-Demographic Dataset (Census Tract)",
+            "id" : "2x3x-4dkh",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "This census tract geography dataset includes selected indicators (2012-2016 5-Year Averages) pertaining to population, age, race/ethnicity, language, housing, poverty/income, education, disability, health insurance, employment, and age*race*gender groups.  This dataset is assembled annually from the U.S. Census American Community Survey American Factfinder website and is maintained by the Colorado Department of Public Health and Environment.",
+            "attribution" : "CDPHE - Department of Public Health and Environment",
+            "attribution_link" : "https://data-cdphe.opendata.arcgis.com",
+            "contact_email" : null,
+            "type" : "href",
+            "updatedAt" : "2026-02-19T00:57:36.000Z",
+            "createdAt" : "2015-04-24T21:53:28.000Z",
+            "metadata_updated_at" : "2026-02-19T00:57:36.000Z",
+            "data_updated_at" : "2015-04-24T21:53:28.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 8,
+                "page_views_last_month" : 33,
+                "page_views_total" : 1649,
+                "page_views_last_week_log" : 3.1699250014423126,
+                "page_views_last_month_log" : 5.08746284125034,
+                "page_views_total_log" : 10.688250309133178
+              },
+            "columns_name" : [],
+            "columns_field_name" : [],
+            "columns_datatype" : [],
+            "columns_description" : [],
+            "columns_format" : [],
+            "download_count" : 37,
+            "provenance" : "official",
+            "lens_view_type" : "href",
+            "lens_display_type" : "href",
+            "locked" : false,
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2015-04-24T21:55:50.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [],
+            "tags" : [],
+            "domain_category" : "Demographics",
+            "domain_tags" :
+              [
+                "demographics",
+                "cdphe",
+                "colorado",
+                "covid19",
+                "gis",
+                "gocodecolorado",
+                "social determinants of health"
+              ],
+            "domain_metadata" :
+              [
+                {
+                  "key" : "Contributing-Agency-Information_Citation",
+                  "value" : "U.S. Census American Community Survey"
+                },
+                {
+                  "key" : "Contributing-Agency-Information_Agency-Program-Page",
+                  "value" : "https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml"
+                },
+                {
+                  "key" : "Dataset-Coverage_Unit-of-Analysis",
+                  "value" : "Census Tract"
+                },
+                {
+                  "key" : "Dataset-Coverage_Geographic-Coverage",
+                  "value" : "State of Colorado"
+                },
+                {
+                  "key" : "Geospatial_Collection-Method",
+                  "value" : "Census Tract"
+                },
+                {
+                  "key" : "Data-Description_Collection-Mode",
+                  "value" : "Selected American Community Survey 5 Year Estimates 2012-2016"
+                },
+                {
+                  "key" : "Additional-Dataset-Documentation_Disclaimers",
+                  "value" : "These data are published for informational purposes and there are no restrictions for using or disseminating this data set.  This data set is provided as an estimate from the 2011-2015 American Community Survey Estimates (U.S. Census). Users of the data should consider factors such as the data source, time period, assignment of geography, statistical reliability, and calculation of rate. The State of Colorado and the Colorado Department of Public Health and Environment assumes no liability to the completeness, correctness, or fitness for use of this data set.  Please contact the GIS Coordinator at the Colorado Department of Public Health and Environment for more information on how this data was assembled, using this data set, or to request additional access to this data."
+                },
+                {
+                  "key" : "Additional-Dataset-Documentation_Data-Dictionary",
+                  "value" : "See attachments"
+                }
+              ]
+          },
+        "metadata" :
+          {
+            "domain" : "data.colorado.gov",
+            "license" : "Public Domain",
+            "additional_access_points" :
+              [
+                {
+                  "urls" :
+                    {
+                      "cdphe composite socio-demographic dataset (census tract)" : "http://data-cdphe.opendata.arcgis.com/datasets/cdphe-composite-socio-demographic-dataset-census-tract"
+                    },
+                  "description" : "This census tract geography dataset includes selected indicators (2012-2016 5-Year Averages) pertaining to population, age, race/ethnicity, language, housing, poverty/income, education, disability, health insurance, employment, and age*race*gender groups.  This dataset is assembled annually from the U.S. Census American Community Survey American Factfinder website and is maintained by the Colorado Department of Public Health and Environment.",
+                  "title" : "CDPHE Composite Socio-Demographic Dataset (Census Tract)"
+                }
+              ],
+            "access_points" :
+              {
+                "cdphe composite socio-demographic dataset (census tract)" : "http://data-cdphe.opendata.arcgis.com/datasets/cdphe-composite-socio-demographic-dataset-census-tract"
+              }
+          },
+        "permalink" : "https://data.colorado.gov/d/2x3x-4dkh",
+        "link" : "https://data.colorado.gov/Demographics/CDPHE-Composite-Socio-Demographic-Dataset-Census-T/2x3x-4dkh",
+        "owner" :
+          {
+            "id" : "wnsb-eatm",
+            "user_type" : "interactive",
+            "display_name" : "CDPHE_spatial_data"
+          },
+        "creator" :
+          {
+            "id" : "wnsb-eatm",
+            "user_type" : "interactive",
+            "display_name" : "CDPHE_spatial_data"
+          }
+      },
+      {
+        "resource" :
+          {
+            "name" : "CDPHE Composite Socio-Demographic Dataset (County)",
+            "id" : "rcsh-y5k8",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "This county geography dataset includes selected indicators (2011-2015 5-Year Averages) pertaining to population, age, race/ethnicity, language, housing, poverty/income, education, disability, health insurance, employment, and age*race*gender groups. This dataset is assembled annually from the U.S. Census American Community Survey American Factfinder website and is maintained by the Colorado Department of Public Health and Environment.",
+            "attribution" : "CDPHE - Department of Public Health and Environment; U.S. Census American Community Survey",
+            "attribution_link" : null,
+            "contact_email" : null,
+            "type" : "href",
+            "updatedAt" : "2026-02-19T00:39:31.000Z",
+            "createdAt" : "2017-03-31T23:54:10.000Z",
+            "metadata_updated_at" : "2026-02-19T00:39:31.000Z",
+            "data_updated_at" : "2017-03-31T23:54:10.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 23,
+                "page_views_last_month" : 29,
+                "page_views_total" : 985,
+                "page_views_last_week_log" : 4.584962500721157,
+                "page_views_last_month_log" : 4.906890595608519,
+                "page_views_total_log" : 9.945443836377912
+              },
+            "columns_name" : [],
+            "columns_field_name" : [],
+            "columns_datatype" : [],
+            "columns_description" : [],
+            "columns_format" : [],
+            "download_count" : 0,
+            "provenance" : "official",
+            "lens_view_type" : "href",
+            "lens_display_type" : "href",
+            "locked" : false,
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2017-04-01T00:03:11.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [],
+            "tags" : [],
+            "domain_category" : "Health",
+            "domain_tags" :
+              [
+                "gis",
+                "social determinants of health",
+                "cdphe",
+                "colorado",
+                "covid19",
+                "demographics",
+                "gocodecolorado"
+              ],
+            "domain_metadata" :
+              [
+                {
+                  "key" : "Contributing-Agency-Information_Citation",
+                  "value" : "U.S. Census American Community Survey"
+                },
+                {
+                  "key" : "Contributing-Agency-Information_Agency-Program-Page",
+                  "value" : "https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml"
+                },
+                {
+                  "key" : "Dataset-Coverage_Unit-of-Analysis",
+                  "value" : "County"
+                },
+                {
+                  "key" : "Dataset-Coverage_Geographic-Coverage",
+                  "value" : "State of Colorado"
+                },
+                {
+                  "key" : "Data-Updates_Update-Schedule",
+                  "value" : "annually"
+                },
+                {
+                  "key" : "Data-Description_Collection-Mode",
+                  "value" : "Selected American Community Survey 5 Year Estimates 2011-2015"
+                },
+                {
+                  "key" : "Additional-Dataset-Documentation_Disclaimers",
+                  "value" : "These data are published for informational purposes and there are no restrictions for using or disseminating this data set. This data set is provided as an estimate from the 2011-2015 American Community Survey Estimates (U.S. Census). Users of the data should consider factors such as the data source, time period, assignment of geography, statistical reliability, and calculation of rate. The State of Colorado and the Colorado Department of Public Health and Environment assumes no liability to the completeness, correctness, or fitness for use of this data set. Please contact the GIS Coordinator at the Colorado Department of Public Health and Environment for more information on how this data was assembled, using this data set, or to request additional access to this data."
+                },
+                {
+                  "key" : "Additional-Dataset-Documentation_Data-Dictionary",
+                  "value" : "https://data.colorado.gov/api/views/rcsh-y5k8.json"
+                }
+              ]
+          },
+        "metadata" :
+          {
+            "domain" : "data.colorado.gov",
+            "additional_access_points" :
+              [
+                {
+                  "urls" :
+                    {
+                      "cdphe composite socio-demographic dataset (county)" : "http://data-cdphe.opendata.arcgis.com/datasets/cdphe-composite-socio-demographic-dataset-county"
+                    },
+                  "description" : "This county geography dataset includes selected indicators (2011-2015 5-Year Averages) pertaining to population, age, race/ethnicity, language, housing, poverty/income, education, disability, health insurance, employment, and age*race*gender groups. This dataset is assembled annually from the U.S. Census American Community Survey American Factfinder website and is maintained by the Colorado Department of Public Health and Environment.",
+                  "title" : "CDPHE Composite Socio-Demographic Dataset (County)"
+                }
+              ],
+            "access_points" :
+              {
+                "cdphe composite socio-demographic dataset (county)" : "http://data-cdphe.opendata.arcgis.com/datasets/cdphe-composite-socio-demographic-dataset-county"
+              }
+          },
+        "permalink" : "https://data.colorado.gov/d/rcsh-y5k8",
+        "link" : "https://data.colorado.gov/Health/CDPHE-Composite-Socio-Demographic-Dataset-County-/rcsh-y5k8",
+        "owner" :
+          {
+            "id" : "wnsb-eatm",
+            "user_type" : "interactive",
+            "display_name" : "CDPHE_spatial_data"
+          },
+        "creator" :
+          {
+            "id" : "wnsb-eatm",
+            "user_type" : "interactive",
+            "display_name" : "CDPHE_spatial_data"
+          }
+      }
+    ],
+  "resultSetSize" : 4,
+  "timings" : { "serviceMillis" : 19, "searchMillis" : [ 3, 6 ] },
+  "warnings" : []
+}
