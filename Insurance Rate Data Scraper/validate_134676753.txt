@@ -1,0 +1,18 @@
+[SFMA-134676753] ID/134676753
+
+[write] C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\subsidiary_fields.json
+
+======================================================================
+SUBSIDIARY EXTRACTION SUMMARY
+======================================================================
+
+SFMA-134676753 (ID/134676753)
+  Scanned: 3  Skipped: 7
+  State Farm Mutual Automobile Insurance Company
+    overall_rate_impact:        -9.7
+    overall_indicated_change:   -2.6
+    policyholders_affected:     None
+  State Farm Fire and Casualty Company
+    overall_rate_impact:        -2.1
+    overall_indicated_change:   15.9
+    policyholders_affected:     None

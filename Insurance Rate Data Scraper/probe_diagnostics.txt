@@ -1,0 +1,303 @@
+==============================================================================
+PROBE 1: GEICO  GECC-134628136  (WA/134628136)
+==============================================================================
+PDFs (5):
+  - Memo_GEGG.pdf  (0.08 MB)
+  - WA Change Sheet 2025-222A.pdf  (0.04 MB)
+  - WA Cover Letter 2025-222A.pdf  (0.08 MB)
+  - WA-GE-Rate 2025-222.pdf  (0.64 MB)
+  - WA-GE-Rate-2025-222-Markup.pdf  (0.92 MB)
+
+--- Memo_GEGG.pdf  (0.08 MB) ---
+FIRST PAGE (truncated to 1500 chars):
+GOVERNMENT EMPLOYEES INSURANCE COMPANY (GE)
+GEICO GENERAL INSURANCE COMPANY (GG)
+Recreational Vehicle Insurance
+Washington
+Filing Memorandum
+Government Employees Insurance Company (GE) and GEICO General Insurance Company (GG) propose
+to apply Model Year factors to current model years. The updated Model Year pages are included in this
+filing. Base rates have been offset to be premium neutral.
+
+Markers present: []
+
+--- WA Change Sheet 2025-222A.pdf  (0.04 MB) ---
+FIRST PAGE (truncated to 1500 chars):
+GOVERNMENT EMPLOYEES INSURANCE COMPANY
+GEICO GENERAL INSURANCE COMPANY
+RECREATIONAL VEHICLE
+WASHINGTON
+CHANGE SHEET
+RATE SECTION The following sections replace the current
+sections on file:
+ TABLE OF CONTENTS
+ BASE RATES RV
+The following new section is being placed
+on file:
+ RV PROGRAM - PHYSICAL DAMAGE
+MODEL YEAR and SYMBOL FACTORS
+The following sections have been
+removed:
+ RV PROGRAM - MOTOR HOME
+PHYSICAL DAMAGE MODEL YEAR and
+SYMBOL RELATIVITIES
+ RV PROGRAM - TRAVEL TRAILER
+PHYSICAL DAMAGE MODEL YEAR and
+SYMBOL RELATIVITIES
+File No. 2025-222A EƯective: 9/18/2025 NB
+11/9/2025 RNL
+
+Markers present: []
+
+--- WA Cover Letter 2025-222A.pdf  (0.08 MB) ---
+FIRST PAGE (truncated to 1500 chars):
+ONE GEICO PLAZA  Washington, D.C. 20076-0001
+August 6, 2025
+Honorable Patty Kuderer
+Commissioner
+Washington State Office of the Insurance Commissioner
+P.O. Box 40255
+Olympia, WA 98504-0255
+United States
+Re: Government Employees Insurance Company (GE) NAIC#: 031-22063
+GEICO General Insurance Company (GG) NAIC#: 031-35882
+Recreational Vehicle (RV) Casualty Manuals – Rate Revision
+File No.: 2025-222A
+Dear Commissioner Kuderer:
+For your review and approval, the above referenced companies herewith submit a revision to our
+Recreational Vehicle Casualty Manuals currently on file with your department.
+A more detailed description and justification for the above-referenced changes are set forth in the
+attached filing memorandum.
+The corresponding rate revisions will be submitted under SERFF Tracking Numbers: GECC-134629877,
+GECC-134629950.
+Revised manual pages and markups are enclosed for your convenience.
+Once you have had an opportunity to review the enclosed, please forward your approval for our records,
+so we can proceed to implement these revisions for all new business policies effective on and after
+September 18, 2025 and all renewal policies effective on and after November 09, 2025.
+Sincerely,
+Edwy Pierre-Louis
+Filing Analyst
+Email: epierrelouis@geico.com
+Enclosures
+Shareholder Owned Companies Not Affiliated With the U.S. Government
+
+Markers present: []
+
+--- WA-GE-Rate 2025-222.pdf  (0.64 MB) ---
+FIRST PAGE (truncated to 1500 chars):
+Table of Contents - 1
+GOVERNMENT EMPLOYEES INSURANCE COMPANY / GEICO GENERAL INSURANCE COMPANY
+WASHINGTON RATE PAGES EFFECTIVE: NEW BUSINESS 09/18/2025 RENEWALS 11/09/2025 RATE GEN 82
+TABLE OF CONTENTS
+Base Rates
+Territory Factors
+Base Rates RV
+Territory Factors RV
+Miscellaneous Coverages Base Rates
+Tier Factors
+Private Passenger Increased Limits and Deductibles
+Private Passenger Vehicle Liability Symbol Factors
+Private Passenger Physical Damage Model Year and Symbol Relativities
+Cost New Chart
+Miscellaneous Coverages Rating Factors
+Mobile Homes and Trailers / Annual Base Rates and Rating Factors
+Commercial Rating Factors
+Rating Steps
+Private Passenger Rating Worksheet
+RV Program - Motor Homes And Travel Trailers Rating Factors
+RV Program - Miscellaneous Coverages Rating Factors
+RV Physical Damage Symbol Assignments by Cost New
+RV Symbol Model Year Factors
+RV Rating Steps
+RV Rating Worksheet
+
+Markers present: []
+
+--- WA-GE-Rate-2025-222-Markup.pdf  (0.92 MB) ---
+FIRST PAGE (truncated to 1500 chars):
+Table of Contents - 1
+GOVERNMENT EMPLOYEES INSURANCE COMPANY / GEICO GENERAL INSURANCE COMPANY
+WASHINGTON RATE PAGES EFFECTIVE: NEW BUSINESS 10/10/2024 09/18/2025 RENEWALS 11/25/2024 11/09/2025 RATE GEN 81 82
+TABLE OF CONTENTS
+Base Rates
+Territory Factors
+Base Rates RV
+Territory Factors RV
+Miscellaneous Coverages Base Rates
+Tier Factors
+Private Passenger Increased Limits and Deductibles
+Private Passenger Vehicle Liability Symbol Factors
+Private Passenger Physical Damage Model Year and Symbol Relativities
+Cost New Chart
+Miscellaneous Coverages Rating Factors
+Mobile Homes and Trailers / Annual Base Rates and Rating Factors
+Commercial Rating Factors
+Rating Steps
+Private Passenger Rating Worksheet
+RV Program - Motor Homes And Travel Trailers Rating Factors
+RV Program - Miscellaneous Coverages Rating Factors
+RV Physical Damage Symbol Assignments by Cost New
+RV Motor Home Physical Damage Model Year and Symbol Relativities
+RV Travel Trailer Physical Damage Model Year and Symbol Relativities
+RV Symbol Model Year Factors
+RV Rating Steps
+RV Rating Worksheet
+
+Markers present: []
+
+==============================================================================
+PROBE 2: CONTAMINATION CHECK  SFMA-134393639  (CO/134393639)
+==============================================================================
+(Extracted policyholders=545,361 with no impact — investigating source)
+PDFs (4):
+  - CO HO 2025 Filing Memo.pdf  (0.63 MB)
+  - CO HO 2025-03-15 Compare.pdf  (0.09 MB)
+  - CO HO 2025-03-15 Pages Changed.pdf  (0.10 MB)
+  - CO NT 2025 Filing Form A.pdf  (0.09 MB)
+
+[CO NT 2025 Filing Form A.pdf] 545,361 context:
+  « REASON FOR FILING: (Briefly describe the purpose of the filing) Rate Filing
+8. MANUAL RULE NUMBERS CHANGED:
+9. NEW PAGE(S): SUPERSEDES PAGE(S):
+10. NUMBER OF POLICYHOLDERS AFFECTED FOR THIS PROGRAM: 545,361
+11. EXPOSURE UNITS USED: Policyholders (e.g. policyholders car years, accident years)
+If other, please explain:
+12. OVERALL % RATE IMPACT/ CHANGE (Provide Justification):
+(If the selected rate change»
+
+[CO NT 2025 Filing Form A.pdf] Form A blocks:
+  Section 1 COMPANY hits: 1
+    -> State Farm Fire and Casualty Company
+  Section 10 POLICYHOLDERS hits: 1
+    -> 545,361
+  Section 12 IMPACT hits: 0
+
+==============================================================================
+PROBE 3: ALSE-134572006  (WA/134572006)  AVPIC 0.0% sanity check
+==============================================================================
+
+--- 3. WA HO AVPIC R59054 Filing Memo.pdf  (0.17 MB) ---
+  «sing the Multiple Policy Discount – Auto Factors and the Maximum Multiple Policy Discount. The Rate Adjustment Factors (RAFs) have also been revised in order to target an overall rate level change of 0.0%. Multiple Policy Discount – Auto Allstate used a Loss Ratio Relativity anal»
+
+  «of MPD – Auto, the Maximum Multiple Policy Discount was increased from 40% to 45%. Rate Adjustment Factor The Rate Adjustment Factors (RAFs) were revised in order to achieve an overall rate change of 0.0% when considering the impact of the MPD – Auto revision. In the measurement »
+
+  «ng the Multiple Policy Discount – Auto Factors and the Maximum Multiple Policy Discount. The Rate Adjustment Factors (RAFs) have also been revised in order to target an overall rate level change of 0.0%. Multiple Policy Discount – Auto Allstate used a Loss Ratio Relativity analys»
+
+  « MPD – Auto, the Maximum Multiple Policy Discount was increased from 40% to 45%. Rate Adjustment Factor The Rate Adjustment Factors (RAFs) were revised in order to achieve an overall rate change of 0.0% when considering the impact of the MPD – Auto revision. In the measurement pr»
+
+
+--- 4. WA HO AVPIC R59054 Manual.pdf  (0.06 MB) ---
+
+--- 5. WA HO AVPIC R59054 Complete Manual.pdf  (1.70 MB) ---
+  «unt of Insurance above RCE ratio. D. Select Value Endorsement When determining the applicable premium for the optional Select Value Endorsement, the Percent of Amount of Insurance above RCE should be 0%. Percent of Amount of Insurance above RCE is determined as the following rati»
+
+  «tual value of 3% in the Rate Pages: 02-01-2018 INTENDED FOR THE EXCLUSIVE USE AND PROPERTY OF Page 19-1 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY WASHINGTON OWNERS MANUAL RULES Estimation (RCE) 0% 5% $20,000 0.740 0.780 $40,000 0.880 0.900 1. Difference in Amounts (RCE) = $»
+
+  « = $20,000 2. Additional Amount = $30,000 - $20,000 = $10,000 3. Ratio of (2) / (1) = 0.5000 (round to 4 decimals) 4. Difference in factors at 0 and 5 Percent of Amount of Insurance above RCE: a. For 0%: 0.880 – 0.740 = 0.140 b. For 5%: 0.900 – 0.780 = 0.120 5. Interpolated value»
+
+  « Amount of Insurance above RCE: a. For 0%: 0.880 – 0.740 = 0.140 b. For 5%: 0.900 – 0.780 = 0.120 5. Interpolated values for RCE of $30,000 at 0 and 5 Percent of Amount of Insurance above RCE: a. For 0%: 0.740 + [Step (3) x Step (4 a)] = 0.740 + (0.500 x 0.140) = 0.8100 (round to»
+
+  «00 (round to 4 decimals) b. For 5%: 0.780 + [Step (3) x Step (4 b)] = 0.780 + (0.500 x 0.120) = 0.8400 (round to 4 decimals) 6. Difference in Amounts (Percent of Amount of Insurance above RCE) = 5% - 0% = 5% 7. Additional Amount = 3% - 0% = 3% (round to 4 decimals) 8. Ratio of (7»
+
+  «0.780 + [Step (3) x Step (4 b)] = 0.780 + (0.500 x 0.120) = 0.8400 (round to 4 decimals) 6. Difference in Amounts (Percent of Amount of Insurance above RCE) = 5% - 0% = 5% 7. Additional Amount = 3% - 0% = 3% (round to 4 decimals) 8. Ratio of (7) / (6) = 0.6000 (round to 4 decimal»
+
+  «OPERTY INSURANCE COMPANY 2-1-2024 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 1 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «OPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 2 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «OPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 3 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «OPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 4 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «OPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 5 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «OPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 6 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «OPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 7 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «OPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 8 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «OPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 9 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «PERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 10 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «PERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 11 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «PERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS AMOUNT OF INSURANCE GRID FACTORS RATING PLAN RULE PREMIUM COMPONENT 12 Replacement Cost PERCENT OF AMOUNT OF INSURANCE ABOVE RCE Estimation (RCE) 19 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «10 11 12 DWELLING IN THE COURSE OF CONSTRUCTION 59 Factor: 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 COVERAGE BC - BUILDING CODES FACTOR 65 Coverage Amount of Coverage A 0% 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 5% 1.»
+
+  « USE AND PROPERTY OF RP-13 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2019 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 1 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-1.1 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 2 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-1.2 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 3 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-1.3 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 4 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-1.4 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 5 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-1.5 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 6 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-1.6 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 7 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-1.7 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 8 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-1.8 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 9 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «E AND PROPERTY OF CLA-1.9 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 10 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  « AND PROPERTY OF CLA-1.10 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 11 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  « AND PROPERTY OF CLA-1.11 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 12 COVERAGE B PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «E AND PROPERTY OF CLA-1.12 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 1 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-2.1 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 2 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-2.2 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 3 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-2.3 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 4 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-2.4 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 5 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-2.5 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 6 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-2.6 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 7 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-2.7 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 8 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «SE AND PROPERTY OF CLA-2.8 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 9 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «E AND PROPERTY OF CLA-2.9 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 10 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  « AND PROPERTY OF CLA-2.10 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 11 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  « AND PROPERTY OF CLA-2.11 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 12 COVERAGE C PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 10»
+
+  «E AND PROPERTY OF CLA-2.12 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 1 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 -1.26 -1.17 0.00 0.69 1.17 1.55 1.86 2»
+
+  «SE AND PROPERTY OF CLA-3.1 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 2 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 -1.26 -1.17 0.00 0.69 1.17 1.55 1.86 2»
+
+  «SE AND PROPERTY OF CLA-3.2 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 3 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.0»
+
+  «SE AND PROPERTY OF CLA-3.3 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 4 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 -0.07 -0.07 0.00 0.04 0.07 0.09 0.11 0»
+
+  «SE AND PROPERTY OF CLA-3.4 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 5 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 -0.37 -0.34 0.00 0.20 0.34 0.45 0.54 0»
+
+  «SE AND PROPERTY OF CLA-3.5 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 6 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 -1.36 -0.28 0.00 0.16 0.28 0.37 0.44 0»
+
+  «SE AND PROPERTY OF CLA-3.6 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 7 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 -0.14 -0.03 0.00 0.02 0.03 0.04 0.04 0»
+
+  «SE AND PROPERTY OF CLA-3.7 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 8 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 -0.07 -0.06 0.00 0.04 0.06 0.08 0.10 0»
+
+  «SE AND PROPERTY OF CLA-3.8 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 9 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 -0.02 -0.01 0.00 0.01 0.01 0.02 0.02 0»
+
+  «E AND PROPERTY OF CLA-3.9 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 10 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.0»
+
+  « AND PROPERTY OF CLA-3.10 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 11 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.0»
+
+  « AND PROPERTY OF CLA-3.11 ALLSTATE VEHICLE AND PROPERTY INSURANCE COMPANY 2-1-2018 WASHINGTON OWNERS CHANGES IN LIMITS ADDENDS PREMIUM COMPONENT 12 COVERAGE D PERCENT BUY-UP or BUY-DOWN Insured Value 0% 5% 10% 15% 20% 25% 30% 35% 40% $20,000 -0.05 -0.05 0.00 0.03 0.05 0.06 0.07 0»
+
+
+--- 6. WA HO AVPIC R59054 Tracked Manual.pdf  (0.10 MB) ---

@@ -1,0 +1,104 @@
+
+==============================================================================
+FILING: SFMA-134702926  (CO/134702926)  — per-subsidiary candidate (SFM + SFFC)
+PDF dir: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\pdfs\CO\134702926
+==============================================================================
+
+--- Auto Cost Containment Exhibit 2025.pdf  (0.1 MB) ---
+  Company mentions: ['State Farm Mutual']
+
+--- CO Appendix A- SFM.pdf  (0.1 MB) ---
+  Company mentions: ['State Farm Mutual']
+
+--- CO AT 2025-12-15 Compare.pdf  (0.2 MB) ---
+  Company mentions: ['State Farm Fire', 'State Farm Fire and Casualty', 'State Farm Mutual']
+
+--- CO Filing Exhibits - SFFC.pdf  (1.0 MB) ---
+  Company mentions: ['State Farm Fire', 'State Farm Fire and Casualty', 'State Farm Mutual']
+
+--- CO Filing Packet - SFM Updated.pdf  (1.6 MB) ---
+  Company mentions: ['State Farm Fire', 'State Farm Fire and Casualty', 'State Farm Mutual']
+
+--- CO Filing Packet - SFM.pdf  (1.6 MB) ---
+  Company mentions: ['State Farm Fire', 'State Farm Fire and Casualty', 'State Farm Mutual']
+
+--- CO PV Form A - Updated.pdf  (0.2 MB) ---
+  Company mentions: ['State Farm Fire', 'State Farm Fire and Casualty', 'State Farm Mutual']
+  IMPACT (4):
+      -7.82%  «...rs car years, accident years) If other, please explain: 12. OVERALL % RATE IMPACT/ CHANGE (Provide Justification): -7.822% (If the selected rate chang...»
+      -4.04%  «.... IF REVISED RATES, DATE OF LAST RATE CHANGE: 7/29/2025 17. OVERALL % RATE IMPACT OF LAST RATE CHANGE: -4.045% 18. PREVIOUS SERFF TRACKING NUMBER(S): ...»
+      -8.96%  «...rs car years, accident years) If other, please explain: 12. OVERALL % RATE IMPACT/ CHANGE (Provide Justification): -8.959% (If the selected rate chang...»
+      -3.05%  «.... IF REVISED RATES, DATE OF LAST RATE CHANGE: 7/29/2025 17. OVERALL % RATE IMPACT OF LAST RATE CHANGE: -3.05% 18. PREVIOUS SERFF TRACKING NUMBER(S): C...»
+  POLICYHOLDERS (4):
+    1,174,505   «...NGED: N/A 9. NEW PAGE(S): SUPERSEDES PAGE(S): 10. NUMBER OF POLICYHOLDERS AFFECTED FOR THIS PROGRAM: 1,174,505 11. EXPOSURE UNITS USED: Policyholders ...»
+      29,073   «...NGED: N/A 9. NEW PAGE(S): SUPERSEDES PAGE(S): 10. NUMBER OF POLICYHOLDERS AFFECTED FOR THIS PROGRAM: 29,073 11. EXPOSURE UNITS USED:Policyholders (e.g...»
+    1,174,505   «...UMBERS CHANGED: N/A 9. NEW PAGE(S): SUPERSEDES PAGE(S): 10. NUMBER OF POLICYHOLDERS AFFECTED FOR THIS PROGRAM: 1,174,505 11. EXPOSURE UNITS USED: Poli...»
+      29,073   «...UMBERS CHANGED: N/A 9. NEW PAGE(S): SUPERSEDES PAGE(S): 10. NUMBER OF POLICYHOLDERS AFFECTED FOR THIS PROGRAM: 29,073 11. EXPOSURE UNITS USED:Policyho...»
+
+--- CO PV Form A.pdf  (0.3 MB) ---
+  Company mentions: ['State Farm Fire', 'State Farm Fire and Casualty', 'State Farm Mutual']
+  IMPACT (4):
+      -7.82%  «...rs car years, accident years) If other, please explain: 12. OVERALL % RATE IMPACT/ CHANGE (Provide Justification): -7.822% (If the selected rate chang...»
+      -4.04%  «.... IF REVISED RATES, DATE OF LAST RATE CHANGE: 7/29/2025 17. OVERALL % RATE IMPACT OF LAST RATE CHANGE: -4.045% 18. PREVIOUS SERFF TRACKING NUMBER(S): ...»
+      -8.96%  «...rs car years, accident years) If other, please explain: 12. OVERALL % RATE IMPACT/ CHANGE (Provide Justification): -8.959% (If the selected rate chang...»
+      -3.05%  «.... IF REVISED RATES, DATE OF LAST RATE CHANGE: 7/29/2025 17. OVERALL % RATE IMPACT OF LAST RATE CHANGE: -3.05% 18. PREVIOUS SERFF TRACKING NUMBER(S): C...»
+  POLICYHOLDERS (4):
+    1,307,299   «...NGED: N/A 9. NEW PAGE(S): SUPERSEDES PAGE(S): 10. NUMBER OF POLICYHOLDERS AFFECTED FOR THIS PROGRAM: 1,307,299 11. EXPOSURE UNITS USED:Policyholders (...»
+      34,428   «...NGED: N/A 9. NEW PAGE(S): SUPERSEDES PAGE(S): 10. NUMBER OF POLICYHOLDERS AFFECTED FOR THIS PROGRAM: 34,428 11. EXPOSURE UNITS USED: Policyholders (e....»
+    1,307,299   «...UMBERS CHANGED: N/A 9. NEW PAGE(S): SUPERSEDES PAGE(S): 10. NUMBER OF POLICYHOLDERS AFFECTED FOR THIS PROGRAM: 1,307,299 11. EXPOSURE UNITS USED:Polic...»
+      34,428   «...UMBERS CHANGED: N/A 9. NEW PAGE(S): SUPERSEDES PAGE(S): 10. NUMBER OF POLICYHOLDERS AFFECTED FOR THIS PROGRAM: 34,428 11. EXPOSURE UNITS USED: Policyh...»
+
+==============================================================================
+FILING: GECC-134650382  (CO/134650382)  — filing-level only candidate
+PDF dir: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\pdfs\CO\134650382
+==============================================================================
+
+--- CO 2024-146 Change Sheet.pdf  (0.1 MB) ---
+
+--- CO 2024-146 Cover Letter.pdf  (0.2 MB) ---
+
+--- CO Filing Memo.pdf  (0.1 MB) ---
+
+--- CO Insurance History Tier Exhibit_Part1.pdf  (4.1 MB) ---
+
+--- CO Insurance History Tier Exhibit_Part2.pdf  (4.1 MB) ---
+
+--- CO Insurance History Tier Exhibit_Part3.pdf  (4.1 MB) ---
+
+--- FORM A - GB.pdf  (0.0 MB) ---
+
+--- FORM A - GV.pdf  (0.0 MB) ---
+
+==============================================================================
+FILING: ALSE-134538132  (WA/134538132)  — tabular/exhibit candidate
+PDF dir: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\pdfs\WA\134538132
+==============================================================================
+
+--- 3. WA PPA AI R58865 A#1 Filing Memo.pdf  (0.8 MB) ---
+  Company mentions: ['Allstate Fire', 'Allstate Indemnity', 'Allstate Insurance', 'Allstate Northbrook', 'Allstate Property']
+  TABLE ROWS (8):
+    p.17 t0: {'overall_indicated_change': '26.6%', 'company': 'Bodily Injury'}
+    p.17 t0: {'overall_indicated_change': '26.8%', 'company': 'Property Damage'}
+    p.17 t0: {'overall_indicated_change': '27.1%', 'company': 'Personal Injury Protection'}
+    p.17 t0: {'overall_indicated_change': '-10.5%', 'company': 'Uninsured/Underinsured Motorist'}
+    p.17 t0: {'overall_indicated_change': '17.3%', 'company': 'Medical Payments'}
+    p.17 t0: {'overall_indicated_change': '-15.0%', 'company': 'Collision'}
+    p.17 t0: {'overall_indicated_change': '-36.2%', 'company': 'Comprehensive'}
+    p.17 t0: {'overall_indicated_change': '6.9%', 'company': 'Total'}
+
+--- 3. WA PPA AI R58865 Filing Memo.pdf  (0.8 MB) ---
+  Company mentions: ['Allstate Fire', 'Allstate Indemnity', 'Allstate Insurance', 'Allstate Northbrook', 'Allstate Property']
+  TABLE ROWS (8):
+    p.17 t0: {'overall_indicated_change': '28.1%', 'company': 'Bodily Injury'}
+    p.17 t0: {'overall_indicated_change': '27.8%', 'company': 'Property Damage'}
+    p.17 t0: {'overall_indicated_change': '28.8%', 'company': 'Personal Injury Protection'}
+    p.17 t0: {'overall_indicated_change': '-9.3%', 'company': 'Uninsured/Underinsured Motorist'}
+    p.17 t0: {'overall_indicated_change': '19.5%', 'company': 'Medical Payments'}
+    p.17 t0: {'overall_indicated_change': '-13.4%', 'company': 'Collision'}
+    p.17 t0: {'overall_indicated_change': '-34.4%', 'company': 'Comprehensive'}
+    p.17 t0: {'overall_indicated_change': '8.3%', 'company': 'Total'}
+
+--- 5. WA PPA AI R58865 A#1 Complete Manual.pdf  (5.9 MB) ---
+  Company mentions: ['Allstate Fire', 'Allstate Indemnity', 'Allstate Insurance', 'Allstate Northbrook', 'Allstate Property']
+
+--- 5. WA PPA AI R58865 Complete Manual.pdf  (5.8 MB) ---

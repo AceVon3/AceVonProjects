@@ -1,0 +1,92 @@
+==============================================================================
+Travelers: TRVD-G134416862  (WA/134420360)
+==============================================================================
+PDFs (4):
+  - WA QTM HO Rule 511.pdf  (0.11 MB)
+  - WA QTM HO Rule 535.pdf  (0.10 MB)
+  - WA QTM Home 05.18.2025-Ver 1.pdf  (0.10 MB)
+  - WA Quantum Home DOI Manual.pdf  (3.85 MB)
+
+--- WA QTM HO Rule 511.pdf  (0.11 MB) ---
+  FIRST PAGE: TRAVELERS WASHINGTON
+Quantum Homesm
+Rule 511 Loss Assessment Coverage
+Residence Premises
+A. Introduction: All Forms. The policy may be endorsed to provide a single additional amount of
+insurance to be applied to one or more assessments arising out of a single loss covered under:
+a. Either Section I Additional Coverage or Section II Additional Coverage; or
+b. Both Section I and Section II Additiona
+  Markers present: []
+
+--- WA QTM HO Rule 535.pdf  (0.10 MB) ---
+  FIRST PAGE: TRAVELERS WASHINGTON
+Quantum Homesm
+Rule 535 Enhanced Home Package
+A. Introduction: The Enhanced Home Package endorsement increases certain Section I and Section II limits
+and includes limited additional replacement cost protection, personal property replacement cost, lock
+replacement coverage, reward coverage, water back up of sewers and drains, increased fire department
+service charge coverage, 
+  Markers present: []
+
+--- WA QTM Home 05.18.2025-Ver 1.pdf  (0.10 MB) ---
+  FIRST PAGE: WASHINGTON QUANTUM HOMEOWNERS
+THE TRAVELERS HOME AND MARINE INSURANCE COMPANY
+TRAVELERS COMMERCIAL INSURANCE COMPANY
+Table of Contents
+Explanatory Memorandum
+Exhibit 1 Revision to Rule 511: Loss Assessment Coverage
+Exhibit 2 Revision to Rule 535: Enhanced Home Package
+  Markers present: ['RATE IMPACT']
+
+--- SKIP WA Quantum Home DOI Manual.pdf (3.8 MB > 3.5) ---
+==============================================================================
+Progressive: PRGS-134458809  (WA/134458809)
+==============================================================================
+PDFs (3):
+  - Inserts S2008 Symbol Set 2025.pdf  (0.85 MB)
+  - WA 2025 Symbols Addendum Letter.pdf  (0.02 MB)
+  - WA 2025 Symbols Cover Letter.pdf  (0.07 MB)
+
+--- Inserts S2008 Symbol Set 2025.pdf  (0.85 MB) ---
+  FIRST PAGE: PROGRESSIVE GROUP OF INSURANCE COMPANIES
+PRIVATE PASSENGER AUTO SYMBOLS: SERIES 2008
+Year Make Model Body Wheel Cyl Make Sym Model Sym Style Sym Aux Sym
+2025 ACURA INTEGRA 4 DOOR SEDAN 4 AC TG 44 H0
+2025 ACURA MDX 4 DOOR WAGON 4X2 6 AC MD 56 ZV
+2025 ACURA MDX 4 DOOR WAGON 4X4 6 AC MD 5K XX
+2025 ACURA RDX 4 DOOR WAGON 4X4 4 AC RD 5H ZV
+2025 ACURA TLX 4 DOOR SEDAN 4 AC TX 44 H3
+2025 ACURA TLX 4 DOOR
+  Markers present: []
+
+--- WA 2025 Symbols Addendum Letter.pdf  (0.02 MB) ---
+  FIRST PAGE: Insurance Filing Addendum
+Private Passenger Auto Symbol
+Effective Date : Upon Approval
+Edition Label : 03/25
+Prior Edition Label : 03/24
+Inserts
+We file symbol updates annually to define how vehicles are categorized in our Symbol
+Factor Table. The 03/25 edition is primarily composed of new vehicles that have been
+added since our last filing and some that have received updates according to our VIN
+
+  Markers present: ['RATE IMPACT']
+
+--- WA 2025 Symbols Cover Letter.pdf  (0.07 MB) ---
+  FIRST PAGE: Harnam Atwal
+Product Manager
+300 N. Common Blvd.
+Mayfield Village, OH 44143
+Phone: 440-395-2356
+Fax: 440-395-7702
+harnam_atwal@progressive.com
+March 14, 2025
+State of Washington
+Office of Insurance Commissioner
+P.O. Box 40255
+Olympia, WA 98504-0255
+ATTN: Eric Slavich, Actuarial Analyst
+RE: Private Passenger Automobile Symbol filing for:
+Progressive Casualty Insurance Company (NAIC #155 – 24260)
+Pr
+  Markers present: []
