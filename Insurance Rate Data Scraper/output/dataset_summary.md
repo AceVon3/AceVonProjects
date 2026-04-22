@@ -4,14 +4,14 @@
 
 ## What this dataset contains
 
-126 rate-filing rows for personal-lines insurance across **Idaho, Washington, and Colorado**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing.
+125 rate-filing rows for personal-lines insurance across **Idaho, Washington, and Colorado**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing.
 
-| State | Filings probed | Form/Rule excluded | New product excluded | Does-NOT-apply excluded | Filings emitted | Rows |
-|------:|---------------:|-------------------:|---------------------:|------------------------:|----------------:|-----:|
-| ID    |             75 |                 49 |                    3 |                       0 |              23 |   31 |
-| WA    |             54 |                 28 |                    2 |                      12 |              12 |   15 |
-| CO    |            119 |                 66 |                    6 |                       5 |              42 |   80 |
-| **Σ** |        **248** |            **143** |               **11** |                  **17** |          **77** | **126** |
+| State | Rows |
+|------:|-----:|
+| ID    |   31 |
+| WA    |   15 |
+| CO    |   79 |
+| **Σ** | **125** |
 
 ## Methodology
 
@@ -33,7 +33,8 @@
 | `state` | Two-letter state code |
 | `effective_date` | Requested effective date (Renewal preferred over New) |
 | `company_name` | Subsidiary writing the rate; per-row expansion when multiple |
-| `line_of_business` | NAIC TOI code + label |
+| `line_of_business` | NAIC parent TOI code + label (kept for AM Best compatibility) |
+| `sub_type_of_insurance` | NAIC Sub-TOI code + label (e.g. `19.0001 Private Passenger Auto (PPA)`, `19.0002 Motorcycle`, `19.0003 RV`) |
 | `overall_indicated_change` | Filer's actuarially indicated change (may be blank when filer omits) |
 | `overall_rate_impact` | Filed rate impact (the change actually requested) |
 | `written_premium_change` | Effect of rate filing on written premium, USD |
@@ -54,7 +55,7 @@ All 16 columns are 100% populated **except** `overall_indicated_change`, which i
 ## Scope and limitations
 
 - **States:** ID, WA, CO only.
-- **Lines:** Personal Auto, Homeowners, Personal Farmowners only.
+- **Lines:** Personal Auto (TOI 19.0) and Homeowners (TOI 04.0) only. Farmowners explicitly out of scope.
 - **Carriers:** Six national groups + named subsidiaries; no regional or single-state carriers.
 - **Date range:** Whatever was visible in SERFF Public Access at run time (2026-04-22). No explicit date filter applied.
 - **Filer flag:** When the filer flagged "Rate data does NOT apply to filing," the row is excluded — this flag is taken at face value.

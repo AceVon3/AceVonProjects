@@ -39,7 +39,7 @@ from src.search import (
 )
 from src.utils import parse_filing_summary_pdf
 
-TARGET_TOI = ("19.0", "04.0", "03.0")  # PPA, Homeowners, Farmowners
+TARGET_TOI = ("19.0", "04.0")  # Personal Auto + Homeowners (Farmowners explicitly out of scope)
 GROUP_SEARCH = {  # group -> SERFF search term
     "State Farm":     "state farm",
     "GEICO":          "geico",
@@ -102,6 +102,10 @@ def load_targets(state: str) -> list[Target]:
     for r in ws.iter_rows(min_row=2, values_only=True):
         toi = r[ix["type_of_insurance"]] or ""
         if not any(toi.startswith(p) for p in TARGET_TOI):
+            grp = carrier_group(r[ix["company_name"]], r[ix["target_company"]])
+            if grp and toi:
+                tk = r[ix["serff_tracking_number"]] or ""
+                print(f"  excluded — out of scope TOI: {tk} ({grp}, {toi})", flush=True)
             continue
         grp = carrier_group(r[ix["company_name"]], r[ix["target_company"]])
         if not grp:
@@ -185,6 +189,7 @@ COLUMNS = [
     "effective_date",
     "company_name",
     "line_of_business",
+    "sub_type_of_insurance",
     "overall_indicated_change",
     "overall_rate_impact",
     "written_premium_change",
@@ -252,6 +257,7 @@ def build_rows(state: str, targets: list[Target]) -> tuple[list[dict], dict]:
                 "effective_date": eff,
                 "company_name": r.company_name,
                 "line_of_business": t.toi,
+                "sub_type_of_insurance": t.sub_toi,
                 "overall_indicated_change": r.overall_indicated_change,
                 "overall_rate_impact": r.overall_rate_impact,
                 "written_premium_change": r.written_premium_change,
