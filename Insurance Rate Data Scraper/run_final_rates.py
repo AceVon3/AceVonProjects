@@ -40,22 +40,30 @@ from src.search import (
 from src.utils import parse_filing_summary_pdf
 
 TARGET_TOI = ("19.0", "04.0")  # Personal Auto + Homeowners (Farmowners explicitly out of scope)
-GROUP_SEARCH = {  # group -> SERFF search term
-    "State Farm":     "state farm",
-    "GEICO":          "geico",
-    "Allstate":       "allstate",
-    "Travelers":      "travelers",
-    "Liberty Mutual": "liberty mutual",
-    "Progressive":    "progressive",
-}
-GROUP_KW = {
-    "State Farm":     ["state farm", "mga insurance"],
+GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate SERFF query)
+    "State Farm":     ["state farm"],
     "GEICO":          ["geico"],
-    "Allstate":       ["allstate", "encompass", "esurance", "integon", "north american insurance"],
-    "Travelers":      ["travelers", "standard fire"],
-    "Liberty Mutual": ["liberty mutual", "safeco", "american economy"],
+    # Encompass files under its own brand on SERFF and is NOT returned by an
+    # "allstate" keyword search; we search both names under the Allstate group.
+    "Allstate":       ["allstate", "encompass"],
+    "Travelers":      ["travelers"],
+    # Safeco is Liberty Mutual's independent-agent brand and files under its
+    # own name; it does NOT surface under a "liberty mutual" search.
+    "Liberty Mutual": ["liberty mutual", "safeco"],
     "Progressive":    ["progressive"],
 }
+GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent group
+    "State Farm":     ["state farm", "mga insurance"],
+    "GEICO":          ["geico"],
+    "Allstate":       ["allstate", "encompass", "integon", "north american insurance"],
+    "Travelers":      ["travelers", "standard fire"],
+    "Liberty Mutual": ["liberty mutual", "safeco", "first national insurance company of america", "general insurance company of america", "american states", "american economy"],
+    "Progressive":    ["progressive"],
+}
+# Out-of-scope subsidiaries (do NOT classify as one of our groups):
+#   - Esurance (Allstate, wound down 2020)
+#   - Drive Insurance (Progressive, retired)
+#   - United Financial (Progressive specialty)
 NEW_PRODUCT_RE = re.compile(
     r"\b(New Program|New Product|Initial Filing|Initial Submission|Introduction of)\b",
     re.IGNORECASE,
@@ -145,30 +153,40 @@ def download_all_pdfs(state: str, targets: list[Target]) -> dict[str, str]:
                     uncached.append(t)
             if not uncached:
                 print(f"[{grp}] all {len(items)} cached", flush=True); continue
-            search_term = GROUP_SEARCH[grp]
-            print(f"[{grp}] search={search_term!r}, downloading {len(uncached)}/{len(items)}", flush=True)
-            if not _submit_search(page, state, search_term):
-                for t in uncached: statuses[t.filing_id] = "fail:search"
-                continue
-            _set_rows_per_page_100(page)
-            for idx, t in enumerate(uncached, 1):
-                found = False
-                for _ in range(10):
-                    if page.locator(f'tr[data-rk="{t.filing_id}"]').count():
-                        found = True; break
-                    nxt = page.locator(".ui-paginator-next").first
-                    if not nxt.count() or "ui-state-disabled" in (nxt.get_attribute("class") or ""):
-                        break
-                    nxt.click(); page.wait_for_load_state("networkidle", timeout=15000)
-                if not found:
-                    statuses[t.filing_id] = "fail:row_not_found"
-                    print(f"  [{idx}/{len(uncached)}] {t.tracking}: not found", flush=True); continue
-                dest_dir = Path(f"output/pdfs/{state}/{t.filing_id}")
-                pdf = download_system_summary_pdf(page, t.filing_id, t.tracking, dest_dir)
-                statuses[t.filing_id] = "ok" if pdf else "fail:download"
-                print(f"  [{idx}/{len(uncached)}] {t.tracking}: {statuses[t.filing_id]}", flush=True)
-                if not page.locator(".ui-paginator-next").count():
-                    _submit_search(page, state, search_term); _set_rows_per_page_100(page)
+            search_terms = GROUP_SEARCH[grp]
+            print(f"[{grp}] searches={search_terms!r}, downloading {len(uncached)}/{len(items)}", flush=True)
+            remaining = list(uncached)
+            for search_term in search_terms:
+                if not remaining:
+                    break
+                print(f"  [{grp}] search={search_term!r}, attempting {len(remaining)} filing(s)", flush=True)
+                if not _submit_search(page, state, search_term):
+                    print(f"  [{grp}] search submission failed for {search_term!r}", flush=True)
+                    continue
+                _set_rows_per_page_100(page)
+                still_remaining: list[Target] = []
+                for idx, t in enumerate(remaining, 1):
+                    found = False
+                    for _ in range(10):
+                        if page.locator(f'tr[data-rk="{t.filing_id}"]').count():
+                            found = True; break
+                        nxt = page.locator(".ui-paginator-next").first
+                        if not nxt.count() or "ui-state-disabled" in (nxt.get_attribute("class") or ""):
+                            break
+                        nxt.click(); page.wait_for_load_state("networkidle", timeout=15000)
+                    if not found:
+                        still_remaining.append(t)
+                        continue
+                    dest_dir = Path(f"output/pdfs/{state}/{t.filing_id}")
+                    pdf = download_system_summary_pdf(page, t.filing_id, t.tracking, dest_dir)
+                    statuses[t.filing_id] = "ok" if pdf else "fail:download"
+                    print(f"    [{idx}/{len(remaining)}] {t.tracking}: {statuses[t.filing_id]}", flush=True)
+                    if not page.locator(".ui-paginator-next").count():
+                        _submit_search(page, state, search_term); _set_rows_per_page_100(page)
+                remaining = still_remaining
+            for t in remaining:
+                statuses[t.filing_id] = "fail:row_not_found"
+                print(f"  {t.tracking}: not found in any of {search_terms!r}", flush=True)
         browser.close()
     return statuses
 

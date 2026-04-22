@@ -14,7 +14,17 @@ TARGET_COMPANIES = [
     "Allstate",
     "Travelers",
     "Liberty Mutual",
+    # Major distinct-channel brands (independent-agent siblings of the
+    # Liberty Mutual / Allstate captive channels). Each requires its own
+    # SERFF search keyword because filings are submitted under the brand
+    # name and do not surface under the parent-group search.
+    "Safeco",     # Liberty Mutual independent-agent brand
+    "Encompass",  # Allstate independent-agent brand
 ]
+# Excluded as out-of-scope (specialty / wound-down):
+#   Drive Insurance (Progressive subsidiary, retired)
+#   Esurance (Allstate subsidiary, wound down 2020)
+#   United Financial / other niche specialty subsidiaries
 
 # Lines of business we care about for the final product: personal lines only.
 # Matched case-insensitive partial against `type_of_insurance` and
