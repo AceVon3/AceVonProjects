@@ -364,12 +364,64 @@ def enrich_filings(
     return all_filings
 
 
+def download_system_summary_pdf(
+    page: Page, filing_id: str, tracking: str, dest_dir: Path
+) -> Optional[Path]:
+    """Download the SERFF system-generated Filing Summary PDF.
+
+    Click the row → 'Download Zip File' with no checkboxes selected (yields a
+    ~20KB zip with just the system PDF + usage agreement) → extract
+    `{tracking}.pdf` (or first root .pdf) as `filing_summary.pdf`. Idempotent:
+    returns immediately if a cached file already exists.
+
+    Caller is responsible for being on the results page with `filing_id` visible.
+    Returns the saved Path, or None on failure.
+    """
+    import zipfile  # local import — only this code path needs it
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    out_pdf = dest_dir / "filing_summary.pdf"
+    if out_pdf.exists() and out_pdf.stat().st_size > 5000:
+        return out_pdf
+    if not _click_row_to_detail(page, filing_id):
+        return None
+    page.wait_for_load_state("networkidle", timeout=20000)
+    page.wait_for_timeout(500)
+    tmp_zip = dest_dir / f"{tracking or filing_id}.zip"
+    try:
+        with page.expect_download(timeout=90000) as dl_info:
+            page.evaluate("document.getElementById('summaryForm:downloadLink').click();")
+        dl_info.value.save_as(str(tmp_zip))
+    except Exception as e:
+        print(f"    [zip download fail] {tracking}: {e}", flush=True)
+        _back_to_results(page); return None
+    extracted = False
+    try:
+        with zipfile.ZipFile(tmp_zip) as zf:
+            names = zf.namelist()
+            inner = f"{tracking}.pdf"
+            target = inner if inner in names else next(
+                (n for n in names if n.endswith(".pdf") and "/" not in n.strip("/")), None
+            )
+            if target:
+                with zf.open(target) as src, open(out_pdf, "wb") as dst:
+                    dst.write(src.read())
+                extracted = True
+    except Exception as e:
+        print(f"    [zip extract fail] {tracking}: {e}", flush=True)
+    finally:
+        tmp_zip.unlink(missing_ok=True)
+        _back_to_results(page)
+        page.wait_for_load_state("domcontentloaded", timeout=15000)
+    return out_pdf if extracted else None
+
+
 __all__ = [
     "scrape_detail_fields",
     "list_attachments",
     "prioritize_attachments",
     "download_attachment",
     "download_and_parse_pdfs",
+    "download_system_summary_pdf",
     "enrich_filing",
     "enrich_filings",
     "MAX_PDFS_PER_FILING",

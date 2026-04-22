@@ -542,3 +542,169 @@ def parse_rate_effect_pdf(
         )
         return result, "no_fields"
     return result, "ok"
+
+
+# =====================================================================
+# SERFF system-generated Filing Summary PDF parser
+#
+# The system PDF (named `{tracking}.pdf` at the root of the SERFF zip
+# bundle) contains the Disposition section with the per-company
+# Rate Information table. When the filer marks "Rate data applies to
+# filing.", values match AM Best Disposition Page Data exactly.
+# =====================================================================
+from dataclasses import dataclass, field as _field
+
+
+@dataclass
+class CompanyRateRow:
+    company_name: str
+    overall_indicated_change: Optional[str] = None     # "15.900%"
+    overall_rate_impact: Optional[str] = None          # "-2.100%"
+    written_premium_change: Optional[str] = None       # "-554469" (signed numeric str)
+    policyholders_affected: Optional[int] = None
+    written_premium_for_program: Optional[str] = None  # "26357498"
+    maximum_pct_change: Optional[str] = None           # "388.400%"
+    minimum_pct_change: Optional[str] = None           # "-41.500%"
+
+
+@dataclass
+class FilingSummary:
+    tracking_number: str
+    disposition_status: Optional[str] = None
+    disposition_date: Optional[str] = None
+    effective_date_new: Optional[str] = None
+    effective_date_renewal: Optional[str] = None
+    rate_data_applies: Optional[bool] = None  # SERFF filer-set flag
+    company_rates: list = _field(default_factory=list)
+    multi_company_overall_indicated: Optional[str] = None
+    multi_company_overall_impact: Optional[str] = None
+    multi_company_premium_change: Optional[str] = None
+    multi_company_policyholders: Optional[int] = None
+
+
+# Pattern A: all 7 numeric values present
+_FS_RATE_ROW_RE_A = re.compile(
+    r"^(?P<name>.+?)\s+"
+    r"(?P<ind>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"\$\(?(?P<prem_chg>-?[\d,]+)\)?\s+"
+    r"(?P<ph>[\d,]+)\s+"
+    r"\$(?P<prem_for>[\d,]+)\s+"
+    r"(?P<maxp>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<minp>-?\d+(?:\.\d+)?)%\s*$"
+)
+# Pattern B: blank "Overall Indicated Change" rendered as bare `%`
+_FS_RATE_ROW_RE_B = re.compile(
+    r"^(?P<name>.+?)\s+%\s+"
+    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"\$\(?(?P<prem_chg>-?[\d,]+)\)?\s+"
+    r"(?P<ph>[\d,]+)\s+"
+    r"\$(?P<prem_for>[\d,]+)\s+"
+    r"(?P<maxp>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<minp>-?\d+(?:\.\d+)?)%\s*$"
+)
+# Pattern C: only ind% and impact% present; rest blank ("name ind% imp% % %")
+_FS_RATE_ROW_RE_C = re.compile(
+    r"^(?P<name>.+?)\s+"
+    r"(?P<ind>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"%\s+%\s*$"
+)
+_FS_MULTI_INDICATED_RE = re.compile(r"Overall Percentage Rate Indicated For This Filing\s+(-?\d+(?:\.\d+)?)%")
+_FS_MULTI_IMPACT_RE    = re.compile(r"Overall Percentage Rate Impact For This Filing\s+(-?\d+(?:\.\d+)?)%")
+_FS_MULTI_PREMCHG_RE   = re.compile(r"Effect of Rate Filing[-\s]+Written Premium Change For This Program\s+\$\(?(-?[\d,]+)\)?")
+_FS_MULTI_PH_RE        = re.compile(r"Effect of Rate Filing\s*[-–]\s*Number of Policyholders Affected\s+([\d,]+)")
+_FS_EFF_NEW_RE     = re.compile(r"Effective Date\s+(\d{1,2}/\d{1,2}/\d{2,4})\s*\n\s*Requested\s*\(New\)")
+_FS_EFF_RENEWAL_RE = re.compile(r"Effective Date\s+(\d{1,2}/\d{1,2}/\d{2,4})\s*\n\s*Requested\s*\(Renewal\)")
+_FS_DISP_DATE_RE = re.compile(r"Disposition Date:\s*(\d{1,2}/\d{1,2}/\d{2,4})")
+# anchor to end-of-line so empty "Disposition Status:" doesn't eat letters from later lines
+_FS_DISP_STATUS_RE = re.compile(r"Disposition Status:\s*([A-Z][A-Z\-]+)\s*$", re.MULTILINE)
+_FS_STATE_STATUS_RE = re.compile(r"State Status:\s*([A-Z][A-Z\- ]+?)\s*$", re.MULTILINE)
+_FS_RATE_DATA_APPLIES_RE = re.compile(r"Rate data\s+(does NOT apply|applies)\s+to filing\.", re.IGNORECASE)
+_FS_CONT_STOP = re.compile(
+    r"(Overall|Schedule|Rate|Effective|Disposition|Status|Comment|"
+    r"PDF Pipeline|SERFF Tracking|Generated|Filing Method|Project Name|"
+    r"State:|TOI/Sub-TOI|Product Name|Company Rate Information)"
+)
+
+
+def _fs_normalize_money(s: str) -> str:
+    s = s.replace(",", "").strip()
+    if s.startswith("(") and s.endswith(")"):
+        s = "-" + s[1:-1]
+    return s
+
+
+def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "") -> FilingSummary:
+    """Parse the SERFF system-generated Filing Summary PDF.
+
+    Extracts the Disposition / Company Rate Information table and the
+    `rate_data_applies` flag. Per-company rate rows handle three sparseness
+    patterns observed in real filings (full, blank-indicated, near-empty).
+    """
+    import pdfplumber  # local import to avoid forcing dependency on this whole module
+    fs = FilingSummary(tracking_number=tracking_number, company_rates=[])
+    with pdfplumber.open(str(pdf_path)) as pdf:
+        full = "\n".join((pg.extract_text() or "") for pg in pdf.pages)
+
+    if m := _FS_DISP_DATE_RE.search(full): fs.disposition_date = m.group(1)
+    if m := _FS_DISP_STATUS_RE.search(full):
+        fs.disposition_status = m.group(1)
+    elif m := _FS_STATE_STATUS_RE.search(full):
+        fs.disposition_status = m.group(1).strip()
+    if m := _FS_RATE_DATA_APPLIES_RE.search(full):
+        fs.rate_data_applies = (m.group(1).lower() == "applies")
+    if m := _FS_EFF_NEW_RE.search(full): fs.effective_date_new = m.group(1)
+    if m := _FS_EFF_RENEWAL_RE.search(full): fs.effective_date_renewal = m.group(1)
+    if m := _FS_MULTI_INDICATED_RE.search(full): fs.multi_company_overall_indicated = m.group(1) + "%"
+    if m := _FS_MULTI_IMPACT_RE.search(full):    fs.multi_company_overall_impact    = m.group(1) + "%"
+    if m := _FS_MULTI_PREMCHG_RE.search(full):   fs.multi_company_premium_change    = _fs_normalize_money(m.group(1))
+    if m := _FS_MULTI_PH_RE.search(full):        fs.multi_company_policyholders     = int(m.group(1).replace(",", ""))
+
+    # restrict row scan to Disposition + Company-Rate-Information sections
+    section_text = []
+    capture = False
+    for ln in full.splitlines():
+        if re.search(r"\b(D\s*isposition|Company Rate Information)\b", ln):
+            capture = True
+        if re.search(r"^Schedule\s+Schedule Item", ln) or re.search(r"^R\s*ate/Rule Schedule", ln):
+            capture = False
+        if capture:
+            section_text.append(ln)
+    lines = "\n".join(section_text).splitlines()
+
+    seen_sigs: set[tuple] = set()
+    i = 0
+    while i < len(lines):
+        ln = lines[i].strip()
+        m = _FS_RATE_ROW_RE_A.match(ln)
+        if not m: m = _FS_RATE_ROW_RE_B.match(ln)
+        if not m: m = _FS_RATE_ROW_RE_C.match(ln)
+        if not m:
+            i += 1; continue
+        gd = m.groupdict()
+        name_parts = [gd["name"].strip()]
+        j = i + 1
+        while j < len(lines):
+            nxt = lines[j].strip()
+            if not nxt or "%" in nxt or "$" in nxt or _FS_CONT_STOP.search(nxt):
+                break
+            name_parts.append(nxt); j += 1
+        ind = gd.get("ind"); imp = gd.get("imp")
+        sig = (ind, imp, gd.get("prem_chg"), gd.get("ph"),
+               gd.get("prem_for"), gd.get("maxp"), gd.get("minp"))
+        if sig in seen_sigs:
+            i = j; continue
+        seen_sigs.add(sig)
+        fs.company_rates.append(CompanyRateRow(
+            company_name=" ".join(name_parts).strip(),
+            overall_indicated_change=(ind + "%") if ind is not None else None,
+            overall_rate_impact=(imp + "%") if imp is not None else None,
+            written_premium_change=_fs_normalize_money(gd["prem_chg"]) if gd.get("prem_chg") else None,
+            policyholders_affected=int(gd["ph"].replace(",", "")) if gd.get("ph") else None,
+            written_premium_for_program=_fs_normalize_money(gd["prem_for"]) if gd.get("prem_for") else None,
+            maximum_pct_change=(gd["maxp"] + "%") if gd.get("maxp") else None,
+            minimum_pct_change=(gd["minp"] + "%") if gd.get("minp") else None,
+        ))
+        i = j
+    return fs
