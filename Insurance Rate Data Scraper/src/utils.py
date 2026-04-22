@@ -617,9 +617,10 @@ _FS_MULTI_PH_RE        = re.compile(r"Effect of Rate Filing\s*[-–]\s*Number of
 _FS_EFF_NEW_RE     = re.compile(r"Effective Date\s+(\d{1,2}/\d{1,2}/\d{2,4})\s*\n\s*Requested\s*\(New\)")
 _FS_EFF_RENEWAL_RE = re.compile(r"Effective Date\s+(\d{1,2}/\d{1,2}/\d{2,4})\s*\n\s*Requested\s*\(Renewal\)")
 _FS_DISP_DATE_RE = re.compile(r"Disposition Date:\s*(\d{1,2}/\d{1,2}/\d{2,4})")
-# anchor to end-of-line so empty "Disposition Status:" doesn't eat letters from later lines
-_FS_DISP_STATUS_RE = re.compile(r"Disposition Status:\s*([A-Z][A-Z\-]+)\s*$", re.MULTILINE)
-_FS_STATE_STATUS_RE = re.compile(r"State Status:\s*([A-Z][A-Z\- ]+?)\s*$", re.MULTILINE)
+# anchor to end-of-line so empty "Disposition Status:" doesn't eat letters from later lines.
+# allow mixed-case (e.g., WA "Approved", "Re-Open Processed") in addition to ID's all-caps.
+_FS_DISP_STATUS_RE = re.compile(r"Disposition Status:\s*([A-Za-z][A-Za-z\- ]+?)\s*$", re.MULTILINE)
+_FS_STATE_STATUS_RE = re.compile(r"State Status:\s*([A-Za-z][A-Za-z\- ]+?)\s*$", re.MULTILINE)
 _FS_RATE_DATA_APPLIES_RE = re.compile(r"Rate data\s+(does NOT apply|applies)\s+to filing\.", re.IGNORECASE)
 _FS_CONT_STOP = re.compile(
     r"(Overall|Schedule|Rate|Effective|Disposition|Status|Comment|"
