@@ -4,23 +4,23 @@
 
 ## What this dataset contains
 
-146 rate-filing rows for personal-lines insurance across **Idaho, Washington, and Colorado**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing.
+155 rate-filing rows for personal-lines insurance across **Idaho, Washington, and Colorado**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing.
 
 | State | Rows |
 |------:|-----:|
-| ID    |   39 |
-| WA    |   19 |
-| CO    |   88 |
-| **Σ** | **146** |
+| ID    |   43 |
+| WA    |   20 |
+| CO    |   92 |
+| **Σ** | **155** |
 
 ### Per-state per-brand breakdown
 
 | State | State Farm | GEICO | Allstate | Encompass | Travelers | Liberty Mutual | Safeco | Progressive | Total |
 |------:|----:|----:|----:|----:|----:|----:|----:|----:|----:|
-| ID    |   5 |   4 |  16 |   4 |   0 |   4 |   3 |   3 |  39 |
-| WA    |   1 |   6 |   8 |   2 |   0 |   0 |   2 |   0 |  19 |
-| CO    |  19 |  18 |  18 |   4 |   4 |  11 |   4 |  10 |  88 |
-| **Σ** |  25 |  28 |  42 |  10 |   4 |  15 |   9 |  13 | **146** |
+| ID    |   5 |   6 |  16 |   4 |   0 |   4 |   5 |   3 |  43 |
+| WA    |   1 |   6 |   9 |   2 |   0 |   0 |   2 |   0 |  20 |
+| CO    |  20 |  18 |  18 |   4 |   5 |   7 |   5 |  10 |  92 |
+| **Σ** |  26 |  30 |  43 |  10 |   5 |  11 |  12 |  13 | **155** |
 
 ## Methodology
 
@@ -28,8 +28,8 @@
 2. **Filter.** Keep only target NAIC TOI codes (19.0 Personal Auto, 04.0 Homeowners) for the six target carrier groups (State Farm, GEICO, Progressive, Allstate, Travelers, Liberty Mutual + named subsidiaries) plus two major distinct-channel brands (**Safeco** — Liberty Mutual's independent-agent brand; **Encompass** — Allstate's independent-agent brand). Each brand requires its own SERFF search keyword because filings are submitted under the brand name and do not surface under a parent-group search. Excluded as out-of-scope (specialty / wound-down): Drive Insurance (Progressive subsidiary, retired), Esurance (Allstate subsidiary, wound down 2020), United Financial (Progressive specialty), other niche specialty subsidiaries.
 3. **Download.** From each filing's detail page, click "Download Zip File" with **no checkboxes selected** to receive a ~20 KB minimal zip containing the system-generated Filing Summary PDF.
 4. **Parse.** Extract the Disposition / Company Rate Information table from the PDF. Three row layouts are handled (full / blank-indicated / sparse).
-5. **Exclude.** Drop Form-only / Rule-only filings, new-program launches ("Introduction of …"), and filings the filer flagged with "Rate data does NOT apply to filing."
-6. **Expand.** One row per subsidiary listed in the per-company rate table. For multi-company filings the `Multiple` company label is replaced by the actual subsidiary name from the table.
+5. **Exclude.** Drop Form-only / Rule-only filings, **true** new-program launches, and filings the filer flagged with "Rate data does NOT apply to filing." The new-product detector is anchored to header fields (`Project Name/Number`, `Company Tracking #`) or requires "introduction of …" body text to be followed by a product-launch noun (`Program`, `line of business`); it does not trip on rating-factor additions, deductible tweaks, discount changes, or process-only updates (e.g. "Early Signing Factors", "Spanish disclosure form", "cancellation fee").
+6. **Expand.** One row per subsidiary listed in the per-company rate table. For multi-company filings the `Multiple` company label is replaced by the actual subsidiary name from the table. Within a single filing, subsidiaries are deduped by name to avoid the parser emitting one row per Disposition section when a filing has multiple amendments.
 
 ## Validation
 
@@ -57,20 +57,21 @@
 | `filing_date` | Date submitted to the state |
 | `source_pdf` | Relative path to the cached system PDF |
 
-## Field completion (146 rows)
+## Field completion (155 rows)
 
-All 17 columns are 100% populated **except** `overall_indicated_change` (95.2%), `written_premium_change`, `policyholders_affected`, `written_premium_for_program`, `maximum_percent_change`, `minimum_percent_change` (each 99.3%), and `effective_date` (99.3%) — the remainder are blank because the filer omitted the value (sparse-row pattern, kept as `None` rather than guessed).
+All 17 columns are 100% populated **except** `overall_indicated_change` (94.8%), `written_premium_change`, `policyholders_affected`, `written_premium_for_program`, `maximum_percent_change`, `minimum_percent_change` (each 99.4%), and `effective_date` (99.4%) — the remainder are blank because the filer omitted the value (sparse-row pattern, kept as `None` rather than guessed).
 
 ## Scope and limitations
 
 - **States:** ID, WA, CO only.
 - **Lines:** Personal Auto (TOI 19.0) and Homeowners (TOI 04.0) only. Farmowners explicitly out of scope.
 - **Carriers:** Six national groups (State Farm, GEICO, Progressive, Allstate, Travelers, Liberty Mutual) + their named subsidiaries; plus two major distinct-channel brands (Safeco, Encompass) searched separately. Out-of-scope: Drive Insurance (Progressive, retired), Esurance (Allstate, wound down 2020), United Financial (Progressive specialty), and other niche specialty subsidiaries; no regional or single-state carriers.
-- **Date range:** Whatever was visible in SERFF Public Access at run time (2026-04-22). No explicit date filter applied.
+- **Date range:** SERFF Public Access search window 2025-01-01 → 2026-04-17. Filings submitted before 2025-01-01 are not in the dataset even if their effective date falls inside the window (this is the cause of the two AM Best WA misses below).
+- **Disposition status:** PENDING / Re-Open / Withdrawn filings are kept and labeled in `rate_activity`; only filings with no rate data at all (filer flag below) are excluded.
 - **Filer flag:** When the filer flagged "Rate data does NOT apply to filing," the row is excluded — this flag is taken at face value.
-- **PDF parsing:** Three Disposition row patterns are supported. Layouts outside these patterns may be missed (none observed in the 248 filings probed).
+- **PDF parsing:** Three Disposition row patterns are supported (full / blank-indicated / sparse). Within a filing, subsidiary rows are deduped by name so multi-amendment filings (multiple Disposition sections) emit one row per subsidiary using the most recent disposition's values. Layouts outside the three supported patterns may be missed (none observed in the 250+ filings probed).
 - **Disposition cases:** ID uses ALL-CAPS (`APPROVED`); WA uses `Approved`; CO uses `Filed` (file-and-use). Casing preserved as filed.
-- **WA row count is genuinely thin (19 vs ID 39, CO 88).** Verified — not a scraper gap:
+- **WA row count is genuinely thin (20 vs ID 43, CO 92).** Verified — not a scraper gap:
   - Same date window applied to all three states (2025-01-01 → 2026-04-17).
   - Fresh re-search (State Farm WA): 28 filings vs 28 in raw archive (100% match).
   - Most WA target-TOI target-carrier filings are Form-only (no rate impact) or filer-flagged "Rate data does NOT apply to filing." (heavily Travelers).
@@ -81,14 +82,13 @@ All 17 columns are 100% populated **except** `overall_indicated_change` (95.2%),
 
 | Result | Count |
 |---|---:|
-| Matched (subsidiary + policyholders + impact %) | 11 |
-| In AM Best, missing from ours | 3 |
+| Matched (subsidiary + policyholders + impact %) | 12 |
+| In AM Best, missing from ours | 2 |
 | In ours, not in AM Best report | 8 |
 
-The 3 unmatched-from-AM-Best entries:
-1. **Progressive Casualty 03/07/25** (4.5%, 46,504 pol) — submission date 12/12/2024, before our 2025-01-01 search window.
-2. **Allstate North American 07/24/25** (-2.9%, 472 pol) — `NEW_PRODUCT_RE` false-positive: regex matches "introduction of Early Signing Factors" (a rating-factor change, not a new product). Bug, not yet fixed.
-3. **Encompass Indemnity 07/12/25** (19.6%, 6,098 pol) — filed under tracking ALSE-134095154; submission date appears to be before 2025-01-01, outside search window.
+The 2 unmatched-from-AM-Best entries are both submission-window misses (filed before our 2025-01-01 SERFF search window even though their effective dates fall inside it):
+1. **Progressive Casualty 03/07/25** (4.5%, 46,504 pol) — submission 12/12/2024.
+2. **Encompass Indemnity 07/12/25** (19.6%, 6,098 pol) — submission also pre-2025-01-01.
 
 The 8 in-ours-not-in-AM-Best entries are all expected: 5 are Homeowners filings (AM Best PPA report excludes HO), and 3 are 0% PPA filings that AM Best Disposition reports as N/A for trivial 0% changes.
 

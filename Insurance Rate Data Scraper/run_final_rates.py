@@ -64,8 +64,22 @@ GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent g
 #   - Esurance (Allstate, wound down 2020)
 #   - Drive Insurance (Progressive, retired)
 #   - United Financial (Progressive specialty)
+# Identifies filings that launch a new product (vs. modifying an existing one).
+# A bare "Introduction of" / "Initial Submission" / "Initial Filing" keyword can
+# false-positive on body text describing rating-factor additions, deductible
+# tweaks, or references to prior filings. This regex anchors those keywords to
+# header fields (Project Name/Number, Company Tracking #) and requires body-text
+# "introduction of" to be followed by a product-launch noun (Program, line of
+# business). Standalone "New Program" / "new product" remain catch-alls because
+# audit found no false-positives for those phrasings in our corpus.
 NEW_PRODUCT_RE = re.compile(
-    r"\b(New Program|New Product|Initial Filing|Initial Submission|Introduction of)\b",
+    r"("
+    r"Project Name/Number:[^\n]*\b(?:Initial Filing|Initial Submission|Introduction of)\b"
+    r"|Company Tracking #:[^\n]*\bINTRODUCTION OF\b"
+    r"|\bNew Program\b"
+    r"|\bnew product\b"
+    r"|\bintroduction of\b[\s\S]{0,120}\b(?:Program|line of business|lines of business)\b"
+    r")",
     re.IGNORECASE,
 )
 RATE_FILING_TYPES = {"Rate", "Rate/Rule"}

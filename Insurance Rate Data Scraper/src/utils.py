@@ -623,7 +623,7 @@ _FS_DISP_STATUS_RE = re.compile(r"Disposition Status:\s*([A-Za-z][A-Za-z\- ]+?)\
 _FS_STATE_STATUS_RE = re.compile(r"State Status:\s*([A-Za-z][A-Za-z\- ]+?)\s*$", re.MULTILINE)
 _FS_RATE_DATA_APPLIES_RE = re.compile(r"Rate data\s+(does NOT apply|applies)\s+to filing\.", re.IGNORECASE)
 _FS_CONT_STOP = re.compile(
-    r"(Overall|Schedule|Rate|Effective|Disposition|Status|Comment|"
+    r"(Overall|Schedule|Rate|Effective|D\s*isposition|Status|Comment|"
     r"PDF Pipeline|SERFF Tracking|Generated|Filing Method|Project Name|"
     r"State:|TOI/Sub-TOI|Product Name|Company Rate Information)"
 )
@@ -674,7 +674,11 @@ def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "") -> Filin
             section_text.append(ln)
     lines = "\n".join(section_text).splitlines()
 
-    seen_sigs: set[tuple] = set()
+    # Dedup by normalized company name. PDFs with multiple Disposition
+    # sections (one per amendment) repeat each subsidiary's row with stale
+    # values from earlier dispositions; the most recent Disposition section
+    # appears first in the PDF, so first-seen wins.
+    seen_names: set[str] = set()
     i = 0
     while i < len(lines):
         ln = lines[i].strip()
@@ -691,14 +695,14 @@ def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "") -> Filin
             if not nxt or "%" in nxt or "$" in nxt or _FS_CONT_STOP.search(nxt):
                 break
             name_parts.append(nxt); j += 1
-        ind = gd.get("ind"); imp = gd.get("imp")
-        sig = (ind, imp, gd.get("prem_chg"), gd.get("ph"),
-               gd.get("prem_for"), gd.get("maxp"), gd.get("minp"))
-        if sig in seen_sigs:
+        full_name = " ".join(name_parts).strip()
+        name_key = re.sub(r"\s+", " ", full_name.lower())
+        if name_key in seen_names:
             i = j; continue
-        seen_sigs.add(sig)
+        seen_names.add(name_key)
+        ind = gd.get("ind"); imp = gd.get("imp")
         fs.company_rates.append(CompanyRateRow(
-            company_name=" ".join(name_parts).strip(),
+            company_name=full_name,
             overall_indicated_change=(ind + "%") if ind is not None else None,
             overall_rate_impact=(imp + "%") if imp is not None else None,
             written_premium_change=_fs_normalize_money(gd["prem_chg"]) if gd.get("prem_chg") else None,
