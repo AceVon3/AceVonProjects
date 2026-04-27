@@ -183,9 +183,43 @@ Match parity with WA/OR (both ~100% in-scope) is **not** achieved for UT. The 8 
 
 The 37 "in our UT PPA but not in AM Best report" rows are a mix of (a) 0% rate impacts that AM Best Disposition typically reports as N/A, (b) GEICO multi-subsidiary forms-only filings, and (c) the GECC-134721778 RV filing's 5 REJECTED rows (RV is technically PPA-class but AM Best may not include it in their PPA aggregate). Same expected-extras pattern as WA/OR.
 
-**Phase 2 backlog (UT cross-check follow-ups):**
-- Add `MGA Insurance` and `American Economy` to the SERFF brand-search keyword sets.
-- Decide on submission-window strategy (rolling window vs. pre-fetch).
+## Phase 2 backlog (consolidated)
+
+Items deferred from Phase 1 collection. Each was identified and documented during a Phase 1 milestone but not addressed inline because the scope or risk warranted a dedicated pass.
+
+### 1. `refresh_pending.py` — periodic pending-status refresh
+Build a job that re-queries SERFF detail pages for filings in our dataset where `disposition_status ∈ {Pending, Review pending, PENDING, Active Suspense}`. Decouples pending-status freshness from full-search re-runs and keeps `DATE_TO` aligned with AM Best validation cutoffs. Surfaced during the WA pending coverage characterization (commit `bfbdfd2`).
+
+### 2. Submission-window strategy — rolling window vs. pre-fetch
+SERFF search filters by submission date, but AM Best matches by effective date. Filings submitted before our `DATE_FROM = 2025-01-01` whose effective date falls inside the window are silently missed (e.g., 6 Progressive UT subsidiary rows on a single filing eff 02/19/25; 2 WA rows in the WA AM Best cross-check). Decide whether to widen `DATE_FROM` retroactively or add a pre-fetch step that searches one quarter prior and keeps only those whose effective date is in-window.
+
+### 3. Carrier-keyword cleanup (queued from UT cross-check, 2026-04-27)
+
+**3a. Add `MGA Insurance Company` to State Farm `GROUP_SEARCH` keywords.**
+- Surfaced in UT cross-check as a single missing entry (eff 08/25/25 -9.9% pol=10395).
+- "MGA Insurance Company, Inc." is a State Farm subsidiary that files under its own brand on SERFF and is **not** returned by a `state farm` keyword search.
+- May also affect ID/WA/CO/OR — those states' cross-checks did not surface MGA gaps, but our WA cross-check predates the MGA discovery and was scoped to the AM Best WA report's specific entries (12 in-scope rows). MGA is not currently audited across states.
+- **Code change:** trivial — add `"mga insurance"` to `GROUP_SEARCH["State Farm"]` in `run_final_rates.py` (already present in `GROUP_KW["State Farm"]` for classification).
+- **Re-run cost:** browser-based SERFF search per affected state (~1 hour each). Skip the search re-run for states with confirmed AM Best parity (WA, OR); start with ID/CO and re-validate UT.
+
+**3b. Research `American Economy Insurance Company` scope inclusion.**
+- Surfaced in UT cross-check as a single missing entry (eff 02/10/26 4.0% pol=23806).
+- Currently in `GROUP_KW["Liberty Mutual"]` for classification but does not surface under "liberty mutual" or "safeco" SERFF text searches in UT.
+- **Decide first whether it's in scope** before adding a search keyword. Decision criteria (mirror the customer-facing-vs-filing-vehicle test that already excluded LM General / LM Insurance Corporation):
+  - Does it have its own website / marketing presence?
+  - Do customers buy "American Economy" policies under that name?
+  - Is the brand visible on policy documents, agent collateral?
+- If customer-facing brand → add `"american economy"` as its own SERFF search keyword (parallel to Safeco/Encompass treatment) AND keep it in scope.
+- If filing vehicle → add `"american economy insurance"` to `EXCLUDED_SUBSIDIARY_PATTERNS` and remove the LM classification, mirroring how LM General / LM Insurance Corp are handled. Drop the row from any state's dataset where it surfaces.
+
+### 4. AM Best UT cross-check — submission-window remediation
+The 6 Progressive UT entries eff 02/19/25 are submission-window misses (item 2 above) — not a UT-specific issue. Once the submission-window strategy is decided, re-validate UT to push the cross-check rate from 13/21 (61.9%) toward the WA/OR ~100% in-scope parity. The remaining 2 gaps (MGA, American Economy) are addressed by item 3.
+
+### Why these were deferred rather than addressed in Phase 1
+
+- Items 1, 2, and 4 represent strategic shifts (refresh job, search-window policy) that are out of scope for one-time Phase 1 collection.
+- Item 3 is small per-keyword work, but each addition requires a SERFF browser re-run and re-validation across affected states. Bundling them into a single keyword-cleanup pass amortizes that cost rather than running the full pipeline once per keyword.
+- Until item 3b is researched and decided, adding `american economy` as a search keyword could pull in either an in-scope brand or an out-of-scope filing vehicle — answering the scope question first prevents a re-run if the decision goes the other way.
 
 ## Recommended use
 
