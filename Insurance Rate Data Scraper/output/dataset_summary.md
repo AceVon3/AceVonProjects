@@ -1,28 +1,30 @@
-# Insurance Rate Filings — Four-State Dataset
+# Insurance Rate Filings — Five-State Dataset
 
 **Canonical deliverable:** `output/all_states_final_rates.xlsx` (sheet `rate_filings`) and `output/all_states_final_rates.csv`.
 
 ## What this dataset contains
 
-200 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, and Oregon**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing.
+249 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, and Utah**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing.
 
 | State | Rows |
 |------:|-----:|
 | ID    |   43 |
 | WA    |   20 |
-| CO    |   92 |
+| CO    |   91 |
 | OR    |   45 |
-| **Σ** | **200** |
+| UT    |   50 |
+| **Σ** | **249** |
 
 ### Per-state per-brand breakdown
 
 | State | State Farm | GEICO | Allstate | Encompass | Travelers | Liberty Mutual | Safeco | Progressive | Total |
 |------:|----:|----:|----:|----:|----:|----:|----:|----:|----:|
-| ID    |   5 |   6 |  16 |   4 |   0 |   4 |   5 |   3 |  43 |
+| ID    |   5 |   6 |  16 |   4 |   0 |   5 |   4 |   3 |  43 |
 | WA    |   1 |   6 |   9 |   2 |   0 |   0 |   2 |   0 |  20 |
-| CO    |  20 |  18 |  18 |   4 |   5 |   7 |   5 |  10 |  92 |
+| CO    |  20 |  18 |  18 |   4 |   5 |  12 |   4 |  10 |  91 |
 | OR    |   9 |   1 |  14 |   1 |   0 |   4 |   8 |   8 |  45 |
-| **Σ** |  35 |  31 |  57 |  11 |   5 |  15 |  20 |  21 | **200** |
+| UT    |   6 |  13 |  15 |   0 |   1 |  10 |   5 |   0 |  50 |
+| **Σ** |  41 |  44 |  72 |  11 |   6 |  31 |  23 |  21 | **249** |
 
 ## Scope: Major customer-facing personal lines brands
 
@@ -87,7 +89,8 @@ The scope criterion is *"does this entity represent a distinct brand that custom
 - **Disposition status:** PENDING / Re-Open / Withdrawn filings are kept and labeled in `rate_activity`; only filings with no rate data at all (filer flag below) are excluded.
 - **Filer flag:** When the filer flagged "Rate data does NOT apply to filing," the row is excluded — this flag is taken at face value.
 - **PDF parsing:** Five Disposition row patterns are supported. Within a filing, subsidiary rows are deduped by name so multi-amendment filings (multiple Disposition sections) emit one row per subsidiary using the most recent disposition's values. Layouts outside the supported patterns may be missed.
-- **Disposition cases:** ID uses ALL-CAPS (`APPROVED`); WA uses `Approved`; CO uses `Filed` (file-and-use); OR uses `Approved` / `Filed`. Casing preserved as filed.
+- **Disposition cases:** ID uses ALL-CAPS (`APPROVED`); WA uses `Approved`; CO uses `Filed` (file-and-use); OR uses `Approved` / `Filed`; UT uses `FILED FOR USE` (file-and-use) and `REJECTED` (equivalent to other states' `Disapproved`). Casing preserved as filed. The `rate_activity` classifier maps `REJECTED → rate_change_disapproved` alongside the standard `WITHDRAWN`/`DISAPPROVED`/`PENDING` patterns.
+- **Filing-vehicle subsidiary exclusion:** When a customer-facing-brand filing's per-company rate table lists subsidiary names that are themselves filing vehicles or out-of-scope specialty acquisitions (`LM General Insurance Company`, `LM Insurance Corporation`, `Standard Fire Insurance`, `Integon`, `National General`, `Esurance`, `Drive Insurance`, `United Financial`), those individual rows are dropped at emission time — the parent filing is kept but the filing-vehicle row is suppressed. Enforced in `run_final_rates.py:_is_excluded_subsidiary`.
 
 ## AM Best WA cross-check (2025-01-01 to 2026-04-17, PPA only)
 
@@ -145,6 +148,19 @@ Before expanding to Utah, the dataset's "what's coming next" signal was characte
 
 **Phase 2 backlog item — `refresh_pending.py`:** Build a periodic job that re-queries SERFF detail pages for filings in our dataset where `disposition_status ∈ {Pending, Review pending, PENDING, Active Suspense}`. This decouples pending-status freshness from full-search re-runs and keeps DATE_TO aligned with AM Best.
 
+## Utah expansion (added 2026-04-27)
+
+UT was added bringing the dataset to 5 states / 249 rows (+50 UT rows; -1 CO row from filing-vehicle exclusion fix back-applied). Expansion notes:
+
+- **Search:** 274 raw filings across 7 brands (Encompass=0; both retries confirmed Encompass has no UT presence). Progressive and Allstate timed out on initial `--all-companies` run and were retried separately, then merged via `merge_ut_search.py`.
+- **Final-rates:** 100 target-TOI target-carrier filings → 30 emitted → 50 rows (after subsidiary expansion and 2 filing-vehicle rows dropped).
+- **Per-brand:** Allstate 15, GEICO 13, Liberty Mutual 10, State Farm 6, Safeco 5, Travelers 1, Encompass 0, Progressive 0. (Progressive UT filings were all Form/Rule or "rate-data-does-not-apply"; Safeco contributes 5 rows via "First National Insurance Company of America" and "General Insurance Company of America" subsidiary names.)
+- **New disposition vocabulary discovered:** UT uses `FILED FOR USE` and `REJECTED`. The classifier was extended to map `REJECTED → rate_change_disapproved` (5 rows on filing GECC-134721778, RV).
+- **Spot-check validation:** SFMA-134384912 (State Farm HO 7.9%), GECC-134721778 (GEICO RV REJECTED, 5 subsidiaries), ALSE-134652121 (Allstate PPA, 3 subsidiaries) — all extracted values match the source PDFs exactly. ID anchor SFMA-134676753 still validates 14/14.
+- **AM Best UT validation deferred to Phase 2.** No AM Best UT PPA report was available at run time. The pipeline pattern is identical to the validated WA/OR pipelines (same parser, same scope, same exclusion logic), so this is a known low-risk deferral rather than an unknown.
+
+**Phase 2 backlog item — `validate_ut_against_ambest.py`:** Mirror `compare_or_ambest.py` for Utah. Cross-check our 50 UT rows against AM Best's UT PPA Disposition Page Data export when it becomes available, and document the in-scope match rate.
+
 ## Recommended use
 
 - Comparative analysis of approved/filed rate changes across ID/WA/CO/OR for the 8 in-scope brands.
@@ -158,6 +174,7 @@ Before expanding to Utah, the dataset's "what's coming next" signal was characte
 .venv/Scripts/python run_final_rates.py WA
 .venv/Scripts/python run_final_rates.py CO
 .venv/Scripts/python run_final_rates.py OR
+.venv/Scripts/python run_final_rates.py UT
 .venv/Scripts/python build_all_states.py
 ```
 

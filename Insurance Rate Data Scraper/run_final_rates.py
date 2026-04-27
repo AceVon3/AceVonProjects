@@ -85,6 +85,27 @@ NEW_PRODUCT_RE = re.compile(
 RATE_FILING_TYPES = {"Rate", "Rate/Rule"}
 PDF_FILING_TYPE_RE = re.compile(r"Filing Type:\s*([A-Za-z/ \-]+)\s*$", re.MULTILINE)
 
+# Per-company rate-table rows for these subsidiary names are dropped at emission
+# time. They appear in customer-facing-brand filings (kept at filing level via
+# parent classification) but are themselves filing vehicles or out-of-scope
+# specialty acquisitions, not customer-facing brands. Match is case-insensitive
+# substring against the per-company name.
+EXCLUDED_SUBSIDIARY_PATTERNS = (
+    "lm general insurance company",
+    "lm insurance corporation",
+    "standard fire insurance",
+    "integon ",                  # Integon Indemnity / Integon National (Allstate-acquired specialty)
+    "national general",
+    "esurance",
+    "drive insurance",
+    "united financial",
+)
+
+
+def _is_excluded_subsidiary(name: str | None) -> bool:
+    n = (name or "").lower()
+    return any(p in n for p in EXCLUDED_SUBSIDIARY_PATTERNS)
+
 
 def carrier_group(*names: Optional[str]) -> Optional[str]:
     """Match the first non-empty name against carrier-group keywords.
@@ -290,11 +311,12 @@ def build_rows(state: str, targets: list[Target]) -> tuple[list[dict], dict]:
             stats["filings_excluded_no_pdf"] += 1
             continue
 
-        # Determine rate_activity from disposition status
+        # Determine rate_activity from disposition status. UT uses REJECTED for
+        # disapproved filings; other states use Disapproved/DISAPPROVED.
         ds = (fs.disposition_status or "").upper()
         if "WITHDRAWN" in ds:
             activity = "rate_change_withdrawn"
-        elif "DISAPPROV" in ds:
+        elif "DISAPPROV" in ds or "REJECT" in ds:
             activity = "rate_change_disapproved"
         elif "PENDING" in ds:
             activity = "rate_change_pending"
@@ -304,6 +326,9 @@ def build_rows(state: str, targets: list[Target]) -> tuple[list[dict], dict]:
         eff = fs.effective_date_new or fs.effective_date_renewal
         rel_pdf = pdf.relative_to(Path(".")).as_posix() if pdf.is_absolute() is False else pdf.as_posix()
         for r in fs.company_rates:
+            if _is_excluded_subsidiary(r.company_name):
+                stats["rows_excluded_filing_vehicle"] = stats.get("rows_excluded_filing_vehicle", 0) + 1
+                continue
             rows.append({
                 "state": state,
                 "effective_date": eff,

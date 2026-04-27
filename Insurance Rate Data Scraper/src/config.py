@@ -37,7 +37,7 @@ TARGET_LINES = [
     "homeowners",
 ]
 
-STATES = ["WA", "ID", "CO", "OR"]
+STATES = ["WA", "ID", "CO", "OR", "UT"]
 
 DATE_FROM = "01/01/2025"
 DATE_TO = "04/17/2026"
