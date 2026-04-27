@@ -4,7 +4,7 @@
 
 ## What this dataset contains
 
-249 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, and Utah**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing.
+251 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, and Utah**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing.
 
 | State | Rows |
 |------:|-----:|
@@ -12,8 +12,8 @@
 | WA    |   20 |
 | CO    |   91 |
 | OR    |   45 |
-| UT    |   50 |
-| **Σ** | **249** |
+| UT    |   52 |
+| **Σ** | **251** |
 
 ### Per-state per-brand breakdown
 
@@ -23,8 +23,8 @@
 | WA    |   1 |   6 |   9 |   2 |   0 |   0 |   2 |   0 |  20 |
 | CO    |  20 |  18 |  18 |   4 |   5 |  12 |   4 |  10 |  91 |
 | OR    |   9 |   1 |  14 |   1 |   0 |   4 |   8 |   8 |  45 |
-| UT    |   6 |  13 |  15 |   0 |   1 |  10 |   5 |   0 |  50 |
-| **Σ** |  41 |  44 |  72 |  11 |   6 |  31 |  23 |  21 | **249** |
+| UT    |   8 |  13 |  15 |   0 |   1 |  10 |   5 |   0 |  52 |
+| **Σ** |  43 |  44 |  72 |  11 |   6 |  31 |  23 |  21 | **251** |
 
 ## Scope: Major customer-facing personal lines brands
 
@@ -88,7 +88,7 @@ The scope criterion is *"does this entity represent a distinct brand that custom
 - **Date range:** SERFF Public Access search window 2025-01-01 → 2026-04-17. Filings submitted before 2025-01-01 are not in the dataset even if their effective date falls inside the window (this is the cause of the two AM Best WA misses below).
 - **Disposition status:** PENDING / Re-Open / Withdrawn filings are kept and labeled in `rate_activity`; only filings with no rate data at all (filer flag below) are excluded.
 - **Filer flag:** When the filer flagged "Rate data does NOT apply to filing," the row is excluded — this flag is taken at face value.
-- **PDF parsing:** Five Disposition row patterns are supported. Within a filing, subsidiary rows are deduped by name so multi-amendment filings (multiple Disposition sections) emit one row per subsidiary using the most recent disposition's values. Layouts outside the supported patterns may be missed.
+- **PDF parsing:** Six Disposition row patterns are supported (full / blank-indicated / sparse / blank-indicated+blank-max-min with and without premium change / full-with-blank-max-min). Within a filing, subsidiary rows are deduped by name so multi-amendment filings (multiple Disposition sections) emit one row per subsidiary using the most recent disposition's values. Subsidiary-name lines that wrap across multiple PDF lines are folded by the existing continuation loop after the first line matches a row pattern.
 - **Disposition cases:** ID uses ALL-CAPS (`APPROVED`); WA uses `Approved`; CO uses `Filed` (file-and-use); OR uses `Approved` / `Filed`; UT uses `FILED FOR USE` (file-and-use) and `REJECTED` (equivalent to other states' `Disapproved`). Casing preserved as filed. The `rate_activity` classifier maps `REJECTED → rate_change_disapproved` alongside the standard `WITHDRAWN`/`DISAPPROVED`/`PENDING` patterns.
 - **Filing-vehicle subsidiary exclusion:** When a customer-facing-brand filing's per-company rate table lists subsidiary names that are themselves filing vehicles or out-of-scope specialty acquisitions (`LM General Insurance Company`, `LM Insurance Corporation`, `Standard Fire Insurance`, `Integon`, `National General`, `Esurance`, `Drive Insurance`, `United Financial`), those individual rows are dropped at emission time — the parent filing is kept but the filing-vehicle row is suppressed. Enforced in `run_final_rates.py:_is_excluded_subsidiary`.
 
@@ -167,23 +167,23 @@ Match keys: AM Best dates use disposition/approved date while ours use filed eff
 | Match tier | Count | Definition |
 |---|---:|---|
 | Tier 1 — Direct (sub + eff_date + impact) | 0 | Date-shift between AM Best and SERFF prevents direct match |
-| Tier 2 — Date-relaxed (sub + impact + policyholders) | 10 | Same filing, AM Best effective_date drifts from our filed effective_date |
+| Tier 2 — Date-relaxed (sub + impact + policyholders) | 12 | Same filing, AM Best effective_date drifts from our filed effective_date |
 | Tier 3 — Sub-type reclass (our row in non-PPA bucket) | 1 | Allstate F&C 18.6% landed in our `19.0004 Other`; AM Best PPA includes it |
-| **In-scope match rate** | **11 / 21 (52.4%)** | |
+| **In-scope match rate** | **13 / 21 (61.9%)** | |
 
-Match parity with WA/OR (both ~100% in-scope) is **not** achieved for UT. The 10 still-missing rows decompose into four root causes — none are scope or classification bugs; they are coverage gaps with concrete fixes:
+Match parity with WA/OR (both ~100% in-scope) is **not** achieved for UT. The 8 still-missing rows decompose into three root causes — none are scope or classification bugs; they are coverage gaps with concrete fixes:
 
 | Cause | Count | AM Best entries | Phase 2 fix |
 |---|---:|---|---|
 | Submission-window miss (filed before 2025-01-01, effective in window) | 6 | All 6 Progressive subsidiary rows on a single filing eff 02/19/25 | Same as the WA Progressive Casualty 03/07/25 case noted above. Move to a rolling-window search or pre-fetch out-of-window submissions whose effective date falls inside. |
-| Multi-line subsidiary name in `parse_filing_summary_pdf` | 2 | SF Fire & Casualty + SF Mutual Auto on SFMA-134676709 (eff 11/20/25, AM Best disposition 10/09/25) | Parser fix: company names that wrap across PDF lines ("State Farm Fire and\nCasualty Company") are currently dropped, leaving the filing with 0 extracted rows. Extend regex to fold continuation lines. |
 | Search-keyword gap | 1 | MGA Insurance Company eff 08/25/25 -9.9% (State Farm subsidiary not surfaced by "state farm" SERFF text search) | Add "mga insurance" search keyword to `GROUP_SEARCH["State Farm"]` in `run_final_rates.py`. |
 | Brand-search routing | 1 | American Economy Insurance Company eff 02/10/26 4.0% — likely filed under a SERFF brand prefix not retrieved by "liberty mutual" or "safeco" searches | Audit Liberty Mutual / Safeco search-term coverage; consider adding "american economy" as its own search keyword. |
 
-The 35 "in our UT PPA but not in AM Best report" rows are a mix of (a) 0% rate impacts that AM Best Disposition typically reports as N/A, (b) GEICO multi-subsidiary forms-only filings, and (c) the GECC-134721778 RV filing's 5 REJECTED rows (RV is technically PPA-class but AM Best may not include it in their PPA aggregate). Same expected-extras pattern as WA/OR.
+**Resolved 2026-04-27**: The two SFMA-134676709 rows (SF Fire + SF Mutual Auto, AM Best disposition 10/09/25) were originally missing because `parse_filing_summary_pdf` had no row pattern matching the layout `name + ind% + imp% + $prem_chg + ph + $prem_for + % %` (full ind/imp, blank max/min — UT's State Farm format). Added Pattern F to `src/utils.py`; sweep across all 527 cached PDFs found this was the only silent failure in the dataset (no impact on ID/WA/CO/OR). UT row count went 50 → 52, anchor SFMA-134676753 still validates 14/14, AM Best UT match rate went 11/21 → 13/21.
+
+The 37 "in our UT PPA but not in AM Best report" rows are a mix of (a) 0% rate impacts that AM Best Disposition typically reports as N/A, (b) GEICO multi-subsidiary forms-only filings, and (c) the GECC-134721778 RV filing's 5 REJECTED rows (RV is technically PPA-class but AM Best may not include it in their PPA aggregate). Same expected-extras pattern as WA/OR.
 
 **Phase 2 backlog (UT cross-check follow-ups):**
-- Fix `parse_filing_summary_pdf` to handle multi-line wrapped subsidiary names. Without this, any filing whose per-company name is too long for one PDF line silently produces 0 rows.
 - Add `MGA Insurance` and `American Economy` to the SERFF brand-search keyword sets.
 - Decide on submission-window strategy (rolling window vs. pre-fetch).
 
