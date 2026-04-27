@@ -157,9 +157,35 @@ UT was added bringing the dataset to 5 states / 249 rows (+50 UT rows; -1 CO row
 - **Per-brand:** Allstate 15, GEICO 13, Liberty Mutual 10, State Farm 6, Safeco 5, Travelers 1, Encompass 0, Progressive 0. (Progressive UT filings were all Form/Rule or "rate-data-does-not-apply"; Safeco contributes 5 rows via "First National Insurance Company of America" and "General Insurance Company of America" subsidiary names.)
 - **New disposition vocabulary discovered:** UT uses `FILED FOR USE` and `REJECTED`. The classifier was extended to map `REJECTED → rate_change_disapproved` (5 rows on filing GECC-134721778, RV).
 - **Spot-check validation:** SFMA-134384912 (State Farm HO 7.9%), GECC-134721778 (GEICO RV REJECTED, 5 subsidiaries), ALSE-134652121 (Allstate PPA, 3 subsidiaries) — all extracted values match the source PDFs exactly. ID anchor SFMA-134676753 still validates 14/14.
-- **AM Best UT validation deferred to Phase 2.** No AM Best UT PPA report was available at run time. The pipeline pattern is identical to the validated WA/OR pipelines (same parser, same scope, same exclusion logic), so this is a known low-risk deferral rather than an unknown.
 
-**Phase 2 backlog item — `validate_ut_against_ambest.py`:** Mirror `compare_or_ambest.py` for Utah. Cross-check our 50 UT rows against AM Best's UT PPA Disposition Page Data export when it becomes available, and document the in-scope match rate.
+## AM Best UT cross-check (AM Best PPA report, 2026-04-27 export)
+
+Source: AM Best Best's State Rate Filings UT PPA report (12,001 filings raw; deduplicates to 110 unique subsidiary entries after removing PDF page-break repetition; **21 in scope** for our 8 brands × Rate filing-action × 2025-01-01→2026-04-17 effective-date window with `EXCLUDED_SUBSIDIARY_PATTERNS` applied). Scope filter parity with `compare_or_ambest.py`.
+
+Match keys: AM Best dates use disposition/approved date while ours use filed effective date — these can differ by 8-42 days in some cases. Strict (subsidiary + effective_date + impact) yields 0 matches. Adopting a tiered match policy (mirrors OR cross-check intent):
+
+| Match tier | Count | Definition |
+|---|---:|---|
+| Tier 1 — Direct (sub + eff_date + impact) | 0 | Date-shift between AM Best and SERFF prevents direct match |
+| Tier 2 — Date-relaxed (sub + impact + policyholders) | 10 | Same filing, AM Best effective_date drifts from our filed effective_date |
+| Tier 3 — Sub-type reclass (our row in non-PPA bucket) | 1 | Allstate F&C 18.6% landed in our `19.0004 Other`; AM Best PPA includes it |
+| **In-scope match rate** | **11 / 21 (52.4%)** | |
+
+Match parity with WA/OR (both ~100% in-scope) is **not** achieved for UT. The 10 still-missing rows decompose into four root causes — none are scope or classification bugs; they are coverage gaps with concrete fixes:
+
+| Cause | Count | AM Best entries | Phase 2 fix |
+|---|---:|---|---|
+| Submission-window miss (filed before 2025-01-01, effective in window) | 6 | All 6 Progressive subsidiary rows on a single filing eff 02/19/25 | Same as the WA Progressive Casualty 03/07/25 case noted above. Move to a rolling-window search or pre-fetch out-of-window submissions whose effective date falls inside. |
+| Multi-line subsidiary name in `parse_filing_summary_pdf` | 2 | SF Fire & Casualty + SF Mutual Auto on SFMA-134676709 (eff 11/20/25, AM Best disposition 10/09/25) | Parser fix: company names that wrap across PDF lines ("State Farm Fire and\nCasualty Company") are currently dropped, leaving the filing with 0 extracted rows. Extend regex to fold continuation lines. |
+| Search-keyword gap | 1 | MGA Insurance Company eff 08/25/25 -9.9% (State Farm subsidiary not surfaced by "state farm" SERFF text search) | Add "mga insurance" search keyword to `GROUP_SEARCH["State Farm"]` in `run_final_rates.py`. |
+| Brand-search routing | 1 | American Economy Insurance Company eff 02/10/26 4.0% — likely filed under a SERFF brand prefix not retrieved by "liberty mutual" or "safeco" searches | Audit Liberty Mutual / Safeco search-term coverage; consider adding "american economy" as its own search keyword. |
+
+The 35 "in our UT PPA but not in AM Best report" rows are a mix of (a) 0% rate impacts that AM Best Disposition typically reports as N/A, (b) GEICO multi-subsidiary forms-only filings, and (c) the GECC-134721778 RV filing's 5 REJECTED rows (RV is technically PPA-class but AM Best may not include it in their PPA aggregate). Same expected-extras pattern as WA/OR.
+
+**Phase 2 backlog (UT cross-check follow-ups):**
+- Fix `parse_filing_summary_pdf` to handle multi-line wrapped subsidiary names. Without this, any filing whose per-company name is too long for one PDF line silently produces 0 rows.
+- Add `MGA Insurance` and `American Economy` to the SERFF brand-search keyword sets.
+- Decide on submission-window strategy (rolling window vs. pre-fetch).
 
 ## Recommended use
 
