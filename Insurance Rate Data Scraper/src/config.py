@@ -39,8 +39,21 @@ TARGET_LINES = [
 
 STATES = ["WA", "ID", "CO", "OR", "UT"]
 
-DATE_FROM = "01/01/2025"
+# Submission-window bounds for SERFF search (SERFF only filters by submission
+# date). Widened to a 6-month lookback so filings submitted before 2025-01-01
+# whose effective date falls inside the AM Best validation window are not
+# missed (e.g., the 6 Progressive UT subsidiaries on a filing eff 02/19/25 and
+# WA Progressive Casualty submitted 2024-12-12 eff 03/07/25).
+DATE_FROM = "07/01/2024"
 DATE_TO = "04/17/2026"
+
+# Effective-date emit filter applied at row emission (run_final_rates.py).
+# This is the axis that aligns with AM Best's effective-date matching. Rows
+# whose parsed effective_date falls outside this window are dropped at emit
+# time. Rows with BLANK effective_date are KEPT (filer omitted the field; we
+# do not silently drop them).
+EFFECTIVE_DATE_FROM = "01/01/2025"
+EFFECTIVE_DATE_TO = "04/17/2026"
 
 REQUEST_DELAY = 2.5
 

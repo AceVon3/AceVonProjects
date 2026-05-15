@@ -1,8 +1,12 @@
 """Merge per-carrier OR search checkpoints into or_all_companies_search.xlsx.
 
-Needed because three carriers (Allstate, Travelers, Liberty Mutual) timed out
-mid-run on the combined --all-companies search and were retried in fresh
-processes that produced per-carrier xlsx files.
+Needed because some carriers time out mid-run on the combined --all-companies
+search and are retried in fresh processes that produce per-carrier xlsx files.
+
+Run history:
+- Initial OR scrape: Allstate, Travelers, Liberty Mutual timed out, retried.
+- Lookback re-scrape (DATE_FROM=07/01/2024): GEICO + Progressive + Allstate +
+  Travelers + Liberty Mutual + Safeco timed out, retried.
 """
 from pathlib import Path
 from openpyxl import load_workbook, Workbook
@@ -11,9 +15,12 @@ OUTPUT_DIR = Path("output")
 
 MAIN = OUTPUT_DIR / "or_all_companies_search.xlsx"
 RETRY_FILES = [
+    OUTPUT_DIR / "or_geico_search.xlsx",
+    OUTPUT_DIR / "or_progressive_search.xlsx",
     OUTPUT_DIR / "or_allstate_search.xlsx",
     OUTPUT_DIR / "or_travelers_search.xlsx",
     OUTPUT_DIR / "or_liberty_mutual_search.xlsx",
+    OUTPUT_DIR / "or_safeco_search.xlsx",
 ]
 
 
@@ -34,7 +41,7 @@ def main() -> int:
     # Drop any rows from failed carriers (they would have been written as 0-row
     # groups but just in case).
     idx_target = header.index("target_company")
-    retry_carriers = {"Allstate", "Travelers", "Liberty Mutual"}
+    retry_carriers = {"GEICO", "Progressive", "Allstate", "Travelers", "Liberty Mutual", "Safeco"}
     before = len(rows)
     rows = [r for r in rows if r[idx_target] not in retry_carriers]
     print(f"[main] dropped {before - len(rows)} pre-existing rows for retry carriers")

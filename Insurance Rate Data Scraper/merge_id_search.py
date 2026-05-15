@@ -1,25 +1,22 @@
-"""Merge per-carrier UT search retries into ut_all_companies_search.xlsx.
+"""Merge per-carrier ID search retries into id_all_companies_search.xlsx.
 
 Carriers that time out on "Begin Search" link click during the combined
---all-companies run are retried in fresh processes. The retry set varies
-per re-run (different carriers time out each time depending on SERFF
-session state) — RETRY_FILES below is the active retry set for the
-current run.
+--all-companies run are retried in fresh processes. Mirrors merge_ut_search.py.
 
 Run history:
-- Initial UT scrape (2026-04-27): Progressive + Allstate timed out, retried.
-- Lookback re-scrape (DATE_FROM=07/01/2024, current): Travelers + Liberty
-  Mutual timed out, retried.
+- Lookback re-scrape (DATE_FROM=07/01/2024): Travelers + Liberty Mutual +
+  Safeco timed out, retried.
 """
 from pathlib import Path
 from openpyxl import load_workbook, Workbook
 
 OUTPUT_DIR = Path("output")
 
-MAIN = OUTPUT_DIR / "ut_all_companies_search.xlsx"
+MAIN = OUTPUT_DIR / "id_all_companies_search.xlsx"
 RETRY_FILES = [
-    OUTPUT_DIR / "ut_travelers_search.xlsx",
-    OUTPUT_DIR / "ut_liberty_mutual_search.xlsx",
+    OUTPUT_DIR / "id_travelers_search.xlsx",
+    OUTPUT_DIR / "id_liberty_mutual_search.xlsx",
+    OUTPUT_DIR / "id_safeco_search.xlsx",
 ]
 
 
@@ -38,7 +35,7 @@ def main() -> int:
     print(f"[main] {MAIN.name}: {len(rows)} rows")
 
     idx_target = header.index("target_company")
-    retry_carriers = {"Travelers", "Liberty Mutual"}
+    retry_carriers = {"Travelers", "Liberty Mutual", "Safeco"}
     before = len(rows)
     rows = [r for r in rows if r[idx_target] not in retry_carriers]
     print(f"[main] dropped {before - len(rows)} pre-existing rows for retry carriers")

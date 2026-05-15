@@ -180,6 +180,18 @@ def main() -> int:
     started = time.time()
     group_order = sorted(groups.keys(), key=lambda k: len(groups[k]))
 
+    def _submit_with_retry(page, state: str, company: str, attempts: int = 3) -> bool:
+        """Wrap _submit_search so a Playwright timeout becomes a retry-then-skip
+        instead of crashing the whole pipeline."""
+        for attempt in range(1, attempts + 1):
+            try:
+                if _submit_search(page, state, company):
+                    return True
+                print(f"  [submit attempt {attempt}/{attempts}] returned False", flush=True)
+            except Exception as e:
+                print(f"  [submit attempt {attempt}/{attempts}] exception: {type(e).__name__}: {e}", flush=True)
+        return False
+
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=HEADLESS)
         try:
@@ -193,8 +205,8 @@ def main() -> int:
                 ctx = browser.new_context(user_agent=USER_AGENT, accept_downloads=True)
                 page = ctx.new_page()
                 try:
-                    if not _submit_search(page, state, company):
-                        print(f"  ! search failed, skipping {company}", flush=True)
+                    if not _submit_with_retry(page, state, company):
+                        print(f"  ! search failed after retries, skipping {company}", flush=True)
                         continue
                     _set_rows_per_page_100(page)
 

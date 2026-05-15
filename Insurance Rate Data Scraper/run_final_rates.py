@@ -19,6 +19,7 @@ import re
 import sys
 import time
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -29,7 +30,35 @@ from playwright.sync_api import sync_playwright
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.stdout.reconfigure(encoding="utf-8")
 
-from src.config import HEADLESS, USER_AGENT
+from src.config import EFFECTIVE_DATE_FROM, EFFECTIVE_DATE_TO, HEADLESS, USER_AGENT
+
+_EFF_WINDOW_FROM = datetime.strptime(EFFECTIVE_DATE_FROM, "%m/%d/%Y").date()
+_EFF_WINDOW_TO = datetime.strptime(EFFECTIVE_DATE_TO, "%m/%d/%Y").date()
+
+
+def _parse_pdf_eff_date(s):
+    """Parse the PDF-extracted effective date string (MM/DD/YY or MM/DD/YYYY).
+    Returns None on blank or unparseable input."""
+    if not s:
+        return None
+    s = str(s).strip()
+    if not s:
+        return None
+    for fmt in ("%m/%d/%Y", "%m/%d/%y"):
+        try:
+            return datetime.strptime(s, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+
+def _in_effective_window(eff_str) -> bool:
+    """Effective-date emit filter. Blank effective_date is KEPT (filer omission).
+    Parseable dates outside [EFFECTIVE_DATE_FROM, EFFECTIVE_DATE_TO] are dropped."""
+    d = _parse_pdf_eff_date(eff_str)
+    if d is None:
+        return True
+    return _EFF_WINDOW_FROM <= d <= _EFF_WINDOW_TO
 from src.detail import download_system_summary_pdf
 from src.search import (
     _back_to_results,
@@ -144,6 +173,17 @@ def load_targets(state: str) -> list[Target]:
     out = []
     for r in ws.iter_rows(min_row=2, values_only=True):
         toi = r[ix["type_of_insurance"]] or ""
+        sub_toi = r[ix["sub_type_of_insurance"]] or ""
+        # Fallback: parent TOI is populated by detail-page enrichment, but
+        # when enrichment is skipped (row-not-found during a large search),
+        # type_of_insurance can be blank while sub_type_of_insurance (captured
+        # at search time) is still reliable. Derive parent TOI from the
+        # sub-type prefix so target filings aren't silently dropped.
+        if not toi and sub_toi:
+            if sub_toi.startswith("19."):
+                toi = "19.0 Personal Auto"
+            elif sub_toi.startswith("04."):
+                toi = "04.0 Homeowners"
         if not any(toi.startswith(p) for p in TARGET_TOI):
             grp = carrier_group(r[ix["company_name"]], r[ix["target_company"]])
             if grp and toi:
@@ -288,6 +328,7 @@ def build_rows(state: str, targets: list[Target]) -> tuple[list[dict], dict]:
         "filings_excluded_new_product": 0,
         "filings_excluded_no_pdf": 0,
         "filings_excluded_rate_data_does_not_apply": 0,
+        "filings_excluded_out_of_effective_window": 0,
         "filings_emitted": 0,
         "rows_emitted": 0,
         "anchor_match_count": 0,
@@ -324,6 +365,9 @@ def build_rows(state: str, targets: list[Target]) -> tuple[list[dict], dict]:
             activity = "rate_change"
 
         eff = fs.effective_date_new or fs.effective_date_renewal
+        if not _in_effective_window(eff):
+            stats["filings_excluded_out_of_effective_window"] += 1
+            continue
         rel_pdf = pdf.relative_to(Path(".")).as_posix() if pdf.is_absolute() is False else pdf.as_posix()
         for r in fs.company_rates:
             if _is_excluded_subsidiary(r.company_name):

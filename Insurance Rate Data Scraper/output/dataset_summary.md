@@ -4,27 +4,27 @@
 
 ## What this dataset contains
 
-251 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, and Utah**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing.
+314 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, and Utah**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2025-01-01, 2026-04-17]`.
 
 | State | Rows |
 |------:|-----:|
-| ID    |   43 |
-| WA    |   20 |
-| CO    |   91 |
-| OR    |   45 |
-| UT    |   52 |
-| **Σ** | **251** |
+| ID    |   53 |
+| WA    |   34 |
+| CO    |   99 |
+| OR    |   47 |
+| UT    |   81 |
+| **Σ** | **314** |
 
 ### Per-state per-brand breakdown
 
 | State | State Farm | GEICO | Allstate | Encompass | Travelers | Liberty Mutual | Safeco | Progressive | Total |
 |------:|----:|----:|----:|----:|----:|----:|----:|----:|----:|
-| ID    |   5 |   6 |  16 |   4 |   0 |   5 |   4 |   3 |  43 |
-| WA    |   1 |   6 |   9 |   2 |   0 |   0 |   2 |   0 |  20 |
-| CO    |  20 |  18 |  18 |   4 |   5 |  12 |   4 |  10 |  91 |
-| OR    |   9 |   1 |  14 |   1 |   0 |   4 |   8 |   8 |  45 |
-| UT    |   8 |  13 |  15 |   0 |   1 |  10 |   5 |   0 |  52 |
-| **Σ** |  43 |  44 |  72 |  11 |   6 |  31 |  23 |  21 | **251** |
+| ID    |   6 |   6 |  19 |   3 |   2 |  11 |   3 |   3 |  53 |
+| WA    |   3 |   6 |  14 |   3 |   3 |   0 |   3 |   2 |  34 |
+| CO    |  26 |  18 |  21 |   4 |   5 |  12 |   3 |  10 |  99 |
+| OR    |   9 |   1 |  13 |   1 |   0 |   8 |   7 |   8 |  47 |
+| UT    |   9 |  20 |  24 |   0 |   2 |  10 |   6 |  10 |  81 |
+| **Σ** |  53 |  51 |  91 |  11 |  12 |  41 |  22 |  33 | **314** |
 
 ## Scope: Major customer-facing personal lines brands
 
@@ -47,7 +47,14 @@ The scope criterion is *"does this entity represent a distinct brand that custom
 
 ## Methodology
 
-1. **Discover.** Search SERFF Public Filing Access (`filingaccess.serff.com`) per state by carrier-group keyword — one keyword per in-scope brand (see Scope section above).
+The dataset is **effective-date aligned with AM Best** while accommodating SERFF's submission-date-only search interface. Two date windows are in play:
+
+- **Submission window** (`DATE_FROM = 2024-07-01` to `DATE_TO = 2026-04-17`): used by the SERFF search. The 2024-07-01 start is a 6-month lookback that ensures filings submitted before 2025-01-01 with effective dates inside the AM Best window are still captured (SERFF cannot filter by effective date).
+- **Effective-date emit filter** (`EFFECTIVE_DATE_FROM = 2025-01-01` to `EFFECTIVE_DATE_TO = 2026-04-17`): applied at row emission in `run_final_rates.py`. Rows whose parsed effective date falls outside this window are dropped. Rows with **blank** effective date are KEPT (filer omitted the field; we don't silently drop).
+
+The dataset's date axis is therefore *effective date*, which matches AM Best's matching methodology directly.
+
+1. **Discover.** Search SERFF Public Filing Access (`filingaccess.serff.com`) per state by carrier-group keyword — one keyword per in-scope brand (see Scope section above). Submission window 2024-07-01 → 2026-04-17.
 2. **Filter.** Keep only target NAIC TOI codes (19.0 Personal Auto, 04.0 Homeowners) for the 8 in-scope brands.
 3. **Download.** From each filing's detail page, click "Download Zip File" with **no checkboxes selected** to receive a ~20 KB minimal zip containing the system-generated Filing Summary PDF.
 4. **Parse.** Extract the Disposition / Company Rate Information table from the PDF. Five row layouts are handled (full / blank-indicated / sparse / blank-indicated+blank-max/min with and without premium change).
@@ -85,7 +92,7 @@ The scope criterion is *"does this entity represent a distinct brand that custom
 - **States:** ID, WA, CO, OR only.
 - **Lines:** Personal Auto (TOI 19.0) and Homeowners (TOI 04.0) only. Farmowners explicitly out of scope.
 - **Carriers:** See Scope section above — 8 customer-facing brands; filing-vehicle subsidiaries and specialty acquisitions explicitly excluded.
-- **Date range:** SERFF Public Access search window 2025-01-01 → 2026-04-17. Filings submitted before 2025-01-01 are not in the dataset even if their effective date falls inside the window (this is the cause of the two AM Best WA misses below).
+- **Date range:** Effective-date window 2025-01-01 → 2026-04-17 (the AM Best validation cutoff). SERFF submission window widened to 2024-07-01 → 2026-04-17 so pre-2025 submissions with in-window effective dates are captured. The effective-date filter is applied at row emit time in `run_final_rates.py`.
 - **Disposition status:** PENDING / Re-Open / Withdrawn filings are kept and labeled in `rate_activity`; only filings with no rate data at all (filer flag below) are excluded.
 - **Filer flag:** When the filer flagged "Rate data does NOT apply to filing," the row is excluded — this flag is taken at face value.
 - **PDF parsing:** Six Disposition row patterns are supported (full / blank-indicated / sparse / blank-indicated+blank-max-min with and without premium change / full-with-blank-max-min). Within a filing, subsidiary rows are deduped by name so multi-amendment filings (multiple Disposition sections) emit one row per subsidiary using the most recent disposition's values. Subsidiary-name lines that wrap across multiple PDF lines are folded by the existing continuation loop after the first line matches a row pattern.
@@ -98,35 +105,49 @@ The scope criterion is *"does this entity represent a distinct brand that custom
 |---|---:|
 | Matched (subsidiary + policyholders + impact %) | 12 |
 | In AM Best, missing from ours | 2 |
-| In ours, not in AM Best report | 8 |
+| In ours, not in AM Best report | 21 |
 
-The 2 unmatched-from-AM-Best entries are both submission-window misses (filed before our 2025-01-01 SERFF search window even though their effective dates fall inside it):
-1. **Progressive Casualty 03/07/25** (4.5%, 46,504 pol) — submission 12/12/2024.
-2. **Encompass Indemnity 07/12/25** (19.6%, 6,098 pol) — submission also pre-2025-01-01.
+**Phase C did NOT improve the WA match rate** (still 12/14). The 2 unmatched entries were originally documented here as submission-window misses, but Phase C investigation revealed both are actually SERFF visibility gaps (see [Phase 2 backlog Item #4](#4-serff-visibility-investigation-new-2026-05-14)):
 
-The 8 in-ours-not-in-AM-Best entries are all expected: 5 are Homeowners filings (AM Best PPA report excludes HO), and 3 are 0% PPA filings that AM Best Disposition reports as N/A for trivial 0% changes.
+1. **Progressive Casualty 03/07/25** (4.5%, 46,504 pol) — filed 2024-12-12 (inside the new 2024-07-01 lookback window, but SERFF still doesn't return it under any "Progressive" search-keyword combination).
+2. **Encompass Indemnity 07/12/25** (19.6%, 6,098 pol) — filed 2025-03-12 (was inside the *original* DATE_FROM=2025-01-01 window all along; should have been found even before Phase C).
+
+Both filings exist in AM Best's reporting but cannot be retrieved via SERFF Public Access using our 8 brand-keyword searches. Root cause unknown — possible candidates include SERFF indexing/visibility issues, a subsidiary name not in our keyword lists, or pagination cutting off the result set. Investigation is queued as Item #4.
+
+The in-ours-not-in-AM-Best entries are all expected: a mix of Homeowners filings (AM Best PPA report excludes HO), 0% PPA filings that AM Best reports as N/A, and additional pre-2025-submission rows recovered by the new lookback that AM Best may not have indexed at export time.
 
 ## AM Best OR cross-check (AM Best PPA report, 2026-04-24 export)
 
 Scope filter: AM Best report is PPA-only. Our OR PPA bucket aggregates sub-types `19.0001` (PPA), `19.0000` (Personal Auto Combinations), and `19.0002` (Motorcycle) to align with AM Best's PPA classification.
 
+After Phase C re-run (DATE_FROM=2024-07-01 lookback):
+
 | Result | Count |
 |---|---:|
 | Matched — direct (subsidiary + effective date + impact %) | 25 |
-| Matched — via sub-type reclassification (same filing, coded differently) | 4 |
-| Out-of-scope entities in AM Best (not scraper gaps) | 6 |
-| **In-scope match rate** | **29 / 29 (100%)** |
+| In AM Best, missing from ours — out-of-scope filing vehicles | 6 |
+| In AM Best, missing from ours — genuine in-scope gaps (Item #4 candidates) | 4 |
+| **In-scope match rate** | **25 / 29 (86%)** direct, plus prior Tier 2 sub-type reclass not re-validated this cycle |
 
-**The 6 "missing from ours" rows are all out-of-scope entities** — correctly excluded per the Scope section above, not scraper bugs:
+**6 out-of-scope entities** (correctly excluded per Scope; not scraper gaps):
 
 | Subsidiary | Parent | Why excluded |
 |---|---|---|
 | Standard Fire Insurance Company (×2 filings) | Travelers | Filing vehicle, not customer-facing brand |
-| Integon Indemnity Corporation (×2 filings) | Allstate (National General) | Specialty non-standard auto, different market segment |
-| LM General Insurance Company (×1) | Liberty Mutual | Filing vehicle, not customer-facing brand |
-| LM Insurance Corporation (×1) | Liberty Mutual | Filing vehicle, not customer-facing brand |
+| Integon Indemnity Corporation (×2 filings) | Allstate (National General) | Specialty non-standard auto |
+| LM General Insurance Company (×1) | Liberty Mutual | Filing vehicle |
+| LM Insurance Corporation (×1) | Liberty Mutual | Filing vehicle |
 
-The 33 in-ours-not-in-AM-Best entries are a mix of future-dated filings past the AM Best 2026-04-24 export cutoff, zero-impact filings that AM Best lists as N/A, and 12 homeowners/motorcycle/combinations sub-type rows outside AM Best PPA scope.
+**4 genuine in-scope gaps** — same pattern as WA's 2 misses (filings exist in AM Best but don't surface in our SERFF searches even after the 6-month lookback). Queued as Item #4 candidates:
+
+| Subsidiary | Eff date | Impact | Policyholders |
+|---|---|---:|---:|
+| Artisan and Truckers Casualty Company (Progressive) | 09/19/25 | +4.1% | 5,487 |
+| Progressive Universal Insurance Company | 09/19/25 | +3.7% | 9,055 |
+| Allstate Insurance Company | 07/21/25 | +31.0% | 889 |
+| Safeco Insurance Company of Oregon | 06/21/25 | +12.3% | 7,299 |
+
+The in-ours-not-in-AM-Best entries are a mix of future-dated filings past the AM Best 2026-04-24 export cutoff, zero-impact filings that AM Best lists as N/A, additional pre-2025-submission rows recovered by the lookback, and homeowners/motorcycle/combinations sub-type rows outside AM Best PPA scope.
 
 ## Pending-coverage characterization (pre-Utah expansion, 2026-04-27)
 
@@ -167,21 +188,22 @@ Match keys: AM Best dates use disposition/approved date while ours use filed eff
 | Match tier | Count | Definition |
 |---|---:|---|
 | Tier 1 — Direct (sub + eff_date + impact) | 0 | Date-shift between AM Best and SERFF prevents direct match |
-| Tier 2 — Date-relaxed (sub + impact + policyholders) | 12 | Same filing, AM Best effective_date drifts from our filed effective_date |
+| Tier 2 — Date-relaxed (sub + impact + policyholders) | 18 | Same filing, AM Best effective_date drifts from our filed effective_date |
 | Tier 3 — Sub-type reclass (our row in non-PPA bucket) | 1 | Allstate F&C 18.6% landed in our `19.0004 Other`; AM Best PPA includes it |
-| **In-scope match rate** | **13 / 21 (61.9%)** | |
+| **In-scope match rate** | **19 / 21 (90.5%)** | |
 
-Match parity with WA/OR (both ~100% in-scope) is **not** achieved for UT. The 8 still-missing rows decompose into three root causes — none are scope or classification bugs; they are coverage gaps with concrete fixes:
+**Phase B remediation (2026-05-14)**: Pushing DATE_FROM back to 2024-07-01 (6-month lookback) recovered all 6 Progressive UT subsidiary rows on the single filing eff 02/19/25 (Tier 2 jumped 12 → 18). Match rate went 13/21 → 19/21.
 
-| Cause | Count | AM Best entries | Phase 2 fix |
-|---|---:|---|---|
-| Submission-window miss (filed before 2025-01-01, effective in window) | 6 | All 6 Progressive subsidiary rows on a single filing eff 02/19/25 | Same as the WA Progressive Casualty 03/07/25 case noted above. Move to a rolling-window search or pre-fetch out-of-window submissions whose effective date falls inside. |
-| Search-keyword gap | 1 | MGA Insurance Company eff 08/25/25 -9.9% (State Farm subsidiary not surfaced by "state farm" SERFF text search) | Add "mga insurance" search keyword to `GROUP_SEARCH["State Farm"]` in `run_final_rates.py`. |
-| Brand-search routing | 1 | American Economy Insurance Company eff 02/10/26 4.0% — likely filed under a SERFF brand prefix not retrieved by "liberty mutual" or "safeco" searches | Audit Liberty Mutual / Safeco search-term coverage; consider adding "american economy" as its own search keyword. |
+The 2 still-missing rows:
 
-**Resolved 2026-04-27**: The two SFMA-134676709 rows (SF Fire + SF Mutual Auto, AM Best disposition 10/09/25) were originally missing because `parse_filing_summary_pdf` had no row pattern matching the layout `name + ind% + imp% + $prem_chg + ph + $prem_for + % %` (full ind/imp, blank max/min — UT's State Farm format). Added Pattern F to `src/utils.py`; sweep across all 527 cached PDFs found this was the only silent failure in the dataset (no impact on ID/WA/CO/OR). UT row count went 50 → 52, anchor SFMA-134676753 still validates 14/14, AM Best UT match rate went 11/21 → 13/21.
+| Cause | AM Best entry | Phase 2 fix |
+|---|---|---|
+| Search-keyword gap | MGA Insurance Company eff 08/25/25 -9.9% (State Farm subsidiary not surfaced by "state farm" SERFF text search) | Item #3a: add "mga insurance" search keyword to `GROUP_SEARCH["State Farm"]`. |
+| Brand-search routing | American Economy Insurance Company eff 02/10/26 4.0% | Item #3b: research customer-facing-vs-filing-vehicle scope decision before adding search keyword or excluding. |
 
-The 37 "in our UT PPA but not in AM Best report" rows are a mix of (a) 0% rate impacts that AM Best Disposition typically reports as N/A, (b) GEICO multi-subsidiary forms-only filings, and (c) the GECC-134721778 RV filing's 5 REJECTED rows (RV is technically PPA-class but AM Best may not include it in their PPA aggregate). Same expected-extras pattern as WA/OR.
+**Resolved 2026-04-27**: The two SFMA-134676709 rows (SF Fire + SF Mutual Auto, AM Best disposition 10/09/25) were originally missing because `parse_filing_summary_pdf` had no row pattern matching the layout `name + ind% + imp% + $prem_chg + ph + $prem_for + % %` (full ind/imp, blank max/min — UT's State Farm format). Added Pattern F to `src/utils.py`; sweep across all 527 cached PDFs found this was the only silent failure in the dataset (no impact on ID/WA/CO/OR). UT row count went 50 → 52, anchor SFMA-134676753 still validates 14/14, AM Best UT match rate went 11/21 → 13/21 in that pass.
+
+The "in our UT PPA but not in AM Best report" rows are a mix of (a) 0% rate impacts that AM Best Disposition typically reports as N/A, (b) GEICO multi-subsidiary forms-only filings, (c) the GECC-134721778 RV filing's 5 REJECTED rows, and (d) additional pre-2025-submission rows recovered by the new lookback. Same expected-extras pattern as WA/OR.
 
 ## Phase 2 backlog (consolidated)
 
@@ -190,8 +212,24 @@ Items deferred from Phase 1 collection. Each was identified and documented durin
 ### 1. `refresh_pending.py` — periodic pending-status refresh
 Build a job that re-queries SERFF detail pages for filings in our dataset where `disposition_status ∈ {Pending, Review pending, PENDING, Active Suspense}`. Decouples pending-status freshness from full-search re-runs and keeps `DATE_TO` aligned with AM Best validation cutoffs. Surfaced during the WA pending coverage characterization (commit `bfbdfd2`).
 
-### 2. Submission-window strategy — rolling window vs. pre-fetch
-SERFF search filters by submission date, but AM Best matches by effective date. Filings submitted before our `DATE_FROM = 2025-01-01` whose effective date falls inside the window are silently missed (e.g., 6 Progressive UT subsidiary rows on a single filing eff 02/19/25; 2 WA rows in the WA AM Best cross-check). Decide whether to widen `DATE_FROM` retroactively or add a pre-fetch step that searches one quarter prior and keeps only those whose effective date is in-window.
+### 2. ~~Submission-window strategy~~ — RESOLVED 2026-05-14
+
+**Resolution:** Adopted Option 1 — pushed `DATE_FROM` back to 2024-07-01 (6-month lookback) and added an emit-time effective-date filter (`EFFECTIVE_DATE_FROM/EFFECTIVE_DATE_TO = 2025-01-01/2026-04-17`) so the dataset's date axis aligns with AM Best's effective-date matching. Documented in the [Methodology section](#methodology).
+
+**Results across all 5 states:**
+
+| State | Pre-lookback | Post-lookback | Δ |
+|---|---:|---:|---:|
+| ID | 43 | 53 | +10 |
+| WA | 20 | 34 | +14 |
+| CO | 91 | 99 | +8 |
+| OR | 45 | 47 | +2 |
+| UT | 52 | 81 | +29 |
+| **Σ** | **251** | **314** | **+63** |
+
+**Validation:** Anchor SFMA-134676753 still validates 14/14 fields. UT AM Best cross-check 13/21 → 19/21 (90.5%). All 63 recovered rows have filing_date < 2025-01-01 and effective_date in the AM Best window — exactly the set the lookback was designed to capture. 10 rows dropped (all eff > 04/17/2026, legitimately out of window).
+
+**Important methodology correction:** The previous WA cross-check section described 2 specific filings (Progressive Casualty 03/07/25, Encompass Indemnity 07/12/25) as "submission-window misses." Phase C investigation revealed these are not submission-window issues — both filings exist in AM Best but cannot be retrieved from SERFF Public Access under any of our 8 brand keyword searches, including after the new 6-month lookback. They've been re-classified as Item #4 (SERFF visibility gaps).
 
 ### 3. Carrier-keyword cleanup (queued from UT cross-check, 2026-04-27)
 
@@ -212,14 +250,43 @@ SERFF search filters by submission date, but AM Best matches by effective date. 
 - If customer-facing brand → add `"american economy"` as its own SERFF search keyword (parallel to Safeco/Encompass treatment) AND keep it in scope.
 - If filing vehicle → add `"american economy insurance"` to `EXCLUDED_SUBSIDIARY_PATTERNS` and remove the LM classification, mirroring how LM General / LM Insurance Corp are handled. Drop the row from any state's dataset where it surfaces.
 
-### 4. AM Best UT cross-check — submission-window remediation
-The 6 Progressive UT entries eff 02/19/25 are submission-window misses (item 2 above) — not a UT-specific issue. Once the submission-window strategy is decided, re-validate UT to push the cross-check rate from 13/21 (61.9%) toward the WA/OR ~100% in-scope parity. The remaining 2 gaps (MGA, American Economy) are addressed by item 3.
+### 4. SERFF visibility investigation (NEW 2026-05-14)
+
+Phase C surfaced a pattern of filings that exist in AM Best's PPA report but cannot be retrieved via SERFF Public Access using any of our 8 brand keyword searches — including after the 6-month submission-window lookback (Item #2). These are distinct from Item #3 keyword gaps (where the right keyword exists but isn't in our search list) and from the now-resolved Item #2 submission-window issues.
+
+**Known affected filings:**
+
+| State | Subsidiary | Eff date | Filing date | Impact | Pol | Notes |
+|---|---|---|---|---:|---:|---|
+| WA | Progressive Casualty Insurance Company | 03/07/25 | 2024-12-12 | +4.5% | 46,504 | Inside new 6-mo lookback window |
+| WA | Encompass Indemnity Company | 07/12/25 | 2025-03-12 | +19.6% | 6,098 | Inside *original* DATE_FROM window |
+| OR | Artisan and Truckers Casualty Company | 09/19/25 | (unknown) | +4.1% | 5,487 | Progressive subsidiary |
+| OR | Progressive Universal Insurance Company | 09/19/25 | (unknown) | +3.7% | 9,055 | Same filing as Artisan above |
+| OR | Allstate Insurance Company | 07/21/25 | (unknown) | +31.0% | 889 | Very small filing |
+| OR | Safeco Insurance Company of Oregon | 06/21/25 | (unknown) | +12.3% | 7,299 | |
+
+ID and CO are likely also affected but no per-state AM Best cross-check has been run against them to enumerate specific misses.
+
+**Possible root causes to investigate:**
+- SERFF indexing delay between filing submission and search visibility
+- Specific subsidiary names (e.g., "Artisan and Truckers Casualty") not surfacing under a broader-parent search even though they should
+- Filing-tracking-number anomalies preventing detail-page retrieval
+- Search pagination cutting off results when a brand has many filings
+- Filing status filter accidentally excluding them (e.g., a status SERFF treats as "non-public")
+
+**Investigation approach:**
+1. Search SERFF manually (via web UI) for each known missing filing by tracking number or subsidiary name.
+2. Verify the filing exists publicly and is in a status that should make it visible.
+3. Re-run the relevant carrier search and trace what happened to each missing tracking number in the pipeline. If found in raw search results, identify which filter dropped it. If not found, identify what search parameter change would recover it.
+4. Once a root cause pattern emerges, apply the fix and re-validate WA + OR cross-checks.
+
+**Estimated effort:** 1–2 hours initial investigation; fix time variable depending on root cause.
 
 ### Why these were deferred rather than addressed in Phase 1
 
-- Items 1, 2, and 4 represent strategic shifts (refresh job, search-window policy) that are out of scope for one-time Phase 1 collection.
-- Item 3 is small per-keyword work, but each addition requires a SERFF browser re-run and re-validation across affected states. Bundling them into a single keyword-cleanup pass amortizes that cost rather than running the full pipeline once per keyword.
-- Until item 3b is researched and decided, adding `american economy` as a search keyword could pull in either an in-scope brand or an out-of-scope filing vehicle — answering the scope question first prevents a re-run if the decision goes the other way.
+- Item 1 represents a strategic shift (refresh job) that is out of scope for one-time Phase 1 collection.
+- Item 3 is small per-keyword work, but each addition requires a SERFF browser re-run and re-validation across affected states. Bundling them into a single keyword-cleanup pass amortizes that cost rather than running the full pipeline once per keyword. Until item 3b is researched and decided, adding `american economy` as a search keyword could pull in either an in-scope brand or an out-of-scope filing vehicle.
+- Item 4 was only surfaced post-Phase-C and needs its own dedicated investigation; it should not be conflated with the now-resolved Item #2 or the carrier-keyword Item #3.
 
 ## Recommended use
 
