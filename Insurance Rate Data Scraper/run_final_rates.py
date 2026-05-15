@@ -89,7 +89,7 @@ GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent g
     "GEICO":          ["geico"],
     "Allstate":       ["allstate", "encompass", "integon", "north american insurance"],
     "Travelers":      ["travelers", "standard fire"],
-    "Liberty Mutual": ["liberty mutual", "safeco", "first national insurance company of america", "general insurance company of america", "american states", "american economy"],
+    "Liberty Mutual": ["liberty mutual", "safeco", "first national insurance company of america", "general insurance company of america", "american states"],
     "Progressive":    ["progressive"],
 }
 # Out-of-scope subsidiaries (do NOT classify as one of our groups):
@@ -131,6 +131,10 @@ EXCLUDED_SUBSIDIARY_PATTERNS = (
     "esurance",
     "drive insurance",
     "united financial",
+    # Liberty Mutual-owned filing entity (Item #3b, 2026-05-15). No consumer
+    # website, no own agent channel, AM Best rating consolidated under LM,
+    # sold under Safeco's umbrella. Matches LM General / Standard Fire pattern.
+    "american economy",
 )
 
 

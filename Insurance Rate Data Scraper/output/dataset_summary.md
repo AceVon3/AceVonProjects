@@ -4,27 +4,27 @@
 
 ## What this dataset contains
 
-322 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, and Utah**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2025-01-01, 2026-04-17]`.
+320 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, and Utah**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2025-01-01, 2026-04-17]`.
 
 | State | Rows |
 |------:|-----:|
-| ID    |   54 |
+| ID    |   53 |
 | WA    |   34 |
-| CO    |   99 |
+| CO    |  100 |
 | OR    |   48 |
-| UT    |   87 |
-| **Σ** | **322** |
+| UT    |   85 |
+| **Σ** | **320** |
 
 ### Per-state per-brand breakdown
 
 | State | State Farm | GEICO | Allstate | Encompass | Travelers | Liberty Mutual | Safeco | Progressive | Total |
 |------:|----:|----:|----:|----:|----:|----:|----:|----:|----:|
-| ID    |   7 |   6 |  19 |   3 |   2 |  11 |   3 |   3 |  54 |
+| ID    |   7 |   6 |  19 |   3 |   2 |  10 |   3 |   3 |  53 |
 | WA    |   3 |   6 |  14 |   3 |   3 |   0 |   3 |   2 |  34 |
-| CO    |  26 |  18 |  21 |   4 |   5 |  12 |   3 |  10 |  99 |
+| CO    |  26 |  18 |  21 |   4 |   5 |  13 |   3 |  10 | 100 |
 | OR    |  10 |   1 |  13 |   1 |   0 |   8 |   7 |   8 |  48 |
-| UT    |  10 |  20 |  24 |   0 |   2 |  15 |   6 |  10 |  87 |
-| **Σ** |  56 |  51 |  91 |  11 |  12 |  46 |  22 |  33 | **322** |
+| UT    |  10 |  20 |  24 |   0 |   2 |  13 |   6 |  10 |  85 |
+| **Σ** |  56 |  51 |  91 |  11 |  12 |  44 |  22 |  33 | **320** |
 
 State Farm row counts include filings made under the **MGA Insurance Company, Inc.** subsidiary brand (a State Farm-owned filer that submits under its own name on SERFF). MGA Insurance was added as a separate SERFF search keyword in the Item #3a resolution (2026-05-15) and is classified back into State Farm via `GROUP_KW["State Farm"]`.
 
@@ -41,6 +41,7 @@ The two independent-agent brands are included because they operate as distinct c
 - **National General / Integon** (specialty non-standard auto; different market segment; Allstate-acquired 2021)
 - **Standard Fire Insurance** (Travelers filing vehicle, not marketed as a separate brand)
 - **LM General / LM Insurance Corp** (Liberty Mutual filing vehicles, not customer-facing brands)
+- **American Economy Insurance Company** (Liberty Mutual filing entity; no consumer website, no own agent channel, AM Best rating consolidated under LM, sold under Safeco's umbrella; matches LM General/Standard Fire pattern — see Item #3b in Phase 2 backlog for research findings)
 - **Drive Insurance** (Progressive, retired 2020)
 - **Esurance** (Allstate, wound down 2020)
 - **United Financial** (Progressive specialty) and other niche specialty subsidiaries
@@ -182,19 +183,17 @@ Match keys: AM Best dates use disposition/approved date while ours use filed eff
 | Match tier | Count | Definition |
 |---|---:|---|
 | Tier 1 — Direct (sub + eff_date + impact) | 0 | Date-shift between AM Best and SERFF prevents direct match |
-| Tier 2 — Date-relaxed (sub + impact + policyholders) | 19 | Same filing, AM Best effective_date drifts from our filed effective_date |
+| Tier 2 — Date-relaxed (sub + impact + policyholders) | 18 | Same filing, AM Best effective_date drifts from our filed effective_date |
 | Tier 3 — Sub-type reclass (our row in non-PPA bucket) | 1 | Allstate F&C 18.6% landed in our `19.0004 Other`; AM Best PPA includes it |
-| **In-scope match rate** | **20 / 21 (95.2%)** | |
+| **In-scope match rate** | **19 / 19 (100%)** | |
+
+The AM Best UT report has 21 entries for our 8 brands, but 2 are American Economy Insurance Company filings now correctly excluded as a filing vehicle per the Item #3b scope decision (2026-05-15). In-scope AM Best entries: 21 − 2 = 19. All 19 are matched.
 
 **Phase B remediation (2026-05-14)**: Pushing DATE_FROM back to 2024-07-01 (6-month lookback) recovered all 6 Progressive UT subsidiary rows on the single filing eff 02/19/25 (Tier 2 jumped 12 → 18). Match rate went 13/21 → 19/21.
 
 **Item #3a remediation (2026-05-15)**: Adding "mga insurance" as a separate SERFF search keyword (`TARGET_COMPANIES += "MGA Insurance"`; `GROUP_SEARCH["State Farm"] += "mga insurance"`) recovered the State Farm-owned MGA Insurance Company UT filing (GNSC-134605705 eff 07/18/2025 imp -9.9% pol=10395 — matches AM Best's 08/25/25 disposition entry via Tier 2 date-relaxed match). Tier 2 jumped 18 → 19. Match rate went 19/21 → 20/21.
 
-The 1 still-missing row:
-
-| Cause | AM Best entry | Phase 2 fix |
-|---|---|---|
-| Brand-search routing | American Economy Insurance Company eff 02/10/26 4.0% | Item #3b: research customer-facing-vs-filing-vehicle scope decision before adding search keyword or excluding. |
+**Item #3b resolution (2026-05-15)**: American Economy Insurance Company excluded as filing vehicle (matches LM General / Standard Fire pattern; see Phase 2 backlog Item #3b for research findings). The American Economy AM Best entry was the last remaining "miss"; it is now correctly out-of-scope. In-scope denominator drops from 21 to 19 (2 AEIC entries excluded); all 19 remaining are matched. UT cross-check now at **19/19 (100%) in-scope match rate** matching the OR cross-check.
 
 **Resolved 2026-04-27**: The two SFMA-134676709 rows (SF Fire + SF Mutual Auto, AM Best disposition 10/09/25) were originally missing because `parse_filing_summary_pdf` had no row pattern matching the layout `name + ind% + imp% + $prem_chg + ph + $prem_for + % %` (full ind/imp, blank max/min — UT's State Farm format). Added Pattern F to `src/utils.py`; sweep across all 527 cached PDFs found this was the only silent failure in the dataset (no impact on ID/WA/CO/OR). UT row count went 50 → 52, anchor SFMA-134676753 still validates 14/14, AM Best UT match rate went 11/21 → 13/21 in that pass.
 
@@ -240,15 +239,27 @@ Build a job that re-queries SERFF detail pages for filings in our dataset where 
   - UT AM Best cross-check: **19/21 (90.5%) → 20/21 (95.2%)** — recovered the MGA UT filing.
   - ID anchor SFMA-134676753 still validates 14/14 (no regression).
 
-**3b. Research `American Economy Insurance Company` scope inclusion.**
-- Surfaced in UT cross-check as a single missing entry (eff 02/10/26 4.0% pol=23806).
-- Currently in `GROUP_KW["Liberty Mutual"]` for classification but does not surface under "liberty mutual" or "safeco" SERFF text searches in UT.
-- **Decide first whether it's in scope** before adding a search keyword. Decision criteria (mirror the customer-facing-vs-filing-vehicle test that already excluded LM General / LM Insurance Corporation):
-  - Does it have its own website / marketing presence?
-  - Do customers buy "American Economy" policies under that name?
-  - Is the brand visible on policy documents, agent collateral?
-- If customer-facing brand → add `"american economy"` as its own SERFF search keyword (parallel to Safeco/Encompass treatment) AND keep it in scope.
-- If filing vehicle → add `"american economy insurance"` to `EXCLUDED_SUBSIDIARY_PATTERNS` and remove the LM classification, mirroring how LM General / LM Insurance Corp are handled. Drop the row from any state's dataset where it surfaces.
+**3b. ~~Research `American Economy Insurance Company` scope inclusion.~~ — RESOLVED 2026-05-15: EXCLUDE**
+
+**Decision:** Excluded as a filing vehicle, matching LM General / Standard Fire pattern. Added to `EXCLUDED_SUBSIDIARY_PATTERNS` in `run_final_rates.py` and `compare_ut_ambest.py`; removed from `GROUP_KW["Liberty Mutual"]` and `TARGET_KEYWORDS["Liberty Mutual"]` (compare_ut_ambest.py).
+
+**Research findings (2026-05-15):** American Economy Insurance Company fails the customer-facing-brand test on every signal that distinguishes Safeco/Encompass (in scope) from LM General/Standard Fire (excluded):
+
+| Signal | Safeco (in scope) | American Economy |
+|---|---|---|
+| Standalone consumer website | safeco.com ✓ | None — redirects to Safeco |
+| Own agent channel | Independent-agent network ✓ | Uses Safeco's agent network |
+| Standalone AM Best rating | Member-rated as a distinct channel | Consolidated under Liberty Mutual Holding, no separate rating |
+| Consumer marketing as a distinct brand | Yes ✓ | No — "operates under the Safeco umbrella" |
+| Premium volume tracked separately | Yes ✓ | Bundled into LM consolidated reporting |
+
+AEIC operates as a back-end filing entity within the Safeco brand family. AM Best can see it via direct state DOI feeds, but consumers never see the AEIC name on advertising, policy documents, or agent collateral. This matches the precedent that excluded LM General Insurance Company.
+
+**Impact on dataset (2026-05-15):**
+- 4 AEIC rows dropped from the dataset (1 ID, 1 CO, 2 UT) that had been inadvertently classified as Liberty Mutual via the previous `GROUP_KW` entry.
+- 2 additional Liberty Mutual rows recovered (CO LBPM-134358341 subsidiaries) as a side effect of the re-run.
+- Net dataset delta: 322 → 320 (-2 rows).
+- UT AM Best cross-check: AEIC removed from in-scope denominator (21 → 19); all 19 in-scope matched. New rate: **19/19 (100%) in-scope match** (was 20/21 = 95.2%).
 
 ### 4. ~~SERFF visibility investigation~~ — INVESTIGATED 2026-05-15: structural limitation confirmed
 

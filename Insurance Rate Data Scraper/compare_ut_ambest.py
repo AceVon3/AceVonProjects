@@ -25,7 +25,7 @@ TARGET_KEYWORDS: dict[str, tuple[str, ...]] = {
     "Allstate":       ("allstate", "north american insurance"),
     "Encompass":      ("encompass",),
     "Travelers":      ("travelers",),
-    "Liberty Mutual": ("liberty", "peerless", "american states", "american economy"),
+    "Liberty Mutual": ("liberty", "peerless", "american states"),
     "Safeco":         ("safeco", "first national insurance company of america", "general insurance company of america"),
     "Progressive":    ("progressive", "artisan and truckers"),
 }
@@ -41,6 +41,8 @@ EXCLUDED_SUBSIDIARY_PATTERNS = (
     "esurance",
     "drive insurance",
     "united financial",
+    # Liberty Mutual filing entity excluded as filing vehicle (Item #3b, 2026-05-15).
+    "american economy",
 )
 
 DATE_FROM = datetime(2025, 1, 1)
