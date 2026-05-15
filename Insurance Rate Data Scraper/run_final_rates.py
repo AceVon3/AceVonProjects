@@ -70,7 +70,10 @@ from src.utils import parse_filing_summary_pdf
 
 TARGET_TOI = ("19.0", "04.0")  # Personal Auto + Homeowners (Farmowners explicitly out of scope)
 GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate SERFF query)
-    "State Farm":     ["state farm"],
+    # MGA Insurance Company is a State Farm subsidiary that files under its
+    # own name on SERFF and is NOT returned by a "state farm" keyword search
+    # (Item #3a, 2026-05-15).
+    "State Farm":     ["state farm", "mga insurance"],
     "GEICO":          ["geico"],
     # Encompass files under its own brand on SERFF and is NOT returned by an
     # "allstate" keyword search; we search both names under the Allstate group.

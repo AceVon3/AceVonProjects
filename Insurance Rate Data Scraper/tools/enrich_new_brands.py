@@ -1,14 +1,18 @@
-"""Enrich newly-added Safeco/Encompass filings and append to {state}_final.xlsx.
+"""Enrich newly-added single-brand filings and append to {state}_final.xlsx.
 
 Loads the brand-specific search workbooks (output/{state}_{brand}_search.xlsx),
 filters to filing_ids not yet present in {state}_final.xlsx, runs detail
 enrichment + PDF download on those, and rewrites the final xlsx with the
 combined set.
 
+Default brands: safeco + encompass (original use case). Additional brand
+slugs can be passed as positional arguments after the state — used for
+Item #3a (MGA Insurance) and any future per-keyword search additions.
+
 Usage:
     python tools/enrich_new_brands.py WA
-    python tools/enrich_new_brands.py ID
-    python tools/enrich_new_brands.py CO
+    python tools/enrich_new_brands.py UT mga_insurance
+    python tools/enrich_new_brands.py OR mga_insurance
 """
 from __future__ import annotations
 
@@ -129,32 +133,36 @@ def _hydrate_filing_from_final_row(row: dict) -> Filing:
     )
 
 
-def main(state: str) -> int:
+def main(state: str, brand_slugs: tuple[str, ...] = ("safeco", "encompass")) -> int:
     state_l = state.lower()
     final_path = OUTPUT_DIR / f"{state_l}_final.xlsx"
 
     existing_rows = _load_xlsx_rows(final_path, "Filings")
     existing_filings = [_hydrate_filing_from_final_row(r) for r in existing_rows]
-    # Treat rows that lack type_of_insurance as un-enriched: previous run failed
-    # to hit the SERFF search for them, so they came in with no detail data.
-    enriched_ids = {f.filing_id for f in existing_filings if f.type_of_insurance}
-    existing_filings = [f for f in existing_filings if f.filing_id in enriched_ids]
-    existing_ids = enriched_ids
-    print(f"[load] {final_path.name}: {len(existing_filings)} enriched filings (rows with no TOI dropped for retry)", flush=True)
+    # Preserve all existing rows including un-enriched ones (those lacking
+    # type_of_insurance). Earlier behavior dropped them on the assumption a
+    # subsequent retry pass would re-enrich them, but that retry never
+    # happened in practice — and run_final_rates.py now has a sub_type →
+    # parent TOI fallback that handles un-enriched rows correctly. Dropping
+    # them here would lose data the downstream pipeline would otherwise emit.
+    existing_ids = {f.filing_id for f in existing_filings}
+    print(f"[load] {final_path.name}: {len(existing_filings)} existing filings", flush=True)
 
     new_filings: list[Filing] = []
-    for brand in ("safeco", "encompass"):
+    for brand in brand_slugs:
         brand_path = OUTPUT_DIR / f"{state_l}_{brand}_search.xlsx"
         if not brand_path.exists():
             print(f"[skip] {brand_path.name} not found", flush=True)
             continue
         rows = _load_xlsx_rows(brand_path)
+        before = len(new_filings)
         for r in rows:
             fid = str(r.get("filing_id") or "")
             if not fid or fid in existing_ids:
                 continue
             new_filings.append(_row_to_filing(r))
-        print(f"[load] {brand_path.name}: {len(rows)} rows -> {sum(1 for f in new_filings if f.target_company.lower()==brand)} new", flush=True)
+        added = len(new_filings) - before
+        print(f"[load] {brand_path.name}: {len(rows)} rows -> {added} new", flush=True)
 
     if not new_filings:
         print("[done] no new filings to enrich", flush=True)
@@ -196,4 +204,7 @@ def main(state: str) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv[1] if len(sys.argv) > 1 else "WA"))
+    args = sys.argv[1:]
+    state = args[0] if args else "WA"
+    extra_brands = tuple(args[1:]) if len(args) > 1 else ("safeco", "encompass")
+    raise SystemExit(main(state, extra_brands))

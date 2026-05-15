@@ -20,6 +20,11 @@ TARGET_COMPANIES = [
     # name and do not surface under the parent-group search.
     "Safeco",     # Liberty Mutual independent-agent brand
     "Encompass",  # Allstate independent-agent brand
+    # State Farm subsidiary that files under its own name on SERFF and is
+    # NOT returned by a "state farm" keyword search. Added as a separate
+    # search keyword (Item #3a). Classification via GROUP_KW folds it back
+    # into State Farm in the final dataset — the 8-brand scope is unchanged.
+    "MGA Insurance",
 ]
 # Excluded as out-of-scope (specialty / wound-down):
 #   Drive Insurance (Progressive subsidiary, retired)

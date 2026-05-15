@@ -4,27 +4,29 @@
 
 ## What this dataset contains
 
-314 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, and Utah**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2025-01-01, 2026-04-17]`.
+322 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, and Utah**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2025-01-01, 2026-04-17]`.
 
 | State | Rows |
 |------:|-----:|
-| ID    |   53 |
+| ID    |   54 |
 | WA    |   34 |
 | CO    |   99 |
-| OR    |   47 |
-| UT    |   81 |
-| **Σ** | **314** |
+| OR    |   48 |
+| UT    |   87 |
+| **Σ** | **322** |
 
 ### Per-state per-brand breakdown
 
 | State | State Farm | GEICO | Allstate | Encompass | Travelers | Liberty Mutual | Safeco | Progressive | Total |
 |------:|----:|----:|----:|----:|----:|----:|----:|----:|----:|
-| ID    |   6 |   6 |  19 |   3 |   2 |  11 |   3 |   3 |  53 |
+| ID    |   7 |   6 |  19 |   3 |   2 |  11 |   3 |   3 |  54 |
 | WA    |   3 |   6 |  14 |   3 |   3 |   0 |   3 |   2 |  34 |
 | CO    |  26 |  18 |  21 |   4 |   5 |  12 |   3 |  10 |  99 |
-| OR    |   9 |   1 |  13 |   1 |   0 |   8 |   7 |   8 |  47 |
-| UT    |   9 |  20 |  24 |   0 |   2 |  10 |   6 |  10 |  81 |
-| **Σ** |  53 |  51 |  91 |  11 |  12 |  41 |  22 |  33 | **314** |
+| OR    |  10 |   1 |  13 |   1 |   0 |   8 |   7 |   8 |  48 |
+| UT    |  10 |  20 |  24 |   0 |   2 |  15 |   6 |  10 |  87 |
+| **Σ** |  56 |  51 |  91 |  11 |  12 |  46 |  22 |  33 | **322** |
+
+State Farm row counts include filings made under the **MGA Insurance Company, Inc.** subsidiary brand (a State Farm-owned filer that submits under its own name on SERFF). MGA Insurance was added as a separate SERFF search keyword in the Item #3a resolution (2026-05-15) and is classified back into State Farm via `GROUP_KW["State Farm"]`.
 
 ## Scope: Major customer-facing personal lines brands
 
@@ -180,17 +182,18 @@ Match keys: AM Best dates use disposition/approved date while ours use filed eff
 | Match tier | Count | Definition |
 |---|---:|---|
 | Tier 1 — Direct (sub + eff_date + impact) | 0 | Date-shift between AM Best and SERFF prevents direct match |
-| Tier 2 — Date-relaxed (sub + impact + policyholders) | 18 | Same filing, AM Best effective_date drifts from our filed effective_date |
+| Tier 2 — Date-relaxed (sub + impact + policyholders) | 19 | Same filing, AM Best effective_date drifts from our filed effective_date |
 | Tier 3 — Sub-type reclass (our row in non-PPA bucket) | 1 | Allstate F&C 18.6% landed in our `19.0004 Other`; AM Best PPA includes it |
-| **In-scope match rate** | **19 / 21 (90.5%)** | |
+| **In-scope match rate** | **20 / 21 (95.2%)** | |
 
 **Phase B remediation (2026-05-14)**: Pushing DATE_FROM back to 2024-07-01 (6-month lookback) recovered all 6 Progressive UT subsidiary rows on the single filing eff 02/19/25 (Tier 2 jumped 12 → 18). Match rate went 13/21 → 19/21.
 
-The 2 still-missing rows:
+**Item #3a remediation (2026-05-15)**: Adding "mga insurance" as a separate SERFF search keyword (`TARGET_COMPANIES += "MGA Insurance"`; `GROUP_SEARCH["State Farm"] += "mga insurance"`) recovered the State Farm-owned MGA Insurance Company UT filing (GNSC-134605705 eff 07/18/2025 imp -9.9% pol=10395 — matches AM Best's 08/25/25 disposition entry via Tier 2 date-relaxed match). Tier 2 jumped 18 → 19. Match rate went 19/21 → 20/21.
+
+The 1 still-missing row:
 
 | Cause | AM Best entry | Phase 2 fix |
 |---|---|---|
-| Search-keyword gap | MGA Insurance Company eff 08/25/25 -9.9% (State Farm subsidiary not surfaced by "state farm" SERFF text search) | Item #3a: add "mga insurance" search keyword to `GROUP_SEARCH["State Farm"]`. |
 | Brand-search routing | American Economy Insurance Company eff 02/10/26 4.0% | Item #3b: research customer-facing-vs-filing-vehicle scope decision before adding search keyword or excluding. |
 
 **Resolved 2026-04-27**: The two SFMA-134676709 rows (SF Fire + SF Mutual Auto, AM Best disposition 10/09/25) were originally missing because `parse_filing_summary_pdf` had no row pattern matching the layout `name + ind% + imp% + $prem_chg + ph + $prem_for + % %` (full ind/imp, blank max/min — UT's State Farm format). Added Pattern F to `src/utils.py`; sweep across all 527 cached PDFs found this was the only silent failure in the dataset (no impact on ID/WA/CO/OR). UT row count went 50 → 52, anchor SFMA-134676753 still validates 14/14, AM Best UT match rate went 11/21 → 13/21 in that pass.
@@ -225,12 +228,17 @@ Build a job that re-queries SERFF detail pages for filings in our dataset where 
 
 ### 3. Carrier-keyword cleanup (queued from UT cross-check, 2026-04-27)
 
-**3a. Add `MGA Insurance Company` to State Farm `GROUP_SEARCH` keywords.**
-- Surfaced in UT cross-check as a single missing entry (eff 08/25/25 -9.9% pol=10395).
-- "MGA Insurance Company, Inc." is a State Farm subsidiary that files under its own brand on SERFF and is **not** returned by a `state farm` keyword search.
-- May also affect ID/WA/CO/OR — those states' cross-checks did not surface MGA gaps, but our WA cross-check predates the MGA discovery and was scoped to the AM Best WA report's specific entries (12 in-scope rows). MGA is not currently audited across states.
-- **Code change:** trivial — add `"mga insurance"` to `GROUP_SEARCH["State Farm"]` in `run_final_rates.py` (already present in `GROUP_KW["State Farm"]` for classification).
-- **Re-run cost:** browser-based SERFF search per affected state (~1 hour each). Skip the search re-run for states with confirmed AM Best parity (WA, OR); start with ID/CO and re-validate UT.
+**3a. ~~Add `MGA Insurance Company` to State Farm `GROUP_SEARCH` keywords.~~ — RESOLVED 2026-05-15**
+
+- Added `"MGA Insurance"` to `TARGET_COMPANIES` (so `run_search.py` searches for it) and `"mga insurance"` to `GROUP_SEARCH["State Farm"]` (so `run_final_rates.py::download_all_pdfs` can find MGA filings when downloading PDFs).
+- Per-state SERFF spot-check before re-search (live keyword "mga insurance"): **ID=2, WA=0, CO=0, OR=4, UT=7**. Re-search executed only for ID, OR, UT (the 3 states with MGA filings).
+- **Pipeline tool refinement:** `tools/enrich_new_brands.py` was extended to take brand slugs as a CLI argument (previously hardcoded to "safeco"/"encompass") and to preserve un-enriched rows when appending new-brand filings (was dropping them on the assumption a retry pass would re-enrich, which never happened in practice).
+- **Results:**
+  - 3 MGA Insurance Company rows emitted across the dataset (GNSC-134806133 ID eff 01/23/26 -0.1%; GNSC-134675106 OR eff 09/19/25 -3.0%; GNSC-134605705 UT eff 07/18/25 -9.9% — the AM Best UT target).
+  - Pipeline-tool fix to `enrich_new_brands.py` indirectly recovered 5 additional Liberty Mutual UT rows (LBPM-134332238 subsidiaries filed 2024-12-02 eff 01/01/25) whose detail-page enrichment had failed in Phase C and were being silently dropped on each subsequent re-run.
+  - Total +8 rows across ID/OR/UT (251 → 322 since pre-Phase-B; 314 → 322 since end of Phase C).
+  - UT AM Best cross-check: **19/21 (90.5%) → 20/21 (95.2%)** — recovered the MGA UT filing.
+  - ID anchor SFMA-134676753 still validates 14/14 (no regression).
 
 **3b. Research `American Economy Insurance Company` scope inclusion.**
 - Surfaced in UT cross-check as a single missing entry (eff 02/10/26 4.0% pol=23806).
