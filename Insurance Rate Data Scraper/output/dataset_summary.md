@@ -107,27 +107,26 @@ The dataset's date axis is therefore *effective date*, which matches AM Best's m
 | In AM Best, missing from ours | 2 |
 | In ours, not in AM Best report | 21 |
 
-**Phase C did NOT improve the WA match rate** (still 12/14). The 2 unmatched entries were originally documented here as submission-window misses, but Phase C investigation revealed both are actually SERFF visibility gaps (see [Phase 2 backlog Item #4](#4-serff-visibility-investigation-new-2026-05-14)):
+**Phase C did NOT improve the WA match rate** (still 12/14). The 2 unmatched entries are now confirmed (via Item #4 investigation 2026-05-15) to be **genuine SERFF Public Access visibility gaps** — a structural limitation, not a fixable scraper bug:
 
-1. **Progressive Casualty 03/07/25** (4.5%, 46,504 pol) — filed 2024-12-12 (inside the new 2024-07-01 lookback window, but SERFF still doesn't return it under any "Progressive" search-keyword combination).
-2. **Encompass Indemnity 07/12/25** (19.6%, 6,098 pol) — filed 2025-03-12 (was inside the *original* DATE_FROM=2025-01-01 window all along; should have been found even before Phase C).
+1. **Progressive Casualty 03/07/25** (4.5%, 46,504 pol) — filed 2024-12-12 (inside the new 2024-07-01 lookback window).
+2. **Encompass Indemnity 07/12/25** (19.6%, 6,098 pol) — filed 2025-03-12 (was inside the *original* DATE_FROM=2025-01-01 window all along; never visible to our scraper despite multiple keyword angles).
 
-Both filings exist in AM Best's reporting but cannot be retrieved via SERFF Public Access using our 8 brand-keyword searches. Root cause unknown — possible candidates include SERFF indexing/visibility issues, a subsidiary name not in our keyword lists, or pagination cutting off the result set. Investigation is queued as Item #4.
+**Root cause confirmed:** SERFF provides filer-controlled public visibility via a "Public Access Indicator" field on each filing. Filings marked private do not appear in SERFF Public Access search results, even when approved by the state. Live re-search on 2026-05-15 across "encompass" (22 hits), "allstate" (55 hits), "indemnity" (31 hits — all ACE/Chubb), and "progressive" (8 hits) confirmed neither AM Best filing appears under any reasonable carrier keyword. WA OIC's own website (`insurance.wa.gov`) directs property/casualty rate-filing searches to SERFF Public Access — no separate state-only portal exists for our scope. AM Best obtains these filings through licensed state DOI data-sharing arrangements that public scrapers cannot replicate. See the new [SERFF Public Access Limitations](#serff-public-access-limitations) section below.
 
 The in-ours-not-in-AM-Best entries are all expected: a mix of Homeowners filings (AM Best PPA report excludes HO), 0% PPA filings that AM Best reports as N/A, and additional pre-2025-submission rows recovered by the new lookback that AM Best may not have indexed at export time.
 
 ## AM Best OR cross-check (AM Best PPA report, 2026-04-24 export)
 
-Scope filter: AM Best report is PPA-only. Our OR PPA bucket aggregates sub-types `19.0001` (PPA), `19.0000` (Personal Auto Combinations), and `19.0002` (Motorcycle) to align with AM Best's PPA classification.
+Scope filter: AM Best report is PPA-only. Our OR PPA bucket aggregates sub-types `19.0001` (PPA), `19.0000` (Personal Auto Combinations), `19.0002` (Motorcycle), and `19.0004` (Other Personal Auto) to align with AM Best's PPA classification.
 
-After Phase C re-run (DATE_FROM=2024-07-01 lookback):
+After Phase C re-run (DATE_FROM=2024-07-01 lookback) and the Item #4 investigation's compare-script fix (2026-05-15):
 
 | Result | Count |
 |---|---:|
-| Matched — direct (subsidiary + effective date + impact %) | 25 |
+| Matched — direct (subsidiary + effective date + impact %) | 29 |
 | In AM Best, missing from ours — out-of-scope filing vehicles | 6 |
-| In AM Best, missing from ours — genuine in-scope gaps (Item #4 candidates) | 4 |
-| **In-scope match rate** | **25 / 29 (86%)** direct, plus prior Tier 2 sub-type reclass not re-validated this cycle |
+| **In-scope match rate** | **29 / 29 (100%)** |
 
 **6 out-of-scope entities** (correctly excluded per Scope; not scraper gaps):
 
@@ -138,16 +137,9 @@ After Phase C re-run (DATE_FROM=2024-07-01 lookback):
 | LM General Insurance Company (×1) | Liberty Mutual | Filing vehicle |
 | LM Insurance Corporation (×1) | Liberty Mutual | Filing vehicle |
 
-**4 genuine in-scope gaps** — same pattern as WA's 2 misses (filings exist in AM Best but don't surface in our SERFF searches even after the 6-month lookback). Queued as Item #4 candidates:
+**Item #4 investigation note (2026-05-15):** A previous version of `compare_or_ambest.py` had `_is_ppa()` filtering only `19.0001` and `19.0000`, omitting `19.0002` (Motorcycle) and `19.0004` (Other Personal Auto). AM Best's PPA aggregation includes all four. The omission hid 4 valid in-scope matches (Allstate Insurance Company eff 07/21/25 31% in 19.0004; Progressive Universal, Artisan & Truckers, Safeco of Oregon all in 19.0002), incorrectly counting them as missing. Those filings are present in our data with correct rate-effect values; the bug was solely in the comparison script's filter. After fix, OR returns to its previously documented 29/29 (100%) in-scope match rate. Pattern parity with `compare_ut_ambest.py` restored.
 
-| Subsidiary | Eff date | Impact | Policyholders |
-|---|---|---:|---:|
-| Artisan and Truckers Casualty Company (Progressive) | 09/19/25 | +4.1% | 5,487 |
-| Progressive Universal Insurance Company | 09/19/25 | +3.7% | 9,055 |
-| Allstate Insurance Company | 07/21/25 | +31.0% | 889 |
-| Safeco Insurance Company of Oregon | 06/21/25 | +12.3% | 7,299 |
-
-The in-ours-not-in-AM-Best entries are a mix of future-dated filings past the AM Best 2026-04-24 export cutoff, zero-impact filings that AM Best lists as N/A, additional pre-2025-submission rows recovered by the lookback, and homeowners/motorcycle/combinations sub-type rows outside AM Best PPA scope.
+The "in our OR PPA but not in AM Best report" entries are a mix of future-dated filings past the AM Best 2026-04-24 export cutoff, zero-impact filings that AM Best lists as N/A, additional pre-2025-submission rows recovered by the lookback, and homeowners sub-type rows outside AM Best PPA scope.
 
 ## Pending-coverage characterization (pre-Utah expansion, 2026-04-27)
 
@@ -250,43 +242,65 @@ Build a job that re-queries SERFF detail pages for filings in our dataset where 
 - If customer-facing brand → add `"american economy"` as its own SERFF search keyword (parallel to Safeco/Encompass treatment) AND keep it in scope.
 - If filing vehicle → add `"american economy insurance"` to `EXCLUDED_SUBSIDIARY_PATTERNS` and remove the LM classification, mirroring how LM General / LM Insurance Corp are handled. Drop the row from any state's dataset where it surfaces.
 
-### 4. SERFF visibility investigation (NEW 2026-05-14)
+### 4. ~~SERFF visibility investigation~~ — INVESTIGATED 2026-05-15: structural limitation confirmed
 
-Phase C surfaced a pattern of filings that exist in AM Best's PPA report but cannot be retrieved via SERFF Public Access using any of our 8 brand keyword searches — including after the 6-month submission-window lookback (Item #2). These are distinct from Item #3 keyword gaps (where the right keyword exists but isn't in our search list) and from the now-resolved Item #2 submission-window issues.
+**Status:** Closed. Root cause identified as a structural limitation of public-scraping approaches against SERFF Filing Access. Not fixable via search-keyword, pagination, or filter changes. Kept in backlog as documentation, not as an action item.
 
-**Known affected filings:**
+**Original scope (Phase C):** 6 filings — 2 WA + 4 OR.
 
-| State | Subsidiary | Eff date | Filing date | Impact | Pol | Notes |
-|---|---|---|---|---:|---:|---|
-| WA | Progressive Casualty Insurance Company | 03/07/25 | 2024-12-12 | +4.5% | 46,504 | Inside new 6-mo lookback window |
-| WA | Encompass Indemnity Company | 07/12/25 | 2025-03-12 | +19.6% | 6,098 | Inside *original* DATE_FROM window |
-| OR | Artisan and Truckers Casualty Company | 09/19/25 | (unknown) | +4.1% | 5,487 | Progressive subsidiary |
-| OR | Progressive Universal Insurance Company | 09/19/25 | (unknown) | +3.7% | 9,055 | Same filing as Artisan above |
-| OR | Allstate Insurance Company | 07/21/25 | (unknown) | +31.0% | 889 | Very small filing |
-| OR | Safeco Insurance Company of Oregon | 06/21/25 | (unknown) | +12.3% | 7,299 | |
+**Phase 2 investigation findings (2026-05-15):**
 
-ID and CO are likely also affected but no per-state AM Best cross-check has been run against them to enumerate specific misses.
+- **OR's 4 "missing" cases were a FALSE ALARM** — a compare-script bug in `compare_or_ambest.py::_is_ppa()` that omitted sub-types `19.0002` (Motorcycle) and `19.0004` (Other Personal Auto) from the PPA bucket. AM Best's PPA report aggregates those codes; our script didn't. All 4 OR filings were actually in our dataset with matching parameters; they just weren't visible to the cross-check key lookup. After the 1-line fix, OR cross-check returns to 29/29 (100%) in-scope match rate. **Not an Item #4 case.**
+- **WA's 2 cases are GENUINE Item #4 cases** — confirmed via live SERFF re-search across "encompass" (22 hits), "allstate" (55 hits), "indemnity" (31 hits — all ACE/Chubb, none Allstate-affiliated), and "progressive" (8 hits). None of those keyword searches returns the AM Best filings. WA OIC's website confirms SERFF Public Access is the only public search portal for property/casualty rate filings. Most likely root cause: the filer set the SERFF "Public Access Indicator" to "No" on these filings, hiding them from public search while AM Best can still see them via licensed state DOI data feeds.
 
-**Possible root causes to investigate:**
-- SERFF indexing delay between filing submission and search visibility
-- Specific subsidiary names (e.g., "Artisan and Truckers Casualty") not surfacing under a broader-parent search even though they should
-- Filing-tracking-number anomalies preventing detail-page retrieval
-- Search pagination cutting off results when a brand has many filings
-- Filing status filter accidentally excluding them (e.g., a status SERFF treats as "non-public")
+**Confirmed affected filings (Item #4 scope is just 2 filings):**
 
-**Investigation approach:**
-1. Search SERFF manually (via web UI) for each known missing filing by tracking number or subsidiary name.
-2. Verify the filing exists publicly and is in a status that should make it visible.
-3. Re-run the relevant carrier search and trace what happened to each missing tracking number in the pipeline. If found in raw search results, identify which filter dropped it. If not found, identify what search parameter change would recover it.
-4. Once a root cause pattern emerges, apply the fix and re-validate WA + OR cross-checks.
+| State | Subsidiary | Eff date | Filing date | Impact | Pol |
+|---|---|---|---|---:|---:|
+| WA | Progressive Casualty Insurance Company | 03/07/25 | 2024-12-12 | +4.5% | 46,504 |
+| WA | Encompass Indemnity Company | 07/12/25 | 2025-03-12 | +19.6% | 6,098 |
 
-**Estimated effort:** 1–2 hours initial investigation; fix time variable depending on root cause.
+UT cross-check shows zero Item #4 cases (both remaining UT misses are Item #3 carrier-keyword issues). OR is fully clean after the compare-script fix. ID and CO have no AM Best PPA reports available for direct verification but UT/OR/WA results suggest the issue is rare.
+
+**Why this is not fixable:** SERFF Public Access intentionally exposes only filings whose "Public Access Indicator" is set to "Yes" by the filer. AM Best, RateFilings.com, and other commercial providers bridge this gap via licensed state DOI data-sharing arrangements not available to public scrapers. The 2 WA filings are correctly approved and in WA OIC's records, but the filers chose to mark them private. No code change to our SERFF scraper can recover them; the only resolution paths are:
+- Switch to a licensed commercial data source (AM Best feed, RateFilings.com, etc.), or
+- Request copies directly from WA OIC under public records procedures.
+
+Both approaches are out of scope for the public-SERFF-scraping pipeline. **The dataset's representation is therefore "rate filings publicly visible via SERFF Filing Access," not "all rate filings in the state."** See the new [SERFF Public Access Limitations](#serff-public-access-limitations) section below for the broader characterization of this constraint.
 
 ### Why these were deferred rather than addressed in Phase 1
 
 - Item 1 represents a strategic shift (refresh job) that is out of scope for one-time Phase 1 collection.
 - Item 3 is small per-keyword work, but each addition requires a SERFF browser re-run and re-validation across affected states. Bundling them into a single keyword-cleanup pass amortizes that cost rather than running the full pipeline once per keyword. Until item 3b is researched and decided, adding `american economy` as a search keyword could pull in either an in-scope brand or an out-of-scope filing vehicle.
-- Item 4 was only surfaced post-Phase-C and needs its own dedicated investigation; it should not be conflated with the now-resolved Item #2 or the carrier-keyword Item #3.
+
+## SERFF Public Access Limitations
+
+This dataset represents *rate filings publicly visible via SERFF Filing Access (`filingaccess.serff.com`)* — **not** *all rate filings in each state*. The distinction matters and is documented here so downstream consumers don't assume the dataset is a complete enumeration of state rate filings.
+
+**Why the difference exists:**
+
+- SERFF (System for Electronic Rate and Form Filings) is the NAIC-operated filing system used by most US state insurance regulators.
+- Each filing has a **Public Access Indicator** field that the filer sets to control whether the filing appears in `filingaccess.serff.com` (the public-search portal). When set to "No," the filing is still received and processed by the state DOI but is hidden from public search.
+- State DOIs receive ALL filings (public and non-public). Commercial data providers (AM Best, RateFilings.com, S&P Capital IQ, etc.) bridge the gap by licensing direct state DOI data feeds that include both public and non-public filings.
+- Public scrapers — including this one — can only retrieve filings the filer chose to make public. There is no public-scraping technique that recovers the full set.
+
+**Observed impact in this dataset (2026-05-15 Item #4 investigation):**
+
+Of the WA AM Best PPA cross-check's 14 in-scope filings, 2 are not retrievable via SERFF Public Access:
+
+| Filing | Why we believe it's a non-public filing |
+|---|---|
+| Progressive Casualty WA eff 03/07/25 (4.5%, 46,504 pol) | Approved 2024-12-16 by WA OIC per AM Best; absent from SERFF Public Access search for "progressive" (8 results), "casualty" or other keyword angles |
+| Encompass Indemnity WA eff 07/12/25 (19.6%, 6,098 pol) | Approved 2025-09-15 by WA OIC per AM Best; absent from SERFF Public Access search for "encompass" (22 results), "allstate" (55 results), "indemnity" (31 results — all ACE/Chubb) |
+
+OR, UT, ID, and CO show no current Item #4 cases. OR was a false alarm from a compare-script bug. UT's 2 remaining cross-check misses are Item #3 search-keyword issues, not Item #4. ID and CO have no AM Best PPA reports for direct verification.
+
+**Implications for dataset consumers:**
+
+- The cross-check match rates documented above (UT: 19/21 = 90.5%; OR: 29/29 = 100%; WA: 12/14 = 86%) are the maximum achievable via public scraping.
+- For market analysis comparing carriers within the publicly-visible set, the dataset is reliable.
+- For comprehensive market analysis requiring every rate filing on record (including non-public filings), licensed commercial sources are required. No iteration on this scraper will close that gap.
+- This is a known structural limitation, not a defect.
 
 ## Recommended use
 

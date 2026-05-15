@@ -94,8 +94,15 @@ data = [dict(zip(hdr, r)) for r in rows[1:]]
 or_rows = [d for d in data if d["state"] == "OR"]
 def _is_ppa(d):
     s = (d["sub_type_of_insurance"] or "")
-    # AM Best PPA report aggregates 19.0000 (Personal Auto Combinations) and 19.0001 (PPA) together
-    return s.startswith("19.0001") or s.startswith("19.0000")
+    # AM Best PPA report aggregates Personal Auto sub-codes: 19.0000 (Personal
+    # Auto Combinations), 19.0001 (PPA), 19.0002 (Motorcycle), and 19.0004
+    # (Other Personal Auto). Pattern matches compare_ut_ambest.py. Item #4
+    # investigation (2026-05-15) discovered that omitting 19.0002 and 19.0004
+    # had been hiding 4 in-scope matches (Allstate Insurance Co 31% in
+    # 19.0004; Progressive Universal, Artisan & Truckers, Safeco of Oregon
+    # all in 19.0002) and falsely reporting them as missing.
+    return (s.startswith("19.0001") or s.startswith("19.0000")
+            or s.startswith("19.0002") or s.startswith("19.0004"))
 or_ppa = [d for d in or_rows if _is_ppa(d)]
 or_other = [d for d in or_rows if not _is_ppa(d)]
 
