@@ -1,19 +1,20 @@
-# Insurance Rate Filings — Five-State Dataset
+# Insurance Rate Filings — Six-State Dataset
 
 **Canonical deliverable:** `output/all_states_final_rates.xlsx` (sheet `rate_filings`) and `output/all_states_final_rates.csv`.
 
 ## What this dataset contains
 
-320 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, and Utah**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2025-01-01, 2026-04-17]`.
+392 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, Utah, and Arizona**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2025-01-01, 2026-04-17]`.
 
 | State | Rows |
 |------:|-----:|
 | ID    |   53 |
 | WA    |   34 |
-| CO    |  100 |
-| OR    |   48 |
-| UT    |   85 |
-| **Σ** | **320** |
+| CO    |   97 |
+| OR    |   47 |
+| UT    |   84 |
+| AZ    |   77 |
+| **Σ** | **392** |
 
 ### Per-state per-brand breakdown
 
@@ -21,10 +22,11 @@
 |------:|----:|----:|----:|----:|----:|----:|----:|----:|----:|
 | ID    |   7 |   6 |  19 |   3 |   2 |  10 |   3 |   3 |  53 |
 | WA    |   3 |   6 |  14 |   3 |   3 |   0 |   3 |   2 |  34 |
-| CO    |  26 |  18 |  21 |   4 |   5 |  13 |   3 |  10 | 100 |
-| OR    |  10 |   1 |  13 |   1 |   0 |   8 |   7 |   8 |  48 |
-| UT    |  10 |  20 |  24 |   0 |   2 |  13 |   6 |  10 |  85 |
-| **Σ** |  56 |  51 |  91 |  11 |  12 |  44 |  22 |  33 | **320** |
+| CO    |  26 |  18 |  21 |   4 |   5 |  10 |   3 |  10 |  97 |
+| OR    |  10 |   1 |  13 |   1 |   0 |   7 |   7 |   8 |  47 |
+| UT    |  10 |  20 |  24 |   0 |   2 |  12 |   6 |  10 |  84 |
+| AZ    |  12 |   2 |  23 |   2 |  13 |  11 |   6 |   8 |  77 |
+| **Σ** |  68 |  53 | 114 |  13 |  25 |  50 |  28 |  41 | **392** |
 
 State Farm row counts include filings made under the **MGA Insurance Company, Inc.** subsidiary brand (a State Farm-owned filer that submits under its own name on SERFF). MGA Insurance was added as a separate SERFF search keyword in the Item #3a resolution (2026-05-15) and is classified back into State Farm via `GROUP_KW["State Farm"]`.
 
@@ -42,11 +44,18 @@ The two independent-agent brands are included because they operate as distinct c
 - **Standard Fire Insurance** (Travelers filing vehicle, not marketed as a separate brand)
 - **LM General / LM Insurance Corp** (Liberty Mutual filing vehicles, not customer-facing brands)
 - **American Economy Insurance Company** (Liberty Mutual filing entity; no consumer website, no own agent channel, AM Best rating consolidated under LM, sold under Safeco's umbrella; matches LM General/Standard Fire pattern — see Item #3b in Phase 2 backlog for research findings)
+- **Peerless Insurance Company / Peerless Indemnity Insurance Company** (Liberty Mutual phased out the consumer-facing Peerless brand in 2013; both entities now exist only as filing vehicles within Liberty Mutual Holding Company; no consumer website, no own agent channel, AM Best rating consolidated under LM; same filing-vehicle pattern as LM General / American Economy — see Item #6 in Phase 2 backlog for research findings)
 - **Drive Insurance** (Progressive, retired 2020)
 - **Esurance** (Allstate, wound down 2020)
 - **United Financial** (Progressive specialty) and other niche specialty subsidiaries
 
 The scope criterion is *"does this entity represent a distinct brand that customers interact with and recognize?"* — **not** *"does this entity share a corporate parent with a major brand?"*
+
+### Scope time-sensitivity note (Safeco brand retirement)
+
+Safeco was retired as a customer-facing brand by Liberty Mutual on **2026-04-25**, eight days after this dataset's effective-date cutoff (2026-04-17). For the dataset's effective-date window (2025-01-01 to 2026-04-17), Safeco was a distinct customer-facing brand throughout, so its inclusion is correct.
+
+However, any future expansion of the effective-date window past 2026-04-25 must reconsider Safeco's scope classification — post-retirement, Safeco filings would represent a wound-down brand rather than an active customer-facing one. This is the inverse of the filing-vehicle exclusion: a brand that WAS customer-facing during our window but ceased to be afterward. See Item #5 in Phase 2 backlog.
 
 ## Methodology
 
@@ -73,7 +82,7 @@ The dataset's date axis is therefore *effective date*, which matches AM Best's m
 | Column | Meaning |
 |---|---|
 | `state` | Two-letter state code |
-| `effective_date` | Requested effective date (Renewal preferred over New) |
+| `effective_date` | Requested effective date (New business date preferred; falls back to Renewal if New unavailable). Matches AM Best convention — verified via OR cross-check where 17/18 differing-date filings matched AM Best's New date (Thread 4 investigation, 2026-05-26). |
 | `company_name` | Subsidiary writing the rate; per-row expansion when multiple |
 | `line_of_business` | NAIC parent TOI code + label (kept for AM Best compatibility) |
 | `sub_type_of_insurance` | NAIC Sub-TOI code + label (e.g. `19.0001 Private Passenger Auto (PPA)`, `19.0002 Motorcycle`, `19.0003 RV`) |
@@ -92,7 +101,7 @@ The dataset's date axis is therefore *effective date*, which matches AM Best's m
 
 ## Scope and limitations
 
-- **States:** ID, WA, CO, OR only.
+- **States:** ID, WA, CO, OR, UT, AZ.
 - **Lines:** Personal Auto (TOI 19.0) and Homeowners (TOI 04.0) only. Farmowners explicitly out of scope.
 - **Carriers:** See Scope section above — 8 customer-facing brands; filing-vehicle subsidiaries and specialty acquisitions explicitly excluded.
 - **Date range:** Effective-date window 2025-01-01 → 2026-04-17 (the AM Best validation cutoff). SERFF submission window widened to 2024-07-01 → 2026-04-17 so pre-2025 submissions with in-window effective dates are captured. The effective-date filter is applied at row emit time in `run_final_rates.py`.
@@ -100,7 +109,8 @@ The dataset's date axis is therefore *effective date*, which matches AM Best's m
 - **Filer flag:** When the filer flagged "Rate data does NOT apply to filing," the row is excluded — this flag is taken at face value.
 - **PDF parsing:** Six Disposition row patterns are supported (full / blank-indicated / sparse / blank-indicated+blank-max-min with and without premium change / full-with-blank-max-min). Within a filing, subsidiary rows are deduped by name so multi-amendment filings (multiple Disposition sections) emit one row per subsidiary using the most recent disposition's values. Subsidiary-name lines that wrap across multiple PDF lines are folded by the existing continuation loop after the first line matches a row pattern.
 - **Disposition cases:** ID uses ALL-CAPS (`APPROVED`); WA uses `Approved`; CO uses `Filed` (file-and-use); OR uses `Approved` / `Filed`; UT uses `FILED FOR USE` (file-and-use) and `REJECTED` (equivalent to other states' `Disapproved`). Casing preserved as filed. The `rate_activity` classifier maps `REJECTED → rate_change_disapproved` alongside the standard `WITHDRAWN`/`DISAPPROVED`/`PENDING` patterns.
-- **Filing-vehicle subsidiary exclusion:** When a customer-facing-brand filing's per-company rate table lists subsidiary names that are themselves filing vehicles or out-of-scope specialty acquisitions (`LM General Insurance Company`, `LM Insurance Corporation`, `Standard Fire Insurance`, `Integon`, `National General`, `Esurance`, `Drive Insurance`, `United Financial`), those individual rows are dropped at emission time — the parent filing is kept but the filing-vehicle row is suppressed. Enforced in `run_final_rates.py:_is_excluded_subsidiary`.
+- **Filing-vehicle subsidiary exclusion:** When a customer-facing-brand filing's per-company rate table lists subsidiary names that are themselves filing vehicles or out-of-scope specialty acquisitions (`LM General Insurance Company`, `LM Insurance Corporation`, `Standard Fire Insurance`, `Integon`, `National General`, `Esurance`, `Drive Insurance`, `United Financial`, `American Economy`, `Peerless`), those individual rows are dropped at emission time — the parent filing is kept but the filing-vehicle row is suppressed. Enforced in `run_final_rates.py:_is_excluded_subsidiary`.
+- **Disposition cases (AZ):** AZ uses `Approved` for approved rate filings and reports per-subsidiary indicated/impact percentages in standard format. No new disposition vocabulary surfaced during AZ expansion.
 
 ## AM Best WA cross-check (2025-01-01 to 2026-04-17, PPA only)
 
@@ -199,6 +209,37 @@ The AM Best UT report has 21 entries for our 8 brands, but 2 are American Econom
 
 The "in our UT PPA but not in AM Best report" rows are a mix of (a) 0% rate impacts that AM Best Disposition typically reports as N/A, (b) GEICO multi-subsidiary forms-only filings, (c) the GECC-134721778 RV filing's 5 REJECTED rows, and (d) additional pre-2025-submission rows recovered by the new lookback. Same expected-extras pattern as WA/OR.
 
+## Arizona expansion (added 2026-05-26)
+
+AZ was added bringing the dataset to 6 states / 392 rows (+77 AZ rows). Expansion notes:
+
+- **Search:** 232 raw filings across 9 brand keywords (Allstate=76, Travelers=43, Liberty Mutual=33, Safeco=20, GEICO=18, Progressive=17, State Farm=17, Encompass=5, MGA Insurance=3). MGA Insurance timed out on initial `--all-companies` run and was retried separately, then merged via `merge_az_search.py`.
+- **Enrichment:** 50.6 min runtime, 232/232 submission dates populated, 291 PDFs downloaded (248 MB cached). 26 enrichment skips logged (`row not found in results`) — Liberty Mutual 17, Travelers 9. All 6 target-Rate self-recovered via `run_final_rates.py` independent retry; 1 confirmed correct out-of-window exclusion (LBPM-134879025).
+- **Final-rates:** 207 target-TOI target-carrier filings → 57 emitted → 83 rows → 77 after filing-vehicle exclusion (6 rows dropped: 3 Peerless Indemnity + others).
+- **Per-brand:** Allstate 23, Travelers 13, State Farm 12, Liberty Mutual 11, Progressive 8, Safeco 6, Encompass 2, GEICO 2. Notable: AZ has by far the heaviest Travelers HO presence in the dataset (TRVD-G prefix = Travelers Personal Insurance Company).
+- **No new disposition vocabulary discovered:** AZ uses standard `Approved` casing.
+- **Anchor:** ID SFMA-134676753 still validates 14/14 (unchanged).
+- **Issue surfaced and resolved during AZ:** `NEW_PRODUCT_RE` false positive on the SERFF supporting-document boilerplate `"Rate Transition Modification - New Program Table"`. Fixed via `\bNew Program\b(?!\s+Table)` negative lookahead. 5 Travelers HO filings recovered across AZ; no prior-state impact (confirmed via dataset-wide cached-PDF sweep).
+
+## AM Best AZ cross-check (AM Best PPA + Homeowners Multi-Peril report, 2026-05-26 export)
+
+The AZ AM Best report is the **first AM Best validation covering BOTH PPA and Homeowners Multi-Peril** for our dataset (UT and OR were PPA-only). PPA bucket folds sub-types 19.0000 / 19.0001 / 19.0002 / 19.0004 (mirrors UT/OR). HO bucket folds sub-types 04.0000–04.0005.
+
+Match keys: `(subsidiary_name_normalized, effective_date_MMDDYY, impact_pct)` Tier 1 — direct match.
+
+| Result | PPA | HO |
+|---|---:|---:|
+| AM Best in-scope entries (8 brands, 2025-01-01 to 2026-04-17) | 14 | 15 |
+| Tier 1 direct match (subsidiary + eff_date + impact) | 14 | 11 |
+| Tier 2 date-relaxed | 0 | 4 |
+| Tier 3 sub-type reclass | 0 | 0 |
+| Still missing | 0 | 0 |
+| **In-scope match rate** | **14 / 14 (100%)** | **15 / 15 (100%)** |
+
+The 4 HO Tier-2 matches are all on the same SERFF tracking number group (Travelers Personal Insurance Company eff 03/21/25, multiple sub-TOI variants) where the date-relaxed match falls back to (subsidiary + impact + policyholders).
+
+**In our AZ but not in AM Best:** 33 PPA + 19 HO. Standard pattern documented elsewhere: a mix of (a) 0% rate impacts AM Best reports as N/A, (b) recent filings past the AM Best report's snapshot date, (c) sub-TOI rows (Motorcycle/RV/Tenant) that AM Best may bucket differently.
+
 ## Phase 2 backlog (consolidated)
 
 Items deferred from Phase 1 collection. Each was identified and documented during a Phase 1 milestone but not addressed inline because the scope or risk warranted a dedicated pass.
@@ -286,6 +327,78 @@ UT cross-check shows zero Item #4 cases (both remaining UT misses are Item #3 ca
 - Request copies directly from WA OIC under public records procedures.
 
 Both approaches are out of scope for the public-SERFF-scraping pipeline. **The dataset's representation is therefore "rate filings publicly visible via SERFF Filing Access," not "all rate filings in the state."** See the new [SERFF Public Access Limitations](#serff-public-access-limitations) section below for the broader characterization of this constraint.
+
+### 5. Safeco brand retirement — window-extension contingency (added 2026-05-26)
+
+Liberty Mutual retired the Safeco brand on 2026-04-25 ([LMG announcement](https://www.libertymutualgroup.com/about-lm/news/articles/liberty-mutual-insurance-retires-safeco-brand)). For this dataset's effective-date window (cutoff 2026-04-17), Safeco was a distinct customer-facing brand throughout, so its inclusion is correct and unchanged.
+
+**Contingency:** If a future expansion extends the effective-date window past 2026-04-25, Safeco's scope classification must be re-evaluated. Post-retirement, Safeco filings would represent a wound-down brand (analogous to Drive Insurance / Esurance) rather than an active customer-facing one. Default treatment in that scenario: exclude post-2026-04-25 Safeco filings as a wound-down brand, but document and revisit if filing volume suggests Safeco continues as a meaningful filer entity in transition.
+
+Not actionable today — purely a forward-looking note tied to window-extension decisions.
+
+### 6. ~~Peerless Insurance / Peerless Indemnity scope inclusion.~~ — RESOLVED 2026-05-26: EXCLUDE
+
+**Decision:** Excluded as a filing vehicle, matching LM General / American Economy / Standard Fire pattern. Added `"peerless"` to `EXCLUDED_SUBSIDIARY_PATTERNS` in `run_final_rates.py` and `compare_ut_ambest.py`; removed `"peerless"` from `TARGET_KEYWORDS["Liberty Mutual"]` in `compare_ut_ambest.py`.
+
+**Research findings (2026-05-26):** Liberty Mutual phased out the consumer-facing Peerless brand in 2013 ([Agency Checklists](https://agencychecklists.com/2013/01/22/peerlesschangingtolibertymutual-8717/), [Keene Sentinel](https://www.keenesentinel.com/news/local/liberty-mutual-axes-peerless-brand/article_b0a561b8-542f-59db-92a7-5f903333bff5.html)). Peerless Insurance Company (PIC) and Peerless Indemnity Insurance Company (PIIC) persist as legal/filing entities within Liberty Mutual Holding Company but have no consumer-facing presence — no standalone website, no own agent channel, AM Best rating consolidated under Liberty Mutual.
+
+| Signal | Safeco (in scope) | Peerless |
+|---|---|---|
+| Standalone consumer website | safeco.com ✓ | None — brand retired 2013 |
+| Own agent channel | Independent-agent network ✓ | Personal lines routed through Safeco's channel pre-2026 |
+| Standalone AM Best rating | Member-rated ✓ | Consolidated under Liberty Mutual Holding |
+| Marketed as a distinct brand | Yes ✓ | No — brand discontinued 13 years ago |
+| Premium volume tracked separately | Yes ✓ | Bundled into LM/Safeco consolidated reporting |
+
+**Impact on dataset (2026-05-26):**
+- 8 Peerless Indemnity rows dropped (3 CO + 1 OR + 1 UT + 3 AZ).
+- Net dataset delta: pre-Peerless-fix → post-Peerless-fix (CO 100→97, OR 48→47, UT 85→84, AZ 74→71).
+
+### 7. Enrichment row-click flakiness — JSF ViewState staleness (added 2026-05-26)
+
+**Symptom:** During `run_*_full.py` enrichment, `_click_row_to_detail` intermittently fails for target-Rate filings, logging `[skip] {tracking}: row not found in results`. Initial concern was that filings were silently dropped from the dataset.
+
+**Root cause:** Long-running browser context degrades JSF ViewState (PrimeFaces/Mojarra session tokens), causing row-clicks to fail later in the run. **Not a pagination issue** — Thread 3 investigation confirmed the failing row was on page 1 of a fresh-context search. The flakiness scales with how long the same browser context has been alive (more enrichment iterations consumed = more stale tokens). Heavy-volume search groups processed later in the run (Travelers/LM/Safeco) hit it more often.
+
+**Observed across the dataset (Thread 4 audit, 2026-05-26):** 120 unique skipped filings across 5 prior states + 26 in AZ. Disposition:
+- **115 out-of-scope** (non-target TOI: workers comp, commercial auto, Form-only filings, etc.)
+- **16 self-recovered** via `run_final_rates.py`'s independent row-click retry (a separate process invokes a fresh search per carrier group, so most skips don't survive to the canonical output)
+- **2 correctly filtered** by other scope rules (`rate_data_applies=False`, `is_new_product=True`)
+- **0 genuine losses** after correct classification
+
+**Mitigation in place:** `run_final_rates.py` runs an independent fresh-search per carrier group during PDF download, which already recovers most enrichment skips by giving them a fresh ViewState. The combination of two passes is robust enough that no genuine losses survived in the 387-row dataset.
+
+**Fresh-context recovery pattern (Thread 3 proven):** When a target filing IS genuinely lost (rare — 1 known case across all 6 states: AZ LBPM-134879025, which turned out to be out-of-window scope-correct after recovery anyway), a one-off recovery script works reliably:
+1. Open a fresh Playwright browser context
+2. Submit the same SERFF search keyword
+3. Paginate forward until the row is in view (if needed)
+4. Call `download_system_summary_pdf` — the fresh ViewState succeeds on first attempt
+
+See `recover_lbpm_134879025.py` and `recover_gecc_134650382.py` as templates.
+
+**Recommendation:** For one-time Phase 1 collection (current posture), the existing two-pass setup + standalone recovery script is sufficient. If the pipeline is productionized for periodic re-runs, wire the fresh-context retry into `run_*_full.py` and `run_final_rates.py` as an automatic fallback when `_click_row_to_detail` fails — that would eliminate the need for manual recovery scripts.
+
+### 8. Safeco-search false alarm (added 2026-05-26)
+
+During the AZ run, the dedicated `safeco` SERFF search failed all 3 retries in `run_final_rates.py` (PrimeFaces "Begin Search" link click timeout). Initial concern: missing Safeco coverage.
+
+**Resolution:** Safeco filings are filed under the Liberty Mutual filer entity (`LBPM-` tracking number prefix), so they are co-discoverable via the `liberty mutual` search keyword in run_final_rates' `GROUP_SEARCH["Liberty Mutual"] = ["liberty mutual", "safeco", "american states"]` chain. The first keyword succeeded; the failed safeco keyword would only have caught Safeco filings *not* findable under `liberty mutual` — and there were none. **No data loss.**
+
+**Lesson:** Multi-keyword GROUP_SEARCH chains provide natural redundancy for brand-keyword search failures. When auditing post-run logs, "search keyword X failed" needs cross-reference to other keywords in the same group's chain before being treated as data loss.
+
+### 9. Skip-audit methodology note (added 2026-05-26)
+
+When auditing enrichment skip logs, classification of "GENUINELY LOST" requires checking **all** these conditions, not just (a) and (b):
+
+(a) Filing type is `Rate` or `Rate/Rule` (from search workbook)
+(b) Sub-TOI starts with `19.` or `04.` (target lines)
+(c) Filing is absent from the state's `_final_rates.xlsx` output
+(d) **`rate_data_applies=True`** in the system Filing Summary PDF (else filer-flagged "Rate data does NOT apply")
+(e) **`is_new_product=False`** (else excluded as new-program launch per scope)
+(f) **Effective date (New, with Renewal fallback) is in window** [2025-01-01, 2026-04-17]
+(g) Subsidiary names aren't in `EXCLUDED_SUBSIDIARY_PATTERNS` (filing vehicles)
+
+The initial AZ skip audit (Thread 4 first pass) only checked (a)/(b)/(c) and over-flagged 5 candidates as "lost." After applying (d)/(e)/(f) it dropped to 0 unambiguous losses. Future audits must use the full check.
 
 ### Why these were deferred rather than addressed in Phase 1
 

@@ -108,7 +108,11 @@ NEW_PRODUCT_RE = re.compile(
     r"("
     r"Project Name/Number:[^\n]*\b(?:Initial Filing|Initial Submission|Introduction of)\b"
     r"|Company Tracking #:[^\n]*\bINTRODUCTION OF\b"
-    r"|\bNew Program\b"
+    # `\bNew Program\b` excludes the "Rate Transition Modification - New Program
+    # Table" SERFF supporting-document boilerplate via negative lookahead
+    # (Issue #3, 2026-05-26). Without the lookahead, 5 Travelers HO rate filings
+    # in AZ were false-positively excluded as new-product launches.
+    r"|\bNew Program\b(?!\s+Table)"
     r"|\bnew product\b"
     r"|\bintroduction of\b[\s\S]{0,120}\b(?:Program|line of business|lines of business)\b"
     r")",
@@ -135,6 +139,13 @@ EXCLUDED_SUBSIDIARY_PATTERNS = (
     # website, no own agent channel, AM Best rating consolidated under LM,
     # sold under Safeco's umbrella. Matches LM General / Standard Fire pattern.
     "american economy",
+    # Peerless Insurance Company / Peerless Indemnity Insurance Company.
+    # Liberty Mutual phased out the consumer-facing Peerless brand in 2013;
+    # both entities now exist only as legal/filing vehicles within Liberty
+    # Mutual Holding Company. No consumer website, no own agent channel, AM
+    # Best rating consolidated under LM. Same filing-vehicle pattern as LM
+    # General / American Economy (Thread 1, 2026-05-26).
+    "peerless",
 )
 
 
