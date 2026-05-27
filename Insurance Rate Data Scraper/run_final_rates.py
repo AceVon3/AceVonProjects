@@ -113,7 +113,14 @@ NEW_PRODUCT_RE = re.compile(
     # (Issue #3, 2026-05-26). Without the lookahead, 5 Travelers HO rate filings
     # in AZ were false-positively excluded as new-product launches.
     r"|\bNew Program\b(?!\s+Table)"
-    r"|\bnew product\b"
+    # `\bnew product\b` now requires introduction/rollout context within 40
+    # chars (Issue #5, 2026-05-27 MT/WY/NV expansion). Without anchoring, the
+    # bare \bnew product\b matched narrative/regulator-commentary references
+    # like "discussing this new product with the Division" (NV ALSE-134362303,
+    # a 47%-rate-change filing) and false-positively excluded 7 legitimate
+    # rate filings across CO/AZ/MT/NV.
+    r"|\b(?:introduc\w+|launch\w+)\b[\s\S]{0,40}\bnew product\b"
+    r"|\bnew product\b[\s\S]{0,40}\b(?:will\s+be\s+(?:offered|available|launched|introduced)|to\s+new\s+business\s+only)\b"
     r"|\bintroduction of\b[\s\S]{0,120}\b(?:Program|line of business|lines of business)\b"
     r")",
     re.IGNORECASE,
@@ -371,13 +378,15 @@ def build_rows(state: str, targets: list[Target]) -> tuple[list[dict], dict]:
             continue
 
         # Determine rate_activity from disposition status. UT uses REJECTED for
-        # disapproved filings; other states use Disapproved/DISAPPROVED.
+        # disapproved filings; other states use Disapproved/DISAPPROVED. NV uses
+        # "Open" for undisposed/in-review filings (added 2026-05-27 in MT/WY/NV
+        # expansion — equivalent to PENDING).
         ds = (fs.disposition_status or "").upper()
         if "WITHDRAWN" in ds:
             activity = "rate_change_withdrawn"
         elif "DISAPPROV" in ds or "REJECT" in ds:
             activity = "rate_change_disapproved"
-        elif "PENDING" in ds:
+        elif "PENDING" in ds or ds == "OPEN":
             activity = "rate_change_pending"
         else:
             activity = "rate_change"

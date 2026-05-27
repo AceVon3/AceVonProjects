@@ -1,10 +1,10 @@
-# Insurance Rate Filings — Six-State Dataset
+# Insurance Rate Filings — Nine-State Dataset
 
 **Canonical deliverable:** `output/all_states_final_rates.xlsx` (sheet `rate_filings`) and `output/all_states_final_rates.csv`.
 
 ## What this dataset contains
 
-392 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, Utah, and Arizona**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2025-01-01, 2026-04-17]`.
+468 rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, Utah, Arizona, Montana, Wyoming, and Nevada**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2025-01-01, 2026-04-17]`.
 
 | State | Rows |
 |------:|-----:|
@@ -14,7 +14,10 @@
 | OR    |   47 |
 | UT    |   84 |
 | AZ    |   77 |
-| **Σ** | **392** |
+| MT    |   25 |
+| WY    |    0 |
+| NV    |   51 |
+| **Σ** | **468** |
 
 ### Per-state per-brand breakdown
 
@@ -26,7 +29,10 @@
 | OR    |  10 |   1 |  13 |   1 |   0 |   7 |   7 |   8 |  47 |
 | UT    |  10 |  20 |  24 |   0 |   2 |  12 |   6 |  10 |  84 |
 | AZ    |  12 |   2 |  23 |   2 |  13 |  11 |   6 |   8 |  77 |
-| **Σ** |  68 |  53 | 114 |  13 |  25 |  50 |  28 |  41 | **392** |
+| MT    |   5 |   2 |   8 |   0 |   1 |   4 |   2 |   3 |  25 |
+| WY    |   0 |   0 |   0 |   0 |   0 |   0 |   0 |   0 |   0 |
+| NV    |  19 |   8 |  11 |   0 |   1 |   2 |   2 |   8 |  51 |
+| **Σ** |  92 |  63 | 133 |  13 |  27 |  56 |  32 |  52 | **468** |
 
 State Farm row counts include filings made under the **MGA Insurance Company, Inc.** subsidiary brand (a State Farm-owned filer that submits under its own name on SERFF). MGA Insurance was added as a separate SERFF search keyword in the Item #3a resolution (2026-05-15) and is classified back into State Farm via `GROUP_KW["State Farm"]`.
 
@@ -101,14 +107,14 @@ The dataset's date axis is therefore *effective date*, which matches AM Best's m
 
 ## Scope and limitations
 
-- **States:** ID, WA, CO, OR, UT, AZ.
+- **States:** ID, WA, CO, OR, UT, AZ, MT, WY, NV.
 - **Lines:** Personal Auto (TOI 19.0) and Homeowners (TOI 04.0) only. Farmowners explicitly out of scope.
 - **Carriers:** See Scope section above — 8 customer-facing brands; filing-vehicle subsidiaries and specialty acquisitions explicitly excluded.
 - **Date range:** Effective-date window 2025-01-01 → 2026-04-17 (the AM Best validation cutoff). SERFF submission window widened to 2024-07-01 → 2026-04-17 so pre-2025 submissions with in-window effective dates are captured. The effective-date filter is applied at row emit time in `run_final_rates.py`.
 - **Disposition status:** PENDING / Re-Open / Withdrawn filings are kept and labeled in `rate_activity`; only filings with no rate data at all (filer flag below) are excluded.
 - **Filer flag:** When the filer flagged "Rate data does NOT apply to filing," the row is excluded — this flag is taken at face value.
 - **PDF parsing:** Six Disposition row patterns are supported (full / blank-indicated / sparse / blank-indicated+blank-max-min with and without premium change / full-with-blank-max-min). Within a filing, subsidiary rows are deduped by name so multi-amendment filings (multiple Disposition sections) emit one row per subsidiary using the most recent disposition's values. Subsidiary-name lines that wrap across multiple PDF lines are folded by the existing continuation loop after the first line matches a row pattern.
-- **Disposition cases:** ID uses ALL-CAPS (`APPROVED`); WA uses `Approved`; CO uses `Filed` (file-and-use); OR uses `Approved` / `Filed`; UT uses `FILED FOR USE` (file-and-use) and `REJECTED` (equivalent to other states' `Disapproved`). Casing preserved as filed. The `rate_activity` classifier maps `REJECTED → rate_change_disapproved` alongside the standard `WITHDRAWN`/`DISAPPROVED`/`PENDING` patterns.
+- **Disposition cases:** ID uses ALL-CAPS (`APPROVED`); WA uses `Approved`; CO uses `Filed` (file-and-use); OR uses `Approved` / `Filed`; UT uses `FILED FOR USE` (file-and-use) and `REJECTED` (equivalent to other states' `Disapproved`); MT uses `Rates Reviewed and Filed` (file-and-use, equivalent to `Filed`/`Approved`); NV uses `Approved` and `Open` (undisposed/in-review, equivalent to `Pending`). Casing preserved as filed. The `rate_activity` classifier maps `REJECTED → rate_change_disapproved` and `Open → rate_change_pending` (added 2026-05-27 in MT/WY/NV expansion) alongside the standard `WITHDRAWN`/`DISAPPROVED`/`PENDING` patterns.
 - **Filing-vehicle subsidiary exclusion:** When a customer-facing-brand filing's per-company rate table lists subsidiary names that are themselves filing vehicles or out-of-scope specialty acquisitions (`LM General Insurance Company`, `LM Insurance Corporation`, `Standard Fire Insurance`, `Integon`, `National General`, `Esurance`, `Drive Insurance`, `United Financial`, `American Economy`, `Peerless`), those individual rows are dropped at emission time — the parent filing is kept but the filing-vehicle row is suppressed. Enforced in `run_final_rates.py:_is_excluded_subsidiary`.
 - **Disposition cases (AZ):** AZ uses `Approved` for approved rate filings and reports per-subsidiary indicated/impact percentages in standard format. No new disposition vocabulary surfaced during AZ expansion.
 
@@ -239,6 +245,119 @@ Match keys: `(subsidiary_name_normalized, effective_date_MMDDYY, impact_pct)` Ti
 The 4 HO Tier-2 matches are all on the same SERFF tracking number group (Travelers Personal Insurance Company eff 03/21/25, multiple sub-TOI variants) where the date-relaxed match falls back to (subsidiary + impact + policyholders).
 
 **In our AZ but not in AM Best:** 33 PPA + 19 HO. Standard pattern documented elsewhere: a mix of (a) 0% rate impacts AM Best reports as N/A, (b) recent filings past the AM Best report's snapshot date, (c) sub-TOI rows (Motorcycle/RV/Tenant) that AM Best may bucket differently.
+
+## MT / WY / NV expansion (added 2026-05-27)
+
+Three states added bringing the dataset to 9 states / 467 rows (+75 from prior 392). Notes:
+
+- **MT: 25 rows** from 348 raw filings → 85 target → 16 emitted → 25 rows. Per-brand: Allstate 8, State Farm 5, Liberty Mutual 4, Progressive 3, GEICO 2, Safeco 2, Travelers 1. Heavy Travelers Form/Rule volume (162 raw, only 1 in-scope target Rate).
+- **WY: 0 rows** from 182 raw filings → 34 target-carrier filings, ALL Form-only. Genuine zero — WY's small market (~600K population) means major carriers file routine forms but no standalone rate changes in our 19-month window. Confirmed via direct re-search and AM Best (user-confirmed WY AM Best report had no entries).
+- **NV: 50 rows** from 278 raw filings → 106 target → 30+ emitted → 50 rows. Per-brand: State Farm 19, Allstate 10, GEICO 8, Progressive 8, Liberty Mutual 2, Safeco 2, Travelers 1. NV also has 4 RV (19.0003 Recreational Vehicle) filings — first state with RV sub-TOI volume outside UT.
+
+### Search-phase observations
+
+- **SERFF rate-limiting under concurrent multi-state searches:** Running MT/WY/NV `--all-companies` searches in parallel triggered SERFF Public Access rate-limiting — after the first 2-3 brand keywords per state, subsequent brand searches failed with `Locator.click: Timeout 30000ms exceeded` on "Begin Search". Sequential per-brand retries with no other concurrent SERFF activity recovered all failed brands. **Lesson:** parallel searches across states from a single IP trip SERFF's rate limit; future multi-state expansions should serialize the search phase OR throttle to a single state at a time.
+- **NV Liberty Mutual silent-zero bug:** Initial NV retry sweep reported 0 Liberty Mutual filings without an explicit failure message; verification re-run revealed 42 actual filings. The "silent zero" mode (search submits but result page never populates) is a known SERFF degradation pattern under rate-limiting. **Lesson:** any `Total filings: 0` for a brand known to be active should be verified by re-running in isolation.
+
+### New disposition vocabulary (Issue 4 in Phase 2 backlog)
+
+MT and NV introduced two new disposition statuses not seen in ID/WA/CO/OR/UT/AZ:
+
+- **MT: `Rates Reviewed and Filed`** — Montana's file-and-use phrasing, semantically equivalent to other states' `Filed` / `Approved`. Classified as `rate_change` by the activity classifier's fall-through (correct).
+- **NV: `Open`** — Nevada's undisposed/in-review status, conceptually equivalent to `Pending`. Added explicit handling in `run_final_rates.py:rate_activity` classifier: `Open → rate_change_pending`.
+
+The disposition vocabulary catalog now spans 8 distinct statuses across 9 states: `APPROVED`/`Approved`/`Filed`/`FILED`/`FILED FOR USE`/`REJECTED`/`Rates Reviewed and Filed`/`Open` (+ `Withdrawn`/`Disapproved`/`Pending` shared across states).
+
+### no_pdf audit (per the Issue 3 methodology from AZ session)
+
+After Open→Pending fix and full re-emit, MT and NV no_pdf cases:
+- **NV: 0 genuine losses** (was 19 no_pdf; all resolved during re-emit because PDF cache had warmed from prior `run_*_full.py` enrichment runs).
+- **MT: 1 genuine loss recovered + 1 confirmed correct exclusion**:
+  - Recovered: `SFMA-134524072` (State Farm Fire and Casualty, 04.0005 Other Homeowners, eff 07/15/2025, 0.0% impact) via the fresh-context recovery pattern (`recover_sfma_134524072.py`).
+  - Confirmed correct exclusion: `SFCI-134249794` (State Farm Classic Insurance, 19.0000 Personal Auto Combinations) — PDF parses cleanly but the rate-data table is genuinely blank (filer reported no percentage impacts, 0 policyholders). Not a parser bug; this is a Rate-shell filing with no actual rate impact data.
+
+### NEW_PRODUCT_RE narrative-context fix (Issue 5, added 2026-05-27)
+
+The `\bnew product\b` clause was too broad — it matched narrative/regulator-commentary references like "discussing this new product with the Division" (NV ALSE-134362303, a 47%-rate-change filing) and false-positively excluded 7 legitimate filings across CO/AZ/MT/NV. Fixed via introduction-context anchoring:
+
+```python
+# Before (too broad — matches narrative references)
+r"|\bnew product\b"
+
+# After (anchored to introduction/rollout context within 40 chars)
+r"|\b(?:introduc\w+|launch\w+)\b[\s\S]{0,40}\bnew product\b"
+r"|\bnew product\b[\s\S]{0,40}\b(?:will\s+be\s+(?:offered|available|launched|introduced)|to\s+new\s+business\s+only)\b"
+```
+
+**Validation:** Dataset-wide dry-run across 1,244 cached PDFs:
+- 7 PDFs went `is_new_product` True → False (recovered: CO 2, AZ 3, MT 1, NV 1)
+- 0 PDFs went False → True (sanity check confirmed fix only narrows)
+- 94 PDFs unchanged (true new-product launches still caught by other patterns)
+
+**Row impact:** Only +1 net row in dataset (NV ALSE-134362303 — Allstate Vehicle & Property HO 20.5% 40,758 policyholders). The other 6 recovered filings were Form-only or otherwise excluded by downstream filters, so no row delta — but the classification is now correct.
+
+**Forward-looking note (Phase 2 cleanup candidate):** The NEW_PRODUCT_RE regex has now been refined twice (`\bNew Program\b(?!\s+Table)` in the AZ session, anchored-context for `\bnew product\b` in this session). Both narrowed narrative/contextual matches that weren't actual product introductions. Future false-positive variations are possible — consider refactoring to rely primarily on `Project Name/Number:` and `Company Tracking #:` field anchors in a future cleanup, since those are reliable filer-level signals while body-text patterns are heuristic.
+
+### Travelers NV HO PDF recovery (added 2026-05-27)
+
+3 Travelers HO filings (TRVD-G134570380, TRVD-G134503411, TRVD-G134806398) failed to cache during the original NV run_final_rates pass — JSF ViewState skip pattern. Recovered via `recover_nv_travelers_ho.py` (fresh-context per target). Only TRVD-G134570380 emitted a row (Travelers Property Casualty Insurance Company HO 14.4% eff 09/26/2025); the other two are Rule-only (excluded) and Personal Interline 35.0001 (out of TOI scope).
+
+**Recovery-script caveat (lesson):** TRVD-G tracking numbers do NOT map directly to the SERFF `filing_id`. Other carrier prefixes (LBPM-, SFMA-, ALSE-, etc.) typically use `filing_id = tracking_suffix`, but TRVD-G filings have distinct filing_ids that must be looked up in the search workbook. Recovery scripts must read filing_id from `{state}_all_companies_search.xlsx` rather than derive it from the tracking string.
+
+## AM Best MT cross-check (2026-05-26 export, PPA + Homeowners Multi-Peril)
+
+MT AM Best report contains both PPA and HO Multi-Peril filings (mirrors AZ format).
+
+| Result | PPA | HO |
+|---|---:|---:|
+| AM Best in-scope entries (8 brands, 2025-01-01 to 2026-04-17) | 17 | 3 |
+| Tier 1 direct match | 16 | 3 |
+| Tier 2 date-relaxed | 0 | 0 |
+| Tier 3 sub-type reclass | 0 | 0 |
+| Still missing | 1 | 0 |
+| **In-scope match rate** | **16 / 17 (94.1%)** | **3 / 3 (100%)** |
+
+**1 PPA miss:** `GMMX-134564734` Encompass Indemnity Company eff 09/29/2025, 0.0% impact, 0 policyholders. PDF analysis confirms this is a TRUE new-product launch ("In introducing this new product, EI will offer the following enhancements"). Correctly excluded per scope rules. AM Best includes it as filing-of-record. Same scope-boundary pattern as documented for CO GECC-134650382 in the AZ session.
+
+**MT validation effectively 100% of in-scope filings** (excluding the documented scope-boundary new-product case).
+
+## AM Best NV cross-check (2026-05-26 export, PPA + Homeowners Multi-Peril)
+
+NV AM Best report contains both PPA and HO Multi-Peril filings.
+
+| Result | PPA | HO |
+|---|---:|---:|
+| AM Best in-scope entries (8 brands, 2025-01-01 to 2026-04-17) | 33 | 8 |
+| Tier 1 direct match | 23 | 5 |
+| Tier 2 date-relaxed | 5 | 0 |
+| Tier 3 sub-type reclass | 0 | 0 |
+| Still missing | 5 | 3 |
+| **In-scope match rate** | **28 / 33 (84.8%)** | **5 / 8 (62.5%)** |
+
+**5 PPA misses classified:**
+- 1 scope-boundary new-product: Allstate North American eff 03/17/26 0%/0pol
+- 4 SERFF Public Access visibility gaps (NOT in our search workbook):
+  - State Farm Mutual Automobile Insurance Company eff 02/13/25 — 0 SF Mutual Auto PPA filings discoverable via SERFF keyword search
+  - State Farm Fire and Casualty Company eff 02/13/25 — same filing pair
+  - Liberty Mutual Insurance Company eff 06/23/25 8.1% — 0 LM PPA filings discoverable via SERFF
+  - Liberty Mutual Personal Insurance Company eff 06/23/25 — same filing pair
+
+**3 HO misses classified:**
+- 2 State Farm Fire and Casualty Company HO eff 05/15/25 + 03/15/25 (9.94%, 214k policyholders each) — SERFF visibility gap (10 SFMA HO filings in search, only 1 is Rate/Rule with different eff date)
+- 1 Travelers Property Casualty Insurance Company eff 02/16/25 (0.007%, 63k pol) — likely Rule-only Rule filing excluded by scope
+
+**NV cross-check pattern:** Significantly more SERFF visibility gaps than other states (similar to WA's 12/14 pattern). NV has 4 + 2 = 6 filings where AM Best has them but our SERFF search can't find them under any keyword combination. These are filer-controlled Public Access Indicator=No filings — same structural limitation documented for WA. Not actionable via search-keyword changes.
+
+**In-scope match rates for state coverage comparison:**
+
+| State | PPA match | HO match |
+|---|---:|---:|
+| UT | 19/19 (100%) | — (no AM Best HO report) |
+| OR | 29/29 (100%) | — (no AM Best HO report) |
+| AZ | 14/14 (100%) | 15/15 (100%) |
+| MT | 16/17 (94.1%) | 3/3 (100%) |
+| NV | 28/33 (84.8%) | 5/8 (62.5%) |
+| WA | 12/14 (86%) | — |
 
 ## Phase 2 backlog (consolidated)
 
