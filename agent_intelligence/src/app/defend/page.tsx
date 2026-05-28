@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import FilingsTable from "@/components/FilingsTable";
+import ScopeStrip from "@/components/ScopeStrip";
 import type { Filing } from "@/lib/filings";
 import { AgentProfile, loadProfile } from "@/lib/profile";
 
@@ -84,15 +85,6 @@ export default function DefendPage(): React.JSX.Element {
     };
   }, [filings]);
 
-  const scopeLabel = useMemo(() => {
-    if (!profile) return "";
-    const states = profile.licensed_states.join(", ");
-    if (profile.agent_type === "captive") {
-      return `Showing: ${states} · vs competitors of ${profile.authorized_brands[0]}`;
-    }
-    return `Showing: ${states}`;
-  }, [profile]);
-
   if (phase === "loading") {
     return (
       <main className="min-h-screen" style={{ background: C.bg }}>
@@ -130,18 +122,12 @@ export default function DefendPage(): React.JSX.Element {
 
   return (
     <main className="min-h-screen" style={{ background: C.bg }}>
-      <div
-        className="text-[12px] flex justify-between items-center px-4 py-2"
-        style={{ background: C.surface2 }}
-      >
-        <span style={{ color: C.text2 }}>{scopeLabel}</span>
-        <a
-          href="/setup"
-          style={{ color: C.blueText, fontWeight: 500, textDecoration: "none" }}
-        >
-          Edit
-        </a>
-      </div>
+      <ScopeStrip
+        states={profile!.licensed_states}
+        captiveBrand={
+          profile!.agent_type === "captive" ? profile!.authorized_brands[0] : undefined
+        }
+      />
 
       <div className="max-w-[1100px] mx-auto px-4 py-6">
         <div className="mb-4">

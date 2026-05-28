@@ -102,9 +102,16 @@ async function main(): Promise<void> {
   check("URL is still / after reload",
     new URL(page.url()).pathname === "/",
     { url: page.url() });
-  const bodyText = (await page.locator("body").textContent()) ?? "";
-  check("body shows 'Welcome back, Ryan Christy' (placeholder Overview)",
-    bodyText.includes("Welcome back") && bodyText.includes("Ryan Christy"));
+  // The real Overview (shipped in step 8) renders the four OverviewCards
+  // instead of the original step-4 placeholder; assert against the actual
+  // landed page so this stays green as later steps build on /.
+  await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
+  const overviewHeading = (await page.locator('[data-testid="page-title"]').textContent())?.trim();
+  check("Overview heading present", overviewHeading === "Overview", { overviewHeading });
+  const cardCount = await page.locator(
+    '[data-testid="ov-card-prospect"], [data-testid="ov-card-defend"], [data-testid="ov-card-most-urgent"], [data-testid="ov-card-most-urgent-empty"], [data-testid="ov-card-compliance"]',
+  ).count();
+  check("Overview renders all four cards", cardCount === 4, { cardCount });
 
   // -- (4) Clear profile, reload, expect bounce back to /setup --------------
   console.log("\n(4) clear localStorage and reload, expect redirect back to /setup");

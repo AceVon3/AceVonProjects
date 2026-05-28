@@ -1048,7 +1048,18 @@ Do these in sequence. Don't move on until the previous step works end-to-end.
 9. Build **Compliance** (`/compliance`): the `resourceUrls.ts` map (eight topics, one-or-more URLs each; start with the 8 covered states), the `generate_compliance` script that fetches mapped pages and writes grounded 2–3 sentence summaries + titles + `last_checked` into `complianceData.ts`, and the `/compliance` page rendering a grid of `ComplianceCard`s (topic tag, state badge, title, short summary, bare-domain source links, last-checked date). The app reads only the pre-generated data — no live fetching at view time. Include the disclaimer banner and the "Coming soon"/bare-link fallback for unmapped or failed-generation cells.
 10. Build `NavBar` (Overview first; "My Carriers" for independents only; Compliance for all) and `ScopeStrip` (with the conditional captive suffix).
 11. Build `/methodology`.
-12. Polish: empty states, loading states, badge colors, mobile layout.
+12. Polish:
+    a. **PINNED — first task, before any cosmetic polish:** run
+       `ANTHROPIC_API_KEY=… npx tsx scripts/generate_compliance.ts` for
+       the WA topics against the live Anthropic API, then verify 2-3
+       generated summaries against the hand-validated reference summaries
+       for WA Wage & Hour and Leave. Confirm no facts appear in the
+       output that aren't on the source pages, and that a deliberately
+       broken URL falls through to the bare-link "Summary coming soon"
+       card rather than producing invented content. This is the real
+       test of the grounding pipeline — the WA summaries currently in
+       `src/lib/complianceData.ts` are hand-seeded placeholders.
+    b. Empty states, loading states, badge colors, mobile layout.
 13. Deploy to Vercel.
 
 ---

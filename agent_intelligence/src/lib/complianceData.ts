@@ -4,17 +4,21 @@
 // `npx tsx scripts/generate_compliance.ts` to refresh from official sources.
 // The web app reads this file only; it never fetches official pages live.
 //
-// Seed status (initial check-in, pre-first-regeneration):
-//   - Washington (WA) summaries are seeded from the ui-reference.html
-//     illustrative samples so the page has something to render before the
-//     first regeneration pass. They are paraphrased from the same official
-//     source URLs listed in resourceUrls.ts; running generate_compliance.ts
-//     will overwrite them with model-generated, grounded summaries from
-//     freshly fetched page content.
-//   - All 7 other covered states (AZ, CO, ID, MT, NV, OR, UT) have no
-//     stored summaries yet — they fall through to the "Summary coming
-//     soon" card variant on /compliance, which still renders the topic
-//     tag, state badge, and any mapped source links.
+// ⚠️  PLACEHOLDER STATUS — pending first real regeneration. ⚠️
+// These WA entries are HAND-SEEDED from ui-reference.html samples so the
+// page has something to render. They have NOT been produced by the
+// generation pipeline. The first task of step 12 (pinned in spec.md
+// "Build order") is to run the real generator and verify grounding
+// against hand-validated reference summaries for WA Wage & Hour and Leave.
+// Until that runs and is verified, treat these summaries as illustrative
+// placeholders, not grounded outputs.
+//
+// Seed coverage:
+//   - WA: 7 of 8 topics. Remote Work intentionally omitted so the
+//     coming-soon fallback path renders for that cell.
+//   - AZ / CO / ID / MT / NV / OR / UT: no stored summaries; every cell
+//     renders the "Summary coming soon" fallback (which still shows the
+//     topic tag, state badge, and any mapped source links).
 
 import type { ResourceKey, StateCode } from "./resourceUrls";
 
