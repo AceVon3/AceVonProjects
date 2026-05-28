@@ -20,10 +20,24 @@
 // as it grows.
 //
 // Usage:
-//   ANTHROPIC_API_KEY=sk-... npx tsx scripts/generate_compliance.ts
+//   Full regen:    ANTHROPIC_API_KEY=sk-... npx tsx scripts/generate_compliance.ts
+//   Partial regen: ANTHROPIC_API_KEY=sk-... npx tsx scripts/generate_compliance.ts \
+//                    --only WA/payroll,WA/nexus
+//
+// With --only, the script loads the existing complianceData.ts, regenerates
+// only the matching (state, topic) entries, and merges the result back in.
+// Entries outside the filter are preserved untouched. If a regenerated entry
+// fails (all sources unreachable, etc.) the previous entry is dropped, so
+// the page renders the coming-soon fallback for it.
 //
 // If ANTHROPIC_API_KEY is unset, exits 0 without touching the existing
 // complianceData.ts seed — local dev / CI without keys keeps building.
+//
+// Grounding-refusal handling: when the model output matches a refusal
+// pattern (the prompt instructs it to say so when the source pages don't
+// contain enough substantive content), the entry is stored with null
+// title and summary so ComplianceCard renders the coming-soon variant
+// rather than displaying a meaningless "cannot summarize" body.
 
 import Anthropic from "@anthropic-ai/sdk";
 import { writeFileSync } from "node:fs";
@@ -149,11 +163,30 @@ async function fetchPageText(url: string): Promise<string | null> {
 type GeneratedSummary = {
   state: StateCode;
   topic: ResourceKey;
-  title: string;
-  summary: string;
+  // null when the model declined to ground a summary on the fetched
+  // source content — page renders coming-soon for those.
+  title: string | null;
+  summary: string | null;
   sources: string[];
   last_checked: string;
 };
+
+// Phrase patterns that indicate the model declined to produce a grounded
+// summary (most often because the source page is generic and doesn't
+// cover the topic). The prompt instructs an exact phrase, but the model
+// frequently rephrases — so match the load-bearing parts liberally.
+const REFUSAL_PATTERNS: RegExp[] = [
+  /cannot be produced/i,
+  /can(?:not|'t) be summari[sz]ed/i,
+  /not contain (?:substantive )?content/i,
+  /does not (?:contain|have) (?:substantive )?(?:specific )?content/i,
+  /insufficient (?:source |substantive )?content/i,
+  /unable to (?:produce|write|summari[sz]e)/i,
+];
+
+function isGroundingRefusal(summary: string): boolean {
+  return REFUSAL_PATTERNS.some(p => p.test(summary));
+}
 
 async function generateOne(
   client: Anthropic,
@@ -217,15 +250,17 @@ async function generateOne(
   }
 
   const u = resp.usage;
+  const refused = isGroundingRefusal(parsed.summary);
   console.error(
-    `  ok    ${state}/${topic}  in=${u.input_tokens} cached=${u.cache_read_input_tokens ?? 0} out=${u.output_tokens}`,
+    `  ${refused ? "refused" : "ok    "} ${state}/${topic}  in=${u.input_tokens} cached=${u.cache_read_input_tokens ?? 0} out=${u.output_tokens}` +
+    (refused ? "  (model declined to ground — coming-soon)" : ""),
   );
 
   return {
     state,
     topic,
-    title: parsed.title,
-    summary: parsed.summary,
+    title: refused ? null : parsed.title,
+    summary: refused ? null : parsed.summary,
     sources: sources.map(s => s.url),
     last_checked: today,
   };
@@ -244,8 +279,11 @@ import type { ResourceKey, StateCode } from "./resourceUrls";
 export type ComplianceSummary = {
   state: StateCode;
   topic: ResourceKey;
-  title: string;
-  summary: string;
+  // null when the model declined to produce a grounded summary from
+  // the fetched source pages. ComplianceCard renders these entries
+  // as the "Summary coming soon" coming-soon variant.
+  title: string | null;
+  summary: string | null;
   sources: string[];
   last_checked: string;
 };
@@ -259,6 +297,26 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = ${JSON.stringify(result
 
 // ---- main -----------------------------------------------------------------
 
+// Parse `--only state/topic[,state/topic...]` into a Set, or null if absent.
+function parseOnlyFlag(argv: string[]): Set<string> | null {
+  const idx = argv.indexOf("--only");
+  if (idx < 0 || !argv[idx + 1]) return null;
+  const items = argv[idx + 1]
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean);
+  return items.length > 0 ? new Set(items) : null;
+}
+
+async function loadExistingSummaries(): Promise<GeneratedSummary[]> {
+  // Dynamic import the current complianceData.ts so partial regens merge
+  // back into the existing array instead of clobbering unfiltered entries.
+  const mod = await import("../src/lib/complianceData");
+  // Older committed shapes had non-null title/summary; the cast widens
+  // those to the nullable shape we use now.
+  return mod.COMPLIANCE_SUMMARIES as GeneratedSummary[];
+}
+
 async function main(): Promise<void> {
   if (!process.env.ANTHROPIC_API_KEY) {
     console.error("ANTHROPIC_API_KEY is not set.");
@@ -268,13 +326,33 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
+  const onlyFilter = parseOnlyFlag(process.argv);
+
   const client = new Anthropic();
   const today = new Date().toISOString().slice(0, 10);
-  const results: GeneratedSummary[] = [];
 
-  console.error(
-    `Regenerating compliance summaries (model: ${MODEL}, asOf: ${today})\n`,
-  );
+  // Partial regen: seed `results` with existing entries that are OUTSIDE
+  // the filter so they survive untouched. Entries that match the filter
+  // are removed (and re-added below only if regeneration succeeds).
+  let results: GeneratedSummary[] = [];
+  if (onlyFilter) {
+    try {
+      const existing = await loadExistingSummaries();
+      results = existing.filter(r => !onlyFilter.has(`${r.state}/${r.topic}`));
+      console.error(
+        `Partial regen: --only ${Array.from(onlyFilter).join(", ")}\n` +
+        `  preserved ${results.length} existing entries; regenerating ${onlyFilter.size} target(s).\n`,
+      );
+    } catch (e) {
+      console.error("FATAL: --only requires a readable src/lib/complianceData.ts;");
+      console.error("       could not import it:", e);
+      process.exit(1);
+    }
+  } else {
+    console.error(
+      `Full regen (model: ${MODEL}, asOf: ${today})\n`,
+    );
+  }
 
   for (const [state, topics] of Object.entries(RESOURCE_URLS) as Array<
     [StateCode, Partial<Record<ResourceKey, string[]>>]
@@ -283,6 +361,7 @@ async function main(): Promise<void> {
       [ResourceKey, string[]]
     >) {
       if (!urls || urls.length === 0) continue;
+      if (onlyFilter && !onlyFilter.has(`${state}/${topic}`)) continue;
       console.error(`${state}/${topic}: fetching ${urls.length} source(s)`);
       try {
         const result = await generateOne(client, state, topic, urls, today);
@@ -294,9 +373,15 @@ async function main(): Promise<void> {
   }
 
   if (results.length === 0) {
-    console.error("\nno summaries generated — leaving complianceData.ts unchanged.");
+    console.error("\nno summaries to write — leaving complianceData.ts unchanged.");
     process.exit(1);
   }
+
+  // Stable sort so partial regens don't churn the file order in diffs.
+  results.sort((a, b) => {
+    if (a.state !== b.state) return a.state.localeCompare(b.state);
+    return a.topic.localeCompare(b.topic);
+  });
 
   writeComplianceData(results);
 }

@@ -158,7 +158,10 @@ async function main(): Promise<void> {
   const waFull = cardMeta.filter(c => c.state === "WA" && c.variant === "full");
   const waComingSoon = cardMeta.filter(c => c.state === "WA" && c.variant === "coming-soon");
   check("WA: 7 full-summary cards", waFull.length === 7, { waFull: waFull.length });
-  check("WA: 1 coming-soon card (Remote Work — intentionally unseeded)",
+  // WA Remote Work: the L&I source page is a generic hub with no
+  // remote-work-specific content, so the generator's refusal detector
+  // stores null title/summary → ComplianceCard renders coming-soon.
+  check("WA: 1 coming-soon card (Remote Work — model refused to ground)",
     waComingSoon.length === 1 && waComingSoon[0].topic === "remote",
     { waComingSoon });
   const azCards = cardMeta.filter(c => c.state === "AZ");

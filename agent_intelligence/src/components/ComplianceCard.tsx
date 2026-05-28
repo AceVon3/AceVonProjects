@@ -5,9 +5,13 @@ import type { ResourceKey } from "@/lib/resourceUrls";
 export type ComplianceCardProps = {
   state: string;
   topic: ResourceKey;
-  // Full card: title + summary populated. Coming-soon: both undefined.
-  title?: string;
-  summary?: string;
+  // Full card: title + summary populated as strings. Coming-soon:
+  // either field null/undefined → ComplianceCard renders the
+  // "Summary coming soon" variant. Null is used by the generator to
+  // mark grounding refusals; undefined is used for (state, topic)
+  // pairs that aren't in complianceData.ts at all.
+  title?: string | null;
+  summary?: string | null;
   sources: string[];     // may be empty if no URLs are mapped
   last_checked?: string; // omitted on coming-soon cards
 };

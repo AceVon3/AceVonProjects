@@ -54,7 +54,7 @@ export const RESOURCE_URLS: Record<
     // business licensing (employers must license with DOR before filing).
     payroll: [
       "https://esd.wa.gov/employer-requirements/unemployment-taxes/employers-guide-paying-taxes",
-      "https://dor.wa.gov/open-business/business-licensing",
+      "https://dor.wa.gov/open-business",
     ],
     // Workers' Comp — WA is a monopolistic state fund administered by L&I.
     workers_comp: [
@@ -69,7 +69,7 @@ export const RESOURCE_URLS: Record<
     // Office of the Insurance Commissioner, plus DOR business registration (tax nexus).
     nexus: [
       "https://www.insurance.wa.gov/producers-adjusters/licensing",
-      "https://dor.wa.gov/open-business/business-licensing",
+      "https://dor.wa.gov/open-business",
     ],
     // Hiring Basics — L&I employment-standards hub for employer obligations when hiring.
     // (New-hire reporting is handled via DSHS/ESD; L&I covers core wage/standards rules.)
