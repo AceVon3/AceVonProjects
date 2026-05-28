@@ -118,7 +118,7 @@ CREATE TABLE filings_raw (
   rate_activity TEXT NOT NULL,
   serff_tracking_number TEXT NOT NULL,
   disposition_status TEXT,
-  effective_date TEXT NOT NULL,               -- ISO: YYYY-MM-DD
+  effective_date TEXT,                        -- ISO: YYYY-MM-DD; nullable (real SERFF data has approved 0% filings with no effective_date — keep them; downstream excludes nulls from window/Prospect/Defend/Most-Urgent, shows in My Carriers as "date unknown")
   filing_date TEXT,                           -- ISO: YYYY-MM-DD
   source_pdf TEXT
 );
@@ -132,7 +132,7 @@ CREATE TABLE filings (
   line_of_business TEXT NOT NULL,
   overall_rate_impact REAL NOT NULL,          -- premium-weighted across entities
   rate_activity TEXT NOT NULL,
-  effective_date TEXT NOT NULL,
+  effective_date TEXT,                        -- nullable; see filings_raw.effective_date note above
   filing_date TEXT,
   entity_count INTEGER NOT NULL,              -- # of company_name rows rolled up
   total_policyholders INTEGER,                -- sum across entities, null if any row is null
@@ -163,7 +163,7 @@ Also write `data/last_updated.txt` with an ISO date — the import script's run 
 3. Parse `effective_date` (`MM/DD/YYYY`) and `filing_date` (`YYYY-MM-DD`) into ISO `YYYY-MM-DD` strings.
 4. Clean `line_of_business`: `"04.0 Homeowners"` → `"Homeowners"`, `"19.0 Personal Auto"` → `"Personal Auto"`.
 5. Derive `brand` from `company_name`.
-6. Fail loudly if any `brand` is null, any required field is null, or any date fails to parse.
+6. Fail loudly if any `brand` is null (unmatched `company_name`), if any genuinely-required field is null (`serff_tracking_number`, `company_name`, `line_of_business`, `overall_rate_impact`), or if any date fails to parse. **`effective_date` is allowed to be null** — see schema note; don't reject those rows.
 7. Insert all rows into `filings_raw`.
 8. **Roll up into `filings`:**
    - Group by `(serff_tracking_number, line_of_business)`.
