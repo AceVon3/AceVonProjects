@@ -5,6 +5,20 @@
 // management). The default view always shows the agent's full 12-month
 // picture so a return visit can't accidentally render an over-narrowed
 // empty table the agent forgot they filtered.
+//
+// ARCHITECTURE — window narrowing is client-side. The table pages always
+// fetch the broadest 12-month set once per profile load and let
+// applyFilters() narrow in-memory for every filter, including window.
+// Two consequences:
+//   1. Every filter change (window, state, line, carrier, sort) is
+//      instant — no refetch latency, no loading spinner between click
+//      and result.
+//   2. The raw `filings` array always carries the full 12-month set,
+//      so "filtered to empty" is distinguishable from "no data".
+// Both server-side date(asOf, ...) and client-side windowCutoff(asOf, ...)
+// anchor to the SAME asOf (data/last_updated.txt, returned in the API
+// response), so the two paths are deterministic and produce identical
+// cutoffs.
 
 import type { Filing } from "./filings";
 import type { AgentProfile } from "./profile";

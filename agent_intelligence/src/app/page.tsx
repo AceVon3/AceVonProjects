@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import OverviewCards from "@/components/OverviewCards";
+import PageSkeleton from "@/components/PageSkeleton";
 import RecentChanges from "@/components/RecentChanges";
 import type { Filing } from "@/lib/filings";
 import {
@@ -102,16 +103,7 @@ export default function OverviewPage(): React.JSX.Element {
   }, [profile]);
 
   if (phase === "loading") {
-    return (
-      <main className="min-h-screen" style={{ background: C.bg }}>
-        <div
-          className="max-w-[1100px] mx-auto px-4 py-10 text-[13px]"
-          style={{ color: C.text3 }}
-        >
-          Loading…
-        </div>
-      </main>
-    );
+    return <PageSkeleton variant="overview" />;
   }
 
   if (phase === "error") {

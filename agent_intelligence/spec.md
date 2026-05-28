@@ -994,9 +994,11 @@ Defaults per page:
 | Time window | Last 12 months | Last 12 months | Last 12 months |
 | Sort | Effective date (newest) | Effective date (newest) | Effective date (newest) |
 
-The time window dropdown's three options map to SQL as `effective_date >= date(:asOf, '-30 days')`, `'-90 days'`, `'-12 months'`. Built into the query builder in `src/lib/filings.ts` — accept the window as a parameter rather than hardcoding the 12-month value.
+The time window dropdown's three options have the same semantics across server and client: `effective_date >= date(:asOf, '-30 days' | '-90 days' | '-12 months')`. The query builder in `src/lib/filings.ts` accepts a window parameter so callers can ask for a narrower window directly, but **the table pages always fetch the broadest 12-month set once per profile and narrow client-side** via `applyFilters()` in `src/lib/filters.ts`. This makes every filter change (window, state, line, carrier, sort) instant — no refetch latency — and lets `filteredToEmpty` be distinguished from no-data because the raw fetch always carries the full 12-month set.
 
-**`:asOf` anchors to data freshness, not the wall clock.** The query builder defaults `:asOf` to the date in `data/last_updated.txt` (written by `scripts/import_filings.py` as the source xlsx's mtime). This keeps queries deterministic per data snapshot — the spec's verification counts stay valid until the data is regenerated, and the active window doesn't silently shed filings as the calendar advances between deploys.
+Callers other than the table pages (e.g. Overview Most Urgent / Recent Changes) use the 12-month default and don't expose a window picker, so the architecture is invisible to them.
+
+**`:asOf` anchors to data freshness, not the wall clock.** The query builder defaults `:asOf` to the date in `data/last_updated.txt` (written by `scripts/import_filings.py` as the source xlsx's mtime). The client-side `windowCutoff()` helper uses the same `asOf` from the API response — so both paths produce identical cutoffs and the spec's verification counts stay valid until the data is regenerated. The active window doesn't silently shed filings as the calendar advances between deploys.
 
 ---
 

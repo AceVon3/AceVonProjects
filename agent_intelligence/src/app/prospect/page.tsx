@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import FilingsTable from "@/components/FilingsTable";
 import FilterBar from "@/components/FilterBar";
+import PageSkeleton from "@/components/PageSkeleton";
 import ScopeStrip from "@/components/ScopeStrip";
 import type { Filing } from "@/lib/filings";
 import {
@@ -108,16 +109,7 @@ export default function ProspectPage(): React.JSX.Element {
   }, [visibleFilings]);
 
   if (phase === "loading" || !profile || !filters) {
-    return (
-      <main className="min-h-screen" style={{ background: C.bg }}>
-        <div
-          className="max-w-[1100px] mx-auto px-4 py-10 text-[13px]"
-          style={{ color: C.text3 }}
-        >
-          Loading…
-        </div>
-      </main>
-    );
+    return <PageSkeleton variant="table" />;
   }
 
   if (phase === "error") {
