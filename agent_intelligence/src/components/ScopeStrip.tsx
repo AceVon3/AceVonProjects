@@ -8,12 +8,6 @@ type Props = {
   captiveBrand?: string;
 };
 
-const C = {
-  surface2: "#F4F2EC",
-  text2: "#5F5E5A",
-  blueText: "#0C447C",
-};
-
 export default function ScopeStrip({
   states,
   captiveBrand,
@@ -24,19 +18,11 @@ export default function ScopeStrip({
   return (
     <div
       data-testid="scope-strip"
-      style={{
-        background: C.surface2,
-        padding: "8px 16px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        fontSize: 12,
-      }}
+      className="bg-surface-2 px-4 py-2 flex items-center justify-between text-12"
     >
-      <span style={{ color: C.text2 }} data-testid="scope-label">
+      <span className="text-ink-2" data-testid="scope-label">
         <i
-          className="ti ti-filter"
-          style={{ fontSize: 13, verticalAlign: -2, marginRight: 6 }}
+          className="ti ti-filter text-13 mr-1.5 align-[-2px]"
           aria-hidden
         />
         Showing: {stateList}
@@ -45,11 +31,7 @@ export default function ScopeStrip({
       <Link
         href="/setup"
         data-testid="scope-edit"
-        style={{
-          color: C.blueText,
-          fontWeight: 500,
-          textDecoration: "none",
-        }}
+        className="text-blue-text font-medium no-underline"
       >
         Edit
       </Link>

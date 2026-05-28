@@ -15,65 +15,10 @@ type Props = {
   todayLabel: string;
 };
 
-const C = {
-  surface: "#ffffff",
-  surface2: "#F4F2EC",
-  text: "#1c1c1b",
-  text2: "#5F5E5A",
-  text3: "#888780",
-  line: "rgba(0,0,0,0.08)",
-  redText: "#A32D2D",
-  redFill: "#FCEBEB",
-  amberFill: "#FAEEDA",
-  amberText: "#633806",
-  blueText: "#0C447C",
-};
-
-const cardBase: React.CSSProperties = {
-  border: `0.5px solid ${C.line}`,
-  borderRadius: 12,
-  padding: 16,
-  background: C.surface,
-};
-const cardUrgent: React.CSSProperties = {
-  ...cardBase,
-  border: `2px solid ${C.redText}`,
-};
-
-const iconBox = (bg: string): React.CSSProperties => ({
-  width: 32,
-  height: 32,
-  borderRadius: 8,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  flexShrink: 0,
-  background: bg,
-});
-const ovHead: React.CSSProperties = {
-  display: "flex",
-  alignItems: "flex-start",
-  gap: 10,
-  marginBottom: 10,
-};
-const lab: React.CSSProperties = { fontSize: 13, color: C.text2, paddingTop: 2 };
-const ovNum: React.CSSProperties = { fontSize: 26, fontWeight: 500, marginBottom: 8, color: C.text };
-const ovLinkStyle: React.CSSProperties = {
-  fontSize: 12,
-  color: C.blueText,
-  fontWeight: 500,
-  textDecoration: "none",
-};
-const redBadge: React.CSSProperties = {
-  display: "inline-block",
-  background: C.redFill,
-  color: C.redText,
-  padding: "2px 8px",
-  fontSize: 11,
-  borderRadius: 999,
-  lineHeight: 1.4,
-  fontWeight: 500,
-};
+const CARD =
+  "border border-hairline border-line rounded-xl p-4 bg-surface";
+const CARD_URGENT =
+  "border-2 border-red-text rounded-xl p-4 bg-surface";
 
 export default function OverviewCards({
   prospectCount,
@@ -85,41 +30,36 @@ export default function OverviewCards({
   return (
     <div
       data-testid="ov-cards"
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
-        gap: 12,
-        marginBottom: 20,
-      }}
+      className="grid grid-cols-4 gap-3 mb-5"
     >
       {/* Prospect */}
-      <div style={cardBase} data-testid="ov-card-prospect">
-        <div style={ovHead}>
-          <div style={iconBox(C.surface2)}>
-            <i className="ti ti-target-arrow" style={{ fontSize: 17, color: C.text2 }} />
+      <div className={CARD} data-testid="ov-card-prospect">
+        <div className="flex items-start gap-2.5 mb-2.5">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-surface-2">
+            <i className="ti ti-target-arrow text-17 text-ink-2" />
           </div>
-          <div style={lab}>Prospect opportunities</div>
+          <div className="text-13 text-ink-2 pt-0.5">Prospect opportunities</div>
         </div>
-        <div style={ovNum} data-testid="ov-prospect-count">
+        <div className="text-26 font-medium mb-2 text-ink" data-testid="ov-prospect-count">
           {prospectCount}
         </div>
-        <Link href="/prospect" style={ovLinkStyle}>
+        <Link href="/prospect" className="text-12 text-blue-text font-medium no-underline">
           View all →
         </Link>
       </div>
 
       {/* Defend */}
-      <div style={cardBase} data-testid="ov-card-defend">
-        <div style={ovHead}>
-          <div style={iconBox(C.amberFill)}>
-            <i className="ti ti-shield-half" style={{ fontSize: 17, color: C.amberText }} />
+      <div className={CARD} data-testid="ov-card-defend">
+        <div className="flex items-start gap-2.5 mb-2.5">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-amber-fill">
+            <i className="ti ti-shield-half text-17 text-amber-text" />
           </div>
-          <div style={lab}>Defend risks</div>
+          <div className="text-13 text-ink-2 pt-0.5">Defend risks</div>
         </div>
-        <div style={ovNum} data-testid="ov-defend-count">
+        <div className="text-26 font-medium mb-2 text-ink" data-testid="ov-defend-count">
           {defendCount}
         </div>
-        <Link href="/defend" style={ovLinkStyle}>
+        <Link href="/defend" className="text-12 text-blue-text font-medium no-underline">
           View all →
         </Link>
       </div>
@@ -128,66 +68,63 @@ export default function OverviewCards({
       {mostUrgent ? (
         <Link
           href={mostUrgent.classification === "prospect" ? "/prospect" : "/defend"}
-          style={{ ...cardUrgent, textDecoration: "none" }}
+          className={`${CARD_URGENT} no-underline block`}
           data-testid="ov-card-most-urgent"
           data-tier={mostUrgent.tier}
         >
-          <div style={ovHead}>
-            <div style={iconBox(C.redFill)}>
-              <i
-                className="ti ti-alert-triangle"
-                style={{ fontSize: 17, color: C.redText }}
-              />
+          <div className="flex items-start gap-2.5 mb-2.5">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-red-fill">
+              <i className="ti ti-alert-triangle text-17 text-red-text" />
             </div>
-            <div style={lab}>Most urgent</div>
+            <div className="text-13 text-ink-2 pt-0.5">Most urgent</div>
           </div>
           <div
-            style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: C.text }}
+            className="text-15 font-medium mb-2 text-ink"
             data-testid="ov-most-urgent-body"
           >
             {mostUrgent.filing.brand}{" "}
-            <span style={{ color: C.redText }}>
+            <span className="text-red-text">
               {formatRateImpact(mostUrgent.filing.overall_rate_impact)}
             </span>{" "}
             in {mostUrgent.filing.state}
           </div>
-          <span style={redBadge} data-testid="ov-most-urgent-pill">
+          <span
+            className="inline-block bg-red-fill text-red-text px-2 py-0.5 text-11 rounded-full leading-[1.4] font-medium"
+            data-testid="ov-most-urgent-pill"
+          >
             {mostUrgent.pillText}
           </span>
         </Link>
       ) : (
-        <div style={cardBase} data-testid="ov-card-most-urgent-empty">
-          <div style={ovHead}>
-            <div style={iconBox(C.surface2)}>
-              <i
-                className="ti ti-alert-triangle"
-                style={{ fontSize: 17, color: C.text3 }}
-              />
+        <div className={CARD} data-testid="ov-card-most-urgent-empty">
+          <div className="flex items-start gap-2.5 mb-2.5">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-surface-2">
+              <i className="ti ti-alert-triangle text-17 text-ink-3" />
             </div>
-            <div style={lab}>Most urgent</div>
+            <div className="text-13 text-ink-2 pt-0.5">Most urgent</div>
           </div>
-          <div style={{ fontSize: 13, color: C.text3 }}>Nothing urgent right now.</div>
+          <div className="text-13 text-ink-3">Nothing urgent right now.</div>
         </div>
       )}
 
       {/* Compliance — lightweight v1 (no change-detection claims) */}
-      <div style={cardBase} data-testid="ov-card-compliance">
-        <div style={ovHead}>
-          <div style={iconBox(C.surface2)}>
-            <i className="ti ti-gavel" style={{ fontSize: 17, color: C.text2 }} />
+      <div className={CARD} data-testid="ov-card-compliance">
+        <div className="flex items-start gap-2.5 mb-2.5">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-surface-2">
+            <i className="ti ti-gavel text-17 text-ink-2" />
           </div>
-          <div style={lab}>Compliance</div>
+          <div className="text-13 text-ink-2 pt-0.5">Compliance</div>
         </div>
         <div
-          style={{ fontSize: 15, fontWeight: 500, marginBottom: 4, color: C.text }}
+          className="text-15 font-medium mb-1 text-ink"
           data-testid="ov-compliance-states"
         >
           {employeeStatesCount} {employeeStatesCount === 1 ? "state" : "states"} tracked
         </div>
-        <div style={{ fontSize: 11, color: C.text3, marginBottom: 8 }}>
+        <div className="text-11 text-ink-3 mb-2">
           Last checked {todayLabel}
         </div>
-        <Link href="/compliance" style={ovLinkStyle}>
+        <Link href="/compliance" className="text-12 text-blue-text font-medium no-underline">
           View resources →
         </Link>
       </div>

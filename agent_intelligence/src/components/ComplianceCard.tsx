@@ -16,17 +16,19 @@ export type ComplianceCardProps = {
   last_checked?: string; // omitted on coming-soon cards
 };
 
-// Topic tag colors keyed to the reference's per-topic palette. Remote Work
-// is intentionally neutral — it doubles as the coming-soon fallback color.
-const TOPIC_COLORS: Record<ResourceKey, { fill: string; text: string }> = {
-  wage_hour:    { fill: "#EAF3DE", text: "#27500A" }, // green
-  leave:        { fill: "#EAF3DE", text: "#27500A" }, // green
-  payroll:      { fill: "#E6F1FB", text: "#0C447C" }, // blue
-  workers_comp: { fill: "#FAEEDA", text: "#633806" }, // amber
-  termination:  { fill: "#FCEBEB", text: "#A32D2D" }, // red
-  nexus:        { fill: "#E6F1FB", text: "#0C447C" }, // blue
-  hiring:       { fill: "#EAF3DE", text: "#27500A" }, // green
-  remote:       { fill: "#F1EFE8", text: "#444441" }, // gray
+// Topic tag color pairs keyed to the reference's per-topic palette. Remote
+// Work is intentionally neutral — it doubles as the coming-soon fallback
+// color. Stored as Tailwind class pairs so the palette flows from the
+// shared tokens.
+const TOPIC_TAG_CLASS: Record<ResourceKey, string> = {
+  wage_hour:    "bg-green-fill text-green-text",
+  leave:        "bg-green-fill text-green-text",
+  payroll:      "bg-blue-fill text-blue-text",
+  workers_comp: "bg-amber-fill text-amber-text",
+  termination:  "bg-red-fill text-red-text",
+  nexus:        "bg-blue-fill text-blue-text",
+  hiring:       "bg-green-fill text-green-text",
+  remote:       "bg-gray-fill text-gray-text",
 };
 
 const TOPIC_LABELS: Record<ResourceKey, string> = {
@@ -38,17 +40,6 @@ const TOPIC_LABELS: Record<ResourceKey, string> = {
   nexus: "Nexus & Licensing",
   hiring: "Hiring Basics",
   remote: "Remote Work",
-};
-
-const C = {
-  surface: "#ffffff",
-  surface2: "#F4F2EC",
-  text: "#1c1c1b",
-  text2: "#5F5E5A",
-  text3: "#888780",
-  line: "rgba(0,0,0,0.08)",
-  line2: "rgba(0,0,0,0.15)",
-  blueText: "#0C447C",
 };
 
 // "https://www.lni.wa.gov/workers-rights/wages/minimum-wage/" → "lni.wa.gov"
@@ -69,7 +60,6 @@ export default function ComplianceCard({
   last_checked,
 }: ComplianceCardProps): React.JSX.Element {
   const isComingSoon = !title || !summary;
-  const tag = TOPIC_COLORS[topic];
   const tagLabel = TOPIC_LABELS[topic];
 
   return (
@@ -78,71 +68,36 @@ export default function ComplianceCard({
       data-state={state}
       data-topic={topic}
       data-variant={isComingSoon ? "coming-soon" : "full"}
-      style={{
-        border: `0.5px solid ${C.line}`,
-        borderRadius: 12,
-        padding: 16,
-        display: "flex",
-        flexDirection: "column",
-        background: C.surface,
-      }}
+      className="border border-hairline border-line rounded-xl p-4 flex flex-col bg-surface"
     >
       {/* Header: topic tag (left) + state badge (right) */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 10,
-        }}
-      >
+      <div className="flex items-center justify-between mb-2.5">
         <span
-          style={{
-            fontSize: 11,
-            padding: "2px 8px",
-            borderRadius: 999,
-            fontWeight: 500,
-            background: tag.fill,
-            color: tag.text,
-          }}
+          className={`${TOPIC_TAG_CLASS[topic]} text-11 px-2 py-0.5 rounded-full font-medium`}
         >
           {tagLabel}
         </span>
-        <span
-          style={{
-            fontSize: 11,
-            padding: "2px 7px",
-            borderRadius: 6,
-            border: `0.5px solid ${C.line2}`,
-            color: C.text2,
-          }}
-        >
+        <span className="text-11 px-[7px] py-0.5 rounded-md border border-hairline border-line-2 text-ink-2">
           {state}
         </span>
       </div>
 
       {/* Title */}
       <h3
-        style={{
-          fontSize: 15,
-          fontWeight: 500,
-          margin: "0 0 8px",
-          lineHeight: 1.35,
-          color: isComingSoon ? C.text3 : C.text,
-        }}
+        className={[
+          "text-15 font-medium mt-0 mb-2 leading-[1.35]",
+          isComingSoon ? "text-ink-3" : "text-ink",
+        ].join(" ")}
       >
         {isComingSoon ? "Summary coming soon" : title}
       </h3>
 
       {/* Summary */}
       <p
-        style={{
-          fontSize: 13,
-          color: isComingSoon ? C.text3 : C.text2,
-          lineHeight: 1.55,
-          margin: "0 0 14px",
-          flex: 1,
-        }}
+        className={[
+          "text-13 leading-[1.55] mt-0 mb-3.5 flex-1",
+          isComingSoon ? "text-ink-3" : "text-ink-2",
+        ].join(" ")}
       >
         {isComingSoon
           ? "We’re preparing a grounded summary for this topic. The official source link is available below."
@@ -152,17 +107,7 @@ export default function ComplianceCard({
       {/* Sources block — always rendered when at least one URL is mapped */}
       {sources.length > 0 && (
         <>
-          <div
-            style={{
-              fontSize: 11,
-              color: C.text3,
-              textTransform: "uppercase",
-              letterSpacing: 0.4,
-              borderTop: `0.5px solid ${C.line}`,
-              paddingTop: 10,
-              marginBottom: 6,
-            }}
-          >
+          <div className="text-11 text-ink-3 uppercase tracking-wider04 border-t border-hairline border-line pt-2.5 mb-1.5">
             Sources
           </div>
           {sources.map(url => (
@@ -172,24 +117,19 @@ export default function ComplianceCard({
               target="_blank"
               rel="noopener noreferrer"
               data-testid="source-link"
-              style={{
-                fontSize: 12,
-                color: isComingSoon ? C.text3 : C.blueText,
-                display: "flex",
-                alignItems: "center",
-                gap: 5,
-                marginBottom: 3,
-                textDecoration: "none",
-              }}
+              className={[
+                "text-12 flex items-center gap-[5px] mb-[3px] no-underline",
+                isComingSoon ? "text-ink-3" : "text-blue-text",
+              ].join(" ")}
             >
-              <span aria-hidden style={{ fontSize: 11 }}>↗</span>
+              <span aria-hidden className="text-11">↗</span>
               {bareDomain(url)}
             </a>
           ))}
           {!isComingSoon && last_checked && (
             <div
               data-testid="last-checked"
-              style={{ fontSize: 11, color: C.text3, marginTop: 8 }}
+              className="text-11 text-ink-3 mt-2"
             >
               Last checked: {last_checked}
             </div>

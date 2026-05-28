@@ -4,25 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { AgentType } from "@/lib/profile";
-import { loadProfile } from "@/lib/profile";
+import { AgentType, loadProfile } from "@/lib/profile";
 
 type NavItem = { label: string; href: string };
-
-const C = {
-  surface: "#ffffff",
-  text: "#1c1c1b",
-  text2: "#5F5E5A",
-  line: "rgba(0,0,0,0.08)",
-};
 
 // Build the nav list per spec §Navigation:
 //   Captive:     Overview · Prospect · Defend · Compliance · Methodology · Profile
 //   Independent: Overview · Prospect · Defend · My Carriers · Compliance · Methodology · Profile
 //   No profile:  Overview · Methodology  (matches ui-reference Screen 1)
-//
-// Overview is always first. "My Carriers" appears only for independents.
-// "Compliance" appears for both agent types.
 function buildItems(agentType: AgentType | null): NavItem[] {
   if (agentType === null) {
     return [
@@ -46,8 +35,6 @@ function buildItems(agentType: AgentType | null): NavItem[] {
   return items;
 }
 
-// Active-route match. Exact match for "/", prefix match for other routes so
-// /prospect?foo=bar and /prospect/anything would both highlight Prospect.
 function isActive(itemHref: string, pathname: string): boolean {
   if (itemHref === "/") return pathname === "/";
   return pathname === itemHref || pathname.startsWith(`${itemHref}/`);
@@ -71,50 +58,21 @@ export default function NavBar(): React.JSX.Element {
     <div
       data-testid="navbar"
       data-agent-type={agentType ?? "none"}
-      style={{
-        height: 56,
-        padding: "0 16px",
-        background: C.surface,
-        borderBottom: `0.5px solid ${C.line}`,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
+      className="h-[56px] px-4 bg-surface border-b border-hairline border-line flex items-center justify-between"
     >
       {/* Brand (left) */}
       <Link
         href="/"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          textDecoration: "none",
-          color: C.text,
-        }}
+        className="flex items-center gap-2.5 no-underline text-ink"
       >
-        <div
-          style={{
-            width: 22,
-            height: 22,
-            background: C.text,
-            borderRadius: 4,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <i
-            className="ti ti-radar-2"
-            style={{ color: C.surface, fontSize: 14 }}
-          />
+        <div className="w-[22px] h-[22px] bg-ink rounded flex items-center justify-center">
+          <i className="ti ti-radar-2 text-surface text-14" />
         </div>
-        <span style={{ fontWeight: 500, fontSize: 14 }}>
-          Agent Intelligence
-        </span>
+        <span className="font-medium text-14">Agent Intelligence</span>
       </Link>
 
       {/* Nav links (right) */}
-      <nav style={{ display: "flex", gap: 18, fontSize: 13 }}>
+      <nav className="flex gap-[18px] text-13">
         {items.map(item => {
           const active = isActive(item.href, pathname);
           return (
@@ -124,13 +82,12 @@ export default function NavBar(): React.JSX.Element {
               data-testid="nav-link"
               data-label={item.label}
               data-active={active ? "true" : "false"}
-              style={{
-                color: active ? C.text : C.text2,
-                fontWeight: active ? 500 : 400,
-                textDecoration: "none",
-                paddingBottom: 2,
-                borderBottom: active ? `1.5px solid ${C.text}` : "1.5px solid transparent",
-              }}
+              className={[
+                "no-underline pb-0.5 border-b-[1.5px]",
+                active
+                  ? "text-ink font-medium border-ink"
+                  : "text-ink-2 font-normal border-transparent",
+              ].join(" ")}
             >
               {item.label}
             </Link>

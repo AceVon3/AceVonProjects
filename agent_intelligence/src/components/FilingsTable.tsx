@@ -28,43 +28,18 @@ type Props = {
   filteredToEmpty?: boolean;
 };
 
-// Visual tokens — same palette as ProfileForm + ui-reference.html.
-const C = {
-  text: "#1c1c1b",
-  text2: "#5F5E5A",
-  text3: "#888780",
-  line: "rgba(0,0,0,0.08)",
-  line2: "rgba(0,0,0,0.15)",
-  surface: "#ffffff",
-  surface2: "#F4F2EC",
-  soft: "#F1EFE8",
-  blueFill: "#E6F1FB", blueText: "#0C447C",
-  greenFill: "#EAF3DE", greenText: "#27500A",
-  amberFill: "#FAEEDA", amberText: "#633806",
-  redFill: "#FCEBEB", redText: "#A32D2D",
-  grayFill: "#F1EFE8", grayText: "#444441",
-  mineBg: "rgba(255, 230, 200, 0.18)",
+// Map BadgeColor → Tailwind class pair (fill + text). All values come from
+// tailwind.config.ts which mirrors ui-reference.html's :root tokens.
+const BADGE_CLASS: Record<BadgeColor, string> = {
+  green: "bg-green-fill text-green-text",
+  amber: "bg-amber-fill text-amber-text",
+  blue:  "bg-blue-fill text-blue-text",
+  red:   "bg-red-fill text-red-text",
+  gray:  "bg-gray-fill text-gray-text",
 };
 
-function badgeStyle(color: BadgeColor): React.CSSProperties {
-  const map: Record<BadgeColor, [string, string]> = {
-    green: [C.greenFill, C.greenText],
-    amber: [C.amberFill, C.amberText],
-    blue:  [C.blueFill,  C.blueText],
-    red:   [C.redFill,   C.redText],
-    gray:  [C.grayFill,  C.grayText],
-  };
-  const [bg, fg] = map[color];
-  return {
-    display: "inline-block",
-    background: bg,
-    color: fg,
-    padding: "2px 8px",
-    fontSize: 11,
-    borderRadius: 999,
-    lineHeight: 1.4,
-    fontWeight: 500,
-  };
+function badgeClass(color: BadgeColor): string {
+  return `${BADGE_CLASS[color]} inline-block px-2 py-0.5 text-11 rounded-full font-medium leading-[1.4]`;
 }
 
 function firstColumnHeader(mode: FilingsTableMode, agentType: Props["agentType"]): string {
@@ -73,10 +48,10 @@ function firstColumnHeader(mode: FilingsTableMode, agentType: Props["agentType"]
   return agentType === "captive" ? "Competitor" : "Carrier";
 }
 
-function impactColorStyle(c: "red" | "green" | "black"): React.CSSProperties {
-  if (c === "red") return { color: C.redText, fontWeight: 500 };
-  if (c === "green") return { color: C.greenText, fontWeight: 500 };
-  return { color: C.text, fontWeight: 500 };
+function impactClass(c: "red" | "green" | "black"): string {
+  if (c === "red") return "text-red-text font-medium";
+  if (c === "green") return "text-green-text font-medium";
+  return "text-ink font-medium";
 }
 
 export default function FilingsTable({
@@ -95,8 +70,7 @@ export default function FilingsTable({
       <div
         data-testid="empty-state"
         data-variant={filteredToEmpty ? "filtered" : "no-data"}
-        className="text-[13px] px-4 py-6 text-center"
-        style={{ color: C.text3, border: `0.5px solid ${C.line}`, borderRadius: 8 }}
+        className="text-13 px-4 py-6 text-center text-ink-3 border border-hairline border-line rounded-lg"
       >
         {copy}
       </div>
@@ -105,8 +79,8 @@ export default function FilingsTable({
 
   return (
     <table
-      className="w-full"
-      style={{ tableLayout: "fixed", fontSize: 13, borderCollapse: "collapse" }}
+      className="w-full text-13"
+      style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
     >
       <colgroup>
         <col style={{ width: "17%" }} />
@@ -118,7 +92,7 @@ export default function FilingsTable({
         <col style={{ width: "12%" }} />
       </colgroup>
       <thead>
-        <tr style={{ borderBottom: `0.5px solid ${C.line2}`, textAlign: "left" }}>
+        <tr className="border-b border-hairline border-line-2 text-left">
           <Th>{firstHeader}</Th>
           <Th>State</Th>
           <Th>Line</Th>
@@ -137,7 +111,6 @@ export default function FilingsTable({
             mode !== "my-carriers"
             && agentType === "independent"
             && ownedBrands.has(f.brand);
-          const rowBg = isMine ? C.mineBg : undefined;
           const impactC = rateImpactColor(f.overall_rate_impact, mode);
           const showDot = shouldShowEntitySpreadDot(
             f.entity_count, f.min_entity_impact, f.max_entity_impact,
@@ -149,27 +122,17 @@ export default function FilingsTable({
             <tr
               key={f.id}
               title={`Filing: ${f.serff_tracking_number}`}
-              style={{
-                background: rowBg,
-                borderBottom: `0.5px solid ${C.line}`,
-              }}
+              className={[
+                "border-b border-hairline border-line",
+                isMine ? "bg-mine-bg" : "",
+              ].join(" ")}
             >
               <Td>
                 <span>{f.brand}</span>
                 {isMine && (
                   <span
-                    style={{
-                      display: "inline-block",
-                      background: C.blueFill,
-                      color: C.blueText,
-                      fontSize: 10,
-                      padding: "1px 6px",
-                      borderRadius: 999,
-                      marginLeft: 4,
-                      verticalAlign: 1,
-                      fontWeight: 500,
-                    }}
                     data-testid="mine-pill"
+                    className="inline-block bg-blue-fill text-blue-text text-10 px-1.5 py-px rounded-full ml-1 align-[1px] font-medium"
                   >
                     Mine
                   </span>
@@ -178,7 +141,7 @@ export default function FilingsTable({
               <Td>{f.state}</Td>
               <Td>{f.line_of_business}</Td>
               <Td>
-                <span style={impactColorStyle(impactC)}>
+                <span className={impactClass(impactC)}>
                   {formatRateImpact(f.overall_rate_impact)}
                 </span>
                 {showDot && (
@@ -188,45 +151,26 @@ export default function FilingsTable({
                     )}
                     aria-label="Multi-entity rollup details"
                     data-testid="entity-spread-dot"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: 14,
-                      height: 14,
-                      borderRadius: "50%",
-                      background: C.soft,
-                      color: C.text2,
-                      fontSize: 10,
-                      fontStyle: "italic",
-                      fontFamily: "Georgia, serif",
-                      marginLeft: 4,
-                      cursor: "help",
-                    }}
+                    className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-soft text-ink-2 text-10 italic ml-1 cursor-help"
+                    style={{ fontFamily: "Georgia, serif" }}
                   >
                     i
                   </span>
                 )}
               </Td>
               <Td>
-                <div style={{ fontSize: 12 }}>
+                <div className="text-12">
                   {formatEffectiveDate(f.effective_date)}
                 </div>
-                <span style={{ ...badgeStyle(windowB.color), marginTop: 2 }}>
+                <span className={`${badgeClass(windowB.color)} mt-0.5`}>
                   {windowB.text}
                 </span>
               </Td>
               <Td>
-                <span style={badgeStyle(statusB.color)}>{statusB.text}</span>
+                <span className={badgeClass(statusB.color)}>{statusB.text}</span>
               </Td>
               <Td align="right">
-                <span
-                  style={
-                    f.total_policyholders == null
-                      ? { color: C.text2 }
-                      : undefined
-                  }
-                >
+                <span className={f.total_policyholders == null ? "text-ink-2" : ""}>
                   {formatPolicyholders(f.total_policyholders)}
                 </span>
               </Td>
@@ -238,25 +182,24 @@ export default function FilingsTable({
   );
 }
 
+// Th padding: 8px all sides, except left=0 when the cell is left-aligned.
+// (Original inline behavior: padding: 8; paddingLeft: align ? 8 : 0.)
 function Th({ children, align }: { children: React.ReactNode; align?: "right" }) {
   return (
     <th
-      style={{
-        fontWeight: 500,
-        color: C.text2,
-        fontSize: 11,
-        textTransform: "uppercase",
-        letterSpacing: 0.4,
-        padding: 8,
-        paddingLeft: align ? 8 : 0,
-        textAlign: align ?? "left",
-      }}
+      className={
+        align
+          ? "font-medium text-ink-2 text-11 uppercase tracking-wider04 p-2 text-right"
+          : "font-medium text-ink-2 text-11 uppercase tracking-wider04 py-2 pr-2 pl-0 text-left"
+      }
     >
       {children}
     </th>
   );
 }
 
+// Td padding: 12px vertical, 8px horizontal — except left=0 when the cell
+// is left-aligned. (Original: padding: "12px 8px"; paddingLeft: align ? 8 : 0.)
 function Td({
   children,
   align,
@@ -266,11 +209,11 @@ function Td({
 }) {
   return (
     <td
-      style={{
-        padding: "12px 8px",
-        paddingLeft: align ? 8 : 0,
-        textAlign: align ?? "left",
-      }}
+      className={
+        align
+          ? "py-3 px-2 text-right"
+          : "py-3 pr-2 pl-0 text-left"
+      }
     >
       {children}
     </td>

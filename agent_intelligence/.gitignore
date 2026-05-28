@@ -34,3 +34,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local-only screenshot artifacts written by scripts/screenshot_pages.ts
+# (before/after PNGs for refactor verification — not source).
+/polish/
+/generate.log

@@ -140,7 +140,9 @@ async function main(): Promise<void> {
     rs.map(r => ({
       brand: r.querySelector("td:first-child")?.textContent?.replace(/Mine$/, "").trim() ?? "",
       hasMine: !!r.querySelector('[data-testid="mine-pill"]'),
-      bg: (r as HTMLElement).style.background,
+      // Use computed style — the warm tint comes from a Tailwind class
+      // (bg-mine-bg) after the token consolidation, not inline style.
+      bg: window.getComputedStyle(r as HTMLElement).backgroundColor,
     })),
   );
   const owned = new Set(["State Farm", "Travelers"]);
@@ -155,7 +157,7 @@ async function main(): Promise<void> {
     otherRows.every(r => !r.hasMine),
     { offending: otherRows.filter(r => r.hasMine).map(r => r.brand) });
   check("owned rows carry warm tint background",
-    ownedRows.every(r => r.bg.includes("rgba(255, 230, 200")));
+    ownedRows.every(r => r.bg.includes("255, 230, 200")));
 
   await browser.close();
 

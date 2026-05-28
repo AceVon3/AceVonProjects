@@ -146,7 +146,9 @@ async function main(): Promise<void> {
     rs.map(r => ({
       brand: r.querySelector("td:first-child")?.textContent?.replace(/Mine$/, "").trim() ?? "",
       hasMine: !!r.querySelector('[data-testid="mine-pill"]'),
-      bg: (r as HTMLElement).style.background,
+      // Use computed style — the warm tint comes from a Tailwind class
+      // (bg-mine-bg) after the token consolidation, not inline style.
+      bg: window.getComputedStyle(r as HTMLElement).backgroundColor,
     })),
   );
   const owned = new Set(["State Farm", "Travelers"]);
@@ -162,12 +164,12 @@ async function main(): Promise<void> {
   check("at least one Mine pill is present", expectedMine.some(r => r.hasMine),
     { count: expectedMine.length });
 
-  // Warm tint: the .mineBg color is rgba(255, 230, 200, 0.18). Inline style
-  // serializes as 'rgba(255, 230, 200, 0.18)'. Match on substring.
-  const mineRowsHaveTint = expectedMine.every(r => r.bg.includes("rgba(255, 230, 200"));
+  // Warm tint: the mine-bg color is rgba(255, 230, 200, 0.18). Browser
+  // computed style serializes the same way. Match on substring.
+  const mineRowsHaveTint = expectedMine.every(r => r.bg.includes("255, 230, 200"));
   const nonMineRowsNoTint = rowsWithPill
     .filter(r => !owned.has(r.brand))
-    .every(r => !r.bg.includes("rgba(255, 230, 200"));
+    .every(r => !r.bg.includes("255, 230, 200"));
   check("owned rows carry warm tint background", mineRowsHaveTint);
   check("non-owned rows do NOT carry warm tint", nonMineRowsNoTint);
 

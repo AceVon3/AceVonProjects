@@ -22,17 +22,6 @@ type Props = {
   authorizedBrands?: string[];       // bounds the Carrier chip (my-carriers only)
 };
 
-const C = {
-  text: "#1c1c1b",
-  text2: "#5F5E5A",
-  text3: "#888780",
-  surface: "#ffffff",
-  surface2: "#F4F2EC",
-  line: "rgba(0,0,0,0.08)",
-  line2: "rgba(0,0,0,0.15)",
-  blueText: "#0C447C",
-};
-
 export default function FilterBar({
   mode,
   filters,
@@ -81,23 +70,9 @@ export default function FilterBar({
     <div
       ref={wrapperRef}
       data-testid="filter-bar"
-      style={{
-        display: "flex",
-        gap: 8,
-        marginBottom: 12,
-        flexWrap: "wrap",
-        alignItems: "center",
-      }}
+      className="flex gap-2 mb-3 flex-wrap items-center"
     >
-      <span
-        style={{
-          color: C.text3,
-          textTransform: "uppercase",
-          fontSize: 11,
-          letterSpacing: 0.4,
-          marginRight: 4,
-        }}
-      >
+      <span className="text-ink-3 uppercase text-11 tracking-wider04 mr-1">
         Filters
       </span>
 
@@ -236,45 +211,23 @@ function Chip({
   children: React.ReactNode;
 }): React.JSX.Element {
   return (
-    <span style={{ position: "relative" }}>
+    <span className="relative">
       <button
         type="button"
         onClick={onToggle}
         data-testid={testid}
         data-open={open ? "true" : "false"}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 4,
-          border: `0.5px solid ${C.line2}`,
-          borderRadius: 8,
-          padding: "5px 10px",
-          fontSize: 12,
-          background: C.surface,
-          color: C.text,
-          cursor: "pointer",
-        }}
+        className="inline-flex items-center gap-1 border border-hairline border-line-2 rounded-lg px-2.5 py-[5px] text-12 bg-surface text-ink cursor-pointer"
       >
         {label}
-        <span aria-hidden style={{ fontSize: 9, color: C.text3, marginLeft: 2 }}>
+        <span aria-hidden className="text-[9px] text-ink-3 ml-0.5">
           {open ? "▲" : "▼"}
         </span>
       </button>
       {open && (
         <div
           data-testid={`${testid}-panel`}
-          style={{
-            position: "absolute",
-            top: "calc(100% + 4px)",
-            left: 0,
-            zIndex: 10,
-            minWidth: 180,
-            background: C.surface,
-            border: `0.5px solid ${C.line2}`,
-            borderRadius: 8,
-            padding: 6,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-          }}
+          className="absolute top-[calc(100%+4px)] left-0 z-10 min-w-[180px] bg-surface border border-hairline border-line-2 rounded-lg p-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
         >
           {children}
         </div>
@@ -296,7 +249,7 @@ function CheckboxList({
 }): React.JSX.Element {
   const checkedSet = new Set(checked);
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div className="flex flex-col">
       {items.map(it => {
         const isChecked = checkedSet.has(it.value);
         return (
@@ -306,19 +259,7 @@ function CheckboxList({
             onClick={() => onToggle(it.value)}
             data-testid={`${testidPrefix}-${it.value}`}
             data-checked={isChecked ? "true" : "false"}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "5px 8px",
-              fontSize: 12,
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              textAlign: "left",
-              borderRadius: 4,
-              color: C.text,
-            }}
+            className="flex items-center gap-1.5 px-2 py-[5px] text-12 bg-transparent border-none cursor-pointer text-left rounded text-ink"
           >
             <span aria-hidden>{isChecked ? "☑" : "☐"}</span>
             {it.label}
@@ -341,7 +282,7 @@ function RadioList({
   testidPrefix: string;
 }): React.JSX.Element {
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div className="flex flex-col">
       {items.map(it => {
         const isSelected = selected === it.value;
         return (
@@ -351,20 +292,10 @@ function RadioList({
             onClick={() => onSelect(it.value)}
             data-testid={`${testidPrefix}-${it.value}`}
             data-selected={isSelected ? "true" : "false"}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "5px 8px",
-              fontSize: 12,
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              textAlign: "left",
-              borderRadius: 4,
-              color: isSelected ? C.blueText : C.text,
-              fontWeight: isSelected ? 500 : 400,
-            }}
+            className={[
+              "flex items-center gap-1.5 px-2 py-[5px] text-12 bg-transparent border-none cursor-pointer text-left rounded",
+              isSelected ? "text-blue-text font-medium" : "text-ink font-normal",
+            ].join(" ")}
           >
             <span aria-hidden>{isSelected ? "●" : "○"}</span>
             {it.label}

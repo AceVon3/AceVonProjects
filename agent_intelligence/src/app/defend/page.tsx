@@ -15,18 +15,6 @@ type Phase = "loading" | "ready" | "error";
 
 type ApiResponse = { asOf: string; filings: Filing[] };
 
-const C = {
-  bg: "#fafaf9",
-  text: "#1c1c1b",
-  text2: "#5F5E5A",
-  text3: "#888780",
-  line: "rgba(0,0,0,0.08)",
-  line2: "rgba(0,0,0,0.15)",
-  surface2: "#F4F2EC",
-  redText: "#A32D2D",
-  blueText: "#0C447C",
-};
-
 export default function DefendPage(): React.JSX.Element {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("loading");
@@ -103,19 +91,12 @@ export default function DefendPage(): React.JSX.Element {
 
   if (phase === "error") {
     return (
-      <main className="min-h-screen" style={{ background: C.bg }}>
+      <main className="min-h-screen bg-canvas">
         <div className="max-w-[1100px] mx-auto px-4 py-10">
-          <h1 className="text-[18px] font-medium m-0" style={{ color: C.text }}>
+          <h1 className="text-18 font-medium m-0 text-ink">
             Defend
           </h1>
-          <p
-            className="text-[13px] mt-3 p-3 rounded-md"
-            style={{
-              color: C.redText,
-              background: "#FCEBEB",
-              border: "0.5px solid rgba(0,0,0,0.08)",
-            }}
-          >
+          <p className="text-13 mt-3 p-3 rounded-md text-red-text bg-red-fill border border-hairline border-line">
             Couldn’t load filings: {error}
           </p>
         </div>
@@ -124,7 +105,7 @@ export default function DefendPage(): React.JSX.Element {
   }
 
   return (
-    <main className="min-h-screen" style={{ background: C.bg }}>
+    <main className="min-h-screen bg-canvas">
       <ScopeStrip
         states={profile.licensed_states}
         captiveBrand={
@@ -134,10 +115,10 @@ export default function DefendPage(): React.JSX.Element {
 
       <div className="max-w-[1100px] mx-auto px-4 py-6">
         <div className="mb-4">
-          <h1 className="text-[18px] font-medium m-0" style={{ color: C.text }}>
+          <h1 className="text-18 font-medium m-0 text-ink">
             Defend
           </h1>
-          <p className="text-[13px] mt-1 m-0" style={{ color: C.text2 }}>
+          <p className="text-13 mt-1 m-0 text-ink-2">
             Rate decreases in your states — your customers may shop.
           </p>
         </div>
@@ -150,35 +131,25 @@ export default function DefendPage(): React.JSX.Element {
         />
 
         {headerCard && (
-          <div
-            className="rounded-lg mb-4 flex gap-6 items-center"
-            style={{ background: C.surface2, padding: "14px 16px" }}
-          >
+          <div className="rounded-lg mb-4 flex gap-6 items-center bg-surface-2 px-4 py-3.5">
             <div>
-              <div
-                className="text-[11px] uppercase tracking-[0.4px] mb-0.5"
-                style={{ color: C.text2 }}
-              >
+              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
                 Carriers getting cheaper
               </div>
               <div
-                className="text-[22px] font-medium"
-                style={{ color: C.text }}
+                className="text-22 font-medium text-ink"
                 data-testid="header-count"
               >
                 {headerCard.count}
               </div>
             </div>
-            <div style={{ width: "0.5px", background: C.line2, alignSelf: "stretch" }} />
+            <div className="w-px self-stretch bg-line-2" />
             <div>
-              <div
-                className="text-[11px] uppercase tracking-[0.4px] mb-0.5"
-                style={{ color: C.text2 }}
-              >
+              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
                 Biggest cut
               </div>
-              <div className="text-[14px]" style={{ color: C.text }}>
-                <span style={{ fontWeight: 500, color: C.redText }}>
+              <div className="text-14 text-ink">
+                <span className="font-medium text-red-text">
                   −{Math.abs(headerCard.biggestCut.overall_rate_impact).toFixed(1)}%
                 </span>{" "}
                 by {headerCard.biggestCut.brand} in {headerCard.biggestCut.state}

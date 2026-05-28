@@ -17,16 +17,6 @@ type Phase = "loading" | "ready" | "error";
 
 type ApiResponse = { asOf: string; filings: Filing[] };
 
-const C = {
-  bg: "#fafaf9",
-  text: "#1c1c1b",
-  text2: "#5F5E5A",
-  text3: "#888780",
-  surface2: "#F4F2EC",
-  redText: "#A32D2D",
-  blueText: "#0C447C",
-};
-
 // "May 28" — used for the Compliance card's "Last checked" line.
 function todayShort(): string {
   return new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -108,19 +98,12 @@ export default function OverviewPage(): React.JSX.Element {
 
   if (phase === "error") {
     return (
-      <main className="min-h-screen" style={{ background: C.bg }}>
+      <main className="min-h-screen bg-canvas">
         <div className="max-w-[1100px] mx-auto px-4 py-10">
-          <h1 className="text-[18px] font-medium m-0" style={{ color: C.text }}>
+          <h1 className="text-18 font-medium m-0 text-ink">
             Overview
           </h1>
-          <p
-            className="text-[13px] mt-3 p-3 rounded-md"
-            style={{
-              color: C.redText,
-              background: "#FCEBEB",
-              border: "0.5px solid rgba(0,0,0,0.08)",
-            }}
-          >
+          <p className="text-13 mt-3 p-3 rounded-md text-red-text bg-red-fill border border-hairline border-line">
             Couldn’t load Overview: {error}
           </p>
         </div>
@@ -129,19 +112,17 @@ export default function OverviewPage(): React.JSX.Element {
   }
 
   return (
-    <main className="min-h-screen" style={{ background: C.bg }}>
+    <main className="min-h-screen bg-canvas">
       <div className="max-w-[1100px] mx-auto px-4 py-8">
         <div className="mb-5">
           <h1
-            className="text-[18px] font-medium m-0"
-            style={{ color: C.text }}
+            className="text-18 font-medium m-0 text-ink"
             data-testid="page-title"
           >
             Overview
           </h1>
           <p
-            className="text-[13px] mt-1 m-0"
-            style={{ color: C.text2 }}
+            className="text-13 mt-1 m-0 text-ink-2"
             data-testid="page-subtitle"
           >
             {subtitle}

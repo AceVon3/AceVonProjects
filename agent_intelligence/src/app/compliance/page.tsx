@@ -30,15 +30,6 @@ const COVERED: ReadonlySet<string> = new Set<StateCode>([
   "AZ", "CO", "ID", "MT", "NV", "OR", "UT", "WA",
 ]);
 
-const C = {
-  bg: "#fafaf9",
-  text: "#1c1c1b",
-  text2: "#5F5E5A",
-  text3: "#888780",
-  amberFill: "#FAEEDA",
-  amberText: "#633806",
-};
-
 // Build a quick lookup so the page never iterates the whole array per cell.
 function buildSummaryIndex(): Map<string, ComplianceSummary> {
   const m = new Map<string, ComplianceSummary>();
@@ -73,11 +64,8 @@ export default function CompliancePage(): React.JSX.Element {
 
   if (phase === "loading") {
     return (
-      <main className="min-h-screen" style={{ background: C.bg }}>
-        <div
-          className="max-w-[1100px] mx-auto px-4 py-10 text-[13px]"
-          style={{ color: C.text3 }}
-        >
+      <main className="min-h-screen bg-canvas">
+        <div className="max-w-[1100px] mx-auto px-4 py-10 text-13 text-ink-3">
           Loading…
         </div>
       </main>
@@ -85,17 +73,13 @@ export default function CompliancePage(): React.JSX.Element {
   }
 
   return (
-    <main className="min-h-screen" style={{ background: C.bg }}>
+    <main className="min-h-screen bg-canvas">
       <div className="max-w-[1100px] mx-auto px-4 py-8">
         <div className="mb-3">
-          <h1
-            className="text-[18px] font-medium m-0"
-            style={{ color: C.text }}
-            data-testid="page-title"
-          >
+          <h1 className="text-18 font-medium m-0 text-ink" data-testid="page-title">
             Compliance
           </h1>
-          <p className="text-[13px] mt-1 m-0" style={{ color: C.text2 }}>
+          <p className="text-13 mt-1 m-0 text-ink-2">
             HR & insurance regulations for the states your team works in:{" "}
             {renderedStates.join(", ") || "—"}.
           </p>
@@ -104,39 +88,21 @@ export default function CompliancePage(): React.JSX.Element {
         {/* Disclaimer banner — non-optional for a compliance feature. */}
         <div
           data-testid="disclaimer-banner"
-          style={{
-            background: C.amberFill,
-            color: C.amberText,
-            fontSize: 12,
-            padding: "9px 12px",
-            borderRadius: 8,
-            marginBottom: 16,
-          }}
+          className="bg-amber-fill text-amber-text text-12 px-3 py-[9px] rounded-lg mb-4"
         >
           AI-generated summaries of official sources, which may be incomplete or out
           of date. Always verify on the official site. This is not legal advice.
         </div>
 
         {renderedStates.length === 0 ? (
-          <div
-            className="text-[13px] px-4 py-6 text-center"
-            style={{
-              color: C.text3,
-              border: "0.5px solid rgba(0,0,0,0.08)",
-              borderRadius: 8,
-            }}
-          >
+          <div className="text-13 text-ink-3 px-4 py-6 text-center border border-hairline border-line rounded-lg">
             None of your employee work/live states are currently covered by our
             data. Coverage is expanding — check back as more states come online.
           </div>
         ) : (
           <div
             data-testid="compliance-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 14,
-            }}
+            className="grid grid-cols-3 gap-3.5"
           >
             {renderedStates.flatMap(state =>
               TOPIC_ORDER.map(topic => {

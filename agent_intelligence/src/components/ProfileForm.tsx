@@ -14,24 +14,6 @@ import {
 } from "@/lib/profile";
 import { STATES } from "@/lib/states";
 
-// Visual tokens cribbed from ui-reference.html — using inline arbitrary
-// classes here so the design system can be lifted into tailwind.config in
-// the step-12 polish pass without rewriting components.
-const C = {
-  bg: "#fafaf9",
-  surface: "#ffffff",
-  surface2: "#F4F2EC",
-  text: "#1c1c1b",
-  text2: "#5F5E5A",
-  text3: "#888780",
-  line: "rgba(0,0,0,0.08)",
-  line2: "rgba(0,0,0,0.15)",
-  blueFill: "#E6F1FB",
-  blueText: "#0C447C",
-  blueBorder: "#185FA5",
-  redText: "#A32D2D",
-};
-
 type FormState = {
   agent_type: AgentType | "";
   authorized_brands: Brand[];
@@ -88,6 +70,11 @@ function errorsByField(errs: ValidationError[]): Record<string, string> {
   for (const e of errs) m[e.field] = e.message;
   return m;
 }
+
+// Input + select shared class — kept here so the visual feel of every form
+// field is consistent and gets updated in one place.
+const INPUT_CLS =
+  "w-full rounded-md px-2.5 py-2 text-13 outline-none border border-hairline border-line-2";
 
 export default function ProfileForm(): React.JSX.Element {
   const router = useRouter();
@@ -179,21 +166,18 @@ export default function ProfileForm(): React.JSX.Element {
   // ----- presentational primitives ------------------------------------------
 
   const ReqStar = () => (
-    <span className="ml-0.5" style={{ color: C.redText }}>*</span>
+    <span className="ml-0.5 text-red-text">*</span>
   );
 
   const SecLabel = ({ children }: { children: React.ReactNode }) => (
-    <div
-      className="text-[11px] uppercase tracking-[0.4px] mb-2"
-      style={{ color: C.text2 }}
-    >
+    <div className="text-11 uppercase tracking-wider04 mb-2 text-ink-2">
       {children}
     </div>
   );
 
   const FieldErr = ({ msg }: { msg?: string }) =>
     msg ? (
-      <div className="text-[11px] mt-1" style={{ color: C.redText }}>
+      <div className="text-11 mt-1 text-red-text">
         {msg}
       </div>
     ) : null;
@@ -203,13 +187,10 @@ export default function ProfileForm(): React.JSX.Element {
   return (
     <form onSubmit={onSubmit} className="grid gap-4 lg:grid-cols-[1.7fr_1fr]" noValidate>
       {/* MAIN CARD */}
-      <div
-        className="rounded-xl p-[18px]"
-        style={{ background: C.surface, border: `0.5px solid ${C.line}` }}
-      >
+      <div className="rounded-xl p-[18px] bg-surface border border-hairline border-line">
         {/* Card title */}
         <div className="flex items-center gap-2 mb-4 font-medium text-sm">
-          <span aria-hidden style={{ color: C.redText, fontSize: 17 }}>⌂</span>
+          <span aria-hidden className="text-red-text text-17">⌂</span>
           <span>Agency details</span>
         </div>
 
@@ -217,7 +198,7 @@ export default function ProfileForm(): React.JSX.Element {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
           {/* Full name */}
           <div>
-            <label className="block text-[11px] mb-1" style={{ color: C.text2 }}>
+            <label className="block text-11 mb-1 text-ink-2">
               Full name <ReqStar />
             </label>
             <input
@@ -225,8 +206,7 @@ export default function ProfileForm(): React.JSX.Element {
               value={state.full_name}
               onChange={e => update("full_name", e.target.value)}
               placeholder="Ryan Christy"
-              className="w-full rounded-md px-[10px] py-2 text-[13px] outline-none"
-              style={{ border: `0.5px solid ${C.line2}` }}
+              className={INPUT_CLS}
               aria-invalid={!!errors.full_name}
             />
             <FieldErr msg={errors.full_name} />
@@ -234,7 +214,7 @@ export default function ProfileForm(): React.JSX.Element {
 
           {/* ZIP code */}
           <div>
-            <label className="block text-[11px] mb-1" style={{ color: C.text2 }}>
+            <label className="block text-11 mb-1 text-ink-2">
               ZIP code <ReqStar />
             </label>
             <input
@@ -244,8 +224,7 @@ export default function ProfileForm(): React.JSX.Element {
               value={state.zip_code}
               onChange={e => update("zip_code", e.target.value.replace(/\D/g, "").slice(0, 5))}
               placeholder="99206"
-              className="w-full rounded-md px-[10px] py-2 text-[13px] outline-none"
-              style={{ border: `0.5px solid ${C.line2}` }}
+              className={INPUT_CLS}
               aria-invalid={!!errors.zip_code}
             />
             <FieldErr msg={errors.zip_code} />
@@ -253,14 +232,13 @@ export default function ProfileForm(): React.JSX.Element {
 
           {/* Home state */}
           <div>
-            <label className="block text-[11px] mb-1" style={{ color: C.text2 }}>
+            <label className="block text-11 mb-1 text-ink-2">
               Home state <ReqStar />
             </label>
             <select
               value={state.home_state}
               onChange={e => update("home_state", e.target.value)}
-              className="w-full rounded-md px-[10px] py-2 text-[13px] outline-none bg-white"
-              style={{ border: `0.5px solid ${C.line2}` }}
+              className={`${INPUT_CLS} bg-surface`}
               aria-invalid={!!errors.home_state}
             >
               <option value="">Select…</option>
@@ -275,7 +253,7 @@ export default function ProfileForm(): React.JSX.Element {
 
           {/* Employees */}
           <div>
-            <label className="block text-[11px] mb-1" style={{ color: C.text2 }}>
+            <label className="block text-11 mb-1 text-ink-2">
               Employees <ReqStar />
             </label>
             <input
@@ -285,15 +263,14 @@ export default function ProfileForm(): React.JSX.Element {
               value={state.employee_count_str}
               onChange={e => update("employee_count_str", e.target.value)}
               placeholder="20"
-              className="w-full rounded-md px-[10px] py-2 text-[13px] outline-none"
-              style={{ border: `0.5px solid ${C.line2}` }}
+              className={INPUT_CLS}
               aria-invalid={!!errors.employee_count}
             />
             <FieldErr msg={errors.employee_count} />
           </div>
         </div>
 
-        <div className="my-4" style={{ borderTop: `0.5px solid ${C.line}` }} />
+        <div className="my-4 border-t border-hairline border-line" />
 
         {/* Agent type */}
         <SecLabel>
@@ -312,24 +289,27 @@ export default function ProfileForm(): React.JSX.Element {
                 key={opt.value}
                 type="button"
                 onClick={() => setAgentType(opt.value)}
-                className="flex-1 rounded-lg text-left px-[11px] py-[9px] cursor-pointer"
-                style={{
-                  border: sel
-                    ? `2px solid ${C.blueBorder}`
-                    : `0.5px solid ${C.line2}`,
-                  background: sel ? C.blueFill : C.surface,
-                }}
+                className={[
+                  "flex-1 rounded-lg text-left px-[11px] py-[9px] cursor-pointer",
+                  sel
+                    ? "border-2 border-blue-border bg-blue-fill"
+                    : "border border-hairline border-line-2 bg-surface",
+                ].join(" ")}
                 aria-pressed={sel}
               >
                 <div
-                  className="font-medium text-[13px]"
-                  style={{ color: sel ? C.blueText : C.text }}
+                  className={[
+                    "font-medium text-13",
+                    sel ? "text-blue-text" : "text-ink",
+                  ].join(" ")}
                 >
                   {opt.title}
                 </div>
                 <div
-                  className="text-[11px]"
-                  style={{ color: sel ? C.blueText : C.text2 }}
+                  className={[
+                    "text-11",
+                    sel ? "text-blue-text" : "text-ink-2",
+                  ].join(" ")}
                 >
                   {opt.sub}
                 </div>
@@ -351,15 +331,12 @@ export default function ProfileForm(): React.JSX.Element {
                 key={b}
                 type="button"
                 onClick={() => toggleBrand(b)}
-                className="rounded-md px-[9px] py-[7px] text-[12px] text-left flex justify-between items-center cursor-pointer"
-                style={{
-                  border: sel
-                    ? `1px solid ${C.blueBorder}`
-                    : `0.5px solid ${C.line2}`,
-                  background: sel ? C.blueFill : C.surface,
-                  color: sel ? C.blueText : C.text,
-                  fontWeight: sel ? 500 : 400,
-                }}
+                className={[
+                  "rounded-md px-[9px] py-[7px] text-12 text-left flex justify-between items-center cursor-pointer",
+                  sel
+                    ? "border border-blue-border bg-blue-fill text-blue-text font-medium"
+                    : "border border-hairline border-line-2 bg-surface text-ink font-normal",
+                ].join(" ")}
                 aria-pressed={sel}
                 role={state.agent_type === "captive" ? "radio" : "checkbox"}
                 aria-checked={sel}
@@ -376,7 +353,7 @@ export default function ProfileForm(): React.JSX.Element {
         <SecLabel>
           Licensed / doing business states <ReqStar />
         </SecLabel>
-        <p className="text-[11px] mb-2" style={{ color: C.text3 }}>
+        <p className="text-11 mb-2 text-ink-3">
           We currently have data for 8 states, with all 50 coming soon. You can only
           select states we cover today.
         </p>
@@ -402,7 +379,7 @@ export default function ProfileForm(): React.JSX.Element {
           <SecLabel>
             Employee work / live states <ReqStar />
           </SecLabel>
-          <p className="text-[11px] mb-2" style={{ color: C.text3 }}>
+          <p className="text-11 mb-2 text-ink-3">
             Used for compliance features coming soon. All states selectable.
           </p>
           <StateChipRow
@@ -427,8 +404,7 @@ export default function ProfileForm(): React.JSX.Element {
         <div className="flex justify-end mt-5">
           <button
             type="submit"
-            className="rounded-md px-[18px] py-[9px] text-[13px] font-medium cursor-pointer"
-            style={{ background: C.text, color: C.surface }}
+            className="rounded-md px-[18px] py-[9px] text-13 font-medium cursor-pointer bg-ink text-surface"
           >
             Save changes
           </button>
@@ -459,11 +435,10 @@ function StateChipRow({
           key={code}
           type="button"
           onClick={() => onRemove(code)}
-          className="text-[12px] rounded-md px-2 py-[3px]"
-          style={{ background: C.surface2, color: C.text }}
+          className="text-12 rounded-md px-2 py-[3px] bg-surface-2 text-ink"
           aria-label={`Remove ${code}`}
         >
-          {code} <span aria-hidden style={{ color: C.text2 }}>×</span>
+          {code} <span aria-hidden className="text-ink-2">×</span>
         </button>
       ))}
     </div>
@@ -485,8 +460,7 @@ function SearchBox({
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full rounded-md px-[10px] py-2 text-[12px] mb-2 outline-none"
-      style={{ border: `0.5px solid ${C.line2}`, color: C.text }}
+      className="w-full rounded-md px-2.5 py-2 text-12 mb-2 outline-none border border-hairline border-line-2 text-ink"
     />
   );
 }
@@ -505,11 +479,11 @@ function StateList({
   const sel = new Set(selected);
   return (
     <div
-      className="rounded-md overflow-hidden overflow-y-auto"
-      style={{ border: `0.5px solid ${C.line}`, maxHeight: 220 }}
+      className="rounded-md overflow-hidden overflow-y-auto border border-hairline border-line"
+      style={{ maxHeight: 220 }}
     >
       {items.length === 0 ? (
-        <div className="text-[12px] px-[10px] py-2" style={{ color: C.text3 }}>
+        <div className="text-12 px-2.5 py-2 text-ink-3">
           No states match.
         </div>
       ) : (
@@ -524,30 +498,23 @@ function StateList({
               type="button"
               onClick={() => !disabled && onToggle(s.code)}
               disabled={disabled}
-              className="w-full flex justify-between items-center text-[12px] px-[10px] py-[7px] text-left"
-              style={{
-                borderBottom: `0.5px solid ${C.line}`,
-                opacity: disabled ? 0.4 : 1,
-                cursor: disabled ? "not-allowed" : "pointer",
-                color: isSel ? C.blueText : C.text,
-                fontWeight: isSel ? 500 : 400,
-                background: "transparent",
-              }}
+              className={[
+                "w-full flex justify-between items-center text-12 px-2.5 py-[7px] text-left border-b border-hairline border-line bg-transparent",
+                disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer",
+                isSel ? "text-blue-text font-medium" : "text-ink font-normal",
+              ].join(" ")}
               aria-checked={isSel}
               role="checkbox"
             >
               <span>
                 <span aria-hidden>{isSel ? "☑" : "☐"}</span> {s.name}
                 {disabled && (
-                  <span
-                    className="text-[9px] ml-1 rounded-full px-[5px] py-px"
-                    style={{ background: C.surface2, color: C.text3 }}
-                  >
+                  <span className="text-[9px] ml-1 rounded-full px-[5px] py-px bg-surface-2 text-ink-3">
                     Soon
                   </span>
                 )}
               </span>
-              <span style={{ color: disabled ? C.text3 : C.text2 }}>{s.code}</span>
+              <span className={disabled ? "text-ink-3" : "text-ink-2"}>{s.code}</span>
             </button>
           );
         })
