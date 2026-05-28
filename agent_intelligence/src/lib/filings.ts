@@ -1,4 +1,4 @@
-import { getDb } from "./db";
+import { getDataAsOf, getDb } from "./db";
 import {
   ACTIVE_RATE_ACTIVITIES,
   Brand,
@@ -43,7 +43,13 @@ export type IndependentProfile = {
 
 export type AgentProfile = CaptiveProfile | IndependentProfile;
 
-export type QueryOpts = { window?: WindowKey };
+export type QueryOpts = {
+  window?: WindowKey;
+  // Override the "as of" date that the window anchors to. Defaults to
+  // getDataAsOf() (i.e., data/last_updated.txt). Format: 'YYYY-MM-DD'.
+  // Set this only for testing or for "as of <past snapshot>" features.
+  asOf?: string;
+};
 
 // --- internal helpers -------------------------------------------------------
 
@@ -65,6 +71,10 @@ function windowModifier(opts?: QueryOpts): string {
   return WINDOW_MODIFIERS[opts?.window ?? DEFAULT_WINDOW];
 }
 
+function asOf(opts?: QueryOpts): string {
+  return opts?.asOf ?? getDataAsOf();
+}
+
 // --- queries ----------------------------------------------------------------
 
 // Prospect: filings with overall_rate_impact >= +5% in the active window.
@@ -77,6 +87,7 @@ export function getProspectFilings(
   const states = profile.licensed_states;
   if (states.length === 0) return [];
   const mod = windowModifier(opts);
+  const ref = asOf(opts);
 
   if (profile.agent_type === "captive") {
     const sql = `
@@ -86,7 +97,7 @@ export function getProspectFilings(
         AND brand != ?
         AND overall_rate_impact >= ?
         AND rate_activity IN (${ACTIVITY_PLACEHOLDERS})
-        AND effective_date >= date('now', ?)
+        AND effective_date >= date(?, ?)
     `;
     return getDb()
       .prepare(sql)
@@ -95,6 +106,7 @@ export function getProspectFilings(
         profile.captive_brand,
         PROSPECT_THRESHOLD,
         ...ACTIVITY_VALUES,
+        ref,
         mod,
       ) as Filing[];
   }
@@ -107,11 +119,11 @@ export function getProspectFilings(
     WHERE state IN (${placeholders(states.length)})
       AND overall_rate_impact >= ?
       AND rate_activity IN (${ACTIVITY_PLACEHOLDERS})
-      AND effective_date >= date('now', ?)
+      AND effective_date >= date(?, ?)
   `;
   return getDb()
     .prepare(sql)
-    .all(...states, PROSPECT_THRESHOLD, ...ACTIVITY_VALUES, mod) as Filing[];
+    .all(...states, PROSPECT_THRESHOLD, ...ACTIVITY_VALUES, ref, mod) as Filing[];
 }
 
 // Defend: overall_rate_impact <= -2% in the active window. Same captive/
@@ -123,6 +135,7 @@ export function getDefendFilings(
   const states = profile.licensed_states;
   if (states.length === 0) return [];
   const mod = windowModifier(opts);
+  const ref = asOf(opts);
 
   if (profile.agent_type === "captive") {
     const sql = `
@@ -132,7 +145,7 @@ export function getDefendFilings(
         AND brand != ?
         AND overall_rate_impact <= ?
         AND rate_activity IN (${ACTIVITY_PLACEHOLDERS})
-        AND effective_date >= date('now', ?)
+        AND effective_date >= date(?, ?)
     `;
     return getDb()
       .prepare(sql)
@@ -141,6 +154,7 @@ export function getDefendFilings(
         profile.captive_brand,
         DEFEND_THRESHOLD,
         ...ACTIVITY_VALUES,
+        ref,
         mod,
       ) as Filing[];
   }
@@ -151,11 +165,11 @@ export function getDefendFilings(
     WHERE state IN (${placeholders(states.length)})
       AND overall_rate_impact <= ?
       AND rate_activity IN (${ACTIVITY_PLACEHOLDERS})
-      AND effective_date >= date('now', ?)
+      AND effective_date >= date(?, ?)
   `;
   return getDb()
     .prepare(sql)
-    .all(...states, DEFEND_THRESHOLD, ...ACTIVITY_VALUES, mod) as Filing[];
+    .all(...states, DEFEND_THRESHOLD, ...ACTIVITY_VALUES, ref, mod) as Filing[];
 }
 
 // My Carriers: every recent filing involving the agent's authorized brands
@@ -169,6 +183,7 @@ export function getMyCarriersFilings(
   const brands = profile.authorized_brands;
   if (states.length === 0 || brands.length === 0) return [];
   const mod = windowModifier(opts);
+  const ref = asOf(opts);
 
   const sql = `
     SELECT ${SELECT_COLS}
@@ -176,9 +191,9 @@ export function getMyCarriersFilings(
     WHERE state IN (${placeholders(states.length)})
       AND brand IN (${placeholders(brands.length)})
       AND rate_activity IN (${ACTIVITY_PLACEHOLDERS})
-      AND effective_date >= date('now', ?)
+      AND effective_date >= date(?, ?)
   `;
   return getDb()
     .prepare(sql)
-    .all(...states, ...brands, ...ACTIVITY_VALUES, mod) as Filing[];
+    .all(...states, ...brands, ...ACTIVITY_VALUES, ref, mod) as Filing[];
 }

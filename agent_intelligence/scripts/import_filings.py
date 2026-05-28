@@ -21,7 +21,7 @@ import json
 import os
 import sqlite3
 import sys
-from datetime import date, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -485,8 +485,16 @@ def main() -> int:
     for w in warnings:
         print(w, file=sys.stderr)
 
+    # last_updated reflects the *data* freshness (xlsx mtime), not today's
+    # import-run date. The web app reads this and anchors the 12-month
+    # active window to it (date(asOf, '-12 months')), which keeps queries
+    # deterministic per data snapshot — they don't drift with the wall clock.
+    data_asof = datetime.fromtimestamp(
+        xlsx_path.stat().st_mtime, tz=timezone.utc
+    ).date().isoformat()
     LAST_UPDATED_PATH.parent.mkdir(parents=True, exist_ok=True)
-    LAST_UPDATED_PATH.write_text(date.today().isoformat() + "\n", encoding="utf-8")
+    LAST_UPDATED_PATH.write_text(data_asof + "\n", encoding="utf-8")
+    print(f"Wrote {LAST_UPDATED_PATH.name}: {data_asof} (xlsx mtime, UTC)")
 
     con = sqlite3.connect(db_path)
     try:

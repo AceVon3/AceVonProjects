@@ -12,7 +12,7 @@ import {
   getMyCarriersFilings,
   getProspectFilings,
 } from "../src/lib/filings";
-import { getDb } from "../src/lib/db";
+import { getDataAsOf, getDb } from "../src/lib/db";
 
 const ALL_8 = ["AZ", "CO", "ID", "MT", "NV", "OR", "UT", "WA"];
 
@@ -120,17 +120,18 @@ function mark(actual: number, expected: number): string {
 }
 
 function main(): void {
-  // Print the date context first — `date('now', '-12 months')` depends on it.
+  // Window anchors to data freshness (data/last_updated.txt), not the wall
+  // clock — so verification is deterministic per data snapshot.
   const db = getDb();
-  const today = db.prepare("SELECT date('now') AS d").get() as { d: string };
+  const ref = getDataAsOf();
   const windowStart = db
-    .prepare("SELECT date('now', '-12 months') AS d")
-    .get() as { d: string };
+    .prepare("SELECT date(?, '-12 months') AS d")
+    .get(ref) as { d: string };
 
   console.log("=".repeat(78));
   console.log("VERIFY: per-query test cases against data/filings.db");
-  console.log(`  date('now')               = ${today.d}`);
-  console.log(`  date('now', '-12 months') = ${windowStart.d}`);
+  console.log(`  asOf (data freshness)     = ${ref}`);
+  console.log(`  date(asOf, '-12 months')  = ${windowStart.d}`);
   console.log("=".repeat(78));
 
   // Sanity totals for the active window — spec says 180 filings.
@@ -138,9 +139,9 @@ function main(): void {
     .prepare(
       `SELECT COUNT(*) AS n FROM filings
        WHERE rate_activity IN ('rate_change','rate_change_pending')
-         AND effective_date >= date('now', '-12 months')`,
+         AND effective_date >= date(?, '-12 months')`,
     )
-    .get() as { n: number };
+    .get(ref) as { n: number };
   console.log(`  active-window filings (all states, all brands) = ${active.n}  (spec: 180)`);
   console.log("=".repeat(78));
 

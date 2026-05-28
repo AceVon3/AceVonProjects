@@ -993,7 +993,9 @@ Defaults per page:
 | Time window | Last 12 months | Last 12 months | Last 12 months |
 | Sort | Effective date (newest) | Effective date (newest) | Effective date (newest) |
 
-The time window dropdown's three options map to SQL as `effective_date >= date('now', '-30 days')`, `'-90 days'`, `'-12 months'`. Built into the query builder in `src/lib/filings.ts` — accept the window as a parameter rather than hardcoding the 12-month value.
+The time window dropdown's three options map to SQL as `effective_date >= date(:asOf, '-30 days')`, `'-90 days'`, `'-12 months'`. Built into the query builder in `src/lib/filings.ts` — accept the window as a parameter rather than hardcoding the 12-month value.
+
+**`:asOf` anchors to data freshness, not the wall clock.** The query builder defaults `:asOf` to the date in `data/last_updated.txt` (written by `scripts/import_filings.py` as the source xlsx's mtime). This keeps queries deterministic per data snapshot — the spec's verification counts stay valid until the data is regenerated, and the active window doesn't silently shed filings as the calendar advances between deploys.
 
 ---
 
