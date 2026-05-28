@@ -4,8 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import FilingsTable from "@/components/FilingsTable";
+import FilterBar from "@/components/FilterBar";
 import ScopeStrip from "@/components/ScopeStrip";
 import type { Filing } from "@/lib/filings";
+import { FilterState, applyFilters, defaultFilters } from "@/lib/filters";
 import { AgentProfile, loadProfile } from "@/lib/profile";
 
 type Phase = "loading" | "ready" | "error";
@@ -29,6 +31,7 @@ export default function MyCarriersPage(): React.JSX.Element {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("loading");
   const [profile, setProfile] = useState<AgentProfile | null>(null);
+  const [filters, setFilters] = useState<FilterState | null>(null);
   const [asOf, setAsOf] = useState<string>("");
   const [filings, setFilings] = useState<Filing[]>([]);
   const [error, setError] = useState<string>("");
@@ -45,11 +48,17 @@ export default function MyCarriersPage(): React.JSX.Element {
       return;
     }
     setProfile(p);
+    setFilters(defaultFilters(p, "my-carriers"));
+  }, [router]);
+
+  useEffect(() => {
+    if (!profile || !filters) return;
     const params = new URLSearchParams({
       mode: "my-carriers",
-      agent_type: p.agent_type,
-      licensed_states: p.licensed_states.join(","),
-      authorized_brands: p.authorized_brands.join(","),
+      agent_type: profile.agent_type,
+      licensed_states: profile.licensed_states.join(","),
+      authorized_brands: profile.authorized_brands.join(","),
+      window: filters.window,
     });
     fetch(`/api/filings?${params.toString()}`)
       .then(async r => {
@@ -65,34 +74,41 @@ export default function MyCarriersPage(): React.JSX.Element {
         setError(String(e?.message ?? e));
         setPhase("error");
       });
-  }, [router]);
+  }, [profile, filters?.window]);
 
   const ownedBrands = useMemo(
     () => new Set(profile?.authorized_brands ?? []),
     [profile],
   );
 
-  // Header card numbers — spec line 877-881.
-  //   Carriers tracked: authorized_brands.length (every authorized brand,
-  //   not just brands that actually appear in the result set — matches the
-  //   spec's "carriers you sell" framing).
-  //   Filings this period: total in result set.
-  //   Largest move: absolute-value max impact, signed.
+  const visibleFilings = useMemo(
+    () => (filters ? applyFilters(filings, filters) : filings),
+    [filings, filters],
+  );
+
+  // Header card numbers:
+  //   Carriers tracked: agent's authorized brand count (NOT the filtered
+  //   carrier count — it's "how many carriers you sell", not "how many
+  //   you're currently filtered to").
+  //   Filings this period: filtered visible count.
+  //   Largest move: absolute-value max impact in the filtered set, signed.
   const headerCard = useMemo(() => {
-    if (!profile || filings.length === 0) return null;
-    const largest = filings.reduce(
+    if (!profile || visibleFilings.length === 0) return null;
+    const largest = visibleFilings.reduce(
       (best, f) =>
-        Math.abs(f.overall_rate_impact) > Math.abs(best.overall_rate_impact) ? f : best,
-      filings[0],
+        Math.abs(f.overall_rate_impact) > Math.abs(best.overall_rate_impact)
+          ? f
+          : best,
+      visibleFilings[0],
     );
     return {
       carriersTracked: profile.authorized_brands.length,
-      filingsCount: filings.length,
+      filingsCount: visibleFilings.length,
       largest,
     };
-  }, [filings, profile]);
+  }, [visibleFilings, profile]);
 
-  if (phase === "loading") {
+  if (phase === "loading" || !profile || !filters) {
     return (
       <main className="min-h-screen" style={{ background: C.bg }}>
         <div
@@ -130,7 +146,7 @@ export default function MyCarriersPage(): React.JSX.Element {
   return (
     <main className="min-h-screen" style={{ background: C.bg }}>
       {/* My Carriers is independent-only; no captiveBrand suffix. */}
-      <ScopeStrip states={profile!.licensed_states} />
+      <ScopeStrip states={profile.licensed_states} />
 
       <div className="max-w-[1100px] mx-auto px-4 py-6">
         <div className="mb-4">
@@ -141,6 +157,14 @@ export default function MyCarriersPage(): React.JSX.Element {
             Every recent filing from the carriers you sell — so you know what your book is doing.
           </p>
         </div>
+
+        <FilterBar
+          mode="my-carriers"
+          filters={filters}
+          onChange={setFilters}
+          licensedStates={profile.licensed_states}
+          authorizedBrands={profile.authorized_brands}
+        />
 
         {headerCard && (
           <div
@@ -166,7 +190,11 @@ export default function MyCarriersPage(): React.JSX.Element {
               >
                 Filings this period
               </div>
-              <div className="text-[22px] font-medium" style={{ color: C.text }}>
+              <div
+                className="text-[22px] font-medium"
+                style={{ color: C.text }}
+                data-testid="header-count"
+              >
                 {headerCard.filingsCount}
               </div>
             </div>
@@ -199,8 +227,8 @@ export default function MyCarriersPage(): React.JSX.Element {
 
         <FilingsTable
           mode="my-carriers"
-          filings={filings}
-          agentType={profile!.agent_type}
+          filings={visibleFilings}
+          agentType={profile.agent_type}
           ownedBrands={ownedBrands}
           asOf={asOf}
         />

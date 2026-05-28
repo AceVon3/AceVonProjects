@@ -4,8 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import FilingsTable from "@/components/FilingsTable";
+import FilterBar from "@/components/FilterBar";
 import ScopeStrip from "@/components/ScopeStrip";
 import type { Filing } from "@/lib/filings";
+import { FilterState, applyFilters, defaultFilters } from "@/lib/filters";
 import { AgentProfile, loadProfile } from "@/lib/profile";
 
 type Phase = "loading" | "ready" | "error";
@@ -28,6 +30,7 @@ export default function DefendPage(): React.JSX.Element {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("loading");
   const [profile, setProfile] = useState<AgentProfile | null>(null);
+  const [filters, setFilters] = useState<FilterState | null>(null);
   const [asOf, setAsOf] = useState<string>("");
   const [filings, setFilings] = useState<Filing[]>([]);
   const [error, setError] = useState<string>("");
@@ -39,14 +42,20 @@ export default function DefendPage(): React.JSX.Element {
       return;
     }
     setProfile(p);
+    setFilters(defaultFilters(p, "defend"));
+  }, [router]);
+
+  useEffect(() => {
+    if (!profile || !filters) return;
     const params = new URLSearchParams({
       mode: "defend",
-      agent_type: p.agent_type,
-      licensed_states: p.licensed_states.join(","),
-      authorized_brands: p.authorized_brands.join(","),
+      agent_type: profile.agent_type,
+      licensed_states: profile.licensed_states.join(","),
+      authorized_brands: profile.authorized_brands.join(","),
+      window: filters.window,
     });
-    if (p.agent_type === "captive") {
-      params.set("captive_brand", p.authorized_brands[0]);
+    if (profile.agent_type === "captive") {
+      params.set("captive_brand", profile.authorized_brands[0]);
     }
     fetch(`/api/filings?${params.toString()}`)
       .then(async r => {
@@ -62,30 +71,31 @@ export default function DefendPage(): React.JSX.Element {
         setError(String(e?.message ?? e));
         setPhase("error");
       });
-  }, [router]);
+  }, [profile, filters?.window]);
 
   const ownedBrands = useMemo(
     () => new Set(profile?.authorized_brands ?? []),
     [profile],
   );
 
-  // Header card numbers — spec line 814. "Biggest cut" = most-negative
-  // overall_rate_impact (rows are filtered to <= -2% so they're all negative).
-  const headerCard = useMemo(() => {
-    if (filings.length === 0) return null;
-    const states = new Set(filings.map(f => f.state));
-    const biggestCut = filings.reduce(
-      (best, f) => (f.overall_rate_impact < best.overall_rate_impact ? f : best),
-      filings[0],
-    );
-    return {
-      count: filings.length,
-      stateCount: states.size,
-      biggestCut,
-    };
-  }, [filings]);
+  const visibleFilings = useMemo(
+    () => (filters ? applyFilters(filings, filters) : filings),
+    [filings, filters],
+  );
 
-  if (phase === "loading") {
+  // Header card numbers — "Biggest cut" = most-negative impact in the
+  // filtered set (rows are <= -2% so they're all negative).
+  const headerCard = useMemo(() => {
+    if (visibleFilings.length === 0) return null;
+    const states = new Set(visibleFilings.map(f => f.state));
+    const biggestCut = visibleFilings.reduce(
+      (best, f) => (f.overall_rate_impact < best.overall_rate_impact ? f : best),
+      visibleFilings[0],
+    );
+    return { count: visibleFilings.length, stateCount: states.size, biggestCut };
+  }, [visibleFilings]);
+
+  if (phase === "loading" || !profile || !filters) {
     return (
       <main className="min-h-screen" style={{ background: C.bg }}>
         <div
@@ -123,9 +133,9 @@ export default function DefendPage(): React.JSX.Element {
   return (
     <main className="min-h-screen" style={{ background: C.bg }}>
       <ScopeStrip
-        states={profile!.licensed_states}
+        states={profile.licensed_states}
         captiveBrand={
-          profile!.agent_type === "captive" ? profile!.authorized_brands[0] : undefined
+          profile.agent_type === "captive" ? profile.authorized_brands[0] : undefined
         }
       />
 
@@ -139,6 +149,13 @@ export default function DefendPage(): React.JSX.Element {
           </p>
         </div>
 
+        <FilterBar
+          mode="defend"
+          filters={filters}
+          onChange={setFilters}
+          licensedStates={profile.licensed_states}
+        />
+
         {headerCard && (
           <div
             className="rounded-lg mb-4 flex gap-6 items-center"
@@ -151,7 +168,11 @@ export default function DefendPage(): React.JSX.Element {
               >
                 Carriers getting cheaper
               </div>
-              <div className="text-[22px] font-medium" style={{ color: C.text }}>
+              <div
+                className="text-[22px] font-medium"
+                style={{ color: C.text }}
+                data-testid="header-count"
+              >
                 {headerCard.count}
               </div>
             </div>
@@ -175,8 +196,8 @@ export default function DefendPage(): React.JSX.Element {
 
         <FilingsTable
           mode="defend"
-          filings={filings}
-          agentType={profile!.agent_type}
+          filings={visibleFilings}
+          agentType={profile.agent_type}
           ownedBrands={ownedBrands}
           asOf={asOf}
         />

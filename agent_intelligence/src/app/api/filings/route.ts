@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { BRANDS } from "@/lib/constants";
+import { BRANDS, WindowKey } from "@/lib/constants";
 import { getDataAsOf } from "@/lib/db";
 import {
   CaptiveProfile,
   IndependentProfile,
+  QueryOpts,
   getDefendFilings,
   getMyCarriersFilings,
   getProspectFilings,
@@ -13,6 +14,7 @@ import {
 export const dynamic = "force-dynamic";
 
 const VALID_MODES = new Set(["prospect", "defend", "my-carriers"]);
+const VALID_WINDOWS = new Set<WindowKey>(["30d", "90d", "12m"]);
 const BRAND_SET = new Set<string>(BRANDS);
 
 function bad(msg: string) {
@@ -47,6 +49,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return bad("my-carriers is independent-only");
   }
 
+  const windowRaw = q.get("window");
+  let opts: QueryOpts | undefined;
+  if (windowRaw) {
+    if (!VALID_WINDOWS.has(windowRaw as WindowKey)) return bad("invalid window");
+    opts = { window: windowRaw as WindowKey };
+  }
+
   const profile =
     agent_type === "captive"
       ? ({
@@ -62,9 +71,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         } as IndependentProfile);
 
   let filings;
-  if (mode === "prospect") filings = getProspectFilings(profile);
-  else if (mode === "defend") filings = getDefendFilings(profile);
-  else filings = getMyCarriersFilings(profile as IndependentProfile);
+  if (mode === "prospect") filings = getProspectFilings(profile, opts);
+  else if (mode === "defend") filings = getDefendFilings(profile, opts);
+  else filings = getMyCarriersFilings(profile as IndependentProfile, opts);
 
   return NextResponse.json({ asOf: getDataAsOf(), filings });
 }
