@@ -1,0 +1,307 @@
+#!/usr/bin/env node
+// Regenerates src/lib/complianceData.ts from the official .gov source URLs
+// in src/lib/resourceUrls.ts.
+//
+// For each (state, topic) with mapped URLs:
+//   1. Fetch every URL with a timeout
+//   2. Strip HTML → plain text, clipped to a budget per source
+//   3. Call Claude Sonnet 4.6 with a strict-grounding SYSTEM_PROMPT
+//   4. Receive {title, summary} as JSON, validated against SUMMARY_SCHEMA
+//   5. Write all successful results to complianceData.ts atomically
+//
+// The web app reads only complianceData.ts — it never fetches official
+// pages at view time. Regeneration is a build-time / monthly batch.
+//
+// Grounding is enforced two ways: the system prompt forbids using model
+// knowledge, and JSON-schema output keeps the model from going off-format.
+// The system prompt is reused across every call, so it's marked with
+// cache_control: ephemeral — the marker is a no-op when the prompt is
+// under Sonnet 4.6's 2048-token cache minimum but future-proofs the rubric
+// as it grows.
+//
+// Usage:
+//   ANTHROPIC_API_KEY=sk-... npx tsx scripts/generate_compliance.ts
+//
+// If ANTHROPIC_API_KEY is unset, exits 0 without touching the existing
+// complianceData.ts seed — local dev / CI without keys keeps building.
+
+import Anthropic from "@anthropic-ai/sdk";
+import { writeFileSync } from "node:fs";
+import path from "node:path";
+
+import {
+  RESOURCE_URLS,
+  ResourceKey,
+  StateCode,
+} from "../src/lib/resourceUrls";
+
+// ---- config ---------------------------------------------------------------
+
+const MODEL = "claude-sonnet-4-6";
+const FETCH_TIMEOUT_MS = 15_000;
+const MAX_TEXT_CHARS_PER_SOURCE = 20_000; // clip long pages for token budget
+
+// JSON-schema output. `additionalProperties: false` is required for
+// structured outputs to keep the model from inventing extra keys.
+const SUMMARY_SCHEMA = {
+  type: "object",
+  properties: {
+    title: {
+      type: "string",
+      description:
+        "6-12 words describing what the summary covers (e.g. 'Washington Paid Family & Medical Leave'). Not just the topic category.",
+    },
+    summary: {
+      type: "string",
+      description:
+        "2-3 short, plain-language sentences. Maximum 80 words. No URLs, no jargon, no inferred numbers.",
+    },
+  },
+  required: ["title", "summary"],
+  additionalProperties: false,
+} as const;
+
+// The grounding contract. This is the load-bearing artifact of the whole
+// compliance feature — every change here changes what summaries the model
+// is allowed to produce. Keep both ABSOLUTE RULE blocks intact.
+const SYSTEM_PROMPT = `You are summarizing official US government compliance pages for an insurance agent's reference site. The summaries you write are presented to licensed insurance professionals who may make business decisions based on them. Two rules are absolute and override every other instruction.
+
+ABSOLUTE RULE 1 — STRICT GROUNDING.
+Write the summary using ONLY information present in the provided source pages. Do NOT use prior knowledge of US laws, federal rules, state statutes, regulatory bodies, deadlines, percentages, dollar amounts, or anything else — even if you know facts that would improve the summary. If a fact is not in the source pages, it does not exist for the purposes of this summary. If the sources contradict each other, summarize only what they agree on or omit the contested point entirely.
+
+ABSOLUTE RULE 2 — NO INFERENCE OR HALLUCINATION OF NUMBERS.
+Do not infer or supply from prior knowledge: dollar amounts, percentage rates, contribution splits, employee-count thresholds, time periods (weeks/days/months), effective dates, or any other numeric fact. If a specific number is not stated explicitly in the source text, do not include any number in its place — phrase the rule qualitatively instead (e.g. "a defined period of leave" rather than guessing "12 weeks").
+
+OUTPUT REQUIREMENTS.
+- Write a descriptive TITLE (6-12 words) describing what the summary covers — not the topic category alone. So "Washington Paid Family & Medical Leave", not just "Leave Laws".
+- Write a SUMMARY: 2-3 short, plain sentences. Maximum 80 words total. No URLs, no citation markers, no jargon.
+- Address employers/agents in the third person ("Employers must..."), not "you".
+
+If the source pages do not contain enough substantive content to write a grounded summary, return a summary that says exactly: "The official source page is available, but a grounded summary cannot be produced from its current contents." The title in that case should be the state name plus topic category (e.g. "Washington Wage & Hour").`;
+
+// ---- helpers --------------------------------------------------------------
+
+const STATE_NAMES: Record<StateCode, string> = {
+  AZ: "Arizona", CO: "Colorado", ID: "Idaho", MT: "Montana",
+  NV: "Nevada", OR: "Oregon", UT: "Utah", WA: "Washington",
+};
+
+const TOPIC_LABELS: Record<ResourceKey, string> = {
+  wage_hour: "Wage & Hour",
+  leave: "Leave Laws",
+  payroll: "Payroll",
+  workers_comp: "Workers' Compensation",
+  termination: "Termination",
+  nexus: "Nexus & Licensing",
+  hiring: "Hiring Basics",
+  remote: "Remote Work",
+};
+
+function stripHtml(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&apos;/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function fetchPageText(url: string): Promise<string | null> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const resp = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent":
+          "agent-intelligence/compliance-generator (insurance agent reference)",
+        Accept: "text/html,application/xhtml+xml",
+      },
+    });
+    if (!resp.ok) {
+      console.error(`  fail  ${url}  HTTP ${resp.status}`);
+      return null;
+    }
+    const html = await resp.text();
+    const text = stripHtml(html);
+    if (text.length < 100) {
+      console.error(`  fail  ${url}  stripped text <100 chars (likely JS-rendered)`);
+      return null;
+    }
+    return text.slice(0, MAX_TEXT_CHARS_PER_SOURCE);
+  } catch (e) {
+    console.error(`  fail  ${url}  ${(e as Error)?.message ?? e}`);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+type GeneratedSummary = {
+  state: StateCode;
+  topic: ResourceKey;
+  title: string;
+  summary: string;
+  sources: string[];
+  last_checked: string;
+};
+
+async function generateOne(
+  client: Anthropic,
+  state: StateCode,
+  topic: ResourceKey,
+  urls: string[],
+  today: string,
+): Promise<GeneratedSummary | null> {
+  const sources: Array<{ url: string; text: string }> = [];
+  for (const url of urls) {
+    const text = await fetchPageText(url);
+    if (text) sources.push({ url, text });
+  }
+  if (sources.length === 0) {
+    console.error(`  skip  ${state}/${topic}: all sources failed`);
+    return null;
+  }
+
+  // User content: delimited source pages, then the (state, topic) anchor.
+  const sourceBlocks = sources
+    .map(s => `<<<URL: ${s.url}\n${s.text}\n>>>`)
+    .join("\n\n");
+  const userText =
+    `${sourceBlocks}\n\n` +
+    `STATE: ${STATE_NAMES[state]}\n` +
+    `TOPIC CATEGORY: ${TOPIC_LABELS[topic]}\n\n` +
+    `Produce the title + summary as JSON, grounded strictly in the source pages above.`;
+
+  const resp = await client.messages.create({
+    model: MODEL,
+    max_tokens: 1024,
+    thinking: { type: "disabled" }, // grounded summarization — no reasoning gain
+    output_config: {
+      effort: "low",
+      format: { type: "json_schema", schema: SUMMARY_SCHEMA },
+    },
+    system: [
+      {
+        type: "text",
+        text: SYSTEM_PROMPT,
+        cache_control: { type: "ephemeral" },
+      },
+    ],
+    messages: [{ role: "user", content: userText }],
+  });
+
+  const textBlock = resp.content.find(b => b.type === "text");
+  if (!textBlock || textBlock.type !== "text") {
+    console.error(`  fail  ${state}/${topic}: no text block in response`);
+    return null;
+  }
+
+  let parsed: { title: string; summary: string };
+  try {
+    parsed = JSON.parse(textBlock.text);
+  } catch {
+    console.error(
+      `  fail  ${state}/${topic}: invalid JSON (${textBlock.text.slice(0, 200)})`,
+    );
+    return null;
+  }
+
+  const u = resp.usage;
+  console.error(
+    `  ok    ${state}/${topic}  in=${u.input_tokens} cached=${u.cache_read_input_tokens ?? 0} out=${u.output_tokens}`,
+  );
+
+  return {
+    state,
+    topic,
+    title: parsed.title,
+    summary: parsed.summary,
+    sources: sources.map(s => s.url),
+    last_checked: today,
+  };
+}
+
+function writeComplianceData(results: GeneratedSummary[]): void {
+  const today = new Date().toISOString().slice(0, 10);
+  const body = `// AUTO-GENERATED by scripts/generate_compliance.ts on ${today}.
+//
+// Do NOT hand-edit. Re-run \`npx tsx scripts/generate_compliance.ts\` to
+// refresh from official sources. The web app reads this file only; it
+// never fetches official pages live.
+
+import type { ResourceKey, StateCode } from "./resourceUrls";
+
+export type ComplianceSummary = {
+  state: StateCode;
+  topic: ResourceKey;
+  title: string;
+  summary: string;
+  sources: string[];
+  last_checked: string;
+};
+
+export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = ${JSON.stringify(results, null, 2)};
+`;
+  const outPath = path.resolve(process.cwd(), "src/lib/complianceData.ts");
+  writeFileSync(outPath, body, "utf-8");
+  console.error(`\nwrote ${results.length} summaries → ${outPath}`);
+}
+
+// ---- main -----------------------------------------------------------------
+
+async function main(): Promise<void> {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.error("ANTHROPIC_API_KEY is not set.");
+    console.error(
+      "Exiting without regenerating — the existing complianceData.ts is preserved.",
+    );
+    process.exit(0);
+  }
+
+  const client = new Anthropic();
+  const today = new Date().toISOString().slice(0, 10);
+  const results: GeneratedSummary[] = [];
+
+  console.error(
+    `Regenerating compliance summaries (model: ${MODEL}, asOf: ${today})\n`,
+  );
+
+  for (const [state, topics] of Object.entries(RESOURCE_URLS) as Array<
+    [StateCode, Partial<Record<ResourceKey, string[]>>]
+  >) {
+    for (const [topic, urls] of Object.entries(topics) as Array<
+      [ResourceKey, string[]]
+    >) {
+      if (!urls || urls.length === 0) continue;
+      console.error(`${state}/${topic}: fetching ${urls.length} source(s)`);
+      try {
+        const result = await generateOne(client, state, topic, urls, today);
+        if (result) results.push(result);
+      } catch (e) {
+        console.error(`  error ${state}/${topic}:`, e);
+      }
+    }
+  }
+
+  if (results.length === 0) {
+    console.error("\nno summaries generated — leaving complianceData.ts unchanged.");
+    process.exit(1);
+  }
+
+  writeComplianceData(results);
+}
+
+main().catch(err => {
+  console.error("Fatal error:", err);
+  process.exit(1);
+});

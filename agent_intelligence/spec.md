@@ -1057,6 +1057,8 @@ Do these in sequence. Don't move on until the previous step works end-to-end.
 
 These are computed from the current 468-row dataset and have been verified against the actual file. Use them as hard sanity-checks during build.
 
+> **Dataset note — no future-dated filings.** As of the current xlsx (mtime 2026-05-27), every `effective_date` in the active window is in the past relative to `asOf`. Features keyed on upcoming dates therefore run entirely on their fallback paths today: the Overview's Most Urgent card always renders via Tier 2 (largest |impact| in window), and the Defend table's window badges always render as orange "Customers may already be shopping" rather than red "Risk window opens in N weeks". The future-dated branches (Most Urgent Tier 1, Defend red badges) are wired and intentional — they will light up as soon as the next monthly refresh introduces a future-dated filing.
+
 **Import-level (totals — no agent profile applied):**
 
 - **468 rows total** loaded into `filings_raw`
