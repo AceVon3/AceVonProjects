@@ -45,14 +45,15 @@ export default function DefendPage(): React.JSX.Element {
     setFilters(defaultFilters(p, "defend"));
   }, [router]);
 
+  // Fetch the broadest window (12m) once per profile. All filters apply
+  // client-side via applyFilters — see /prospect for rationale.
   useEffect(() => {
-    if (!profile || !filters) return;
+    if (!profile) return;
     const params = new URLSearchParams({
       mode: "defend",
       agent_type: profile.agent_type,
       licensed_states: profile.licensed_states.join(","),
       authorized_brands: profile.authorized_brands.join(","),
-      window: filters.window,
     });
     if (profile.agent_type === "captive") {
       params.set("captive_brand", profile.authorized_brands[0]);
@@ -71,7 +72,7 @@ export default function DefendPage(): React.JSX.Element {
         setError(String(e?.message ?? e));
         setPhase("error");
       });
-  }, [profile, filters?.window]);
+  }, [profile]);
 
   const ownedBrands = useMemo(
     () => new Set(profile?.authorized_brands ?? []),
@@ -79,8 +80,8 @@ export default function DefendPage(): React.JSX.Element {
   );
 
   const visibleFilings = useMemo(
-    () => (filters ? applyFilters(filings, filters) : filings),
-    [filings, filters],
+    () => (filters && asOf ? applyFilters(filings, filters, asOf) : filings),
+    [filings, filters, asOf],
   );
 
   // Header card numbers — "Biggest cut" = most-negative impact in the
@@ -200,6 +201,7 @@ export default function DefendPage(): React.JSX.Element {
           agentType={profile.agent_type}
           ownedBrands={ownedBrands}
           asOf={asOf}
+          filteredToEmpty={visibleFilings.length === 0 && filings.length > 0}
         />
       </div>
     </main>

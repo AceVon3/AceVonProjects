@@ -50,16 +50,17 @@ export default function ProspectPage(): React.JSX.Element {
     setFilters(defaultFilters(p, "prospect"));
   }, [router]);
 
-  // Refetch on window change (or on first profile load). Other filters
-  // (state, line, sort) apply client-side without a network round-trip.
+  // Fetch the broadest window (12m) once per profile. All filters
+  // (state, line, window, sort) then apply client-side via applyFilters —
+  // instant, no network round-trip, and the raw `filings` count stays
+  // intact so we can distinguish "filtered to empty" from "no data".
   useEffect(() => {
-    if (!profile || !filters) return;
+    if (!profile) return;
     const params = new URLSearchParams({
       mode: "prospect",
       agent_type: profile.agent_type,
       licensed_states: profile.licensed_states.join(","),
       authorized_brands: profile.authorized_brands.join(","),
-      window: filters.window,
     });
     if (profile.agent_type === "captive") {
       params.set("captive_brand", profile.authorized_brands[0]);
@@ -78,17 +79,17 @@ export default function ProspectPage(): React.JSX.Element {
         setError(String(e?.message ?? e));
         setPhase("error");
       });
-  }, [profile, filters?.window]);
+  }, [profile]);
 
   const ownedBrands = useMemo(
     () => new Set(profile?.authorized_brands ?? []),
     [profile],
   );
 
-  // Apply non-window filters in-memory.
+  // Apply all filters (state, line, window, sort) client-side.
   const visibleFilings = useMemo(
-    () => (filters ? applyFilters(filings, filters) : filings),
-    [filings, filters],
+    () => (filters && asOf ? applyFilters(filings, filters, asOf) : filings),
+    [filings, filters, asOf],
   );
 
   // Header card reflects the filtered count, not the raw API result.
@@ -212,6 +213,7 @@ export default function ProspectPage(): React.JSX.Element {
           agentType={profile.agent_type}
           ownedBrands={ownedBrands}
           asOf={asOf}
+          filteredToEmpty={visibleFilings.length === 0 && filings.length > 0}
         />
       </div>
     </main>

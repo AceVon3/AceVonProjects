@@ -21,6 +21,11 @@ type Props = {
   agentType: "captive" | "independent";
   ownedBrands: Set<string>; // empty for captives (mine pill never shows)
   asOf: string;
+  // True when the unfiltered API response had rows but the current
+  // filter set produces zero. Lets the empty state explain "your filters
+  // narrowed too much" instead of "there's no data" — completely
+  // different action for the agent (widen filters vs. just wait).
+  filteredToEmpty?: boolean;
 };
 
 // Visual tokens — same palette as ProfileForm + ui-reference.html.
@@ -80,16 +85,20 @@ export default function FilingsTable({
   agentType,
   ownedBrands,
   asOf,
+  filteredToEmpty,
 }: Props): React.JSX.Element {
   const firstHeader = firstColumnHeader(mode, agentType);
 
   if (filings.length === 0) {
+    const copy = filteredToEmpty ? FILTERED_EMPTY_COPY : emptyStateCopy(mode);
     return (
       <div
+        data-testid="empty-state"
+        data-variant={filteredToEmpty ? "filtered" : "no-data"}
         className="text-[13px] px-4 py-6 text-center"
         style={{ color: C.text3, border: `0.5px solid ${C.line}`, borderRadius: 8 }}
       >
-        {emptyStateCopy(mode)}
+        {copy}
       </div>
     );
   }
@@ -268,6 +277,10 @@ function Td({
   );
 }
 
+// Mode-specific copy when the unfiltered API result is empty — these
+// are spec wording (lines 763, 819, 885). They explain a real product
+// fact: nothing on the wire crosses the threshold in your scope right
+// now. Action: wait for the next monthly refresh.
 function emptyStateCopy(mode: FilingsTableMode): string {
   if (mode === "prospect") {
     return "No competitors are raising rates in your states right now (≥5% threshold). Check back next month — data refreshes monthly.";
@@ -277,3 +290,10 @@ function emptyStateCopy(mode: FilingsTableMode): string {
   }
   return "No recent filings from your authorized carriers in your states. The data refreshes monthly — check back.";
 }
+
+// Filtered-to-empty copy: the underlying data has rows, but the agent's
+// current filter combination returns none. Different problem, different
+// action — widen the filter, not wait. Voice stays factual and points
+// at the obvious next step rather than apologizing.
+const FILTERED_EMPTY_COPY =
+  "No filings match the current filters. Try widening the time window, adding states, or including more lines of business.";

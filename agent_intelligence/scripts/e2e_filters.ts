@@ -108,17 +108,10 @@ async function setOnlyLines(page: Page, ...lines: string[]): Promise<void> {
 
 async function setWindow(page: Page, window: "12m" | "90d" | "30d"): Promise<void> {
   await openChip(page, "chip-time");
-  // The radio-list click triggers a setState → useEffect → fetch sequence.
-  // Wait for the matching /api/filings response with the new window param
-  // before letting the test read row counts, otherwise we race against the
-  // refetch and see stale rows.
-  const responsePromise = page.waitForResponse(
-    r => r.url().includes("/api/filings") && r.url().includes(`window=${window}`),
-    { timeout: 8000 },
-  );
+  // Window changes are now client-side (the page fetches the broadest
+  // 12m set once and narrows in-memory via applyFilters). No fetch to
+  // wait for — just give React one commit tick to re-render.
   await page.locator(`[data-testid="opt-window-${window}"]`).click();
-  await responsePromise;
-  // One commit tick for React to render the new data.
   await page.waitForTimeout(80);
 }
 

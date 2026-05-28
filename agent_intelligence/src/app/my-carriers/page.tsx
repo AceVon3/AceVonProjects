@@ -51,14 +51,15 @@ export default function MyCarriersPage(): React.JSX.Element {
     setFilters(defaultFilters(p, "my-carriers"));
   }, [router]);
 
+  // Fetch the broadest window (12m) once per profile. All filters apply
+  // client-side via applyFilters — see /prospect for rationale.
   useEffect(() => {
-    if (!profile || !filters) return;
+    if (!profile) return;
     const params = new URLSearchParams({
       mode: "my-carriers",
       agent_type: profile.agent_type,
       licensed_states: profile.licensed_states.join(","),
       authorized_brands: profile.authorized_brands.join(","),
-      window: filters.window,
     });
     fetch(`/api/filings?${params.toString()}`)
       .then(async r => {
@@ -74,7 +75,7 @@ export default function MyCarriersPage(): React.JSX.Element {
         setError(String(e?.message ?? e));
         setPhase("error");
       });
-  }, [profile, filters?.window]);
+  }, [profile]);
 
   const ownedBrands = useMemo(
     () => new Set(profile?.authorized_brands ?? []),
@@ -82,8 +83,8 @@ export default function MyCarriersPage(): React.JSX.Element {
   );
 
   const visibleFilings = useMemo(
-    () => (filters ? applyFilters(filings, filters) : filings),
-    [filings, filters],
+    () => (filters && asOf ? applyFilters(filings, filters, asOf) : filings),
+    [filings, filters, asOf],
   );
 
   // Header card numbers:
@@ -231,6 +232,7 @@ export default function MyCarriersPage(): React.JSX.Element {
           agentType={profile.agent_type}
           ownedBrands={ownedBrands}
           asOf={asOf}
+          filteredToEmpty={visibleFilings.length === 0 && filings.length > 0}
         />
       </div>
     </main>

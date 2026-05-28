@@ -57,22 +57,43 @@ export function defaultFilters(
   return base;
 }
 
-// Filter + sort already-fetched filings. Window narrowing happens server-
-// side via the query builder (different SQL window → different rows). The
-// other filters operate on the in-memory result set so they apply with no
-// network round-trip.
+// Compute the windowed cutoff date for client-side filtering. Matches
+// SQLite's date(asOf, '-N days' | '-12 months') semantics so the result
+// equals what the SQL would return — 12m subtracts a calendar year,
+// 30d/90d subtract literal days.
+export function windowCutoff(asOf: string, window: WindowChoice): string {
+  const [y, m, d] = asOf.split("-").map(Number);
+  if (window === "12m") {
+    return `${y - 1}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  }
+  const days = window === "30d" ? 30 : 90;
+  const date = new Date(Date.UTC(y, m - 1, d));
+  date.setUTCDate(date.getUTCDate() - days);
+  return date.toISOString().slice(0, 10);
+}
+
+// Filter + sort already-fetched filings. The pages always fetch the
+// broadest window (12m) and narrow client-side here — that makes window
+// changes instant (no refetch) AND makes filteredToEmpty distinguishable
+// from no-data (because the raw fetch always has the full set).
 export function applyFilters(
   filings: Filing[],
   filters: FilterState,
+  asOf: string,
 ): Filing[] {
   const stateSet = new Set(filters.states);
   const lineSet = new Set<string>(filters.lines);
   const carrierSet = filters.carriers ? new Set(filters.carriers) : null;
+  const cutoff = windowCutoff(asOf, filters.window);
 
   const result = filings.filter(f => {
     if (!stateSet.has(f.state)) return false;
     if (!lineSet.has(f.line_of_business)) return false;
     if (carrierSet && !carrierSet.has(f.brand)) return false;
+    // ISO YYYY-MM-DD strings compare lexicographically. Null dates
+    // are excluded from windowed views (matches the SQL NULL >= ...
+    // returning NULL → filtered out).
+    if (!f.effective_date || f.effective_date < cutoff) return false;
     return true;
   });
 
