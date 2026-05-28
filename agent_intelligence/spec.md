@@ -636,14 +636,15 @@ A row of cards, equal width, `var(--border-radius-lg)`, white background, 0.5px 
 
 ### "Most urgent" selection logic
 
-The single highest-priority filing for this agent, chosen by a tiered rule (important: the current dataset has no future-dated filings, so the fallback tiers are not hypothetical — they will be what actually renders):
+The single highest-priority filing for this agent, chosen by a two-tier rule (important: the current dataset has no future-dated filings, so the fallback tier is not hypothetical — it is what actually renders):
 
 1. **Tier 1 — soonest upcoming.** Among filings in the agent's scope that cross a threshold (Prospect ≥ +5% or Defend ≤ −2%) and have a *future* effective date, pick the one with the soonest effective date. Ties broken by larger absolute impact. Pill: "{n} week(s) left" (or "Effective this week" if ≤6 days out).
-2. **Tier 2 — most recently effective, high impact.** If no future filings exist, among threshold-crossing filings effective within the last 8 weeks, pick the largest absolute impact. Pill: "In effect {n}w".
-3. **Tier 3 — largest impact in window.** If nothing in the last 8 weeks, fall back to the largest absolute impact across the whole 12-month window. Pill: "In effect {n}w".
-4. **Empty.** If the agent has zero threshold-crossing filings at all, hide the Most Urgent card and render only the two count cards. (Or show a muted "Nothing urgent right now" card — engineer's choice, but don't show a broken/empty card.)
+2. **Tier 2 — largest impact in window.** Otherwise, pick the threshold-crossing filing with the largest absolute impact across the whole 12-month window. Ties broken by recency (newer first). Pill: "In effect {n}w" (or "Pending review" if no effective date).
+3. **Empty.** If the agent has zero threshold-crossing filings at all, hide the Most Urgent card and render only the two count cards. (Or show a muted "Nothing urgent right now" card — engineer's choice, but don't show a broken/empty card.)
 
 For independents, "scope" means all 8 brands (matching their Prospect/Defend visibility); for captives it excludes their own brand.
+
+**Why two tiers, not three.** Earlier drafts had Tier 2 = "largest |impact| within the last 8 weeks" and Tier 3 = "largest |impact| in the window," intended to favor recent moves. The reason that's not load-bearing: Tier 1 is the real urgency signal — "act before this hits." Once nothing is in the future, recency stops being a useful proxy for urgency; magnitude is. A small recent defend filing (e.g. −5% effective last week) is not more important to surface than a 50% prospect move from two months ago. The pill text still reflects recency, so the agent can tell at a glance whether the headline move is fresh or older, but the *selection* is by magnitude. Captures the spec verification's intent ("largest absolute impact in window") cleanly.
 
 ### Recent changes feed
 
