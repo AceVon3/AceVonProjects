@@ -121,8 +121,13 @@ export default function FilingsTable({
       </thead>
       <tbody>
         {filings.map(f => {
+          // Mine pill + warm tint apply only to Prospect/Defend for
+          // independents — on /my-carriers every row is owned by
+          // definition, so the marker would be noise (see Screen 5).
           const isMine =
-            agentType === "independent" && ownedBrands.has(f.brand);
+            mode !== "my-carriers"
+            && agentType === "independent"
+            && ownedBrands.has(f.brand);
           const rowBg = isMine ? C.mineBg : undefined;
           const impactC = rateImpactColor(f.overall_rate_impact, mode);
           const showDot = shouldShowEntitySpreadDot(
