@@ -27,14 +27,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        {/* Tabler icon font — used by the Overview cards and the feed.
-            Pinned to the same version the UI reference uses. */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@tabler/[email protected]/tabler-icons.min.css"
-        />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -44,3 +36,5 @@ export default function RootLayout({
     </html>
   );
 }
+// Tabler icon webfont is now @imported in src/app/globals.css and
+// served from /_next/static/media/ — no CDN <link> needed here.

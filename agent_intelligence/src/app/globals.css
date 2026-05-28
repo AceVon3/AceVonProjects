@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Self-hosted Tabler icon webfont — Next.js's CSS pipeline resolves
+   the url() references inside this stylesheet and bundles the WOFF2
+   / WOFF / TTF font files at /_next/static/media/, so the brand mark
+   and every icon glyph load from the same origin as the app.
+   Replaces the prior CDN <link rel="stylesheet"> which was a single
+   point of failure (the icons disappeared whenever the CDN flaked or
+   in headless browser contexts that couldn't reach jsdelivr). */
+@import "@tabler/icons-webfont/dist/tabler-icons.min.css";
+
 /* Design tokens — mirrors tailwind.config.ts so values are also
    inspectable as CSS variables in devtools and available to any
    stylesheet that wants them. Source of truth is the Tailwind
