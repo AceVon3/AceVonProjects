@@ -30,10 +30,17 @@ const EXPECTED_BRANDS = [
   "Progressive", "Safeco", "State Farm", "Travelers",
 ];
 const EXPECTED_STATES = ["AZ", "CO", "ID", "MT", "NV", "OR", "UT", "WA"];
+// Only the brands with a defensible rationale are asserted on the
+// page. Drive, Esurance, and National General are NOT in the list —
+// they're excluded silently by the import script's fail-loudly-on-
+// unmatched-company_name gate (zero current rows match those names,
+// and derive_brand() returns None for synthetic strings, so any future
+// SERFF refresh that introduced them would halt the import rather than
+// silently mis-bucketing).
 const EXPECTED_EXCLUDED = [
-  "National General", "Standard Fire", "LM General",
-  "American Economy", "Peerless", "Drive", "Esurance",
+  "LM General", "Standard Fire", "American Economy", "Peerless",
 ];
+const SHOULD_NOT_APPEAR = ["Drive", "Esurance", "National General"];
 // Pulled from src/lib/states.ts (the spec's STATES.validated field). The
 // page must reflect THIS exactly — drift between the data and the page
 // here would silently mislead a skeptical agent.
@@ -124,18 +131,26 @@ async function main(): Promise<void> {
     /Lowering/.test(thresholdText) && /Defend/.test(thresholdText));
 
   // -- (6) excluded brands -------------------------------------------------
-  console.log("\n(6) excluded brands — all 7 listed with a why line");
+  console.log("\n(6) excluded brands — only the 4 with defensible rationales");
   const excludedItems = await page.$$eval(
     '[data-testid="excluded-list"] li',
     els => els.map(e => e.textContent?.trim() ?? ""),
   );
-  check(`excluded list has 7 entries (got ${excludedItems.length})`,
+  check(`excluded list has ${EXPECTED_EXCLUDED.length} entries (got ${excludedItems.length})`,
     excludedItems.length === EXPECTED_EXCLUDED.length);
   for (const brand of EXPECTED_EXCLUDED) {
     const item = excludedItems.find(t => t.startsWith(brand));
     check(`"${brand}" present with a why line`,
       !!item && item.length > brand.length + 5,
       { brand, item: item?.slice(0, 80) });
+  }
+  // Confirm the page doesn't assert rationales for entities we can't
+  // stand behind — they should be excluded silently by the import gate,
+  // not listed with a made-up justification.
+  for (const brand of SHOULD_NOT_APPEAR) {
+    const excludedSection = (await page.locator('[data-testid="section-excluded"]').textContent()) ?? "";
+    check(`"${brand}" is NOT listed on the Methodology page`,
+      !excludedSection.includes(brand));
   }
 
   // -- (7) AM Best validation table matches STATES.validated ---------------

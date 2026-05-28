@@ -20,22 +20,21 @@ import { STATES } from "@/lib/states";
 export const dynamic = "force-dynamic";
 
 // Excluded brands — one line each on why. The "why" pattern across all of
-// them is some flavor of "filing vehicle or subsidiary that would either
-// double-count an existing brand or doesn't represent a consumer-facing
-// product." Phrasing kept conservative on purpose — this page's job is
-// credibility, not marketing.
+// them is "filing vehicle or subsidiary that would double-count an
+// existing brand or doesn't represent a consumer-facing product." Only
+// names with rationales we can stand behind are listed; others that the
+// brand-derivation rule already excludes by virtue of not matching any
+// of the 8 brand prefixes (Drive, Esurance, National General) are
+// handled silently by the import script's fail-loudly-on-unmatched
+// gate, not by an asserted rationale on this page.
 const EXCLUDED_BRANDS: Array<{ name: string; why: string }> = [
   {
-    name: "National General",
-    why: "An Allstate subsidiary that files separately. Excluded to avoid double-counting Allstate.",
+    name: "LM General",
+    why: "A Liberty Mutual filing vehicle covering a subset of policies, not a separate consumer brand.",
   },
   {
     name: "Standard Fire",
     why: "A Travelers filing vehicle, not sold to consumers under its own brand.",
-  },
-  {
-    name: "LM General",
-    why: "A Liberty Mutual filing vehicle covering a subset of policies, not a separate consumer brand.",
   },
   {
     name: "American Economy",
@@ -44,14 +43,6 @@ const EXCLUDED_BRANDS: Array<{ name: string; why: string }> = [
   {
     name: "Peerless",
     why: "A legacy Liberty Mutual subsidiary, not sold under its own brand in the current dataset.",
-  },
-  {
-    name: "Drive",
-    why: "Progressive's non-standard-auto brand, sold through a separate channel from the consumer Progressive product.",
-  },
-  {
-    name: "Esurance",
-    why: "Allstate's wound-down digital brand. Excluded to avoid double-counting and historical noise.",
   },
 ];
 
