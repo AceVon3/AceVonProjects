@@ -151,10 +151,28 @@ Readiness verified before any Vercel action:
   traced and the relative entries resolve to the real files — proven,
   not inferred from a green build.
 
+### GitHub repo created (2026-05-29)
+
+Pushed to a NEW dedicated repo: **`AceVon3/agent_intelligence`**
+(private, default branch `master`). The project lives at the REPO ROOT
+there (package.json at `/`), extracted from this monorepo subdir via
+`git subtree split --prefix=agent_intelligence` — full 26-commit history
+preserved. `data/filings.db` (240K) + `last_updated.txt` confirmed
+present on the remote.
+
+**Two-repo topology now in play.** This working copy is still the
+monorepo (`AceVon3/browser-games`) with the project under
+`agent_intelligence/`. The standalone deploy repo has it at root.
+- Remote `agent-intel` → the standalone repo.
+- Push future changes with:
+  `git subtree push --prefix=agent_intelligence agent-intel master`
+  (run from the monorepo root). Do NOT plain-`git push` to agent-intel.
+
 Still TODO (live, do together):
-- Vercel project: **Root Directory MUST = `agent_intelligence`** (the
-  repo root holds many sibling projects). Set this BEFORE first deploy.
-- Connect repo + deploy.
+- Vercel project: connect **`AceVon3/agent_intelligence`**. Because the
+  project is now at the repo root, **Root Directory = `/`** (NOT
+  `agent_intelligence` — that note applied to the old monorepo plan).
+- Connect repo + deploy. No env vars needed.
 
 ## Launch-blocker status
 
