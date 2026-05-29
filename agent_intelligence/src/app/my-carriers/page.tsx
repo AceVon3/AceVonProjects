@@ -30,11 +30,8 @@ export default function MyCarriersPage(): React.JSX.Element {
       router.replace("/setup");
       return;
     }
-    // Captive guard: my-carriers is independent-only (spec line 835).
-    if (p.agent_type === "captive") {
-      router.replace("/");
-      return;
-    }
+    // My Carriers is available to both agent types — no captive redirect.
+    // A captive sees their single authorized carrier's filings here.
     setProfile(p);
     setFilters(defaultFilters(p, "my-carriers"));
   }, [router]);
@@ -49,6 +46,10 @@ export default function MyCarriersPage(): React.JSX.Element {
       licensed_states: profile.licensed_states.join(","),
       authorized_brands: profile.authorized_brands.join(","),
     });
+    // Captive requests must carry captive_brand (the API validates it).
+    if (profile.agent_type === "captive") {
+      params.set("captive_brand", profile.authorized_brands[0]);
+    }
     fetch(`/api/filings?${params.toString()}`)
       .then(async r => {
         if (!r.ok) throw new Error((await r.json()).error ?? `HTTP ${r.status}`);
@@ -101,12 +102,22 @@ export default function MyCarriersPage(): React.JSX.Element {
     return <PageSkeleton variant="table" />;
   }
 
+  // Single-carrier (captive) framing: a captive sells exactly one carrier, so
+  // "My Carriers" (plural) and a "Carriers tracked: 1" count read oddly. Use a
+  // singular label and name the actual carrier.
+  const isCaptive = profile.agent_type === "captive";
+  const carrierBrand = profile.authorized_brands[0];
+  const pageTitle = isCaptive ? "My Carrier" : "My Carriers";
+  const pageSubtitle = isCaptive
+    ? `Every recent ${carrierBrand} filing in your states — so you know what your book is doing.`
+    : "Every recent filing from the carriers you sell — so you know what your book is doing.";
+
   if (phase === "error") {
     return (
       <main className="min-h-screen bg-canvas">
         <div className="max-w-[1100px] mx-auto px-4 py-10">
           <h1 className="text-18 font-medium m-0 text-ink">
-            My Carriers
+            {pageTitle}
           </h1>
           <p className="text-13 mt-3 p-3 rounded-md text-red-text bg-red-fill border border-hairline border-line">
             Couldn’t load filings: {error}
@@ -118,16 +129,17 @@ export default function MyCarriersPage(): React.JSX.Element {
 
   return (
     <main className="min-h-screen bg-canvas">
-      {/* My Carriers is independent-only; no captiveBrand suffix. */}
+      {/* My Carriers shows the agent's OWN carrier(s), not competitors —
+          so no "vs competitors of {brand}" suffix even for captives. */}
       <ScopeStrip states={profile.licensed_states} />
 
       <div className="max-w-[1100px] mx-auto px-4 py-6">
         <div className="mb-4">
           <h1 className="text-18 font-medium m-0 text-ink">
-            My Carriers
+            {pageTitle}
           </h1>
           <p className="text-13 mt-1 m-0 text-ink-2">
-            Every recent filing from the carriers you sell — so you know what your book is doing.
+            {pageSubtitle}
           </p>
         </div>
 
@@ -143,11 +155,15 @@ export default function MyCarriersPage(): React.JSX.Element {
           <div className="rounded-lg mb-4 flex flex-wrap items-center gap-x-6 gap-y-3 bg-surface-2 px-4 py-3.5">
             <div>
               <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
-                Carriers tracked
+                {isCaptive ? "Your carrier" : "Carriers tracked"}
               </div>
-              <div className="text-22 font-medium text-ink">
-                {headerCard.carriersTracked}
-              </div>
+              {isCaptive ? (
+                <div className="text-17 font-medium text-ink">{carrierBrand}</div>
+              ) : (
+                <div className="text-22 font-medium text-ink">
+                  {headerCard.carriersTracked}
+                </div>
+              )}
             </div>
             <div className="w-px self-stretch bg-line-2 hidden sm:block" />
             <div>

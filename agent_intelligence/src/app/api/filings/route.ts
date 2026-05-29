@@ -45,9 +45,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       return bad("captive agents must have authorized_brands = [captive_brand]");
     }
   }
-  if (mode === "my-carriers" && agent_type === "captive") {
-    return bad("my-carriers is independent-only");
-  }
+  // (my-carriers is available to both agent types — a captive sees filings
+  // for their single authorized brand. No agent_type restriction here.)
 
   const windowRaw = q.get("window");
   let opts: QueryOpts | undefined;
@@ -73,7 +72,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   let filings;
   if (mode === "prospect") filings = getProspectFilings(profile, opts);
   else if (mode === "defend") filings = getDefendFilings(profile, opts);
-  else filings = getMyCarriersFilings(profile as IndependentProfile, opts);
+  else filings = getMyCarriersFilings(profile, opts);
 
   return NextResponse.json({ asOf: getDataAsOf(), filings });
 }

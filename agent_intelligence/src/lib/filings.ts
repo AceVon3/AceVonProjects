@@ -174,9 +174,10 @@ export function getDefendFilings(
 
 // My Carriers: every recent filing involving the agent's authorized brands
 // in their licensed states, in the active window. No impact threshold.
-// Independent-only; captives shouldn't call this (the UI hides the tab).
+// Available to both agent types — only reads licensed_states +
+// authorized_brands, so for a captive it returns their single brand's filings.
 export function getMyCarriersFilings(
-  profile: IndependentProfile,
+  profile: AgentProfile,
   opts?: QueryOpts,
 ): Filing[] {
   const states = profile.licensed_states;

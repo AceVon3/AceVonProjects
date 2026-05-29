@@ -8,7 +8,7 @@ A public-facing web app that turns SERFF rate filing data into actionable signal
 2. **Overview** — the landing page. An at-a-glance dashboard: Prospect / Defend counts, the single most urgent item, a compliance-tracking card, and a recent-changes feed. Drills into the tables below.
 3. **Prospect Table** — competitors raising rates in the agent's states. Attack opportunities.
 4. **Defend Table** — competitors lowering rates in the agent's states. Retention risks.
-5. **My Carriers Table** — (independents only) every recent filing involving the carriers the agent sells.
+5. **My Carriers Table** — (all agent types; labelled "My Carrier" for captives) every recent filing involving the carriers the agent sells.
 6. **Compliance** — per-state HR & insurance regulatory resources (Labor Dept, Tax/Revenue, Insurance Dept, Workers' Comp), keyed off the agent's employee work/live states, with on-demand AI summaries grounded in the official source pages.
 
 A further page, **Methodology**, is required for credibility but contains no interactive features.
@@ -213,7 +213,7 @@ Also write `data/last_updated.txt` with an ISO date — the import script's run 
 │   │   ├── FilingsTable.tsx        # Shared by Prospect, Defend, My Carriers
 │   │   ├── ComplianceCard.tsx      # One topic card: tag, state badge, title, summary, sources, last-checked
 │   │   ├── ScopeStrip.tsx          # "Showing: AZ, NV · vs competitors of State Farm"
-│   │   └── NavBar.tsx              # "My Carriers" link hidden for captives
+│   │   └── NavBar.tsx              # "My Carrier(s)" link shown for both (singular label for captives)
 │   ├── lib/
 │   │   ├── db.ts                   # better-sqlite3 wrapper
 │   │   ├── profile.ts              # localStorage read/write + type
@@ -555,7 +555,7 @@ A captive only sells one carrier. They want to know about **competitors** — fu
 
 - **Prospect:** filings where `brand != captive_brand` AND `overall_rate_impact >= +5%`. Competitors raising rates → opportunities to attack.
 - **Defend:** filings where `brand != captive_brand` AND `overall_rate_impact <= -2%`. Competitors cutting rates → retention risks.
-- **My Carriers tab:** hidden. Showing one row of "your own brand's recent filings" is not useful enough to warrant a tab.
+- **My Carrier tab:** visible (labelled singular). Filings where `brand = captive_brand`, no threshold — every recent filing for the carrier they sell, so they have their own carrier's rate moves in front of them when customers call. (Earlier this was hidden for captives; that was reversed — see Resolved decisions.)
 
 ### Independent agents
 
@@ -582,7 +582,7 @@ Same components, slightly different framing text. Drives this from `agent_type` 
 | Prospect header card label | "Filings vs {captive_brand}" | "Filings in your states" |
 | Defend title | "Defend" | "Defend" |
 | Defend subtitle | "Competitors lowering rates — your customers may shop." | "Rate decreases in your states — your customers may shop." |
-| My Carriers visible? | No | Yes |
+| My Carriers visible? | Yes (labelled "My Carrier", singular) | Yes ("My Carriers", plural) |
 
 ---
 
@@ -821,19 +821,28 @@ Same as Prospect: State multi-select, Line multi-select, **Time window dropdown*
 
 ---
 
-## Feature 5: My Carriers Table (`/my-carriers`) — independents only
+## Feature 5: My Carriers Table (`/my-carriers`) — all agent types
 
 ### Concept
 
-For independent agents only. *"What's happening across the carriers I sell?"* Shows every recent filing involving the agent's authorized brands in their licensed states, regardless of impact magnitude. The agent uses this to monitor their own book — which of their carriers just moved rates, in which direction, where.
+*"What's happening across the carrier(s) I sell?"* Shows every recent filing involving the agent's authorized brands in their licensed states, regardless of impact magnitude. The agent uses this to monitor their own book — which of their carriers just moved rates, in which direction, where.
 
-This is **hidden entirely for captives.** A one-carrier book doesn't need a "my carriers" tab — that's what their entire Prospect/Defend view already represents from their POV.
+**Available to both captive and independent agents.** An independent sees all the carriers they sell; a captive sees their single carrier's filings. A captive State Farm agent very much wants their own carrier's rate moves in front of them — they're the ones fielding customer calls when State Farm changes rates. (This reverses an earlier "independents-only" decision; see Resolved decisions.)
 
 ### Route & visibility
 
 - Route: `/my-carriers`
-- Hidden from the nav if `agent_type === "captive"`
-- Direct URL access by a captive redirects to `/` (the Overview)
+- Visible in the nav for **both** agent types. The nav label is **"My Carrier"** (singular) for captives, **"My Carriers"** (plural) for independents.
+- No redirect — both agent types can load the page directly.
+
+### Single-carrier (captive) framing
+
+Because a captive sells exactly one carrier, the page adapts:
+- Nav label: **"My Carrier"** (singular).
+- Page title **"My Carrier"**; subtitle names the carrier, e.g. *"Every recent State Farm filing in your states — so you know what your book is doing."*
+- Header card: instead of a "Carriers tracked: N" count (always 1 for a captive), the first cell reads **"Your carrier"** and shows the carrier name.
+- The Carrier filter chip is hidden (a one-option filter is pointless).
+- The query is unchanged — `brand IN (authorized_brands)`, which for a captive is just their single brand.
 
 ### Query
 
@@ -1023,10 +1032,10 @@ Persistent across all pages:
 
 - Product name (left)
 - Links (right):
-  - Captive: Overview · Prospect · Defend · Compliance · Methodology · Profile
+  - Captive: Overview · Prospect · Defend · **My Carrier** · Compliance · Methodology · Profile
   - Independent: Overview · Prospect · Defend · **My Carriers** · Compliance · Methodology · Profile
 
-The "My Carriers" link is conditionally rendered based on `agent_type === "independent"`.
+The My Carrier(s) link is shown for **both** agent types. Its label is `agent_type`-dependent: **"My Carrier"** (singular) for captives, **"My Carriers"** (plural) for independents.
 
 On Prospect, Defend, and My Carriers pages, a thin strip below the nav (`<ScopeStrip />`) shows the agent's current scope: *"Showing: AZ, NV"* (independents) or *"Showing: AZ, NV · vs competitors of State Farm"* (captives), with an "Edit" link to `/setup`. Always visible — agents need to know what filter they're looking through.
 
@@ -1048,7 +1057,7 @@ Do these in sequence. Don't move on until the previous step works end-to-end.
 7. Build `/my-carriers` reusing `FilingsTable` with `mode="my-carriers"`. Add the route-guard that redirects captives to `/`.
 8. Build the **Overview** landing page (`/`): `OverviewCards` (Prospect count, Defend count, Most Urgent with the tiered selection logic, and the lightweight Compliance entry-point card) and `RecentChanges` feed. All rate counts must reconcile exactly with the table queries for the same profile. Verify against the sample-profile numbers in the Overview verification section.
 9. Build **Compliance** (`/compliance`): the `resourceUrls.ts` map (eight topics, one-or-more URLs each; start with the 8 covered states), the `generate_compliance` script that fetches mapped pages and writes grounded 2–3 sentence summaries + titles + `last_checked` into `complianceData.ts`, and the `/compliance` page rendering a grid of `ComplianceCard`s (topic tag, state badge, title, short summary, bare-domain source links, last-checked date). The app reads only the pre-generated data — no live fetching at view time. Include the disclaimer banner and the "Coming soon"/bare-link fallback for unmapped or failed-generation cells.
-10. Build `NavBar` (Overview first; "My Carriers" for independents only; Compliance for all) and `ScopeStrip` (with the conditional captive suffix).
+10. Build `NavBar` (Overview first; "My Carrier(s)" for all agent types — singular label for captives; Compliance for all) and `ScopeStrip` (with the conditional captive suffix).
 11. Build `/methodology`.
 12. Polish:
     a. **PINNED — first task, before any cosmetic polish:** run
@@ -1138,7 +1147,9 @@ The UI must handle large positive values gracefully (e.g. +93.7%) without breaki
 
 ## Resolved decisions (for reference — already baked into the spec)
 
-- **Carrier visibility.** Captives see Prospect/Defend filtered to competitors only (their own brand excluded). Independents see Prospect/Defend with all 8 brands flat — no exclusion, no POV toggle — because they can quote with multiple carriers and need full market visibility. Independents also get a dedicated **My Carriers** tab showing every recent filing involving the carriers they sell, no threshold filter. Captives don't see the My Carriers tab.
+- **Carrier visibility.** Captives see Prospect/Defend filtered to competitors only (their own brand excluded). Independents see Prospect/Defend with all 8 brands flat — no exclusion, no POV toggle — because they can quote with multiple carriers and need full market visibility. Both agent types get the **My Carriers** tab (every recent filing involving the carriers they sell, no threshold filter); for a captive it shows their single carrier and is labelled "My Carrier" (singular).
+
+- **My Carriers is available to captives too (REVERSED 2026-05-29).** Originally My Carriers was independents-only, on the reasoning that "a one-carrier book doesn't need a my-carriers tab — Prospect/Defend already is their POV." That was wrong: Prospect/Defend show *competitors*, never the captive's own carrier, so a captive had no view of their own carrier's filings at all. But a captive State Farm agent is exactly who needs to see State Farm's own rate moves — they field the customer calls when rates change. The view already does the right thing (it filters `brand IN authorized_brands`, which for a captive is their single brand), so opening it was a matter of removing the restriction, not building a feature. The restriction had been enforced in four places, all now reversed: the nav (was hidden for captives), the `/my-carriers` route guard (redirected captives to `/`), the API `mode=my-carriers + agent_type=captive` 400 check, and the `getMyCarriersFilings` parameter type. Single-carrier framing was added (singular "My Carrier" label/title, "Your carrier" header cell, carrier-name subtitle, hidden carrier filter chip). **Do not re-add the independents-only restriction.** Independent behavior is unchanged.
 
 - **No Carrier Toggle.** An earlier draft included a "POV" dropdown to switch the comparative anchor. That was removed — independents now see everything flatly, and captives only have one POV anyway. The toggle was solving a problem the agent doesn't actually have.
 

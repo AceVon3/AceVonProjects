@@ -1,10 +1,11 @@
 // End-to-end check of NavBar + ScopeStrip across all routes.
 //
 // NavBar (per spec §Navigation):
-//   - Captive:     Overview · Prospect · Defend · Compliance · Methodology · Profile
+//   - Captive:     Overview · Prospect · Defend · My Carrier  · Compliance · Methodology · Profile
 //   - Independent: Overview · Prospect · Defend · My Carriers · Compliance · Methodology · Profile
 //   - No profile:  Overview · Methodology only
-//   - "Overview" is always first; "My Carriers" appears only for independents.
+//   - "Overview" is always first; My Carrier(s) shows for both agent types
+//     (singular "My Carrier" for captives, plural "My Carriers" for independents).
 //   - Active link matches current pathname.
 //
 // ScopeStrip (per spec §Navigation):
@@ -105,27 +106,29 @@ async function main(): Promise<void> {
     { noProfileLabels });
 
   // -- Captive --------------------------------------------------------------
-  console.log("\n(B) Captive State Farm: nav hides My Carriers, includes Compliance");
+  console.log("\n(B) Captive State Farm: nav shows singular 'My Carrier' + Compliance");
   await setProfile(page, CAPTIVE_SF);
   await gotoWithNav(page, "/");
   const captiveLabels = await navLabels(page);
-  check("nav = Overview, Prospect, Defend, Compliance, Methodology, Profile (6 items)",
+  check("nav = Overview, Prospect, Defend, My Carrier, Compliance, Methodology, Profile (7 items)",
     JSON.stringify(captiveLabels) ===
-      JSON.stringify(["Overview", "Prospect", "Defend", "Compliance", "Methodology", "Profile"]),
+      JSON.stringify(["Overview", "Prospect", "Defend", "My Carrier", "Compliance", "Methodology", "Profile"]),
     { captiveLabels });
   check("'Overview' is the first nav item", captiveLabels[0] === "Overview");
-  check("'My Carriers' is NOT in the captive nav",
-    !captiveLabels.includes("My Carriers"));
+  check("captive nav uses singular 'My Carrier' (not plural 'My Carriers')",
+    captiveLabels.includes("My Carrier") && !captiveLabels.includes("My Carriers"),
+    { captiveLabels });
+  check("'My Carrier' appears right after 'Defend'",
+    captiveLabels.indexOf("My Carrier") === captiveLabels.indexOf("Defend") + 1);
   check("'Compliance' IS in the captive nav (per spec)",
     captiveLabels.includes("Compliance"));
 
-  // Captive direct-URL guard: /my-carriers still redirects to /.
-  console.log("\n(B1) Captive direct URL /my-carriers redirects to /");
+  // Captive direct-URL access: /my-carriers now loads (no redirect).
+  console.log("\n(B1) Captive direct URL /my-carriers loads (no redirect)");
   await page.goto(`${BASE}/my-carriers`, { waitUntil: "networkidle" });
-  // The route guard in /my-carriers fires in useEffect after loadProfile().
-  await page.waitForURL(`${BASE}/`, { timeout: 5000 }).catch(() => {});
-  check("URL is / after attempting /my-carriers as captive",
-    new URL(page.url()).pathname === "/", { url: page.url() });
+  await page.waitForSelector("table tbody tr, [data-testid=empty-state]", { timeout: 5000 }).catch(() => {});
+  check("URL stays /my-carriers for captive (no redirect)",
+    new URL(page.url()).pathname === "/my-carriers", { url: page.url() });
 
   // -- Independent ----------------------------------------------------------
   console.log("\n(C) Independent: nav includes My Carriers in the right position");

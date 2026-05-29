@@ -170,8 +170,9 @@ export default function FilterBar({
         />
       </Chip>
 
-      {/* My Carriers: Carrier multi-select */}
-      {mode === "my-carriers" && authorizedBrands && filters.carriers && (
+      {/* My Carriers: Carrier multi-select. Hidden when the agent has only
+          one carrier (captive) — filtering a single-option list is pointless. */}
+      {mode === "my-carriers" && authorizedBrands && authorizedBrands.length > 1 && filters.carriers && (
         <Chip
           label={`Carriers: ${
             filters.carriers.length === authorizedBrands.length &&

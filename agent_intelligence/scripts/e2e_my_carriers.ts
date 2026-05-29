@@ -12,9 +12,11 @@
 //      tables). This proves the no-impact-threshold contract.
 //   E. Effective-column badges are neutral gray (or amber Pending review
 //      for the rare null-effective-date case) — never red/green/blue.
-//   F. Captive guard: a captive visiting /my-carriers is redirected to /.
-//   G. API guard: GET /api/filings?mode=my-carriers&agent_type=captive
-//      returns HTTP 400.
+//   F. Captive ACCESS: a captive visiting /my-carriers is NOT redirected —
+//      they see their single carrier's filings (State Farm, AZ+NV → 8 rows),
+//      singular "My Carrier" framing.
+//   G. API ALLOWS captive: GET /api/filings?mode=my-carriers&agent_type=captive
+//      returns HTTP 200 with that carrier's filings.
 //
 // Usage (dev server must be running):
 //   E2E_BASE=http://localhost:3005 npx tsx scripts/e2e_my_carriers.ts
@@ -165,26 +167,43 @@ async function main(): Promise<void> {
   const minePills = await page.locator('[data-testid="mine-pill"]').count();
   check("no Mine pill appears on /my-carriers", minePills === 0, { minePills });
 
-  // -- (F) Captive direct-URL guard -----------------------------------------
-  console.log("\n(F) Captive visiting /my-carriers redirects to /");
+  // -- (F) Captive ACCESS (no redirect) -------------------------------------
+  console.log("\n(F) Captive State Farm reaches /my-carriers (no redirect) → own carrier only");
   await setProfileAndOpen(page, CAPTIVE_SF, "/my-carriers");
-  // Allow the client useEffect to fire its router.replace.
-  await page.waitForURL(`${BASE}/`, { timeout: 5000 }).catch(() => {});
-  check("captive URL ends at /", new URL(page.url()).pathname === "/",
-    { url: page.url() });
+  // Give the client useEffect a beat; assert it did NOT bounce to /.
+  await page.waitForSelector("table tbody tr, [data-testid=empty-state]", { timeout: 5000 }).catch(() => {});
+  check("captive stays on /my-carriers (not redirected)",
+    new URL(page.url()).pathname === "/my-carriers", { url: page.url() });
+  const capRows = await page.$$eval("table tbody tr", rs => rs.length);
+  check("captive State Farm AZ+NV → 8 rows (their carrier only)", capRows === 8, { capRows });
+  const capBrands = await page.$$eval("table tbody tr td:first-child", tds =>
+    Array.from(new Set(tds.map(t => t.textContent?.trim() ?? ""))));
+  check("every row is State Farm (no other brand leaks in)",
+    capBrands.length === 1 && capBrands[0] === "State Farm", { capBrands });
+  // Singular framing: page title "My Carrier", header card shows the carrier name.
+  const capTitle = (await page.locator("h1").first().textContent())?.trim();
+  check("page title is singular 'My Carrier'", capTitle === "My Carrier", { capTitle });
+  // Nav link is the singular "My Carrier".
+  const navLabels = await page.$$eval('[data-testid="nav-link"]', els =>
+    els.map(e => e.getAttribute("data-label")));
+  check("nav shows 'My Carrier' (singular), not 'My Carriers'",
+    navLabels.includes("My Carrier") && !navLabels.includes("My Carriers"), { navLabels });
 
-  // -- (G) API guard for captive+my-carriers --------------------------------
-  console.log("\n(G) API rejects captive + my-carriers combination");
+  // -- (G) API allows captive + my-carriers ---------------------------------
+  console.log("\n(G) API allows captive + my-carriers (returns the carrier's filings)");
   const apiResp = await page.evaluate(async (base) => {
     const r = await fetch(
       `${base}/api/filings?mode=my-carriers&agent_type=captive&captive_brand=State+Farm` +
       `&authorized_brands=State+Farm&licensed_states=AZ,NV`,
     );
-    return { status: r.status, body: await r.text() };
+    return { status: r.status, body: await r.json() };
   }, BASE);
-  check("API returns HTTP 400", apiResp.status === 400, { status: apiResp.status });
-  check("API error message mentions my-carriers / independent",
-    /independent/i.test(apiResp.body), { body: apiResp.body });
+  check("API returns HTTP 200", apiResp.status === 200, { status: apiResp.status });
+  check("API returns 8 State Farm filings",
+    Array.isArray(apiResp.body?.filings)
+      && apiResp.body.filings.length === 8
+      && apiResp.body.filings.every((f: { brand: string }) => f.brand === "State Farm"),
+    { count: apiResp.body?.filings?.length });
 
   await browser.close();
 

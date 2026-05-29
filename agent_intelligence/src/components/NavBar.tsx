@@ -9,13 +9,14 @@ import { AgentType, loadProfile } from "@/lib/profile";
 type NavItem = { label: string; href: string; icon: string };
 
 // Build the nav list per spec §Navigation:
-//   Captive:     Overview · Prospect · Defend · Compliance · Methodology · Profile
+//   Captive:     Overview · Prospect · Defend · My Carrier  · Compliance · Methodology · Profile
 //   Independent: Overview · Prospect · Defend · My Carriers · Compliance · Methodology · Profile
 //   No profile:  Overview · Methodology  (matches ui-reference Screen 1)
 //
-// The icons are presentational only (Tabler webfont). The ITEMS and their
-// show/hide rules are unchanged from the previous top-bar nav — only the
-// visual treatment (left sidebar) differs.
+// My Carrier(s) shows for BOTH agent types — a captive wants to see their own
+// carrier's filings too (they field the calls when rates move). The label is
+// singular ("My Carrier") for captives, who sell exactly one carrier. Icons
+// are presentational only (Tabler webfont).
 function buildItems(agentType: AgentType | null): NavItem[] {
   if (agentType === null) {
     return [
@@ -27,15 +28,15 @@ function buildItems(agentType: AgentType | null): NavItem[] {
     { label: "Overview", href: "/", icon: "ti-layout-dashboard" },
     { label: "Prospect", href: "/prospect", icon: "ti-target-arrow" },
     { label: "Defend", href: "/defend", icon: "ti-shield-half" },
-  ];
-  if (agentType === "independent") {
-    items.push({ label: "My Carriers", href: "/my-carriers", icon: "ti-briefcase" });
-  }
-  items.push(
+    {
+      label: agentType === "captive" ? "My Carrier" : "My Carriers",
+      href: "/my-carriers",
+      icon: "ti-briefcase",
+    },
     { label: "Compliance", href: "/compliance", icon: "ti-gavel" },
     { label: "Methodology", href: "/methodology", icon: "ti-book-2" },
     { label: "Profile", href: "/setup", icon: "ti-settings" },
-  );
+  ];
   return items;
 }
 
