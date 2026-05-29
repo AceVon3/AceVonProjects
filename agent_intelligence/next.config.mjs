@@ -9,6 +9,7 @@ const nextConfig = {
     // because this is next@14.2.x — the top-level form lands in Next 15.
     outputFileTracingIncludes: {
       "/api/filings": ["./data/filings.db", "./data/last_updated.txt"],
+      "/api/positioning": ["./data/filings.db", "./data/last_updated.txt"],
       "/methodology": ["./data/last_updated.txt"],
     },
   },

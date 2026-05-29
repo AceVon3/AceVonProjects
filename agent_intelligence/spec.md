@@ -10,6 +10,7 @@ A public-facing web app that turns SERFF rate filing data into actionable signal
 4. **Defend Table** — competitors lowering rates in the agent's states. Retention risks.
 5. **My Carriers Table** — (all agent types; labelled "My Carrier" for captives) every recent filing involving the carriers the agent sells.
 6. **Compliance** — per-state HR & insurance regulatory resources (Labor Dept, Tax/Revenue, Insurance Dept, Workers' Comp), keyed off the agent's employee work/live states, with on-demand AI summaries grounded in the official source pages.
+7. **Rate Positioning** — (all agent types) per (line, state), the agent's carrier's premium-weighted average rate *change* vs each competitor individually, with confidence tiering and a persistent "rate change, not price" frame. Sparse, comparison-first.
 
 A further page, **Methodology**, is required for credibility but contains no interactive features.
 
@@ -1011,6 +1012,83 @@ Callers other than the table pages (e.g. Overview Most Urgent / Recent Changes) 
 
 ---
 
+## Feature 7: Rate Positioning (`/positioning`) — all agent types
+
+### Concept
+
+Per (line, state), the **premium-weighted average rate *change*** the agent's carrier filed, compared against **each competitor individually** — the spread, never a blended field average. This is a sparse, comparison-first view: only cells where the agent's carrier actually filed are shown; competitors absent from a cell are labeled "insufficient data"; every comparison expands to the underlying filings that produced it. The data is genuinely sparse (see recon below), so the design surfaces the real comparisons rather than rendering a mostly-empty matrix.
+
+Captive = their one carrier vs the field. Independent = each of their carriers vs the rest (brands they don't sell), per carrier — never blended.
+
+### Route, nav, chrome
+
+- **Route:** `/positioning`. **Nav label:** "Positioning" (icon `ti-arrows-left-right`, confirmed present in the self-hosted Tabler webfont). Shown for **both** agent types. Hidden in the no-profile nav; redirects to `/setup` when no profile (same guard as Prospect/Defend/My Carriers).
+- **ScopeStrip:** shown — `"Showing: {states} · vs competitors of {brand}"` (captive) / `"Showing: {states}"` (independent).
+- **Title:** "Rate positioning." **Subtitle (captive):** *"How {brand}'s recent rate changes compare to each competitor, by line and state."* **(independent):** *"How your carriers' recent rate changes compare to the rest of the market."*
+
+### Rate-change framing is LOAD-BEARING PRODUCT COPY, not a footnote
+
+This feature's central risk is being read as a price/cheapness comparison. The disclaimer carries more weight here than anywhere else in the app and is treated as primary product copy:
+
+- A **persistent, always-visible callout band** sits directly under the page title (full width, amber-neutral, ~13px, sticky to the top of the page body — it does not scroll away):
+
+  > **These are rate *changes*, not prices.** Every figure is the average percentage a carrier *changed* its filed rates — not how cheap it is. A carrier raising less or cutting more is moving more favorably for shoppers; it says nothing about whose premium is lower today.
+
+- Reinforced so the frame travels with the data: the comparison column header reads **"avg rate change"** (never "rate"/"avg" alone), and each expanded audit panel repeats a one-line **"change filed, not price"** caption.
+
+This band is not dismissible and not collapsible. If it is ever rendered as fine print or removed, the feature is mis-built.
+
+### Computation (no new data path — same source as every other page)
+
+- Source: rolled-up `filings`, **active** activities (`rate_change`, `rate_change_pending`), **non-null** `effective_date`, `effective_date >= date(:asOf, '-12 months')`. Identical filter to Prospect/Defend — this is what makes the verification numbers reproduce. **If a new query is needed, the logic has diverged from recon — it shouldn't be.**
+- For each (line, state, brand): **premium-weighted average** = `Σ(overall_rate_impactᵢ × total_written_premiumᵢ) / Σ(total_written_premiumᵢ)` over that brand's filings in the cell. Fall back to a simple mean only if *every* premium in the group is null (1 of 180 filings is null, so this is essentially never) and flag the fallback. Retain the filing count and the underlying rows for the audit panel.
+- **Agent carriers:** captive `= [captive_brand]`; independent `= authorized_brands`. **Competitors:** every brand the agent does *not* sell. (An independent who sells all 8 brands has no competitor set — render a graceful "you sell every covered carrier" empty state.)
+- **Anchored cell:** a (line, state) where ≥1 agent carrier filed.
+- **Comparison:** (anchored cell, agent_carrier, competitor). **Comparable** = competitor has ≥1 filing in the cell. **Higher-confidence** = both sides ≥2 filings. **Thin** = comparable but at least one side has exactly 1 filing. **Insufficient** = competitor has 0 in the cell.
+
+### Confidence tiering — the central honesty mechanic
+
+The visual hierarchy *is* the honesty signal; this is spec-load-bearing, not cosmetic.
+
+- **Higher-confidence (≥2 each side):** the primary spine. Full-strength text, normal weight, no caveat — genuine multi-filing averages.
+- **Thin (either side has exactly 1 filing):** visually demoted (muted, smaller, indented). **A one-filing side is NEVER labeled "avg."** It renders `"1 filing: +X%"`, not `"+X% avg"`. Dressing a single number as an average is the trap the rename guardrail prevents.
+- **No computed spread for thin comparisons.** The signed pts-spread (e.g. "+6.2 pts higher") is shown **only for higher-confidence comparisons** where both sides are genuine averages. A thin comparison shows the two figures side by side with **no** computed difference — a spread between an average and a single filing borrows the visual grammar of a real comparison and over-implies certainty one filing can't support. Spread is therefore a higher-confidence-only affordance.
+- **Insufficient (competitor 0):** not a comparison; folded into a muted "Insufficient data: {brands}" line at the foot of the card.
+
+### Layout — sparse, comparison-first
+
+**Ordering:** anchored cells sorted by higher-confidence count desc, then comparable count desc (richest comparisons first); line then state as tiebreak.
+
+**Each anchored cell is a card:**
+- Header: `"{Line} · {State}"` and the agent carrier's own average change with its filing count (the anchor everything is measured against). If the agent carrier itself has only 1 filing in the cell, the header reads `"1 filing: +X%"` (not "avg") and every comparison in that card is therefore thin.
+- Competitor rows: competitor name · their avg change (or `"1 filing: +X%"`) · filing count · **signed pts-spread vs the agent carrier — higher-confidence rows only**. Each row expands to an audit panel listing the underlying filings on **both** sides (brand, effective date, signed impact, premium, SERFF #, pending flag), with the "change filed, not price" caption.
+- Absent competitors collapse into one muted "Insufficient data: …" line at the card foot — never empty rows.
+- **Independent** with multiple owned carriers present in a cell: each owned carrier is its own anchor block within the card (own header average + its own competitor rows). The spread stays per-carrier, never blended across the agent's carriers.
+
+**Unanchored cells (agent carrier didn't file):** not cards. A single compact section at the bottom — *"No filings from your carrier in: {Line · State}, …"* — plain text, no competitor rows.
+
+### Verification numbers (the answer key — the built classifier MUST reproduce these)
+
+These come from the data recon and are the hard check; if the built feature doesn't reproduce them, the query logic diverged from recon.
+
+**Captive State Farm, all 8 covered states:**
+- Anchored (line, state) cells: **10**; unanchored cells: **6**
+- Competitor slots within anchored cells (10 × 7 competitors): **70**
+  - **Comparable: 41** — of which **higher-confidence (≥2 each): 24**, **thin: 17**
+  - Insufficient (competitor absent): **29**
+
+**Independent {State Farm, Travelers, Progressive}, all 8 states:** comparable **69**, of which higher-confidence **34**.
+
+A `verify_positioning.ts` (Node, no browser — like `verify_queries.ts`) must assert **10 / 41 / 24** for the captive case before the page is wired. The 1-vs-1 display decision (below) does not change these computed counts — it only changes whether the 17 thin comparisons are *rendered* or folded into the insufficient line; per the decision, they are rendered.
+
+### Edge cases
+
+- Independent selling all 8 brands → no competitor set → graceful empty state, not an empty grid.
+- All-null-premium group → unweighted mean + a "weighting unavailable" flag (≈never; 1/180).
+- Pending filings (`rate_change_pending`) are in the active set and marked "pending" in the audit panel.
+
+---
+
 ## Methodology page (`/methodology`)
 
 Static page. Must include:
@@ -1150,6 +1228,8 @@ The UI must handle large positive values gracefully (e.g. +93.7%) without breaki
 - **Carrier visibility.** Captives see Prospect/Defend filtered to competitors only (their own brand excluded). Independents see Prospect/Defend with all 8 brands flat — no exclusion, no POV toggle — because they can quote with multiple carriers and need full market visibility. Both agent types get the **My Carriers** tab (every recent filing involving the carriers they sell, no threshold filter); for a captive it shows their single carrier and is labelled "My Carrier" (singular).
 
 - **My Carriers is available to captives too (REVERSED 2026-05-29).** Originally My Carriers was independents-only, on the reasoning that "a one-carrier book doesn't need a my-carriers tab — Prospect/Defend already is their POV." That was wrong: Prospect/Defend show *competitors*, never the captive's own carrier, so a captive had no view of their own carrier's filings at all. But a captive State Farm agent is exactly who needs to see State Farm's own rate moves — they field the customer calls when rates change. The view already does the right thing (it filters `brand IN authorized_brands`, which for a captive is their single brand), so opening it was a matter of removing the restriction, not building a feature. The restriction had been enforced in four places, all now reversed: the nav (was hidden for captives), the `/my-carriers` route guard (redirected captives to `/`), the API `mode=my-carriers + agent_type=captive` 400 check, and the `getMyCarriersFilings` parameter type. Single-carrier framing was added (singular "My Carrier" label/title, "Your carrier" header cell, carrier-name subtitle, hidden carrier filter chip). **Do not re-add the independents-only restriction.** Independent behavior is unchanged.
+
+- **Rate Positioning thin (1-vs-1) comparisons: SHOWN, demoted, never called "avg", no spread (decided 2026-05-29).** In Feature 7, a "thin" comparison is one where either side has exactly one filing. The options were (A) show them visually-demoted with a one-filing flag, or (B) exclude them as insufficient. **Chosen: A**, with two guardrails: (1) a one-filing side renders `"1 filing: +X%"`, never `"+X% avg"` — a single number must not be dressed as an average; (2) **no computed pts-spread for thin comparisons** — the signed difference is a higher-confidence-only affordance, because a spread between a genuine average and a single filing borrows the grammar of a real comparison and over-implies certainty. Rationale for A over B: the confidence tiering already tells the eye to trust the ≥2-each spine first; the audit-panel expansion makes a thin row transparent rather than black-box; hiding real, auditable filings is *less* honest than showing them well-labeled; and the data is sparse enough (recon: only 24 of 41 comparable comparisons are higher-confidence) that excluding the 17 thin ones would drop 41% of the comparable surface and hurt utility more than well-labeled thin rows risk misleading. Do not silently exclude thin comparisons or add a thin-row spread.
 
 - **No Carrier Toggle.** An earlier draft included a "POV" dropdown to switch the comparative anchor. That was removed — independents now see everything flatly, and captives only have one POV anyway. The toggle was solving a problem the agent doesn't actually have.
 
