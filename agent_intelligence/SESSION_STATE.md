@@ -1,12 +1,13 @@
-# Session checkpoint — 2026-05-28
+# Session checkpoint — 2026-05-29
 
 Snapshot at end of session so the next session can pick up cleanly.
-Most-recent commit: `44a486b polish(mobile): responsive layout at 375x800`.
+Most-recent commit: `72312ec verify(mobile): confirm multi-entity info-dot renders at 375px`.
 
 ## Where we are in the build
 
-Spec `## Build order` step 12 is in progress. Item 5 of the polish bundle
-(12.b) just shipped; **item 6 is next**.
+Spec `## Build order` step 12 is essentially complete. Polish bundle
+(12.b) items 1–6 all shipped. **Step 13 (deploy to Vercel) is next** —
+holding for user review before deploying.
 
 ```
 1. Scaffold                            done
@@ -28,9 +29,44 @@ Spec `## Build order` step 12 is in progress. Item 5 of the polish bundle
        3. Tailwind token consolidation            done (commit 1de3061)
        4. Tabler icon resilience (self-host)      done (commit db1dc00)
        5. Mobile layout (375×800)                 done (commit 44a486b)
-       6. Badge color audit                       NEXT
-13. Deploy to Vercel                              after 12.b.6
+       6. Badge color audit                       done (audit clean, no code change)
+13. Deploy to Vercel                              NEXT (awaiting review)
 ```
+
+## Item 6 — badge color audit (2026-05-29): CLEAN, no code change
+
+Swept every `*-fill` / `*-text` usage across `src/` against the five
+design-system color families in `tailwind.config.ts` (blue, green,
+amber, red, gray). Findings:
+
+- **All badge (fill, text) pairs are family-consistent.** Every pairing
+  is stored as an inseparable class-pair string in a lookup map
+  (`FilingsTable.BADGE_CLASS`, `RecentChanges.PILL_CLASS`,
+  `ComplianceCard.TOPIC_TAG_CLASS`), so a cross-family mismatch is
+  structurally impossible, not just absent.
+- **Window/status badge logic matches the spec's per-page tables.**
+  Verified `computeWindowBadge` (prospect/defend/my-carriers) and
+  `computeStatusBadge` in `lib/format.ts` against the spec.
+- **`amber` is the correct single token for the spec's "Yellow" AND
+  "Orange" window-badge slots.** The design system (both
+  `tailwind.config.ts` and the reference HTML) defines exactly 5 badge
+  families — there is no separate orange/yellow token — so both
+  semantic slots correctly resolve to `amber`. Confirmed: no
+  orange/yellow tokens exist anywhere.
+- **Status "Approved" = blue is intentional.** Spec prose says
+  "green-ish," but the authoritative reference mockup
+  (`ui-reference.html`) renders Approved as `b-blue`. Per the conflict
+  rule (reference wins on appearance), blue is correct.
+- Non-badge fills reviewed too: error/coverage banners use red
+  fill+text (family-consistent; red is right for errors), and
+  `CARD_URGENT` reuses `red-text` as a 2px danger border (intentional
+  per spec; no `red-border` token exists).
+
+Note (out of audit scope, flag for later): the spec's amber
+coverage-warning banner ("{State} isn't covered yet…") has no
+implementation in `src/`. The spec says it "won't fire in normal
+operation" since setup blocks uncovered states, so it's a low-priority
+feature gap, not a color issue.
 
 ## Decisions logged from end of item 5
 
@@ -77,12 +113,10 @@ As predicted, font-load state is irrelevant: the dot is a styled
 ## Remaining work
 
 1. ~~Info-dot mobile check~~ — DONE (verified 2026-05-29, see above).
-2. **Item 6: badge color audit** — sweep all badges across all pages,
-   confirm every (fill, text) pair uses the design-system color family
-   (e.g. `bg-green-fill` always pairs with `text-green-text`, no
-   mismatched cross-family usage). Now that tokens are consolidated in
-   `tailwind.config.ts`, this should be a fast grep-driven sweep.
-3. **Step 13: deploy to Vercel.**
+2. ~~Item 6: badge color audit~~ — DONE (2026-05-29, clean; see the
+   "Item 6 — badge color audit" section above. No code change.)
+3. **Step 13: deploy to Vercel** — the only remaining step. Awaiting
+   user review before deploying.
 
 ## Launch-blocker status
 
