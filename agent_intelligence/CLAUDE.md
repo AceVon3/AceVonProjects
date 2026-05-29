@@ -83,3 +83,14 @@ If any of these don't match, something is wired wrong — fix it before proceedi
 - Commit working steps with clear messages.
 - Ask before adding dependencies not listed above or changing the stack.
 - Don't build anything marked "deferred," "Phase B," or "out of scope" in the spec (State Resources panel, compliance change-detection, Brand Health, auth, payments, Pro tier).
+
+## Gotchas
+
+- **Tailwind cache after bulk className edits.** After bulk className
+  edits (sed, grep replace, find-and-replace across files), always
+  `rm -rf .next` before restarting dev. The Tailwind watcher doesn't
+  reliably pick up bulk edits — symptoms are CSS files that contain
+  only a subset of the `bg-*` / `text-*` classes used in source,
+  causing elements to render with transparent backgrounds or default
+  text colors. This has bitten twice in this project; clean restart
+  is the only reliable fix.
