@@ -127,8 +127,34 @@ As predicted, font-load state is irrelevant: the dot is a styled
 1. ~~Info-dot mobile check~~ — DONE (verified 2026-05-29, see above).
 2. ~~Item 6: badge color audit~~ — DONE (2026-05-29, clean; see the
    "Item 6 — badge color audit" section above. No code change.)
-3. **Step 13: deploy to Vercel** — the only remaining step. Awaiting
-   user review before deploying.
+3. **Step 13: deploy to Vercel** — IN PROGRESS. Deploy-prep done; the
+   Vercel project setup is the next live action (do together).
+
+### Deploy-prep (2026-05-29)
+
+Readiness verified before any Vercel action:
+- **SQLite**: `db.ts` opens readonly; `data/filings.db` +
+  `data/last_updated.txt` committed (240K / 12B).
+- **No runtime env vars needed.** `@anthropic-ai/sdk` is imported only
+  in `scripts/generate_compliance.ts` (offline regen), never in `src/`.
+  Compliance page reads the committed `complianceData.ts`. So Vercel
+  needs NO env vars; `ANTHROPIC_API_KEY` is only for local regen.
+- **`npm run build` clean** (next@14.2.35; 11/11 pages).
+- **File-tracing fix applied** (commit below): empty `next.config.mjs`
+  had no `outputFileTracingIncludes`, so the runtime `process.cwd()`
+  reads of `data/` would NOT be bundled into the Vercel lambdas →
+  guaranteed 500s, invisible at build. Added
+  `experimental.outputFileTracingIncludes` (experimental-scoped for
+  14.2.x; top-level is Next 15) mapping `/api/filings` →
+  filings.db + last_updated.txt, `/methodology` → last_updated.txt.
+  **Verified from `.nft.json` trace manifests** that both files are
+  traced and the relative entries resolve to the real files — proven,
+  not inferred from a green build.
+
+Still TODO (live, do together):
+- Vercel project: **Root Directory MUST = `agent_intelligence`** (the
+  repo root holds many sibling projects). Set this BEFORE first deploy.
+- Connect repo + deploy.
 
 ## Launch-blocker status
 
