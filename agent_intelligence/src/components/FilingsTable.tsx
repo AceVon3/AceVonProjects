@@ -280,10 +280,11 @@ export default function FilingsTable({
 // Column header. Uniform 12px horizontal padding (the table now sits in a
 // bordered container, so the first cell is no longer flush to the page edge).
 //
-// When `onSort` is provided the header becomes a clickable sort control: the
-// label sits in a button, `active` darkens it and shows a direction caret
-// (up = ascending, down = descending), and the <th> carries aria-sort.
-// Without `onSort` it's a plain header (caret still shows if `active`).
+// When `onSort` is provided the header becomes a clickable (cursor-pointer)
+// sort control with a three-state affordance: the active column shows a solid
+// directional caret (▲/▼) and darker label; a sortable-but-inactive column
+// shows a muted ⇅ double-arrow signalling it's clickable; the <th> carries
+// aria-sort. Without `onSort` it's a plain, icon-free header.
 function Th({
   children,
   align,
@@ -301,12 +302,22 @@ function Th({
 }) {
   const padAlign = `py-2.5 px-3 ${align === "right" ? "text-right" : "text-left"}`;
   const colorCls = active ? "text-ink" : "text-ink-2";
-  const caret = active ? (
+  // Three-state sort affordance:
+  //   active sort column → solid directional caret (▲ asc / ▼ desc)
+  //   sortable, inactive → muted up/down double-arrow (⇅) "clickable" hint
+  //   non-sortable       → no icon (handled below: nothing rendered)
+  const activeCaret = (
     <i
-      className={`ti ${dir === "asc" ? "ti-chevron-up" : "ti-chevron-down"} text-12`}
+      className={`ti ${dir === "asc" ? "ti-caret-up" : "ti-caret-down"} text-12`}
       aria-hidden
     />
-  ) : null;
+  );
+  const mutedDoubleArrow = (
+    <i
+      className="ti ti-arrows-sort text-12 text-ink-3 opacity-50 group-hover:opacity-90"
+      aria-hidden
+    />
+  );
 
   if (onSort) {
     return (
@@ -320,24 +331,27 @@ function Th({
           data-testid={sortId ? `sort-${sortId}` : undefined}
           data-sort-active={active ? "true" : "false"}
           className={[
-            "inline-flex items-center gap-1 cursor-pointer select-none",
+            "group inline-flex items-center gap-1 cursor-pointer select-none",
             "border-none bg-transparent p-0 font-medium text-11 uppercase tracking-wider04",
             "hover:text-ink transition-colors",
             colorCls,
           ].join(" ")}
         >
           {children}
-          {caret}
+          {active ? activeCaret : mutedDoubleArrow}
         </button>
       </th>
     );
   }
 
+  // Non-sortable header: label only. (If `active` is somehow set without an
+  // onSort handler — sort prop wired but no onSortChange — fall back to the
+  // presentational caret rather than nothing.)
   return (
     <th className={`font-medium text-11 uppercase tracking-wider04 ${padAlign} ${colorCls}`}>
       <span className="inline-flex items-center gap-1 align-middle">
         {children}
-        {caret}
+        {active ? activeCaret : null}
       </span>
     </th>
   );
