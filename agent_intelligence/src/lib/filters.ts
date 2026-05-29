@@ -25,7 +25,15 @@ import type { AgentProfile } from "./profile";
 
 export type WindowChoice = "30d" | "90d" | "12m";
 
-export type SortChoice = "effective_desc" | "impact_desc";
+// Each sortable column (effective date, rate impact) supports both
+// directions. The two "_desc" values are the original presets (newest /
+// largest); the "_asc" values were added so a header click can toggle
+// direction and the FilterBar dropdown can still reflect every state.
+export type SortChoice =
+  | "effective_desc"
+  | "effective_asc"
+  | "impact_desc"
+  | "impact_asc";
 
 export type LineChoice = "Personal Auto" | "Homeowners";
 
@@ -48,8 +56,10 @@ export const WINDOW_LABEL: Record<WindowChoice, string> = {
 };
 
 export const SORT_LABEL: Record<SortChoice, string> = {
-  effective_desc: "Effective date (newest)",
+  effective_desc: "Effective (newest)",
+  effective_asc: "Effective (oldest)",
   impact_desc: "Rate impact (largest)",
+  impact_asc: "Rate impact (smallest)",
 };
 
 // Default filter state for a freshly-mounted page. Spec defaults:
@@ -111,21 +121,30 @@ export function applyFilters(
     return true;
   });
 
-  if (filters.sort === "impact_desc") {
-    result.sort(
-      (a, b) =>
-        Math.abs(b.overall_rate_impact) - Math.abs(a.overall_rate_impact),
-    );
-  } else {
-    // effective_desc — newest first, nulls sink to the bottom.
+  if (filters.sort === "impact_desc" || filters.sort === "impact_asc") {
+    // Sort by absolute rate impact (magnitude of the move). _desc = largest
+    // first, _asc = smallest first. (Within Prospect/Defend every row shares
+    // a sign, so abs ordering equals signed magnitude.)
+    const asc = filters.sort === "impact_asc";
     result.sort((a, b) => {
-      const ea = a.effective_date
-        ? Date.parse(`${a.effective_date}T00:00:00Z`)
-        : -Infinity;
-      const eb = b.effective_date
-        ? Date.parse(`${b.effective_date}T00:00:00Z`)
-        : -Infinity;
-      return eb - ea;
+      const diff = Math.abs(b.overall_rate_impact) - Math.abs(a.overall_rate_impact);
+      return asc ? -diff : diff;
+    });
+  } else {
+    // effective_desc = newest first, effective_asc = oldest first. Null
+    // dates always sink to the bottom regardless of direction. (In practice
+    // the windowed filter above already drops null-effective rows, so this
+    // only matters defensively.)
+    const asc = filters.sort === "effective_asc";
+    result.sort((a, b) => {
+      const an = !a.effective_date;
+      const bn = !b.effective_date;
+      if (an && bn) return 0;
+      if (an) return 1;
+      if (bn) return -1;
+      const ea = Date.parse(`${a.effective_date}T00:00:00Z`);
+      const eb = Date.parse(`${b.effective_date}T00:00:00Z`);
+      return asc ? ea - eb : eb - ea;
     });
   }
 

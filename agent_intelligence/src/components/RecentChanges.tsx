@@ -20,16 +20,21 @@ function pill(color: "red" | "gray"): string {
 
 export default function RecentChanges({ rows }: Props): React.JSX.Element {
   return (
+    // Matches the FilingsTable restyle: rounded hairline container, a
+    // surface-2 header band, hairline row dividers, and row hover. It stays
+    // a feed/list (not a table) — same rows, same data, just visually in line.
     <div
       data-testid="recent-changes"
-      className="border border-hairline border-line rounded-xl pt-[18px] px-[18px] pb-1.5"
+      className="rounded-lg border border-hairline border-line overflow-hidden"
     >
-      <h3 className="text-15 font-medium mt-0 mb-3.5 text-ink">
-        Recent changes
-      </h3>
+      <div className="bg-surface-2 border-b border-hairline border-line-2 px-4 py-2.5">
+        <h3 className="text-11 uppercase tracking-wider04 font-medium m-0 text-ink-2">
+          Recent changes
+        </h3>
+      </div>
 
       {rows.length === 0 ? (
-        <div className="text-12 text-ink-3 pb-3">
+        <div className="text-12 text-ink-3 px-4 py-4">
           No threshold-crossing filings in your scope yet. Check back next month — data refreshes monthly.
         </div>
       ) : (
@@ -43,7 +48,8 @@ export default function RecentChanges({ rows }: Props): React.JSX.Element {
               href={href}
               data-testid="feed-row"
               className={[
-                "flex justify-between items-center py-2.5 no-underline text-inherit",
+                "flex justify-between items-center px-4 py-3 no-underline text-inherit",
+                "transition-colors hover:bg-surface-2/60",
                 isLast ? "" : "border-b border-hairline border-line",
               ].join(" ")}
             >
@@ -51,7 +57,7 @@ export default function RecentChanges({ rows }: Props): React.JSX.Element {
                 <div className="text-14 font-medium text-ink">
                   {r.filing.brand}
                 </div>
-                <div className="text-12 text-ink-2">
+                <div className="text-12 text-ink-2 mt-0.5">
                   {formatRateImpact(r.filing.overall_rate_impact)} in {r.filing.state} · {r.classification}
                 </div>
               </div>

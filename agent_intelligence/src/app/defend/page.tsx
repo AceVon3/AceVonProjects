@@ -165,6 +165,7 @@ export default function DefendPage(): React.JSX.Element {
           ownedBrands={ownedBrands}
           asOf={asOf}
           sort={filters.sort}
+          onSortChange={s => setFilters(f => (f ? { ...f, sort: s } : f))}
           filteredToEmpty={visibleFilings.length === 0 && filings.length > 0}
         />
       </div>

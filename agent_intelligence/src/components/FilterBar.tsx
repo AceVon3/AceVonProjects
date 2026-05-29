@@ -14,6 +14,25 @@ import {
 
 type Mode = "prospect" | "defend" | "my-carriers";
 
+// Sort options shown in the dropdown, in display order. The table headers
+// drive these same values (see FilingsTable), so both controls stay in sync.
+const SORT_OPTIONS: SortChoice[] = [
+  "effective_desc",
+  "effective_asc",
+  "impact_desc",
+  "impact_asc",
+];
+
+// Label for a sort value. On /my-carriers the impact sort is by absolute
+// move (carriers can move either direction), so the wording calls that out.
+function sortLabel(sort: SortChoice, mode: Mode): string {
+  if (mode === "my-carriers") {
+    if (sort === "impact_desc") return "Rate impact (largest move, abs value)";
+    if (sort === "impact_asc") return "Rate impact (smallest move, abs value)";
+  }
+  return SORT_LABEL[sort];
+}
+
 type Props = {
   mode: Mode;
   filters: FilterState;
@@ -131,30 +150,17 @@ export default function FilterBar({
         />
       </Chip>
 
-      {/* Sort single-select */}
+      {/* Sort single-select. These options are the same sort state the
+          clickable table headers drive — selecting here or clicking a header
+          both write filters.sort, so the two controls stay in sync. */}
       <Chip
-        label={`Sort: ${
-          filters.sort === "impact_desc"
-            ? mode === "my-carriers"
-              ? "Rate impact (largest move, abs)"
-              : "Rate impact (largest)"
-            : "Effective (newest)"
-        }`}
+        label={`Sort: ${sortLabel(filters.sort, mode)}`}
         open={openPanel === "sort"}
         onToggle={() => setOpenPanel(openPanel === "sort" ? null : "sort")}
         testid="chip-sort"
       >
         <RadioList
-          items={[
-            { value: "effective_desc", label: SORT_LABEL.effective_desc },
-            {
-              value: "impact_desc",
-              label:
-                mode === "my-carriers"
-                  ? "Rate impact (largest move, abs value)"
-                  : SORT_LABEL.impact_desc,
-            },
-          ]}
+          items={SORT_OPTIONS.map(v => ({ value: v, label: sortLabel(v, mode) }))}
           selected={filters.sort}
           onSelect={v => {
             update("sort", v as SortChoice);

@@ -22,10 +22,14 @@ type Props = {
   agentType: "captive" | "independent";
   ownedBrands: Set<string>; // empty for captives (mine pill never shows)
   asOf: string;
-  // Current sort, used only to draw a direction caret on the active column
-  // header. Presentational — sorting itself is still driven by the FilterBar
-  // chip (see filters.ts). The header carets do not change any data.
+  // Current sort. Draws the direction caret on the active column header.
   sort?: SortChoice;
+  // Click-to-sort callback. When provided, the Impact and Effective headers
+  // become clickable and write the SAME sort state the FilterBar dropdown
+  // uses (the page wires this to setFilters). Clicking the active column
+  // toggles its direction; clicking the other sortable column switches to it
+  // (descending). Omit it and the headers are non-interactive (caret only).
+  onSortChange?: (next: SortChoice) => void;
   // True when the unfiltered API response had rows but the current
   // filter set produces zero. Lets the empty state explain "your filters
   // narrowed too much" instead of "there's no data" — completely
@@ -43,13 +47,18 @@ const BADGE_CLASS: Record<BadgeColor, string> = {
   gray:  "bg-gray-fill text-gray-text",
 };
 
-function badgeClass(color: BadgeColor): string {
-  return `${BADGE_CLASS[color]} inline-block px-2 py-0.5 text-11 rounded-full font-medium leading-[1.4]`;
+// Window badge: the text can be long ("Customers may already be shopping",
+// "Risk window opens in 3 weeks"), so it must wrap cleanly inside the
+// Effective column. A full pill (rounded-full) looks awkward on two lines,
+// so this variant uses an 8px radius with roomier vertical padding and a
+// tighter line-height — the wrap reads as intentional. Same family colors.
+function windowBadgeClass(color: BadgeColor): string {
+  return `${BADGE_CLASS[color]} inline-block px-2 py-1 text-11 rounded-md font-medium leading-[1.35] whitespace-normal`;
 }
 
 // Status pill variant: same family colors, but with a small leading status
 // dot (bg-current draws the dot in the pill's own text color, so it always
-// stays in-family). Window badges keep the plain badgeClass treatment.
+// stays in-family).
 function statusBadgeClass(color: BadgeColor): string {
   return `${BADGE_CLASS[color]} inline-flex items-center gap-1.5 px-2 py-0.5 text-11 rounded-full font-medium leading-[1.4]`;
 }
@@ -79,6 +88,7 @@ export default function FilingsTable({
   ownedBrands,
   asOf,
   sort,
+  onSortChange,
   filteredToEmpty,
 }: Props): React.JSX.Element {
   const firstHeader = firstColumnHeader(mode, agentType);
@@ -86,6 +96,26 @@ export default function FilingsTable({
   // It is appended LAST so columns 1–7 keep their positions across all
   // three modes (Prospect/My Carriers stay 7 columns).
   const showActionCol = mode === "defend";
+
+  // Which column is the table currently sorted by, and in which direction.
+  // Drives the live header caret (up = asc, down = desc).
+  const sortCol: "impact" | "effective" | null =
+    sort === "impact_desc" || sort === "impact_asc"
+      ? "impact"
+      : sort === "effective_desc" || sort === "effective_asc"
+        ? "effective"
+        : null;
+  const sortDir: "asc" | "desc" = sort && sort.endsWith("_asc") ? "asc" : "desc";
+
+  // Next sort value when a header is clicked: toggle direction if it's the
+  // active column, otherwise switch to that column (descending default).
+  function nextSortFor(col: "impact" | "effective"): SortChoice {
+    if (col === "impact") return sort === "impact_desc" ? "impact_asc" : "impact_desc";
+    return sort === "effective_desc" ? "effective_asc" : "effective_desc";
+  }
+  function sortHandler(col: "impact" | "effective"): (() => void) | undefined {
+    return onSortChange ? () => onSortChange(nextSortFor(col)) : undefined;
+  }
 
   if (filings.length === 0) {
     const copy = filteredToEmpty ? FILTERED_EMPTY_COPY : emptyStateCopy(mode);
@@ -112,14 +142,14 @@ export default function FilingsTable({
       >
       {showActionCol ? (
         <colgroup>
-          <col style={{ width: "14%" }} />
-          <col style={{ width: "6%" }} />
           <col style={{ width: "13%" }} />
+          <col style={{ width: "6%" }} />
+          <col style={{ width: "12%" }} />
           <col style={{ width: "11%" }} />
-          <col style={{ width: "19%" }} />
+          <col style={{ width: "22%" }} />
           <col style={{ width: "11%" }} />
           <col style={{ width: "11%" }} />
-          <col style={{ width: "15%" }} />
+          <col style={{ width: "14%" }} />
         </colgroup>
       ) : (
         <colgroup>
@@ -137,8 +167,22 @@ export default function FilingsTable({
           <Th>{firstHeader}</Th>
           <Th>State</Th>
           <Th>Line</Th>
-          <Th sortActive={sort === "impact_desc"}>Impact</Th>
-          <Th sortActive={sort === "effective_desc"}>Effective</Th>
+          <Th
+            sortId="impact"
+            active={sortCol === "impact"}
+            dir={sortDir}
+            onSort={sortHandler("impact")}
+          >
+            Impact
+          </Th>
+          <Th
+            sortId="effective"
+            active={sortCol === "effective"}
+            dir={sortDir}
+            onSort={sortHandler("effective")}
+          >
+            Effective
+          </Th>
           <Th>Status</Th>
           <Th align="right">Policyholders affected</Th>
           {showActionCol && <Th>Action</Th>}
@@ -201,10 +245,10 @@ export default function FilingsTable({
                 )}
               </Td>
               <Td>
-                <div className="text-12">
+                <div className="text-12 mb-1">
                   {formatEffectiveDate(f.effective_date)}
                 </div>
-                <span className={`${badgeClass(windowB.color)} mt-0.5`}>
+                <span className={windowBadgeClass(windowB.color)}>
                   {windowB.text}
                 </span>
               </Td>
@@ -235,28 +279,65 @@ export default function FilingsTable({
 
 // Column header. Uniform 12px horizontal padding (the table now sits in a
 // bordered container, so the first cell is no longer flush to the page edge).
-// `sortActive` draws a descending-sort caret and darkens the label on the
-// column the table is currently sorted by — presentational only.
+//
+// When `onSort` is provided the header becomes a clickable sort control: the
+// label sits in a button, `active` darkens it and shows a direction caret
+// (up = ascending, down = descending), and the <th> carries aria-sort.
+// Without `onSort` it's a plain header (caret still shows if `active`).
 function Th({
   children,
   align,
-  sortActive,
+  active,
+  dir,
+  onSort,
+  sortId,
 }: {
   children: React.ReactNode;
   align?: "right";
-  sortActive?: boolean;
+  active?: boolean;
+  dir?: "asc" | "desc";
+  onSort?: () => void;
+  sortId?: string;
 }) {
+  const padAlign = `py-2.5 px-3 ${align === "right" ? "text-right" : "text-left"}`;
+  const colorCls = active ? "text-ink" : "text-ink-2";
+  const caret = active ? (
+    <i
+      className={`ti ${dir === "asc" ? "ti-chevron-up" : "ti-chevron-down"} text-12`}
+      aria-hidden
+    />
+  ) : null;
+
+  if (onSort) {
+    return (
+      <th
+        className={padAlign}
+        aria-sort={active ? (dir === "asc" ? "ascending" : "descending") : "none"}
+      >
+        <button
+          type="button"
+          onClick={onSort}
+          data-testid={sortId ? `sort-${sortId}` : undefined}
+          data-sort-active={active ? "true" : "false"}
+          className={[
+            "inline-flex items-center gap-1 cursor-pointer select-none",
+            "border-none bg-transparent p-0 font-medium text-11 uppercase tracking-wider04",
+            "hover:text-ink transition-colors",
+            colorCls,
+          ].join(" ")}
+        >
+          {children}
+          {caret}
+        </button>
+      </th>
+    );
+  }
+
   return (
-    <th
-      className={[
-        "font-medium text-11 uppercase tracking-wider04 py-2.5 px-3",
-        align === "right" ? "text-right" : "text-left",
-        sortActive ? "text-ink" : "text-ink-2",
-      ].join(" ")}
-    >
+    <th className={`font-medium text-11 uppercase tracking-wider04 ${padAlign} ${colorCls}`}>
       <span className="inline-flex items-center gap-1 align-middle">
         {children}
-        {sortActive && <i className="ti ti-chevron-down text-12" aria-hidden />}
+        {caret}
       </span>
     </th>
   );
