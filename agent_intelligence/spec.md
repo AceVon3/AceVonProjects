@@ -1142,6 +1142,8 @@ The UI must handle large positive values gracefully (e.g. +93.7%) without breaki
 
 - **No Carrier Toggle.** An earlier draft included a "POV" dropdown to switch the comparative anchor. That was removed — independents now see everything flatly, and captives only have one POV anyway. The toggle was solving a problem the agent doesn't actually have.
 
+- **Coverage-warning banner intentionally NOT implemented in v1** (the amber *"{State} isn't covered yet. Showing your other states."* banner described under *UI / design system → Coverage warning*). The condition it guards is already prevented by two existing layers: the setup UI disables uncovered (`data_coverage: false`) states, and save-validation rejects any licensed state that isn't covered (the tamper guard from build step 4). With both in place, an uncovered state in a saved profile is unreachable in normal operation — the banner would only ever fire on hand-edited `localStorage`. Building display-time UI for a validation-unreachable condition isn't worth the effort for v1. Revisit if profile state ever becomes server-sourced or shareable (i.e. if a profile could arrive without passing through this app's save-validation). Decision made 2026-05-29.
+
 ---
 
 ## Phase B — Compliance change detection ("new law" highlights)

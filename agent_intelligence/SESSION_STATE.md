@@ -62,11 +62,23 @@ amber, red, gray). Findings:
   `CARD_URGENT` reuses `red-text` as a 2px danger border (intentional
   per spec; no `red-border` token exists).
 
-Note (out of audit scope, flag for later): the spec's amber
-coverage-warning banner ("{State} isn't covered yet…") has no
-implementation in `src/`. The spec says it "won't fire in normal
-operation" since setup blocks uncovered states, so it's a low-priority
-feature gap, not a color issue.
+### Decision: coverage-warning banner NOT implemented in v1 (2026-05-29)
+
+Surfaced during the item-6 sweep: the spec's amber coverage-warning
+banner ("{State} isn't covered yet. Showing your other states.",
+spec → UI / design system → Coverage warning) has no implementation in
+`src/`. **This is intentional, not a bug.** Two existing layers already
+make the condition unreachable:
+- the setup UI disables uncovered (`data_coverage: false`) states, and
+- save-validation rejects any non-covered licensed state (the tamper
+  guard from build step 4).
+
+So an uncovered state in a saved profile can't occur in normal
+operation — the banner would only fire on hand-edited `localStorage`.
+Building display-time UI for a validation-unreachable condition isn't
+worth it for v1. Revisit only if profile state ever becomes
+server-sourced or shareable (a profile arriving without passing through
+this app's save-validation). Recorded in spec.md "Resolved decisions".
 
 ## Decisions logged from end of item 5
 
