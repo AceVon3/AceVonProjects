@@ -51,31 +51,32 @@ User answered three open items from the mobile-layout report:
    new "## Gotchas" section so the next bulk-className edit doesn't
    hit a stale `.next` cache for the third time.
 
-## Outstanding verification (pending, low-priority)
+## Outstanding verification — RESOLVED 2026-05-29
 
-**Info-dot circular `i` glyph visibility on mobile.** Surfaced as a
-question during item 5 reporting. Not yet visually verified.
+**Info-dot circular `i` glyph visibility on mobile — VERIFIED.**
+Confirmed at 375×800 on `/prospect` (independent AZ+NV profile).
 
-What's known without re-checking:
-- The dot is a styled `<span>` with text "i", NOT the Tabler iconfont
-  — so font-load failure does NOT affect rendering.
-- The dot lives in the Impact column (column 4 of the 7-column table).
-  At 375px the table scrolls horizontally with `min-w-[900px]`, so the
-  Impact column (and therefore the dot) is OFF-SCREEN by default and
-  requires a horizontal scroll to see.
+How: added a `[multi-entity info-dot]` block to `scripts/e2e_mobile.ts`
+that sets the profile, loads `/prospect`, `scrollIntoViewIfNeeded()`s the
+first `entity-spread-dot`, asserts its computed style, and saves a tight
+clipped screenshot (`polish/mobile-info-dot.png`).
 
-What still needs verification:
-- A mobile screenshot scrolled to the Impact column to confirm the
-  circular background + italic "i" actually render as intended (the
-  shape, not just the text). Easy: in `scripts/e2e_mobile.ts`, scroll
-  the table to the right and screenshot the Impact column region.
+Results (all OK):
+- 2 info-dots present in the table; first rolled up 3 entities
+  (tooltip "Premium-weighted across 3 entities. Range: 1.0% to 10.6%.").
+- Box 14×14, `border-radius: 9999px` (circular), background
+  `rgb(241,239,232)` (`bg-soft`, filled — not transparent),
+  `font-style: italic`, text content `"i"`, scrolled into the viewport
+  horizontally, premium-weighted `title` present.
+- **Visual confirmation:** the clipped PNG shows the circular gray dot
+  with an italic serif "i" — the shape renders, not just the text.
 
-Take a few minutes at the top of the next session to run this check.
-Likely fine; flagging so it isn't forgotten.
+As predicted, font-load state is irrelevant: the dot is a styled
+`<span>` with a Georgia-serif inline style, not the Tabler iconfont.
 
 ## Remaining work
 
-1. **Info-dot mobile check** (above) — quick visual confirmation.
+1. ~~Info-dot mobile check~~ — DONE (verified 2026-05-29, see above).
 2. **Item 6: badge color audit** — sweep all badges across all pages,
    confirm every (fill, text) pair uses the design-system color family
    (e.g. `bg-green-fill` always pairs with `text-green-text`, no

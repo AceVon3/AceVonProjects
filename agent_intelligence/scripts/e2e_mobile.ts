@@ -160,6 +160,71 @@ async function main(): Promise<void> {
   check("table keeps its 900px min-width (scrollable, not squished)",
     !!tableWrapperOverflow?.tableMinWidthHonored, tableWrapperOverflow);
 
+  // --- multi-entity info-dot renders after horizontal scroll --------------
+  // The Impact column (col 4 of 7) sits off-screen at 375px behind the
+  // table's min-w-[900px] horizontal scroll. The dot is a styled <span>
+  // (not the Tabler iconfont), so font-load state shouldn't affect it — but
+  // confirm the circular "i" actually renders, scrolled into view, on a
+  // real multi-entity row (GEICO NV GECC-134661852, +50.9%, spread 30.5→56.5).
+  console.log(`\n[multi-entity info-dot]`);
+  await setProfile(page, INDEPENDENT_AZ_NV);
+  await page.goto(`${BASE}/prospect`, { waitUntil: "networkidle" });
+  await page.waitForSelector('[data-testid="filter-bar"]', { timeout: 5000 });
+  await page.waitForSelector("table tbody tr", { timeout: 5000 });
+
+  const dot = page.locator('[data-testid="entity-spread-dot"]').first();
+  const dotCount = await page.locator('[data-testid="entity-spread-dot"]').count();
+  check("at least one multi-entity info-dot present in the table", dotCount >= 1, { dotCount });
+
+  // Scroll the dot into view horizontally inside the overflow wrapper.
+  await dot.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(150);
+
+  const dotInfo = await dot.evaluate((el: HTMLElement) => {
+    const cs = window.getComputedStyle(el);
+    const r = el.getBoundingClientRect();
+    return {
+      text: (el.textContent ?? "").trim(),
+      visible: r.width > 0 && r.height > 0 && cs.visibility !== "hidden" && cs.display !== "none",
+      width: Math.round(r.width),
+      height: Math.round(r.height),
+      borderRadius: cs.borderRadius,
+      backgroundColor: cs.backgroundColor,
+      fontStyle: cs.fontStyle,
+      // Within viewport horizontally after scroll?
+      inViewportX: r.left >= 0 && r.right <= 375,
+      title: el.getAttribute("title"),
+    };
+  });
+  check('info-dot text is the "i" glyph', dotInfo.text === "i", dotInfo);
+  check("info-dot is visible (non-zero box, not hidden)", dotInfo.visible, dotInfo);
+  check("info-dot is circular (border-radius rounds the 14px box)",
+    /9999px|50%|7px/.test(dotInfo.borderRadius) || parseFloat(dotInfo.borderRadius) >= 7,
+    { borderRadius: dotInfo.borderRadius });
+  check("info-dot has a filled background (not transparent)",
+    dotInfo.backgroundColor !== "rgba(0, 0, 0, 0)" && dotInfo.backgroundColor !== "transparent",
+    { backgroundColor: dotInfo.backgroundColor });
+  check("info-dot scrolled into the viewport horizontally", dotInfo.inViewportX, dotInfo);
+  check("info-dot carries the premium-weighted tooltip",
+    !!dotInfo.title && /Premium-weighted/.test(dotInfo.title), { title: dotInfo.title });
+
+  // Tight clipped screenshot around the dot for visual confirmation of the
+  // circular shape + italic serif "i" (not just the presence of text).
+  const dotBox = await dot.boundingBox();
+  if (dotBox) {
+    const pad = 24;
+    await page.screenshot({
+      path: path.join(outDir, "mobile-info-dot.png"),
+      clip: {
+        x: Math.max(0, dotBox.x - pad),
+        y: Math.max(0, dotBox.y - pad),
+        width: dotBox.width + pad * 2,
+        height: dotBox.height + pad * 2,
+      },
+    });
+    console.log(`  [saved] polish/mobile-info-dot.png (clip around the dot)`);
+  }
+
   // --- tap-target measurements (REPORT, don't fail) -----------------------
   console.log(`\n[tap-target measurements — REPORT ONLY]`);
 
