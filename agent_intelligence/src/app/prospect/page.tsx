@@ -176,6 +176,7 @@ export default function ProspectPage(): React.JSX.Element {
           agentType={profile.agent_type}
           ownedBrands={ownedBrands}
           asOf={asOf}
+          sort={filters.sort}
           filteredToEmpty={visibleFilings.length === 0 && filings.length > 0}
         />
       </div>

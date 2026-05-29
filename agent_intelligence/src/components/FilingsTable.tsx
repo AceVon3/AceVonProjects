@@ -1,6 +1,7 @@
 "use client";
 
 import type { Filing } from "@/lib/filings";
+import type { SortChoice } from "@/lib/filters";
 import {
   BadgeColor,
   computeStatusBadge,
@@ -21,6 +22,10 @@ type Props = {
   agentType: "captive" | "independent";
   ownedBrands: Set<string>; // empty for captives (mine pill never shows)
   asOf: string;
+  // Current sort, used only to draw a direction caret on the active column
+  // header. Presentational — sorting itself is still driven by the FilterBar
+  // chip (see filters.ts). The header carets do not change any data.
+  sort?: SortChoice;
   // True when the unfiltered API response had rows but the current
   // filter set produces zero. Lets the empty state explain "your filters
   // narrowed too much" instead of "there's no data" — completely
@@ -42,6 +47,19 @@ function badgeClass(color: BadgeColor): string {
   return `${BADGE_CLASS[color]} inline-block px-2 py-0.5 text-11 rounded-full font-medium leading-[1.4]`;
 }
 
+// Status pill variant: same family colors, but with a small leading status
+// dot (bg-current draws the dot in the pill's own text color, so it always
+// stays in-family). Window badges keep the plain badgeClass treatment.
+function statusBadgeClass(color: BadgeColor): string {
+  return `${BADGE_CLASS[color]} inline-flex items-center gap-1.5 px-2 py-0.5 text-11 rounded-full font-medium leading-[1.4]`;
+}
+
+// Static, Defend-only contextual framing for the Action column. This is
+// guidance text, NOT a data value — it carries no number and is identical
+// for every row. Appropriate to the Defend page's "your customers may shop"
+// framing (spec §Feature 4).
+const DEFEND_ACTION_COPY = "Lock in renewals before they shop.";
+
 function firstColumnHeader(mode: FilingsTableMode, agentType: Props["agentType"]): string {
   if (mode === "my-carriers") return "Carrier";
   if (mode === "defend") return "Threat";
@@ -60,9 +78,14 @@ export default function FilingsTable({
   agentType,
   ownedBrands,
   asOf,
+  sort,
   filteredToEmpty,
 }: Props): React.JSX.Element {
   const firstHeader = firstColumnHeader(mode, agentType);
+  // Defend gets one extra trailing column: static contextual guidance.
+  // It is appended LAST so columns 1–7 keep their positions across all
+  // three modes (Prospect/My Carriers stay 7 columns).
+  const showActionCol = mode === "defend";
 
   if (filings.length === 0) {
     const copy = filteredToEmpty ? FILTERED_EMPTY_COPY : emptyStateCopy(mode);
@@ -78,34 +101,47 @@ export default function FilingsTable({
   }
 
   return (
-    <div className="overflow-x-auto">
-      {/* min-w keeps the 7 columns readable below desktop widths; the
-          wrapper scrolls horizontally on narrow viewports. The header
-          card above the table carries the headline number ("14 filings
-          · Largest move: +50.9% by GEICO in NV") so the agent gets the
-          punch line without scrolling. */}
+    // Rounded, hairline-bordered container (per the restyle). The wrapper
+    // still scrolls horizontally on narrow viewports; min-w keeps columns
+    // readable. The header card above carries the headline number so the
+    // punch line is visible without scrolling.
+    <div className="overflow-x-auto rounded-lg border border-hairline border-line">
       <table
-        className="w-full min-w-[900px] text-13"
+        className={`w-full ${showActionCol ? "min-w-[1040px]" : "min-w-[900px]"} text-13`}
         style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
       >
-      <colgroup>
-        <col style={{ width: "17%" }} />
-        <col style={{ width: "7%" }} />
-        <col style={{ width: "16%" }} />
-        <col style={{ width: "14%" }} />
-        <col style={{ width: "22%" }} />
-        <col style={{ width: "12%" }} />
-        <col style={{ width: "12%" }} />
-      </colgroup>
+      {showActionCol ? (
+        <colgroup>
+          <col style={{ width: "14%" }} />
+          <col style={{ width: "6%" }} />
+          <col style={{ width: "13%" }} />
+          <col style={{ width: "11%" }} />
+          <col style={{ width: "19%" }} />
+          <col style={{ width: "11%" }} />
+          <col style={{ width: "11%" }} />
+          <col style={{ width: "15%" }} />
+        </colgroup>
+      ) : (
+        <colgroup>
+          <col style={{ width: "17%" }} />
+          <col style={{ width: "7%" }} />
+          <col style={{ width: "16%" }} />
+          <col style={{ width: "14%" }} />
+          <col style={{ width: "22%" }} />
+          <col style={{ width: "12%" }} />
+          <col style={{ width: "12%" }} />
+        </colgroup>
+      )}
       <thead>
-        <tr className="border-b border-hairline border-line-2 text-left">
+        <tr className="bg-surface-2 border-b border-hairline border-line-2 text-left">
           <Th>{firstHeader}</Th>
           <Th>State</Th>
           <Th>Line</Th>
-          <Th>Impact</Th>
-          <Th>Effective</Th>
+          <Th sortActive={sort === "impact_desc"}>Impact</Th>
+          <Th sortActive={sort === "effective_desc"}>Effective</Th>
           <Th>Status</Th>
           <Th align="right">Policyholders affected</Th>
+          {showActionCol && <Th>Action</Th>}
         </tr>
       </thead>
       <tbody>
@@ -129,8 +165,8 @@ export default function FilingsTable({
               key={f.id}
               title={`Filing: ${f.serff_tracking_number}`}
               className={[
-                "border-b border-hairline border-line",
-                isMine ? "bg-mine-bg" : "",
+                "border-b border-hairline border-line last:border-b-0 transition-colors",
+                isMine ? "bg-mine-bg" : "hover:bg-surface-2/60",
               ].join(" ")}
             >
               <Td>
@@ -173,13 +209,21 @@ export default function FilingsTable({
                 </span>
               </Td>
               <Td>
-                <span className={badgeClass(statusB.color)}>{statusB.text}</span>
+                <span className={statusBadgeClass(statusB.color)}>
+                  <span className="w-[5px] h-[5px] rounded-full bg-current opacity-70" aria-hidden />
+                  {statusB.text}
+                </span>
               </Td>
               <Td align="right">
                 <span className={f.total_policyholders == null ? "text-ink-2" : ""}>
                   {formatPolicyholders(f.total_policyholders)}
                 </span>
               </Td>
+              {showActionCol && (
+                <Td>
+                  <span className="text-12 text-ink-2">{DEFEND_ACTION_COPY}</span>
+                </Td>
+              )}
             </tr>
           );
         })}
@@ -189,24 +233,38 @@ export default function FilingsTable({
   );
 }
 
-// Th padding: 8px all sides, except left=0 when the cell is left-aligned.
-// (Original inline behavior: padding: 8; paddingLeft: align ? 8 : 0.)
-function Th({ children, align }: { children: React.ReactNode; align?: "right" }) {
+// Column header. Uniform 12px horizontal padding (the table now sits in a
+// bordered container, so the first cell is no longer flush to the page edge).
+// `sortActive` draws a descending-sort caret and darkens the label on the
+// column the table is currently sorted by — presentational only.
+function Th({
+  children,
+  align,
+  sortActive,
+}: {
+  children: React.ReactNode;
+  align?: "right";
+  sortActive?: boolean;
+}) {
   return (
     <th
-      className={
-        align
-          ? "font-medium text-ink-2 text-11 uppercase tracking-wider04 p-2 text-right"
-          : "font-medium text-ink-2 text-11 uppercase tracking-wider04 py-2 pr-2 pl-0 text-left"
-      }
+      className={[
+        "font-medium text-11 uppercase tracking-wider04 py-2.5 px-3",
+        align === "right" ? "text-right" : "text-left",
+        sortActive ? "text-ink" : "text-ink-2",
+      ].join(" ")}
     >
-      {children}
+      <span className="inline-flex items-center gap-1 align-middle">
+        {children}
+        {sortActive && <i className="ti ti-chevron-down text-12" aria-hidden />}
+      </span>
     </th>
   );
 }
 
-// Td padding: 12px vertical, 8px horizontal — except left=0 when the cell
-// is left-aligned. (Original: padding: "12px 8px"; paddingLeft: align ? 8 : 0.)
+// Body cell. 14px vertical / 12px horizontal for a more spacious feel;
+// top-aligned so the stacked Effective (date + badge) and the Action text
+// line up cleanly across a row.
 function Td({
   children,
   align,
@@ -218,8 +276,8 @@ function Td({
     <td
       className={
         align
-          ? "py-3 px-2 text-right"
-          : "py-3 pr-2 pl-0 text-left"
+          ? "py-3.5 px-3 text-right align-top"
+          : "py-3.5 px-3 text-left align-top"
       }
     >
       {children}

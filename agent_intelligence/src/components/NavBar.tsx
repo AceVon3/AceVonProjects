@@ -6,31 +6,35 @@ import { useEffect, useState } from "react";
 
 import { AgentType, loadProfile } from "@/lib/profile";
 
-type NavItem = { label: string; href: string };
+type NavItem = { label: string; href: string; icon: string };
 
 // Build the nav list per spec §Navigation:
 //   Captive:     Overview · Prospect · Defend · Compliance · Methodology · Profile
 //   Independent: Overview · Prospect · Defend · My Carriers · Compliance · Methodology · Profile
 //   No profile:  Overview · Methodology  (matches ui-reference Screen 1)
+//
+// The icons are presentational only (Tabler webfont). The ITEMS and their
+// show/hide rules are unchanged from the previous top-bar nav — only the
+// visual treatment (left sidebar) differs.
 function buildItems(agentType: AgentType | null): NavItem[] {
   if (agentType === null) {
     return [
-      { label: "Overview", href: "/" },
-      { label: "Methodology", href: "/methodology" },
+      { label: "Overview", href: "/", icon: "ti-layout-dashboard" },
+      { label: "Methodology", href: "/methodology", icon: "ti-book-2" },
     ];
   }
   const items: NavItem[] = [
-    { label: "Overview", href: "/" },
-    { label: "Prospect", href: "/prospect" },
-    { label: "Defend", href: "/defend" },
+    { label: "Overview", href: "/", icon: "ti-layout-dashboard" },
+    { label: "Prospect", href: "/prospect", icon: "ti-target-arrow" },
+    { label: "Defend", href: "/defend", icon: "ti-shield-half" },
   ];
   if (agentType === "independent") {
-    items.push({ label: "My Carriers", href: "/my-carriers" });
+    items.push({ label: "My Carriers", href: "/my-carriers", icon: "ti-briefcase" });
   }
   items.push(
-    { label: "Compliance", href: "/compliance" },
-    { label: "Methodology", href: "/methodology" },
-    { label: "Profile", href: "/setup" },
+    { label: "Compliance", href: "/compliance", icon: "ti-gavel" },
+    { label: "Methodology", href: "/methodology", icon: "ti-book-2" },
+    { label: "Profile", href: "/setup", icon: "ti-settings" },
   );
   return items;
 }
@@ -55,27 +59,39 @@ export default function NavBar(): React.JSX.Element {
   const items = buildItems(agentType);
 
   return (
-    <div
+    <aside
       data-testid="navbar"
       data-agent-type={agentType ?? "none"}
-      className="h-[56px] px-4 bg-surface border-b border-hairline border-line flex items-center justify-between gap-4"
+      // Dark fill. On md+ it's a fixed-width vertical sidebar that sticks
+      // while content scrolls; below md it collapses to a dark horizontal
+      // bar whose nav row scrolls sideways (keeps small screens legible).
+      className="bg-ink text-white shrink-0 flex flex-col
+                 md:w-[224px] md:min-h-screen md:sticky md:top-0 md:self-start"
     >
-      {/* Brand (left) — shrink-0 so it never gets squeezed by the nav row */}
+      {/* Brand */}
       <Link
         href="/"
-        className="flex items-center gap-2.5 no-underline text-ink shrink-0"
+        className="flex items-center gap-2.5 no-underline text-white shrink-0
+                   px-4 h-[56px] md:h-auto md:pt-5 md:pb-4"
       >
-        <div className="w-[22px] h-[22px] bg-ink rounded flex items-center justify-center">
-          <i className="ti ti-radar-2 text-surface text-14" />
+        <div className="w-[26px] h-[26px] bg-white rounded-md flex items-center justify-center">
+          <i className="ti ti-radar-2 text-ink text-15" />
         </div>
         <span className="font-medium text-14">Agent Intelligence</span>
       </Link>
 
-      {/* Nav links (right). On narrow viewports the 6–7 labels don't fit
-          horizontally; `overflow-x-auto whitespace-nowrap min-w-0` lets the
-          nav row scroll within its own box rather than pushing the brand
-          off-screen. */}
-      <nav className="flex gap-[18px] text-13 overflow-x-auto whitespace-nowrap min-w-0">
+      {/* Section header — desktop only (reads oddly in the mobile bar) */}
+      <div className="hidden md:block px-4 mt-2 mb-1 text-10 uppercase tracking-wider06 text-white/40">
+        Platform
+      </div>
+
+      {/* Nav items as icon + label rows. Horizontal scroll row on mobile,
+          stacked column on md+. shrink-0 on each item keeps the mobile row
+          from compressing, so it overflows (scrolls) rather than squishing. */}
+      <nav
+        className="flex flex-row md:flex-col gap-1 px-2 pb-2 md:pb-4
+                   overflow-x-auto md:overflow-x-visible whitespace-nowrap md:whitespace-normal"
+      >
         {items.map(item => {
           const active = isActive(item.href, pathname);
           return (
@@ -86,17 +102,19 @@ export default function NavBar(): React.JSX.Element {
               data-label={item.label}
               data-active={active ? "true" : "false"}
               className={[
-                "no-underline pb-0.5 border-b-[1.5px]",
+                "shrink-0 flex items-center gap-2.5 no-underline rounded-md",
+                "px-3 py-2 text-13 transition-colors",
                 active
-                  ? "text-ink font-medium border-ink"
-                  : "text-ink-2 font-normal border-transparent",
+                  ? "bg-white/10 text-white font-medium"
+                  : "text-white/55 font-normal hover:bg-white/5 hover:text-white/80",
               ].join(" ")}
             >
-              {item.label}
+              <i className={`ti ${item.icon} text-15 shrink-0`} aria-hidden />
+              <span>{item.label}</span>
             </Link>
           );
         })}
       </nav>
-    </div>
+    </aside>
   );
 }
