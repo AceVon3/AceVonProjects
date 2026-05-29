@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 
-import { formatRateImpact } from "@/lib/format";
+import {
+  formatEffectiveDate,
+  formatPolicyholders,
+  formatRateImpact,
+} from "@/lib/format";
 import { FeedRow, feedRowPillColor } from "@/lib/overview";
 
 type Props = {
@@ -53,15 +57,22 @@ export default function RecentChanges({ rows }: Props): React.JSX.Element {
                 isLast ? "" : "border-b border-hairline border-line",
               ].join(" ")}
             >
-              <div>
+              <div className="min-w-0">
                 <div className="text-14 font-medium text-ink">
                   {r.filing.brand}
                 </div>
+                {/* Enriched supporting line — kept as one muted secondary line
+                    (not columns) so the carrier still reads first and the rest
+                    is taken in second. Helpers shared with the tables keep the
+                    date (with year) and policyholder abbreviation consistent. */}
                 <div className="text-12 text-ink-2 mt-0.5">
-                  {formatRateImpact(r.filing.overall_rate_impact)} in {r.filing.state} · {r.classification}
+                  {formatRateImpact(r.filing.overall_rate_impact)} on {r.filing.line_of_business} in {r.filing.state}
+                  {" · "}{formatEffectiveDate(r.filing.effective_date)}
+                  {" · "}{formatPolicyholders(r.filing.total_policyholders)} policyholders
+                  {" · "}{r.classification}
                 </div>
               </div>
-              <span className={pill(feedRowPillColor(r))}>{ageText}</span>
+              <span className={`${pill(feedRowPillColor(r))} ml-3 shrink-0`}>{ageText}</span>
             </Link>
           );
         })
