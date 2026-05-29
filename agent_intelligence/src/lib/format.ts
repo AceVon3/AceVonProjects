@@ -26,8 +26,10 @@ export function formatRateImpact(n: number): string {
   return `${sign}${Math.abs(n).toFixed(1)}%`;
 }
 
-// "2025-07-15" → "Jul 15". Returns "—" for null/invalid input so callers
-// can render it inline without conditional logic.
+// "2025-07-15" → "Jul 15, 2025". Returns "—" for null/invalid input so
+// callers can render it inline without conditional logic. The year is
+// included because the dataset spans 2025–2026, so a bare "Jul 15" is
+// ambiguous about which year a filing takes effect.
 export function formatEffectiveDate(iso: string | null | undefined): string {
   if (!iso) return "—";
   const d = new Date(`${iso}T00:00:00Z`);
@@ -37,7 +39,8 @@ export function formatEffectiveDate(iso: string | null | undefined): string {
   // fact, not a moment).
   const month = d.toLocaleString("en-US", { month: "short", timeZone: "UTC" });
   const day = d.getUTCDate();
-  return `${month} ${day}`;
+  const year = d.getUTCFullYear();
+  return `${month} ${day}, ${year}`;
 }
 
 // Color tokens used by badges. Names match the CSS classes in
