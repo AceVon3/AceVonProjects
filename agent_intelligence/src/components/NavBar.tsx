@@ -58,12 +58,12 @@ export default function NavBar(): React.JSX.Element {
     <div
       data-testid="navbar"
       data-agent-type={agentType ?? "none"}
-      className="h-[56px] px-4 bg-surface border-b border-hairline border-line flex items-center justify-between"
+      className="h-[56px] px-4 bg-surface border-b border-hairline border-line flex items-center justify-between gap-4"
     >
-      {/* Brand (left) */}
+      {/* Brand (left) — shrink-0 so it never gets squeezed by the nav row */}
       <Link
         href="/"
-        className="flex items-center gap-2.5 no-underline text-ink"
+        className="flex items-center gap-2.5 no-underline text-ink shrink-0"
       >
         <div className="w-[22px] h-[22px] bg-ink rounded flex items-center justify-center">
           <i className="ti ti-radar-2 text-surface text-14" />
@@ -71,8 +71,11 @@ export default function NavBar(): React.JSX.Element {
         <span className="font-medium text-14">Agent Intelligence</span>
       </Link>
 
-      {/* Nav links (right) */}
-      <nav className="flex gap-[18px] text-13">
+      {/* Nav links (right). On narrow viewports the 6–7 labels don't fit
+          horizontally; `overflow-x-auto whitespace-nowrap min-w-0` lets the
+          nav row scroll within its own box rather than pushing the brand
+          off-screen. */}
+      <nav className="flex gap-[18px] text-13 overflow-x-auto whitespace-nowrap min-w-0">
         {items.map(item => {
           const active = isActive(item.href, pathname);
           return (

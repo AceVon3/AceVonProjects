@@ -142,7 +142,7 @@ export default function ProspectPage(): React.JSX.Element {
         />
 
         {headerCard && (
-          <div className="rounded-lg mb-4 flex gap-6 items-center bg-surface-2 px-4 py-3.5">
+          <div className="rounded-lg mb-4 flex flex-wrap items-center gap-x-6 gap-y-3 bg-surface-2 px-4 py-3.5">
             <div>
               <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
                 Filings in your states
@@ -154,7 +154,7 @@ export default function ProspectPage(): React.JSX.Element {
                 {headerCard.count}
               </div>
             </div>
-            <div className="w-px self-stretch bg-line-2" />
+            <div className="w-px self-stretch bg-line-2 hidden sm:block" />
             <div>
               <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
                 Largest move

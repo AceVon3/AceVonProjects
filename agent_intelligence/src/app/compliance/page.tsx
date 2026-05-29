@@ -102,7 +102,7 @@ export default function CompliancePage(): React.JSX.Element {
         ) : (
           <div
             data-testid="compliance-grid"
-            className="grid grid-cols-3 gap-3.5"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5"
           >
             {renderedStates.flatMap(state =>
               TOPIC_ORDER.map(topic => {

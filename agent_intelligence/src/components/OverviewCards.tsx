@@ -30,7 +30,7 @@ export default function OverviewCards({
   return (
     <div
       data-testid="ov-cards"
-      className="grid grid-cols-4 gap-3 mb-5"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5"
     >
       {/* Prospect */}
       <div className={CARD} data-testid="ov-card-prospect">

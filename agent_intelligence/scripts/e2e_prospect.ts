@@ -170,7 +170,8 @@ async function main(): Promise<void> {
   const nonMineRowsNoTint = rowsWithPill
     .filter(r => !owned.has(r.brand))
     .every(r => !r.bg.includes("255, 230, 200"));
-  check("owned rows carry warm tint background", mineRowsHaveTint);
+  check("owned rows carry warm tint background", mineRowsHaveTint,
+    { sampleOwnedBg: expectedMine[0]?.bg });
   check("non-owned rows do NOT carry warm tint", nonMineRowsNoTint);
 
   await browser.close();

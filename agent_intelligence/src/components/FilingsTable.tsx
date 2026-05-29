@@ -78,10 +78,16 @@ export default function FilingsTable({
   }
 
   return (
-    <table
-      className="w-full text-13"
-      style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
-    >
+    <div className="overflow-x-auto">
+      {/* min-w keeps the 7 columns readable below desktop widths; the
+          wrapper scrolls horizontally on narrow viewports. The header
+          card above the table carries the headline number ("14 filings
+          · Largest move: +50.9% by GEICO in NV") so the agent gets the
+          punch line without scrolling. */}
+      <table
+        className="w-full min-w-[900px] text-13"
+        style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
+      >
       <colgroup>
         <col style={{ width: "17%" }} />
         <col style={{ width: "7%" }} />
@@ -179,6 +185,7 @@ export default function FilingsTable({
         })}
       </tbody>
     </table>
+    </div>
   );
 }
 
