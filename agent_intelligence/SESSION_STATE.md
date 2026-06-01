@@ -1,13 +1,16 @@
-# Session checkpoint — 2026-05-29
+# Session checkpoint — 2026-06-01  ·  v1 COMPLETE & DEPLOYED
 
-Snapshot at end of session so the next session can pick up cleanly.
-Most-recent commit: `72312ec verify(mobile): confirm multi-entity info-dot renders at 375px`.
+The build is finished and live. We are now in **iterate-and-deploy mode,
+not building**.
 
-## Where we are in the build
+- Monorepo HEAD: `43e07ea feat(positioning): Rate Positioning page`.
+- **Deployed (agent-intel/master): `7bc5bf8`** — the subtree-split equivalent
+  of monorepo `43e07ea`. All suites green at this commit.
 
-Spec `## Build order` step 12 is essentially complete. Polish bundle
-(12.b) items 1–6 all shipped. **Step 13 (deploy to Vercel) is next** —
-holding for user review before deploying.
+## Status: done
+
+All 13 build-order steps complete; all polish complete; Feature 7 (Rate
+Positioning) shipped and live.
 
 ```
 1. Scaffold                            done
@@ -21,17 +24,66 @@ holding for user review before deploying.
 9. /compliance                         done
 10. NavBar + ScopeStrip                done
 11. /methodology                       done
-12. Polish:
-    a. PINNED: live compliance generation gate    CLEARED (commit daa484b)
-    b. Cosmetic polish bundle:
-       1. Empty states (filtered vs no-data)      done (commit af07177)
-       2. Loading skeleton                        done (commit 78c2573)
-       3. Tailwind token consolidation            done (commit 1de3061)
-       4. Tabler icon resilience (self-host)      done (commit db1dc00)
-       5. Mobile layout (375×800)                 done (commit 44a486b)
-       6. Badge color audit                       done (audit clean, no code change)
-13. Deploy to Vercel                              NEXT (awaiting review)
+12. Polish (empty states, skeleton, token consolidation,
+    icon self-host, mobile, badge audit)           done
+13. Deploy to Vercel                                DONE (live)
++  Post-v1 iterations (all shipped & deployed):
+    - effective-date year fix
+    - left sidebar nav + Defend table polish
+    - click-to-sort headers + three-state sort affordance
+    - Recent Changes restyle + enriched feed
+    - window-badge wrap fix
+    - My Carriers opened to captives (singular "My Carrier")
+    - Feature 7: Rate Positioning (/positioning)    ← newest
 ```
+
+## Live deployment
+
+- **Deploy source of truth:** GitHub `AceVon3/agent_intelligence` (private),
+  branch `master`, at `7bc5bf8`.
+- **Host:** Vercel project connected to that repo (project Root Directory =
+  repo root `/`; auto-builds on push to master). The exact live URL is the
+  subdomain Vercel assigned the project — confirm in the Vercel dashboard
+  (intentionally not guessed here).
+- **No env vars** required in prod (`ANTHROPIC_API_KEY` is offline-regen only).
+- **Runtime DB tracing:** `/api/filings`, `/api/positioning`, and
+  `/methodology` read `data/filings.db` / `last_updated.txt` at request time.
+  They are force-included via `experimental.outputFileTracingIncludes` in
+  `next.config.mjs` (next@14.2.x). **Any NEW dynamic route that reads the db
+  MUST be added there or it 500s in prod (invisible at build time).**
+
+## Deploy workflow (two-repo topology — read before shipping)
+
+This working copy is the **monorepo** `AceVon3/browser-games`, project under
+`agent_intelligence/`. The deploy repo has the project at its root.
+
+To ship a change:
+1. Commit in the monorepo (paths `agent_intelligence/...`).
+2. `git subtree push --prefix=agent_intelligence agent-intel master`
+   (from the monorepo root; remote `agent-intel` → the standalone repo).
+3. Vercel auto-builds `master`.
+
+Do NOT plain-`git push` to `agent-intel` (path layouts differ). After each
+deploy, update this file and subtree-push it so the deploy repo's record
+matches.
+
+## Test suites — all green at 7bc5bf8 (4 verify + 13 e2e)
+
+verify_queries · verify_profile · verify_overview · verify_positioning
+e2e: setup · prospect · defend · my-carriers · overview · compliance · nav ·
+methodology · filters · empty_states · skeleton · mobile · positioning
+
+- e2e_*.ts run against a running dev server:
+  `npm run dev` then `E2E_BASE=http://localhost:3000 npx tsx scripts/e2e_<name>.ts`.
+- verify_*.ts are node-only (no browser). **verify_positioning is the Feature 7
+  answer-key gate** — captive State Farm all-8 must produce 10 anchored /
+  6 unanchored / 41 comparable / 24 higher-confidence / 17 thin / 29
+  insufficient; independent {SF,Travelers,Progressive} → 69 / 34. If these
+  drift, the positioning query diverged from recon.
+
+---
+
+_History below is the original build log, retained for reference._
 
 ## Item 6 — badge color audit (2026-05-29): CLEAN, no code change
 
