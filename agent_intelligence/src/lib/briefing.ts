@@ -22,7 +22,37 @@ export type BriefingSectionDef = {
   label: string;
   topic: ResourceKey;     // which COMPLIANCE_SUMMARIES topic supplies the text
   sizeGate?: SectionSizeGate;
+  // The exempt-salary threshold gets a STRONGER figure-specific treatment
+  // instead of a generic size-gate (small/large tiers currently match in
+  // 2026, so "where you sit vs 50" has no size-dependent answer this year):
+  // a misclassification warning + a derived annual figure.
+  salaryRisk?: boolean;
 };
+
+// The strong inline warning for the salary box — UI product copy (not from a
+// source). This is the misclassification-risk figure an employer acts on
+// directly, so it carries its own warning, stronger than the blanket band.
+export const SALARY_WARNING =
+  "This salary determines overtime-exempt status. A figure that's out of date can cause an employee to be misclassified and owed back overtime — confirm the current threshold and multiplier with L&I before classifying anyone as exempt or setting a salary by it.";
+
+// Parse the weekly dollar figure from the (grounded) salary summary and derive
+// the ANNUAL as weekly × 52 — a derived convenience that ties to the weekly by
+// construction, never independently sourced. Returns null if no weekly figure
+// is found (graceful: the UI then shows no annual).
+export function deriveAnnualFromWeekly(
+  summary: string | null,
+): { weekly: string; annual: string } | null {
+  if (!summary) return null;
+  const m = summary.match(/\$([\d,]+(?:\.\d{2})?)\s*(?:per|a)\s+week/i);
+  if (!m) return null;
+  const weeklyNum = parseFloat(m[1].replace(/,/g, ""));
+  if (!isFinite(weeklyNum) || weeklyNum <= 0) return null;
+  const annual = Math.round(weeklyNum * 52);
+  return {
+    weekly: `$${weeklyNum.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    annual: `$${annual.toLocaleString("en-US")}`,
+  };
+}
 
 function sit(n: number, t: number): string {
   return n >= t ? "at or above" : "below";
@@ -41,11 +71,7 @@ export const BRIEFING_SECTIONS: BriefingSectionDef[] = [
     key: "salary",
     label: "Salary & exempt thresholds",
     topic: "salary_threshold",
-    sizeGate: {
-      threshold: 50,
-      framing: n =>
-        `Washington sets the overtime-exempt salary threshold on separate schedules for small (≤50) and large (51+) employers. You have ${emp(n)} — ${sit(n, 50)} the 50-employee line. Which schedule applies depends on how employees are counted; verify with L&I.`,
-    },
+    salaryRisk: true,
   },
   {
     key: "pfml",

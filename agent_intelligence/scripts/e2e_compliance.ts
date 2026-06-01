@@ -242,15 +242,49 @@ async function main(): Promise<void> {
     /discriminat/i.test(atwill) && /retaliat/i.test(atwill) && /protected leave/i.test(atwill),
     { sample: atwill.slice(0, 120) });
 
-  // Salary section: no actionable dollar figure printed.
-  const salary = (await waBlock.locator('[data-testid="briefing-section"][data-section="salary"]').textContent()) ?? "";
-  check("salary section avoids a printed dollar figure", !/\$\s?\d/.test(salary), { sample: salary.slice(0, 120) });
-  check("salary section still useful (mentions threshold/exempt)", /threshold|exempt/i.test(salary));
+  // Salary section: now SHOWS the grounded formula figure (decision B), with a
+  // strong figure-specific warning box and a derived annual that ties exactly.
+  const salarySec = waBlock.locator('[data-testid="briefing-section"][data-section="salary"]');
+  const salary = (await salarySec.textContent()) ?? "";
+  check("salary section shows the formula (× and a weekly $ figure)",
+    /×|x/i.test(salary) && /\$[\d,]+\.\d{2}\s*(per|a)\s*week/i.test(salary), { sample: salary.slice(0, 140) });
+  check("salary summary keeps the 'tiers currently match' line",
+    /tiers? currently match|currently match/i.test(salary), { sample: salary.slice(0, 160) });
 
-  // Size-gate framing: surfaces N and verify, never a determination.
+  // Strong inline warning box (not the generic size-gate) + derived annual.
+  const warnBox = salarySec.locator('[data-testid="salary-warning"]');
+  check("salary has the strong warning box", (await warnBox.count()) === 1);
+  const warnText = (await warnBox.textContent()) ?? "";
+  check("warning says misclassified + back overtime + confirm with L&I",
+    /misclassif/i.test(warnText) && /back overtime/i.test(warnText) && /L&I/i.test(warnText));
+  check("salary section has NO generic size-gate box",
+    (await salarySec.locator('[data-testid="size-gate"]').count()) === 0);
+
+  // Derived annual TIES EXACTLY to the weekly × 52 (the user's firm condition).
+  const annualEl = salarySec.locator('[data-testid="salary-annual"]');
+  check("derived annual present", (await annualEl.count()) === 1);
+  const weekly = await annualEl.getAttribute("data-weekly");
+  const annual = await annualEl.getAttribute("data-annual");
+  const w = parseFloat((weekly ?? "").replace(/[$,]/g, ""));
+  const a = parseFloat((annual ?? "").replace(/[$,]/g, ""));
+  check("annual === round(weekly × 52) — arithmetic ties exactly",
+    Number.isFinite(w) && Number.isFinite(a) && a === Math.round(w * 52),
+    { weekly, annual, expected: Math.round(w * 52) });
+
+  // Per-section "as of {date}" present on the grounded sections.
+  const asofCount = await waBlock.locator('[data-testid="section-asof"]').count();
+  check("per-section 'as of' date shown on every grounded section", asofCount === 6, { asofCount });
+  const asofText = (await waBlock.locator('[data-testid="section-asof"]').first().textContent()) ?? "";
+  check("'as of' shows a YYYY-MM-DD date", /Figures as of \d{4}-\d{2}-\d{2}/.test(asofText), { asofText });
+
+  // Top band now covers staleness.
+  check("top band covers staleness ('as of … may be outdated')",
+    /may be outdated/i.test(bandText) && /as of/i.test(bandText));
+
+  // Size-gate framing: now ONLY PFML (salary swapped to the warning box).
   const gates = await waBlock.locator('[data-testid="size-gate"]').allTextContents();
-  check("two size-gated sections (salary + PFML)", gates.length === 2, { n: gates.length });
-  check("size-gate states N (you have 5) and defers ('verify')",
+  check("exactly one size-gated section (PFML)", gates.length === 1, { n: gates.length });
+  check("PFML size-gate states N (you have 5) and defers ('verify')",
     gates.every(g => /you have 5/i.test(g) && /verify/i.test(g)),
     { gates });
   check("size-gate is never a determination ('you are exempt/subject')",

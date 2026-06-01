@@ -68,7 +68,7 @@ const SUMMARY_SCHEMA = {
     summary: {
       type: "string",
       description:
-        "2-3 short, plain-language sentences. Maximum 80 words. No URLs, no jargon, no inferred numbers.",
+        "2-4 short, plain-language sentences. Maximum 100 words. Include source-stated figures where relevant; no URLs, no jargon, no inferred numbers.",
     },
   },
   required: ["title", "summary"],
@@ -84,11 +84,11 @@ ABSOLUTE RULE 1 — STRICT GROUNDING.
 Write the summary using ONLY information present in the provided source pages. Do NOT use prior knowledge of US laws, federal rules, state statutes, regulatory bodies, deadlines, percentages, dollar amounts, or anything else — even if you know facts that would improve the summary. If a fact is not in the source pages, it does not exist for the purposes of this summary. If the sources contradict each other, summarize only what they agree on or omit the contested point entirely.
 
 ABSOLUTE RULE 2 — NO INFERENCE OR HALLUCINATION OF NUMBERS.
-Do not infer or supply from prior knowledge: dollar amounts, percentage rates, contribution splits, employee-count thresholds, time periods (weeks/days/months), effective dates, or any other numeric fact. If a specific number is not stated explicitly in the source text, do not include any number in its place — phrase the rule qualitatively instead (e.g. "a defined period of leave" rather than guessing "12 weeks").
+Do not infer or supply from prior knowledge: dollar amounts, percentage rates, contribution splits, employee-count thresholds, time periods (weeks/days/months), effective dates, or any other numeric fact. Every number in your summary must appear verbatim in the source pages. If a specific number is not stated explicitly in the source text, do not include any number in its place. BUT when the source DOES state a specific current figure (a dollar amount, wage, rate, or threshold), INCLUDE that exact figure with its context — grounded figures the source provides are wanted, not omitted. Quote the source's number; never round, average, or guess one.
 
 OUTPUT REQUIREMENTS.
 - Write a descriptive TITLE (6-12 words) describing what the summary covers — not the topic category alone. So "Washington Paid Family & Medical Leave", not just "Leave Laws".
-- Write a SUMMARY: 2-3 short, plain sentences. Maximum 80 words total. No URLs, no citation markers, no jargon.
+- Write a SUMMARY: 2-4 short, plain sentences. Maximum 100 words total. Include the specific current figures the source states (wage, rate, threshold) where relevant. No URLs, no citation markers, no jargon.
 - Address employers/agents in the third person ("Employers must..."), not "you".
 
 If the source pages do not contain enough substantive content to write a grounded summary, return a summary that says exactly: "The official source page is available, but a grounded summary cannot be produced from its current contents." The title in that case should be the state name plus topic category (e.g. "Washington Wage & Hour").`;
@@ -119,11 +119,30 @@ const TOPIC_LABELS: Record<ResourceKey, string> = {
 // Per-topic extra grounding constraints, appended to the user message for
 // specific briefing topics. These ADD to (never relax) the absolute rules in
 // SYSTEM_PROMPT. Topics not listed get no extra instruction.
+//
+// REVERSAL (2026-06-01): the briefing now SHOWS concrete figures (with
+// disclaimers in the UI). So include the source-stated numbers — still
+// grounded only in the fetched pages, never invented.
 const EXTRA_GUIDANCE: Partial<Record<ResourceKey, string>> = {
-  // Decision A (firm): never print an actionable salary figure, even though
-  // the source page lists one — a stale number could drive a misclassification.
+  // Minimum wage & overtime — the dollar wage and the overtime multiple.
+  wage_hour:
+    "INCLUDE the current Washington minimum wage dollar amount and the overtime pay multiple (e.g. 1.5x over 40 hours) exactly as the source states them. Quote the source's figures verbatim.",
+  // Salary/exempt threshold — INCLUDE the figure AND show the formula for
+  // transparency. Only SOURCE-stated numbers (multiplier, minimum wage,
+  // weekly result); the UI derives the annual (weekly × 52) and carries the
+  // strong inline misclassification warning.
   salary_threshold:
-    "CRITICAL FOR THIS TOPIC: Do NOT state any specific dollar amount, weekly or annual salary figure, or multiple-of-minimum-wage number, EVEN IF the source page lists one. A printed figure can go stale and cause a worker misclassification. Instead, convey that Washington sets a minimum salary an employee must earn to be overtime-EXEMPT, that this threshold is phased in and TIERED BY EMPLOYER SIZE (smaller vs larger employers), and that the current figure is on the official source page. Describe the structure and where to find the number — never the number itself.",
+    "INCLUDE the current overtime-exempt WEEKLY salary figure AND show how it is derived, as a transparent formula using ONLY numbers the L&I source states: minimum exempt salary = the multiplier × the state minimum wage × 40 hours per week. Show the multiplication explicitly with the current numbers and the weekly result the source gives (for example '2.25 × $[wage] × 40 = $[weekly] per week'). Note the multiplier and minimum wage are set by L&I and update every January 1, and say whether the small (1-50) and large (51+) employer thresholds currently match or differ. Every number must come verbatim from the source; the multiplications are arithmetic shown for transparency. Do NOT state an annual salary figure — the app derives the yearly amount from the weekly figure.",
+  // PFML — premium rate / employer-employee split if the source states it.
+  leave:
+    "If the source states the current Paid Family & Medical Leave premium rate (a percentage of wages) or the employer/employee share split, INCLUDE it exactly as stated. Also keep the paid-sick-leave accrual rate if the source gives it.",
+  // WA Cares — the premium rate as a percentage of gross wages.
+  wa_cares:
+    "INCLUDE the current WA Cares premium rate (the percentage of each employee's gross wages) exactly as the source states it.",
+  // B&O — representative rate(s) by classification; many exist, so use what
+  // the source gives without inventing.
+  business_tax:
+    "If the source states specific Business & Occupation (B&O) tax rates by business classification, INCLUDE the main rate(s) exactly as stated; if many rates are listed, give a representative rate or the range the source provides. Do not invent a rate the source does not state.",
   // The at-will summary MUST carry the exceptions, not just the headline.
   at_will:
     "CRITICAL FOR THIS TOPIC: The summary MUST convey BOTH halves of the rule. (1) Washington is an at-will employment state — an employer generally may end employment at any time, without cause and without advance notice. (2) BUT it must ALSO state the key exceptions present in the source: an employer may NOT terminate for an unlawful or protected reason — such as discrimination against a protected class, retaliation for exercising a protected right or filing a complaint, or for using protected leave. Never present at-will without its exceptions; an exceptions-light summary is unacceptable.",

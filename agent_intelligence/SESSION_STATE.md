@@ -37,6 +37,23 @@ Positioning) shipped and live.
     - Feature 7: Rate Positioning (/positioning)    ← newest
 ```
 
+## ⏰ Standing maintenance obligation — regenerate compliance figures yearly
+
+The Compliance **office briefing (Feature 9)** prints **live grounded figures**
+(minimum wage, the overtime-exempt salary threshold, PFML/WA Cares premium
+rates, B&O rates). **These MUST be regenerated at least once a year** — most WA
+figures reset on **January 1**. A stale printed figure is the feature's main
+risk (the salary threshold can cause a real misclassification).
+
+Each January (and after any known mid-year change):
+1. `ANTHROPIC_API_KEY=… npx tsx scripts/generate_compliance.ts --only WA/wage_hour,WA/salary_threshold,WA/leave,WA/wa_cares,WA/business_tax`
+2. Verify the new numbers against the official source pages.
+3. Commit + subtree-push → redeploy.
+
+The UI shows a per-section "as of {last_checked}" date so staleness is visible,
+but that does not remove the obligation to refresh. (Spec: Feature 9 →
+"Standing maintenance obligation".)
+
 ## Live deployment
 
 - **Live URL:** https://agent-intelligence-sigma.vercel.app/

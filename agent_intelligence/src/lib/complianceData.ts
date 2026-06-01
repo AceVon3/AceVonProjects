@@ -32,8 +32,8 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "WA",
     "topic": "business_tax",
-    "title": "Washington State Business & Occupation (B&O) Tax Overview",
-    "summary": "Washington's B&O tax is a gross receipts tax applied to the value of products, gross proceeds of sale, or gross income of a business, with no deductions for labor, materials, or other costs. The tax rate varies by business classification. Credits such as the Small Business B&O Tax Credit and Multiple Activities Tax Credit may reduce the amount owed, and the tax is reported via excise tax return or electronic filing.",
+    "title": "Washington State Business & Occupation (B&O) Gross Receipts Tax Overview",
+    "summary": "Washington's B&O tax is a gross receipts tax measured on the value of products, gross proceeds of sale, or gross income — with no deductions for labor, materials, or other business costs. The rate varies by business classification; the source does not list specific rates on this page but directs businesses to a separate B&O tax rates list. Key credits include the Small Business B&O Tax Credit and the Multiple Activities Tax Credit. Returns are filed on the excise tax return, with monthly returns due the 25th of the following month and annual returns due April 15th.",
     "sources": [
       "https://dor.wa.gov/taxes-rates/business-occupation-tax",
       "https://dor.wa.gov/open-business"
@@ -53,13 +53,13 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "WA",
     "topic": "leave",
-    "title": "Washington Paid Sick Leave and Paid Family Medical Leave Overview",
-    "summary": "Washington employers must provide paid sick leave, accruing at one hour for every 40 hours worked, usable for illness, family care, and qualifying immigration proceedings. Unused balances up to a defined cap must carry over each year, and employers cannot retaliate against employees for using this leave. Washington also offers a Paid Family and Medical Leave program providing paid time off for serious health conditions, family caregiving, bonding with a new child, or military family needs.",
+    "title": "Washington State Paid Sick Leave and Paid Family & Medical Leave",
+    "summary": "Washington employers must provide paid sick leave, accruing at one hour for every 40 hours worked, with unused balances of 40 hours or less carrying over each year. Employees may use leave for illness, family care, domestic violence reasons, and — as of July 27, 2025 — immigration proceedings. Washington also offers Paid Family and Medical Leave, a separate benefit providing paid time off for serious health conditions, family care, bonding with a new child, or military family needs. The source pages do not state the current Paid Family and Medical Leave premium rate or employer/employee contribution split.",
     "sources": [
       "https://www.lni.wa.gov/workers-rights/leave/paid-sick-leave/",
       "https://paidleave.wa.gov/"
     ],
-    "last_checked": "2026-05-28"
+    "last_checked": "2026-06-01"
   },
   {
     "state": "WA",
@@ -96,8 +96,8 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "WA",
     "topic": "salary_threshold",
-    "title": "Washington State Overtime Exempt Salary Threshold Rules",
-    "summary": "Washington sets a minimum salary that executive, administrative, and professional employees must earn to qualify as overtime-exempt, with the threshold tied to a multiple of the state minimum wage. The phase-in schedule is tiered by employer size, with smaller employers given a more gradual timeline than larger ones. Employers should check the official L&I source page for the current threshold figures, as they are updated annually.",
+    "title": "Washington Overtime-Exempt Salary Thresholds for 2026",
+    "summary": "Starting January 1, 2026, both small employers (1–50 employees) and large employers (51 or more employees) must pay overtime-exempt salaried workers at least 2.25 times the state minimum wage — calculated as 2.25 × $17.13 × 40 = $1,541.70 per week. The two employer tiers currently match at this threshold. The state minimum wage for 2025 is $16.66 per hour, rising to $17.13 in 2026; thresholds update every January 1. Washington's thresholds exceed the federal threshold, so employers must meet the higher state figure.",
     "sources": [
       "https://www.lni.wa.gov/workers-rights/wages/overtime/changes-to-overtime-rules"
     ],
@@ -117,8 +117,8 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "WA",
     "topic": "wa_cares",
-    "title": "Washington WA Cares Fund Long-Term Care Insurance Employer Requirements",
-    "summary": "Washington employers must collect WA Cares Fund premiums from employees each quarter and report wages and hours alongside Paid Leave reporting. WA Cares premiums are a percentage of each employee's gross wages, with no employer share required, though employers may choose to cover the employee share. Employers must track exemptions, keep approval letters on file, and stop deducting premiums from exempt workers.",
+    "title": "Washington WA Cares Fund Employer Premium Collection Requirements",
+    "summary": "Washington employers must collect WA Cares Fund premiums from employees each quarter and report wages and hours alongside Paid Leave reporting. The premium is 0.58% of an employee's gross wages, and unlike Paid Leave, contributions are not capped at the social security taxable maximum. Employers pay no share of the premium but may elect to cover some or all of an employee's share. Employers must keep exemption approval letters on file and must not deduct premiums from exempt workers.",
     "sources": [
       "https://wacaresfund.wa.gov/",
       "https://wacaresfund.wa.gov/employers/"
@@ -128,13 +128,13 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "WA",
     "topic": "wage_hour",
-    "title": "Washington State Minimum Wage and Overtime Requirements",
-    "summary": "Washington employers must pay most employees at least the state minimum wage for every hour worked, with some exceptions for minors and certain exempt workers. Most employees who work more than 40 hours in a workweek must receive overtime pay at a rate of at least 1.5 times their regular hourly rate. Tips and service charges must be passed to employees and cannot count toward the minimum wage requirement.",
+    "title": "Washington State Minimum Wage and Overtime Pay Requirements",
+    "summary": "Washington employers must pay most employees at least $17.13 per hour in 2026, up from $16.66 per hour in 2025. Overtime pay must be at least 1.5 times the employee's regular hourly rate for all hours worked over 40 in a 7-day workweek. Employers must pay overtime regardless of their size, and employees cannot waive their right to overtime. Some salaried workers meeting executive, administrative, or professional definitions are exempt from overtime requirements.",
     "sources": [
       "https://www.lni.wa.gov/workers-rights/wages/minimum-wage/",
       "https://www.lni.wa.gov/workers-rights/wages/overtime/"
     ],
-    "last_checked": "2026-05-28"
+    "last_checked": "2026-06-01"
   },
   {
     "state": "WA",

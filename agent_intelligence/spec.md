@@ -1180,9 +1180,21 @@ So three sections reuse existing grounded WA summaries; four require new grounde
 - `at_will` → `lni.wa.gov/workers-rights/workplace-policies/termination-retaliation` (L&I; states + defines at-will and its exceptions).
 - `business_tax` → `dor.wa.gov/taxes-rates/business-occupation-tax` + `dor.wa.gov/open-business` (DOR B&O gross-receipts tax + licensing).
 
-### Numbers: qualitative, defer figures to source (decision A — firm)
+### Numbers: SHOW concrete figures, grounded, with a two-tier disclaimer (decision B — REVERSES decision A, 2026-06-01)
 
-Summaries stay qualitative and send the agent to the official page for any current figure; a stale number is worse than none. **Firm on `salary_threshold`:** never print an actionable salary figure even though the source page lists one — a stale threshold could drive a worker misclassification. Enforced via a per-topic instruction in `generate_compliance.ts` (`EXTRA_GUIDANCE`): describe that a tiered, size-dependent threshold exists and that the current figure is on the source page; print no number.
+Earlier (decision A) the briefing stayed qualitative and deferred every figure to source. **Reversed:** the briefing now **shows concrete figures for all six topics** (minimum wage amount, overtime multiple, the exempt-salary threshold, PFML/WA Cares premium rates, B&O rate(s)). Figures are **grounded** — the generator pulls the actual current numbers from the L&I / DOR / WA Cares pages, never from model knowledge (the strict-grounding ABSOLUTE RULES stay; only the "omit the number / phrase qualitatively" push is reversed, via `EXTRA_GUIDANCE` that now says INCLUDE the source-stated figure).
+
+Staleness is controlled two ways:
+
+1. **Top-of-page band updated to cover staleness** (see Load-bearing disclaimer below).
+2. **Per-section, prominent "as of {date}"** so staleness is visible per number, not just globally. The date is each summary's `last_checked`.
+3. **`salary_threshold` carries its OWN stronger inline warning at the figure** — because, unlike the other figures, an employer *acts on this one directly* (sets salaries, classifies employees as exempt). The box holds the number AND its specific risk:
+
+   > *This threshold determines overtime-exempt status. A figure that's even slightly out of date can cause an employee to be misclassified and owed back overtime — confirm the current threshold with L&I before setting any salary or classifying anyone as exempt.*
+
+### Standing maintenance obligation — regenerate figures at least annually
+
+Because the briefing now prints live figures, **the compliance summaries MUST be regenerated at least once a year** (most WA figures reset on **January 1** — minimum wage, the exempt-salary threshold, premium rates). This is a standing obligation, not a one-time task: run `generate_compliance.ts` against the official sources each January (and after any known mid-year change), verify the new numbers, and redeploy. Recorded here and in `SESSION_STATE.md` so it is not forgotten; a stale printed figure is the feature's main risk.
 
 ### At-will: exceptions are mandatory (verification gate)
 
@@ -1206,17 +1218,19 @@ Rule: state the threshold, state N, state the neutral above/below comparison, th
 - Ordered by **primary state** = `home_state` if it's an employee state, else the first mapped employee state. The primary (mapped) state renders the full briefing; each other employee state renders a compact "Briefing for {state} — coming soon" block. If no employee state is mapped, the whole briefing is the coming-soon fallback.
 - Behavior change: the current page silently drops non-covered employee states; the briefing instead surfaces them as coming-soon.
 
-### Load-bearing disclaimer (prominent, like Positioning's band)
+### Load-bearing disclaimer — two-tier (prominent, like Positioning's band)
 
-A persistent, prominent band at the top of the briefing — not fine print:
+**Tier 1 — the persistent top-of-briefing band**, now covering staleness (not fine print):
 
-> **This summarizes what the rules say — verify with a qualified professional. Not legal or tax advice.**
+> **This summarizes what the rules say — verify with a qualified professional.** Not legal or tax advice. Figures shown are as of the last update date on each section and may be outdated — confirm current numbers on the official source pages linked below before relying on them.
+
+**Tier 2 — the `salary_threshold` inline warning** (see the Numbers section): a stronger, figure-specific box, because it's the number an employer acts on directly. Plus the per-section "as of {date}" on every figure.
 
 This is product copy, not a footnote, and is the feature's central risk control (employment + tax content). The existing amber disclaimer line is retained for the card grid below.
 
 ### Verification gate (human review before ship)
 
-Like the Sub-type definitions, the four new grounded summaries (`salary_threshold`, `wa_cares`, `at_will`, `business_tax`) are reviewed verbatim by the user before the feature ships — specifically: does `at_will` carry the exceptions, and does `salary_threshold` avoid an actionable number while staying useful. If either fails, regenerate or hold to coming-soon.
+The grounded summaries are reviewed verbatim by the user before the feature ships. With figures now shown (decision B), the review checks: (1) every figure is correct against its source page, (2) `at_will` carries the exceptions, (3) `salary_threshold` shows the figure AND its strong inline warning. If any fails, regenerate or hold to coming-soon.
 
 ---
 
