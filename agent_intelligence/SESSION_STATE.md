@@ -40,10 +40,12 @@ Positioning) shipped and live.
 ## ⏰ Standing maintenance obligation — regenerate compliance figures yearly
 
 The Compliance **office briefing (Feature 9)** prints **live grounded figures**
-(minimum wage, the overtime-exempt salary threshold, PFML/WA Cares premium
-rates, B&O rates). **These MUST be regenerated at least once a year** — most WA
-figures reset on **January 1**. A stale printed figure is the feature's main
-risk (the salary threshold can cause a real misclassification).
+(minimum wage, the overtime-exempt salary threshold, the WA Cares premium rate
+0.58%, and the insurance-commissions B&O rate 0.484%). **These MUST be
+regenerated at least once a year** — most WA figures reset on **January 1**
+(the B&O rate changes by legislation, re-verify it each refresh). A stale
+printed figure is the feature's main risk (the salary threshold can cause a
+real misclassification).
 
 Each January (and after any known mid-year change):
 1. `ANTHROPIC_API_KEY=… npx tsx scripts/generate_compliance.ts --only WA/wage_hour,WA/salary_threshold,WA/leave,WA/wa_cares,WA/business_tax`

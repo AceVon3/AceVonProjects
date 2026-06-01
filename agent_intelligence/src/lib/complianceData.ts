@@ -32,10 +32,11 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "WA",
     "topic": "business_tax",
-    "title": "Washington State Business & Occupation (B&O) Gross Receipts Tax Overview",
-    "summary": "Washington's B&O tax is a gross receipts tax measured on the value of products, gross proceeds of sale, or gross income — with no deductions for labor, materials, or other business costs. The rate varies by business classification; the source does not list specific rates on this page but directs businesses to a separate B&O tax rates list. Key credits include the Small Business B&O Tax Credit and the Multiple Activities Tax Credit. Returns are filed on the excise tax return, with monthly returns due the 25th of the following month and annual returns due April 15th.",
+    "title": "Washington B&O Tax Rate for Insurance Agent and Broker Commissions",
+    "summary": "Washington's Business & Occupation (B&O) tax is a gross-receipts tax with no deductions for labor, materials, or other business costs. Insurance agent and broker commission income falls under its own B&O classification taxed at 0.484%. Rates are classification-specific, so an agency with other revenue streams may fall under additional classifications at different rates. Agencies should confirm all applicable classifications with the Washington Department of Revenue.",
     "sources": [
       "https://dor.wa.gov/taxes-rates/business-occupation-tax",
+      "https://dor.wa.gov/taxes-rates/business-occupation-tax/business-occupation-tax-classifications",
       "https://dor.wa.gov/open-business"
     ],
     "last_checked": "2026-06-01"

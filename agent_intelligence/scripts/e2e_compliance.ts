@@ -271,6 +271,13 @@ async function main(): Promise<void> {
     Number.isFinite(w) && Number.isFinite(a) && a === Math.round(w * 52),
     { weekly, annual, expected: Math.round(w * 52) });
 
+  // Business-tax section: insurance-commissions B&O rate, grounded + framed.
+  const btax = (await waBlock.locator('[data-testid="briefing-section"][data-section="btax"]').textContent()) ?? "";
+  check("B&O section shows the insurance-commissions rate 0.484%", /0\.484%/.test(btax), { sample: btax.slice(0, 160) });
+  check("B&O section frames it for insurance agents/brokers", /insurance (agent|broker)/i.test(btax));
+  check("B&O section keeps the classification-specific / confirm-with-DOR caveat",
+    /classification-specific/i.test(btax) && /DOR|Department of Revenue/i.test(btax));
+
   // Per-section "as of {date}" present on the grounded sections.
   const asofCount = await waBlock.locator('[data-testid="section-asof"]').count();
   check("per-section 'as of' date shown on every grounded section", asofCount === 6, { asofCount });

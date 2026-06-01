@@ -139,10 +139,11 @@ const EXTRA_GUIDANCE: Partial<Record<ResourceKey, string>> = {
   // WA Cares — the premium rate as a percentage of gross wages.
   wa_cares:
     "INCLUDE the current WA Cares premium rate (the percentage of each employee's gross wages) exactly as the source states it.",
-  // B&O — representative rate(s) by classification; many exist, so use what
-  // the source gives without inventing.
+  // B&O — surface the INSURANCE-commissions classification rate specifically,
+  // framed for an insurance-agency audience, with the classification-specific
+  // caveat. The classifications source page lists it as a decimal (.00484).
   business_tax:
-    "If the source states specific Business & Occupation (B&O) tax rates by business classification, INCLUDE the main rate(s) exactly as stated; if many rates are listed, give a representative rate or the range the source provides. Do not invent a rate the source does not state.",
+    "The audience is an insurance agency. From the source classifications page, INCLUDE the specific B&O tax rate for the 'Insurance Agents/Insurance Brokers Commissions' classification — the rate that applies to insurance agent/broker commission income — exactly as the source states it. If the source gives the rate as a decimal (e.g. .00484), express it as the equivalent percentage (0.484%) since that is the same number. Frame it plainly: insurance agent/broker commissions are taxed at that rate under that B&O classification. Then add that B&O is a gross-receipts tax and that rates are CLASSIFICATION-SPECIFIC — an agency with other revenue may fall under other classifications with different rates, so they should confirm their classification(s) with DOR. Every number must come verbatim from the source.",
   // The at-will summary MUST carry the exceptions, not just the headline.
   at_will:
     "CRITICAL FOR THIS TOPIC: The summary MUST convey BOTH halves of the rule. (1) Washington is an at-will employment state — an employer generally may end employment at any time, without cause and without advance notice. (2) BUT it must ALSO state the key exceptions present in the source: an employer may NOT terminate for an unlawful or protected reason — such as discrimination against a protected class, retaliation for exercising a protected right or filing a complaint, or for using protected leave. Never present at-will without its exceptions; an exceptions-light summary is unacceptable.",

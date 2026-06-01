@@ -1194,7 +1194,7 @@ Staleness is controlled two ways:
 
 ### Standing maintenance obligation — regenerate figures at least annually
 
-Because the briefing now prints live figures, **the compliance summaries MUST be regenerated at least once a year** (most WA figures reset on **January 1** — minimum wage, the exempt-salary threshold, premium rates). This is a standing obligation, not a one-time task: run `generate_compliance.ts` against the official sources each January (and after any known mid-year change), verify the new numbers, and redeploy. Recorded here and in `SESSION_STATE.md` so it is not forgotten; a stale printed figure is the feature's main risk.
+Because the briefing now prints live figures, **the compliance summaries MUST be regenerated at least once a year** (most WA figures reset on **January 1** — minimum wage, the exempt-salary threshold, the WA Cares premium rate). The **insurance-commissions B&O rate (0.484%)** changes by legislation rather than annually, but is re-verified at every refresh. This is a standing obligation, not a one-time task: run `generate_compliance.ts` against the official sources each January (and after any known mid-year change), verify the new numbers, and redeploy. Recorded here and in `SESSION_STATE.md` so it is not forgotten; a stale printed figure is the feature's main risk.
 
 ### At-will: exceptions are mandatory (verification gate)
 

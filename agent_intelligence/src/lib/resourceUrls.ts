@@ -117,9 +117,13 @@ export const RESOURCE_URLS: Record<
       "https://www.lni.wa.gov/workers-rights/workplace-policies/termination-retaliation",
     ],
     // Business tax basics — DOR Business & Occupation (B&O) gross-receipts
-    // tax, paired with the business-licensing page for context.
+    // tax. The classifications page carries the per-classification rates,
+    // including "Insurance Agents/Insurance Brokers Commissions" (.00484 =
+    // 0.484%) — the rate that applies to an agency's commission income.
+    // Business-licensing page kept for context.
     business_tax: [
       "https://dor.wa.gov/taxes-rates/business-occupation-tax",
+      "https://dor.wa.gov/taxes-rates/business-occupation-tax/business-occupation-tax-classifications",
       "https://dor.wa.gov/open-business",
     ],
   },
