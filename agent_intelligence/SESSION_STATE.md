@@ -39,12 +39,11 @@ Positioning) shipped and live.
 
 ## Live deployment
 
+- **Live URL:** https://agent-intelligence-sigma.vercel.app/
 - **Deploy source of truth:** GitHub `AceVon3/agent_intelligence` (private),
   branch `master`, at `7bc5bf8`.
 - **Host:** Vercel project connected to that repo (project Root Directory =
-  repo root `/`; auto-builds on push to master). The exact live URL is the
-  subdomain Vercel assigned the project — confirm in the Vercel dashboard
-  (intentionally not guessed here).
+  repo root `/`; auto-builds on push to master).
 - **No env vars** required in prod (`ANTHROPIC_API_KEY` is offline-regen only).
 - **Runtime DB tracing:** `/api/filings`, `/api/positioning`, and
   `/methodology` read `data/filings.db` / `last_updated.txt` at request time.
