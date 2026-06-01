@@ -109,6 +109,24 @@ const TOPIC_LABELS: Record<ResourceKey, string> = {
   nexus: "Nexus & Licensing",
   hiring: "Hiring Basics",
   remote: "Remote Work",
+  // Office-briefing topics (Feature 9)
+  salary_threshold: "Salary & Exempt Thresholds",
+  wa_cares: "WA Cares (Long-Term Care)",
+  at_will: "At-Will Termination",
+  business_tax: "Business Tax (B&O)",
+};
+
+// Per-topic extra grounding constraints, appended to the user message for
+// specific briefing topics. These ADD to (never relax) the absolute rules in
+// SYSTEM_PROMPT. Topics not listed get no extra instruction.
+const EXTRA_GUIDANCE: Partial<Record<ResourceKey, string>> = {
+  // Decision A (firm): never print an actionable salary figure, even though
+  // the source page lists one — a stale number could drive a misclassification.
+  salary_threshold:
+    "CRITICAL FOR THIS TOPIC: Do NOT state any specific dollar amount, weekly or annual salary figure, or multiple-of-minimum-wage number, EVEN IF the source page lists one. A printed figure can go stale and cause a worker misclassification. Instead, convey that Washington sets a minimum salary an employee must earn to be overtime-EXEMPT, that this threshold is phased in and TIERED BY EMPLOYER SIZE (smaller vs larger employers), and that the current figure is on the official source page. Describe the structure and where to find the number — never the number itself.",
+  // The at-will summary MUST carry the exceptions, not just the headline.
+  at_will:
+    "CRITICAL FOR THIS TOPIC: The summary MUST convey BOTH halves of the rule. (1) Washington is an at-will employment state — an employer generally may end employment at any time, without cause and without advance notice. (2) BUT it must ALSO state the key exceptions present in the source: an employer may NOT terminate for an unlawful or protected reason — such as discrimination against a protected class, retaliation for exercising a protected right or filing a complaint, or for using protected leave. Never present at-will without its exceptions; an exceptions-light summary is unacceptable.",
 };
 
 function stripHtml(html: string): string {
@@ -209,10 +227,12 @@ async function generateOne(
   const sourceBlocks = sources
     .map(s => `<<<URL: ${s.url}\n${s.text}\n>>>`)
     .join("\n\n");
+  const extra = EXTRA_GUIDANCE[topic];
   const userText =
     `${sourceBlocks}\n\n` +
     `STATE: ${STATE_NAMES[state]}\n` +
     `TOPIC CATEGORY: ${TOPIC_LABELS[topic]}\n\n` +
+    (extra ? `${extra}\n\n` : "") +
     `Produce the title + summary as JSON, grounded strictly in the source pages above.`;
 
   const resp = await client.messages.create({

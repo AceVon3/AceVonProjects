@@ -27,7 +27,16 @@ export type ResourceKey =
   | "termination"
   | "nexus"
   | "hiring"
-  | "remote";
+  | "remote"
+  // --- Office-briefing topics (Feature 9) ---
+  // New grounded topics for the Compliance "office briefing". WA-mapped &
+  // verified; other states stay coming-soon until mapped. (Minimum wage,
+  // overtime, and WA PFML reuse the existing wage_hour / leave summaries —
+  // no new key for those.)
+  | "salary_threshold"
+  | "wa_cares"
+  | "at_will"
+  | "business_tax";
 
 export type StateCode =
   | "AZ" | "CO" | "ID" | "MT" | "NV" | "OR" | "UT" | "WA";
@@ -82,6 +91,36 @@ export const RESOURCE_URLS: Record<
     // a better page or to hit the fetch fallback.
     remote: [
       "https://www.lni.wa.gov/workers-rights/",
+    ],
+
+    // --- Office-briefing topics (Feature 9), WA verified 2026-06-XX ---
+    // Salary/exempt threshold — L&I "Changes to overtime rules": the EAP
+    // exempt salary threshold, tiered by employer size (small ≤50 / large
+    // 51+). The page prints the current figure, but the briefing describes
+    // the tiered structure and defers the figure to source (a stale number
+    // could drive a misclassification — see generate_compliance guidance).
+    salary_threshold: [
+      "https://www.lni.wa.gov/workers-rights/wages/overtime/changes-to-overtime-rules",
+    ],
+    // WA Cares — the state long-term-care program (DSHS/HCA/ESD). Homepage
+    // for the program overview; the Employers page carries employer duties
+    // and the "applies to W-2 employees, no size gate" framing.
+    wa_cares: [
+      "https://wacaresfund.wa.gov/",
+      "https://wacaresfund.wa.gov/employers/",
+    ],
+    // At-will termination — L&I "Termination & Retaliation". States and
+    // defines WA at-will AND centers on the exceptions (discrimination,
+    // retaliation, protected leave). The summary MUST carry the exceptions,
+    // never just the at-will headline (see generate_compliance guidance).
+    at_will: [
+      "https://www.lni.wa.gov/workers-rights/workplace-policies/termination-retaliation",
+    ],
+    // Business tax basics — DOR Business & Occupation (B&O) gross-receipts
+    // tax, paired with the business-licensing page for context.
+    business_tax: [
+      "https://dor.wa.gov/taxes-rates/business-occupation-tax",
+      "https://dor.wa.gov/open-business",
     ],
   },
 

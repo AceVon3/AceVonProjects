@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import ComplianceBriefing from "@/components/ComplianceBriefing";
 import ComplianceCard from "@/components/ComplianceCard";
 import {
   COMPLIANCE_SUMMARIES,
@@ -81,6 +82,28 @@ export default function CompliancePage(): React.JSX.Element {
           </h1>
           <p className="text-13 mt-1 m-0 text-ink-2">
             HR & insurance regulations for the states your team works in:{" "}
+            {renderedStates.join(", ") || "—"}.
+          </p>
+        </div>
+
+        {/* Office briefing — personalized, ordered by primary state, with the
+            load-bearing "not legal/tax advice" band. Reuses the same grounded
+            summaries the card grid below reads. */}
+        {profile && (
+          <ComplianceBriefing
+            employeeStates={profile.employee_states}
+            homeState={profile.home_state}
+            employeeCount={profile.employee_count}
+          />
+        )}
+
+        {/* All topics — the comprehensive source-linked reference grid. */}
+        <div className="mb-3">
+          <h2 className="text-13 uppercase tracking-wider04 font-medium m-0 text-ink-2">
+            All compliance topics
+          </h2>
+          <p className="text-12 mt-1 m-0 text-ink-3">
+            Every tracked topic for your covered states:{" "}
             {renderedStates.join(", ") || "—"}.
           </p>
         </div>

@@ -1152,6 +1152,74 @@ A clickable **`i`** next to each sub-type label opens a small dismissible popove
 
 ---
 
+## Feature 9: Compliance office briefing (`/compliance`) — all agent types
+
+A personalized, grounded "office briefing" at the top of the Compliance page: a plain-language read of the employment/tax rules that apply to the agent's own staff, scoped to their `employee_states`, ordered with their primary state first. It reuses the existing grounded Compliance summaries where they already cover a topic and adds four new grounded topics. Washington is built first (fully mapped); employee states that aren't mapped yet show the existing coming-soon fallback — state expansion is a separate effort.
+
+### Scope (sections, in order)
+
+1. **Minimum wage** — reuses `wage_hour`.
+2. **Overtime (hourly vs salary)** — reuses `wage_hour`.
+3. **Salary / exempt thresholds** — NEW topic `salary_threshold`.
+4. **Key state laws** — WA Family Leave (PFML) reuses `leave`; **WA Cares** is NEW topic `wa_cares`.
+5. **At-will termination** — NEW topic `at_will`.
+6. **Business tax basics (B&O)** — NEW topic `business_tax`.
+
+So three sections reuse existing grounded WA summaries; four require new grounded generation.
+
+### Data model (no live fetch; reuses the Feature 6 pipeline)
+
+- `ResourceKey` extended with `salary_threshold`, `wa_cares`, `at_will`, `business_tax`. WA URLs added to `RESOURCE_URLS` (verified official `.gov` sources — see below). Other states leave these unmapped → coming-soon.
+- `scripts/generate_compliance.ts` produces grounded summaries for the new keys into `complianceData.ts` (the app still reads only the pre-generated file). Same strict-grounding system prompt + refusal→coming-soon handling as Feature 6.
+- The briefing assembles its six sections from `complianceData.ts`: reused keys (`wage_hour`, `leave`) and the four new keys. A briefing-section config maps each section → its topic key(s), size-gate config, and framing copy.
+
+### Verified sources (WA)
+
+- `salary_threshold` → `lni.wa.gov/workers-rights/wages/overtime/changes-to-overtime-rules` (L&I; EAP exempt-salary threshold, tiered small ≤50 / large 51+).
+- `wa_cares` → `wacaresfund.wa.gov/` + `wacaresfund.wa.gov/employers/` (DSHS/HCA/ESD program + employer duties / no-size-gate framing).
+- `at_will` → `lni.wa.gov/workers-rights/workplace-policies/termination-retaliation` (L&I; states + defines at-will and its exceptions).
+- `business_tax` → `dor.wa.gov/taxes-rates/business-occupation-tax` + `dor.wa.gov/open-business` (DOR B&O gross-receipts tax + licensing).
+
+### Numbers: qualitative, defer figures to source (decision A — firm)
+
+Summaries stay qualitative and send the agent to the official page for any current figure; a stale number is worse than none. **Firm on `salary_threshold`:** never print an actionable salary figure even though the source page lists one — a stale threshold could drive a worker misclassification. Enforced via a per-topic instruction in `generate_compliance.ts` (`EXTRA_GUIDANCE`): describe that a tiered, size-dependent threshold exists and that the current figure is on the source page; print no number.
+
+### At-will: exceptions are mandatory (verification gate)
+
+The `at_will` summary MUST carry both halves: (1) WA is at-will (terminate without cause or notice), AND (2) the exceptions — no termination for an unlawful/protected reason (discrimination, retaliation for a protected right/complaint, or using protected leave). Enforced via `EXTRA_GUIDANCE`. **An exceptions-light summary is a fail** — regenerate, or hold the section to coming-soon. This is checked at the review gate before anything ships.
+
+### Team-size handling (surface the line, never a determination)
+
+Only two sections are size-gated in WA; the framing surfaces the threshold and where the agent's `employee_count` (N) sits, then explicitly defers the legal conclusion (counting rules — FTE math, common ownership, look-back — decide it).
+
+| Section | Size-gated | Threshold | Framing |
+|---|---|---|---|
+| `salary_threshold` | yes | 50 (small ≤50 / large 51+ schedules) | "WA's exempt-salary threshold uses separate small (≤50) and large (51+) employer schedules. You have N — that's [below / at-or-above] 50. Which applies depends on how employees are counted; verify with L&I." |
+| PFML (within Key state laws) | yes | 50 (employer premium share) | "The employer share of PFML premiums applies at 50+ employees; under 50, only the employee share is withheld. You have N. Counting rules vary — verify." |
+| min wage, overtime, WA Cares, at-will, B&O | no | — | "Applies regardless of company size." |
+
+Rule: state the threshold, state N, state the neutral above/below comparison, then defer the determination ("verify"). **Never** "you are exempt / you are subject." (The federal FMLA 50+/75-mile gate is federal, out of this state-scoped briefing — at most a one-line aside.)
+
+### Layout
+
+- The briefing sits **at the top of `/compliance`**; the existing 8-topic card grid stays **below** as the comprehensive source-linked reference (one source of truth — the briefing reuses those summaries).
+- Ordered by **primary state** = `home_state` if it's an employee state, else the first mapped employee state. The primary (mapped) state renders the full briefing; each other employee state renders a compact "Briefing for {state} — coming soon" block. If no employee state is mapped, the whole briefing is the coming-soon fallback.
+- Behavior change: the current page silently drops non-covered employee states; the briefing instead surfaces them as coming-soon.
+
+### Load-bearing disclaimer (prominent, like Positioning's band)
+
+A persistent, prominent band at the top of the briefing — not fine print:
+
+> **This summarizes what the rules say — verify with a qualified professional. Not legal or tax advice.**
+
+This is product copy, not a footnote, and is the feature's central risk control (employment + tax content). The existing amber disclaimer line is retained for the card grid below.
+
+### Verification gate (human review before ship)
+
+Like the Sub-type definitions, the four new grounded summaries (`salary_threshold`, `wa_cares`, `at_will`, `business_tax`) are reviewed verbatim by the user before the feature ships — specifically: does `at_will` carry the exceptions, and does `salary_threshold` avoid an actionable number while staying useful. If either fails, regenerate or hold to coming-soon.
+
+---
+
 ## Methodology page (`/methodology`)
 
 Static page. Must include:

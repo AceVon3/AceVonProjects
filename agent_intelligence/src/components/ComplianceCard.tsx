@@ -29,6 +29,12 @@ const TOPIC_TAG_CLASS: Record<ResourceKey, string> = {
   nexus:        "bg-blue-fill text-blue-text",
   hiring:       "bg-green-fill text-green-text",
   remote:       "bg-gray-fill text-gray-text",
+  // Office-briefing topics (Feature 9) — not in the 8-topic card grid's
+  // TOPIC_ORDER, but ResourceKey requires an entry for each.
+  salary_threshold: "bg-amber-fill text-amber-text",
+  wa_cares:         "bg-blue-fill text-blue-text",
+  at_will:          "bg-red-fill text-red-text",
+  business_tax:     "bg-green-fill text-green-text",
 };
 
 const TOPIC_LABELS: Record<ResourceKey, string> = {
@@ -40,6 +46,10 @@ const TOPIC_LABELS: Record<ResourceKey, string> = {
   nexus: "Nexus & Licensing",
   hiring: "Hiring Basics",
   remote: "Remote Work",
+  salary_threshold: "Salary & Exempt Thresholds",
+  wa_cares: "WA Cares",
+  at_will: "At-Will Termination",
+  business_tax: "Business Tax (B&O)",
 };
 
 // "https://www.lni.wa.gov/workers-rights/wages/minimum-wage/" → "lni.wa.gov"

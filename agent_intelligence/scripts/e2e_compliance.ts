@@ -207,6 +207,66 @@ async function main(): Promise<void> {
   check("AZ coming-soon card says 'Summary coming soon'",
     azBodyText.includes("Summary coming soon"));
 
+  // -- Feature 9: office briefing -----------------------------------------
+  console.log("\nOffice briefing (home WA, employees WA+OR+AZ, N=5)");
+  const briefing = page.locator('[data-testid="compliance-briefing"]');
+  check("briefing present", (await briefing.count()) === 1);
+
+  // Load-bearing band.
+  const band = page.locator('[data-testid="briefing-disclaimer"]');
+  check("load-bearing band present", (await band.count()) === 1);
+  const bandText = (await band.textContent()) ?? "";
+  check("band says 'Not legal or tax advice'", /not legal or tax advice/i.test(bandText));
+  check("band says 'verify with a qualified professional'",
+    /verify with a qualified professional/i.test(bandText));
+
+  // Primary state first = WA (home_state), and it's the ready briefing.
+  const stateBlocks = await page.$$eval('[data-testid="briefing-state"]', els =>
+    els.map(e => ({ state: e.getAttribute("data-state"), ready: e.getAttribute("data-ready") })));
+  check("primary state first is WA", stateBlocks[0]?.state === "WA", { order: stateBlocks.map(s => s.state) });
+  check("WA briefing is ready (full)", stateBlocks.find(s => s.state === "WA")?.ready === "true");
+  check("OR briefing is coming-soon", stateBlocks.find(s => s.state === "OR")?.ready === "false");
+  check("AZ briefing is coming-soon", stateBlocks.find(s => s.state === "AZ")?.ready === "false");
+
+  // WA has the 6 briefing sections, all grounded.
+  const waBlock = page.locator('[data-testid="briefing-state"][data-state="WA"]');
+  const sections = waBlock.locator('[data-testid="briefing-section"]');
+  check("WA briefing has 6 sections", (await sections.count()) === 6, { n: await sections.count() });
+  const grounded = await waBlock.locator('[data-testid="briefing-section"][data-grounded="true"]').count();
+  check("all 6 WA sections are grounded", grounded === 6, { grounded });
+
+  // At-will section MUST carry the exceptions (the firm gate).
+  const atwill = (await waBlock.locator('[data-testid="briefing-section"][data-section="atwill"]').textContent()) ?? "";
+  check("at-will section states at-will", /at-will/i.test(atwill));
+  check("at-will section carries exceptions (discrimination/retaliation/protected leave)",
+    /discriminat/i.test(atwill) && /retaliat/i.test(atwill) && /protected leave/i.test(atwill),
+    { sample: atwill.slice(0, 120) });
+
+  // Salary section: no actionable dollar figure printed.
+  const salary = (await waBlock.locator('[data-testid="briefing-section"][data-section="salary"]').textContent()) ?? "";
+  check("salary section avoids a printed dollar figure", !/\$\s?\d/.test(salary), { sample: salary.slice(0, 120) });
+  check("salary section still useful (mentions threshold/exempt)", /threshold|exempt/i.test(salary));
+
+  // Size-gate framing: surfaces N and verify, never a determination.
+  const gates = await waBlock.locator('[data-testid="size-gate"]').allTextContents();
+  check("two size-gated sections (salary + PFML)", gates.length === 2, { n: gates.length });
+  check("size-gate states N (you have 5) and defers ('verify')",
+    gates.every(g => /you have 5/i.test(g) && /verify/i.test(g)),
+    { gates });
+  check("size-gate is never a determination ('you are exempt/subject')",
+    gates.every(g => !/you are (exempt|subject|not required|required)/i.test(g)));
+
+  // -- Non-covered employee state is SURFACED as coming-soon (not dropped) --
+  console.log("\nNon-covered employee state surfacing (employees WA + CA)");
+  await setProfileAndOpen(page, { ...PROFILE, employee_states: ["WA", "CA"] });
+  const caBlock = page.locator('[data-testid="briefing-state"][data-state="CA"]');
+  check("CA (non-covered) is surfaced as a briefing block", (await caBlock.count()) === 1);
+  check("CA briefing is coming-soon (not dropped)",
+    (await caBlock.getAttribute("data-ready")) === "false");
+  const caText = (await caBlock.textContent()) ?? "";
+  check("CA block names the state and says coming soon",
+    /California/i.test(caText) && /coming soon/i.test(caText), { sample: caText.slice(0, 100) });
+
   await browser.close();
 
   console.log("\n" + "=".repeat(72));
