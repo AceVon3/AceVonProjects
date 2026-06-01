@@ -11,6 +11,7 @@
 //   - thin: either side has exactly 1 filing → a one-filing side is "1 filing: +X%"
 //     (never "avg"), and NO pts-spread is computed (decided 2026-05-29).
 
+import { premiumWeightedAvg } from "./aggregate";
 import { ACTIVE_RATE_ACTIVITIES, Brand, BRANDS, DEFAULT_WINDOW, WINDOW_MODIFIERS, WindowKey } from "./constants";
 import { getDataAsOf, getDb } from "./db";
 import type { AgentProfile, Filing } from "./filings";
@@ -69,26 +70,6 @@ export type PositioningResult = {
 
 export type PositioningOpts = { window?: WindowKey; asOf?: string };
 
-// Premium-weighted average of overall_rate_impact. Falls back to a simple mean
-// only when every filing in the group lacks a usable (non-null, >0) premium.
-function rollAverage(filings: Filing[]): { avg: number; weighted: boolean } {
-  const withPrem = filings.filter(
-    f => f.total_written_premium != null && f.total_written_premium > 0,
-  );
-  if (withPrem.length > 0) {
-    let num = 0;
-    let den = 0;
-    for (const f of withPrem) {
-      const p = f.total_written_premium as number;
-      num += f.overall_rate_impact * p;
-      den += p;
-    }
-    return { avg: num / den, weighted: true };
-  }
-  const mean = filings.reduce((s, f) => s + f.overall_rate_impact, 0) / filings.length;
-  return { avg: mean, weighted: false };
-}
-
 function placeholders(n: number): string {
   return Array.from({ length: n }, () => "?").join(", ");
 }
@@ -143,7 +124,7 @@ export function getPositioning(
   }
 
   const stat = (brand: Brand, filings: Filing[]): BrandStat => {
-    const { avg, weighted } = rollAverage(filings);
+    const { avg, weighted } = premiumWeightedAvg(filings);
     return { brand, count: filings.length, avgChange: avg, weighted, filings };
   };
 

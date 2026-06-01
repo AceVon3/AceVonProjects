@@ -11,10 +11,16 @@ import {
   CaptiveProfile,
   IndependentProfile,
   getDefendFilings,
+  getMyCarriersFilings,
   getProspectFilings,
 } from "../src/lib/filings";
 import { getDataAsOf } from "../src/lib/db";
-import { computeMostUrgent, computeRecentChanges } from "../src/lib/overview";
+import {
+  computeCarrierActivity,
+  computeMostUrgent,
+  computeRecentChanges,
+} from "../src/lib/overview";
+import { getPositioning } from "../src/lib/positioning";
 
 let failures = 0;
 function check(label: string, cond: boolean, detail?: unknown) {
@@ -77,6 +83,39 @@ check("top row brand = Travelers (spec verification)",
   feed[0]?.filing.brand === "Travelers", { actual: feed[0]?.filing.brand });
 check("top row classification = defend",
   feed[0]?.classification === "defend", { actual: feed[0]?.classification });
+
+// -- "Your carrier's activity" reconciliation ------------------------------
+// The dashboard summary is built from the SAME My Carriers filings the
+// /my-carriers page renders, and aggregated with the SAME premium-weighted
+// helper Positioning uses. So it must reconcile with both.
+console.log("\nCarrier-activity summary (captive State Farm, AZ+NV):");
+const myc = getMyCarriersFilings(CAPTIVE_SF);
+const activity = computeCarrierActivity(myc);
+check("My Carriers source = 8 filings (matches /my-carriers)", myc.length === 8, { actual: myc.length });
+check("activity group counts sum to the My Carriers total (no rows lost/added)",
+  activity.reduce((s, i) => s + i.count, 0) === myc.length,
+  { sum: activity.reduce((s, i) => s + i.count, 0), total: myc.length });
+check("every activity item is State Farm (own carrier only)",
+  activity.every(i => i.brand === "State Farm"), { brands: Array.from(new Set(activity.map(i => i.brand))) });
+
+// Cross-check each (line, state) average against the Positioning State Farm
+// anchor for the same profile — identical source + helper ⇒ identical numbers.
+const pos = getPositioning(CAPTIVE_SF);
+const mismatches = activity.filter(it => {
+  const cell = pos.anchoredCells.find(c => c.line === it.line && c.state === it.state);
+  const anchor = cell?.anchors.find(a => a.agent.brand === "State Farm");
+  return !anchor || anchor.agent.count !== it.count || Math.abs(anchor.agent.avgChange - it.avg) > 1e-9;
+});
+check("each activity avg/count matches the Positioning State Farm anchor",
+  mismatches.length === 0,
+  { mismatches: mismatches.map(m => `${m.line}·${m.state}`) });
+activity.forEach(it =>
+  console.log(`  ${it.line.padEnd(14)} ${it.state}  ${it.avg >= 0 ? "+" : ""}${it.avg.toFixed(2)}%  (${it.count} filing${it.count === 1 ? "" : "s"})`),
+);
+
+// Empty-input contract (drives the "No recent … filings" plain message).
+check("computeCarrierActivity([]) returns [] (empty-state trigger)",
+  computeCarrierActivity([]).length === 0);
 
 console.log("\n" + "=".repeat(72));
 if (failures === 0) {

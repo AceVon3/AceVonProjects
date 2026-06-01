@@ -3,11 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import CarrierActivity from "@/components/CarrierActivity";
 import OverviewCards from "@/components/OverviewCards";
 import PageSkeleton from "@/components/PageSkeleton";
 import RecentChanges from "@/components/RecentChanges";
 import type { Filing } from "@/lib/filings";
 import {
+  computeCarrierActivity,
   computeMostUrgent,
   computeRecentChanges,
 } from "@/lib/overview";
@@ -29,6 +31,7 @@ export default function OverviewPage(): React.JSX.Element {
   const [asOf, setAsOf] = useState<string>("");
   const [prospect, setProspect] = useState<Filing[]>([]);
   const [defend, setDefend] = useState<Filing[]>([]);
+  const [myCarriers, setMyCarriers] = useState<Filing[]>([]);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -50,7 +53,9 @@ export default function OverviewPage(): React.JSX.Element {
       common.set("captive_brand", p.authorized_brands[0]);
     }
 
-    const fetchMode = async (mode: "prospect" | "defend"): Promise<ApiResponse> => {
+    const fetchMode = async (
+      mode: "prospect" | "defend" | "my-carriers",
+    ): Promise<ApiResponse> => {
       const params = new URLSearchParams(common);
       params.set("mode", mode);
       const r = await fetch(`/api/filings?${params.toString()}`);
@@ -60,11 +65,15 @@ export default function OverviewPage(): React.JSX.Element {
       return r.json();
     };
 
-    Promise.all([fetchMode("prospect"), fetchMode("defend")])
-      .then(([p1, p2]) => {
+    // My-carriers feeds the "Your carrier's activity" summary; it pulls the
+    // SAME own-carrier filings the /my-carriers page renders (both agent
+    // types can request it), so the two views reconcile by construction.
+    Promise.all([fetchMode("prospect"), fetchMode("defend"), fetchMode("my-carriers")])
+      .then(([p1, p2, p3]) => {
         setAsOf(p1.asOf);
         setProspect(p1.filings);
         setDefend(p2.filings);
+        setMyCarriers(p3.filings);
         setPhase("ready");
       })
       .catch(e => {
@@ -82,6 +91,11 @@ export default function OverviewPage(): React.JSX.Element {
     if (!asOf) return [];
     return computeRecentChanges(prospect, defend, asOf);
   }, [prospect, defend, asOf]);
+
+  const carrierActivity = useMemo(
+    () => computeCarrierActivity(myCarriers),
+    [myCarriers],
+  );
 
   const subtitle = useMemo(() => {
     if (!profile) return "";
@@ -136,6 +150,14 @@ export default function OverviewPage(): React.JSX.Element {
           employeeStatesCount={profile!.employee_states.length}
           todayLabel={todayShort()}
         />
+
+        <div className="mt-5">
+          <CarrierActivity
+            agentType={profile!.agent_type}
+            brands={profile!.authorized_brands}
+            items={carrierActivity}
+          />
+        </div>
 
         <RecentChanges rows={recentChanges} />
       </div>

@@ -6,6 +6,7 @@
 // just the .length of those arrays, so by construction they reconcile with
 // what /prospect and /defend show (spec §"Data note").
 
+import { premiumWeightedAvg } from "./aggregate";
 import type { Filing } from "./filings";
 
 export type OverviewClassification = "prospect" | "defend";
@@ -144,4 +145,56 @@ export function feedRowPillColor(r: FeedRow): "red" | "gray" {
   if (r.classification === "defend") return "red";
   if (r.future && r.ageWeeks <= 2) return "red";
   return "gray";
+}
+
+// --- "Your carrier's activity" Overview summary ----------------------------
+//
+// Summarizes the agent's OWN carrier(s) recent rate activity over the 12-month
+// window: one premium-weighted average per (brand, line, state). Input is the
+// exact same My Carriers filing set the /my-carriers page renders
+// (getMyCarriersFilings → /api/filings?mode=my-carriers), so the dashboard
+// summary and the My Carrier page cannot disagree — same filings, same source,
+// same premiumWeightedAvg helper used by Positioning.
+
+export type CarrierActivityItem = {
+  brand: string;
+  line: "Personal Auto" | "Homeowners";
+  state: string;
+  avg: number;       // premium-weighted average rate change for this cell
+  count: number;     // filings in this (brand, line, state) group
+  weighted: boolean; // false = unweighted fallback (all premiums null/0)
+};
+
+const ACTIVITY_LINE_ORDER = (l: string) => (l === "Personal Auto" ? 0 : 1);
+
+export function computeCarrierActivity(myCarrierFilings: Filing[]): CarrierActivityItem[] {
+  const groups = new Map<string, Filing[]>();
+  for (const f of myCarrierFilings) {
+    const k = `${f.brand}@@${f.line_of_business}@@${f.state}`;
+    const arr = groups.get(k);
+    if (arr) arr.push(f);
+    else groups.set(k, [f]);
+  }
+
+  const items: CarrierActivityItem[] = [];
+  Array.from(groups.entries()).forEach(([k, fs]) => {
+    const [brand, line, state] = k.split("@@");
+    const { avg, weighted } = premiumWeightedAvg(fs);
+    items.push({
+      brand,
+      line: line as CarrierActivityItem["line"],
+      state,
+      avg,
+      count: fs.length,
+      weighted,
+    });
+  });
+
+  items.sort(
+    (a, b) =>
+      a.brand.localeCompare(b.brand)
+      || ACTIVITY_LINE_ORDER(a.line) - ACTIVITY_LINE_ORDER(b.line)
+      || a.state.localeCompare(b.state),
+  );
+  return items;
 }

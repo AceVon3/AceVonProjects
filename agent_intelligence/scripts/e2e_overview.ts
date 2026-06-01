@@ -30,6 +30,20 @@ const CAPTIVE_SF = {
   created_at: "2026-05-28T00:00:00.000Z",
 };
 
+// A captive whose carrier filed nothing in their state — exercises the
+// "No recent {brand} filings in your states" empty state.
+const CAPTIVE_ENCOMPASS_AZ = {
+  agent_type: "captive",
+  authorized_brands: ["Encompass"],
+  licensed_states: ["AZ"],
+  full_name: "Test Captive",
+  zip_code: "99206",
+  home_state: "WA",
+  employee_count: 5,
+  employee_states: ["WA"],
+  created_at: "2026-05-28T00:00:00.000Z",
+};
+
 const FORBIDDEN_COMPLIANCE_PHRASES = [
   /\bnew law\b/i,
   /\bchanges detected\b/i,
@@ -133,6 +147,32 @@ async function main(): Promise<void> {
   check("Top feed row is Travelers (matches spec verification ordering)",
     !!firstFeed && /Travelers/.test(firstFeed) && /defend/.test(firstFeed),
     { firstFeed });
+
+  // -- "Your carrier's activity" summary (populated: captive SF AZ+NV) ------
+  const ca = page.locator('[data-testid="carrier-activity"]');
+  check("carrier-activity card present", (await ca.count()) === 1);
+  const caTitle = (await ca.locator("h3").textContent())?.trim() ?? "";
+  check("captive title names the carrier ('Your carrier (State Farm) in your states')",
+    /Your carrier \(State Farm\) in your states/i.test(caTitle), { caTitle });
+  const caItems = await ca.locator('[data-testid="carrier-activity-item"]').count();
+  check("carrier-activity shows own-carrier line items (SF has filings in AZ+NV)",
+    caItems >= 1, { caItems });
+  const caText = (await ca.textContent()) ?? "";
+  check("activity references a line of business + state",
+    /Personal Auto|Homeowners/.test(caText), { caText: caText.slice(0, 120) });
+
+  // -- Empty case (captive Encompass AZ — carrier filed nothing) ------------
+  console.log("\nEmpty case: captive Encompass in AZ");
+  await setProfileAndOpen(page, CAPTIVE_ENCOMPASS_AZ, "/");
+  await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
+  const ca2 = page.locator('[data-testid="carrier-activity"]');
+  check("carrier-activity card still present (not omitted)", (await ca2.count()) === 1);
+  const empty = ca2.locator('[data-testid="carrier-activity-empty"]');
+  check("plain empty message shown (no empty element)", (await empty.count()) === 1);
+  check("empty message names the carrier ('No recent Encompass filings…')",
+    /No recent Encompass filings in your states/i.test((await empty.textContent()) ?? ""));
+  check("no activity item chips in the empty case",
+    (await ca2.locator('[data-testid="carrier-activity-item"]').count()) === 0);
 
   await browser.close();
 
