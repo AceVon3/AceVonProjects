@@ -26,6 +26,7 @@ export interface Filing {
   max_entity_impact: number;
   entity_names: string; // JSON-encoded string[]
   disposition_status: string | null;
+  sub_type: string | null; // raw NAIC sub_type string; app cleans for display
 }
 
 export type CaptiveProfile = {
@@ -64,7 +65,8 @@ const SELECT_COLS = `
   id, serff_tracking_number, state, brand, line_of_business,
   overall_rate_impact, rate_activity, effective_date, filing_date,
   entity_count, total_policyholders, total_written_premium,
-  min_entity_impact, max_entity_impact, entity_names, disposition_status
+  min_entity_impact, max_entity_impact, entity_names, disposition_status,
+  sub_type
 `;
 
 function windowModifier(opts?: QueryOpts): string {

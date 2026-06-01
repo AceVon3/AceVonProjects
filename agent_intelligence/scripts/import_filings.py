@@ -238,6 +238,13 @@ def create_schema(con: sqlite3.Connection) -> None:
             max_entity_impact REAL NOT NULL,
             entity_names TEXT NOT NULL,
             disposition_status TEXT,
+            -- Single sub_type_of_insurance for the filing. Recon-confirmed
+            -- single-valued per (serff, line) across all entities; the rollup
+            -- asserts this and FAILS LOUDLY on a mixed group (a future refresh
+            -- could in theory introduce one). Stored as the raw source string;
+            -- the app cleans the NAIC code prefix for display. Nullable only
+            -- for the (currently non-existent) all-null-sub_type group.
+            sub_type TEXT,
             UNIQUE (serff_tracking_number, line_of_business)
         );
 
@@ -291,7 +298,7 @@ def rollup(con: sqlite3.Connection) -> tuple[int, int, list[str]]:
         SELECT serff_tracking_number, line_of_business, state, brand,
                company_name, overall_rate_impact, written_premium_for_program,
                policyholders_affected, rate_activity, effective_date, filing_date,
-               disposition_status
+               disposition_status, sub_type_of_insurance
         FROM filings_raw
     """)
     groups: dict[tuple[str, str], list[dict]] = {}
@@ -302,7 +309,7 @@ def rollup(con: sqlite3.Connection) -> tuple[int, int, list[str]]:
             "company_name": row[4], "impact": row[5], "premium": row[6],
             "policyholders": row[7], "rate_activity": row[8],
             "effective_date": row[9], "filing_date": row[10],
-            "disposition_status": row[11],
+            "disposition_status": row[11], "sub_type": row[12],
         })
 
     inserts = []
@@ -316,6 +323,23 @@ def rollup(con: sqlite3.Connection) -> tuple[int, int, list[str]]:
             sys.exit(f"FATAL: serff={serff} lob={lob} spans states {sorted(states)}")
         if len(brands) > 1:
             sys.exit(f"FATAL: serff={serff} lob={lob} spans brands {sorted(brands)}")
+
+        # Sub-type: recon-confirmed single-valued per (serff, line). Assert it
+        # and FAIL LOUDLY on a mixed group (same fail-loud pattern as brands).
+        # All-null is allowed (store NULL + warn); it doesn't occur today.
+        sub_types = {e["sub_type"] for e in entries if e["sub_type"] not in (None, "")}
+        if len(sub_types) > 1:
+            sys.exit(
+                f"FATAL: serff={serff} lob={lob} has MIXED sub_type_of_insurance "
+                f"across entities: {sorted(sub_types)}. The Sub-type column assumes "
+                f"one sub_type per filing; revisit the rollup before proceeding."
+            )
+        sub_type = next(iter(sub_types)) if sub_types else None
+        if sub_type is None:
+            warnings.append(
+                f"WARN: serff={serff} lob={lob} has no non-null sub_type_of_insurance; "
+                f"storing NULL sub_type"
+            )
 
         n = len(entries)
         if n > 1:
@@ -367,7 +391,7 @@ def rollup(con: sqlite3.Connection) -> tuple[int, int, list[str]]:
             serff, rep["state"], rep["brand"], lob, weighted_impact,
             rep["rate_activity"], rep["effective_date"], rep["filing_date"],
             n, total_policyholders, total_premium, min_imp, max_imp,
-            entity_names, rep["disposition_status"],
+            entity_names, rep["disposition_status"], sub_type,
         ))
 
     con.executemany("""
@@ -375,8 +399,9 @@ def rollup(con: sqlite3.Connection) -> tuple[int, int, list[str]]:
             serff_tracking_number, state, brand, line_of_business,
             overall_rate_impact, rate_activity, effective_date, filing_date,
             entity_count, total_policyholders, total_written_premium,
-            min_entity_impact, max_entity_impact, entity_names, disposition_status
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            min_entity_impact, max_entity_impact, entity_names, disposition_status,
+            sub_type
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """, inserts)
 
     return len(inserts), multi_count, warnings
@@ -445,6 +470,30 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     ok = brands == ["State Farm"]
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (5) MGA Insurance Company -> State Farm: got brands={brands}")
+
+    # (6) Sub-type rollup: no mixed groups, column populated, 11 distinct.
+    mixed = con.execute("""
+        SELECT COUNT(*) FROM (
+            SELECT serff_tracking_number, line_of_business
+            FROM filings_raw
+            WHERE sub_type_of_insurance IS NOT NULL AND sub_type_of_insurance <> ''
+            GROUP BY serff_tracking_number, line_of_business
+            HAVING COUNT(DISTINCT sub_type_of_insurance) > 1
+        )
+    """).fetchone()[0]
+    ok = mixed == 0
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (6a) mixed sub_type groups: expected 0, got {mixed}")
+
+    null_sub = con.execute("SELECT COUNT(*) FROM filings WHERE sub_type IS NULL").fetchone()[0]
+    print(f"  [INFO] (6b) filings with NULL sub_type: {null_sub} (expected 0 today)")
+
+    distinct_sub = con.execute(
+        "SELECT COUNT(DISTINCT sub_type) FROM filings WHERE sub_type IS NOT NULL"
+    ).fetchone()[0]
+    ok = distinct_sub == 11
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (6c) distinct sub_type in filings: expected 11, got {distinct_sub}")
 
     print(f"  [INFO]  multi-entity rollups: {multi_count} of {rolled_count} "
           f"({100*multi_count/rolled_count:.1f}%)  -- spec says ~99 / 314 (~31.5%)")

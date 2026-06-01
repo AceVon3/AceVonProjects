@@ -125,11 +125,13 @@ async function main(): Promise<void> {
   // agent_type — spec line 854.
   const firstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Carrier'", firstHeader === "Carrier", { firstHeader });
+  const col4Header = (await page.locator("table thead th").nth(3).textContent())?.trim();
+  check("column 4 header = 'Sub-type'", col4Header === "Sub-type", { col4Header });
 
   // (D) Surveillance behavior: at least one row's Impact cell shows a value
-  // strictly between Defend's -2% and Prospect's +5% thresholds. Pull the
-  // raw text and parse numbers (handle the U+2212 minus we render).
-  const impactTexts = await page.$$eval("table tbody tr td:nth-child(4)", tds =>
+  // strictly between Defend's -2% and Prospect's +5% thresholds. Impact is
+  // column 5 after the Sub-type column was added. (handle U+2212 minus.)
+  const impactTexts = await page.$$eval("table tbody tr td:nth-child(5)", tds =>
     tds.map(t => t.textContent?.trim() ?? ""),
   );
   function parseImpact(s: string): number | null {
@@ -149,8 +151,8 @@ async function main(): Promise<void> {
     { count: zeroImpact.length });
 
   // (E) Every Effective-column window badge is neutral (gray, or amber for
-  // Pending). Specifically: NO green / blue / red badge anywhere.
-  const badges = await page.$$eval("table tbody tr td:nth-child(5) span", spans =>
+  // Pending). Effective is column 6 after the Sub-type column was added.
+  const badges = await page.$$eval("table tbody tr td:nth-child(6) span", spans =>
     spans.map(s => ({
       text: s.textContent?.trim() ?? "",
       bg: window.getComputedStyle(s as HTMLElement).backgroundColor,

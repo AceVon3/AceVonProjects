@@ -201,7 +201,8 @@ async function main(): Promise<void> {
   console.log("\n  Sort → rate impact (largest)");
   await setSort(page, "impact_desc");
   const firstBrand = await page.locator("table tbody tr td:first-child").first().textContent();
-  const firstImpact = await page.locator("table tbody tr td:nth-child(4)").first().textContent();
+  // Impact is column 5 after the Sub-type column was added.
+  const firstImpact = await page.locator("table tbody tr td:nth-child(5)").first().textContent();
   check("first row brand = GEICO",
     firstBrand?.replace(/Mine$/, "").trim() === "GEICO", { firstBrand });
   check("first row impact = +50.9%",

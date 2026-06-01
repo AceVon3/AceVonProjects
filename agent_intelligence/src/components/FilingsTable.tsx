@@ -1,5 +1,6 @@
 "use client";
 
+import SubtypeCell from "@/components/SubtypeCell";
 import type { Filing } from "@/lib/filings";
 import type { SortChoice } from "@/lib/filters";
 import {
@@ -137,29 +138,31 @@ export default function FilingsTable({
     // punch line is visible without scrolling.
     <div className="overflow-x-auto rounded-lg border border-hairline border-line">
       <table
-        className={`w-full ${showActionCol ? "min-w-[1040px]" : "min-w-[900px]"} text-13`}
+        className={`w-full ${showActionCol ? "min-w-[1240px]" : "min-w-[1100px]"} text-13`}
         style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
       >
       {showActionCol ? (
         <colgroup>
-          <col style={{ width: "13%" }} />
-          <col style={{ width: "6%" }} />
           <col style={{ width: "12%" }} />
+          <col style={{ width: "5%" }} />
           <col style={{ width: "11%" }} />
-          <col style={{ width: "22%" }} />
-          <col style={{ width: "11%" }} />
-          <col style={{ width: "11%" }} />
-          <col style={{ width: "14%" }} />
+          <col style={{ width: "15%" }} />
+          <col style={{ width: "10%" }} />
+          <col style={{ width: "17%" }} />
+          <col style={{ width: "10%" }} />
+          <col style={{ width: "10%" }} />
+          <col style={{ width: "10%" }} />
         </colgroup>
       ) : (
         <colgroup>
-          <col style={{ width: "17%" }} />
-          <col style={{ width: "7%" }} />
-          <col style={{ width: "16%" }} />
           <col style={{ width: "14%" }} />
-          <col style={{ width: "22%" }} />
+          <col style={{ width: "6%" }} />
           <col style={{ width: "12%" }} />
-          <col style={{ width: "12%" }} />
+          <col style={{ width: "16%" }} />
+          <col style={{ width: "11%" }} />
+          <col style={{ width: "19%" }} />
+          <col style={{ width: "11%" }} />
+          <col style={{ width: "11%" }} />
         </colgroup>
       )}
       <thead>
@@ -167,6 +170,7 @@ export default function FilingsTable({
           <Th>{firstHeader}</Th>
           <Th>State</Th>
           <Th>Line</Th>
+          <Th>Sub-type</Th>
           <Th
             sortId="impact"
             active={sortCol === "impact"}
@@ -226,6 +230,7 @@ export default function FilingsTable({
               </Td>
               <Td>{f.state}</Td>
               <Td>{f.line_of_business}</Td>
+              <Td><SubtypeCell raw={f.sub_type} /></Td>
               <Td>
                 <span className={impactClass(impactC)}>
                   {formatRateImpact(f.overall_rate_impact)}

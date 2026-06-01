@@ -87,6 +87,8 @@ async function main(): Promise<void> {
 
   const firstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Competitor'", firstHeader === "Competitor", { firstHeader });
+  const col4Header = (await page.locator("table thead th").nth(3).textContent())?.trim();
+  check("column 4 header = 'Sub-type'", col4Header === "Sub-type", { col4Header });
 
   const brands = await rowBrands(page);
   check("no row contains 'State Farm' in the Carrier cell",
@@ -116,8 +118,8 @@ async function main(): Promise<void> {
   }
 
   // Policyholders cells: each is either "—" or matches the abbreviation
-  // regex (digits with optional decimal + optional k/M suffix).
-  const polCells = await page.$$eval("table tbody tr td:nth-child(7)", tds =>
+  // regex. Policyholders is column 8 after the Sub-type column was added.
+  const polCells = await page.$$eval("table tbody tr td:nth-child(8)", tds =>
     tds.map(t => t.textContent?.trim() ?? ""),
   );
   const polRe = /^(—|\d{1,3}(\.\d)?[kM]?)$/;
@@ -130,6 +132,37 @@ async function main(): Promise<void> {
   // the dot fails to render anywhere).
   const totalDots = await page.locator('[data-testid="entity-spread-dot"]').count();
   check("at least one entity-spread dot on the page", totalDots >= 1, { totalDots });
+
+  // Sub-type info bubble: clickable, opens a popover with the explanation,
+  // and a catch-all sub-type carries the "Not a single specific product" line.
+  const infoBtns = page.locator('[data-testid="subtype-info"]');
+  check("sub-type info bubbles present", (await infoBtns.count()) >= 1);
+  await infoBtns.first().click();
+  await page.waitForSelector('[data-testid="subtype-popover"]', { timeout: 3000 }).catch(() => {});
+  const popover = page.locator('[data-testid="subtype-popover"]');
+  check("clicking the i opens the sub-type popover", (await popover.count()) === 1);
+  const popText = (await popover.textContent()) ?? "";
+  check("popover has a non-trivial explanation", popText.length > 40, { len: popText.length });
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(80);
+  check("Escape closes the popover",
+    (await page.locator('[data-testid="subtype-popover"]').count()) === 0);
+
+  // Find a catch-all (Combinations/Other) sub-type and confirm the framing.
+  const labels = await page.$$eval("table tbody tr td:nth-child(4)", tds =>
+    tds.map((t, i) => ({ i, text: t.textContent?.trim() ?? "" })));
+  const caIdx = labels.findIndex(l => /Combinations|Other/.test(l.text));
+  if (caIdx >= 0) {
+    await page.locator(`table tbody tr:nth-child(${caIdx + 1}) [data-testid="subtype-info"]`).click();
+    await page.waitForSelector('[data-testid="subtype-popover"]', { timeout: 3000 }).catch(() => {});
+    const caText = (await page.locator('[data-testid="subtype-popover"]').textContent()) ?? "";
+    check("catch-all popover says 'Not a single specific product'",
+      /Not a single specific product/i.test(caText), { caText: caText.slice(0, 80) });
+    check("catch-all popover is tagged 'catch-all'", /catch-all/i.test(caText));
+    await page.keyboard.press("Escape");
+  } else {
+    check("a catch-all sub-type is visible to test", false, { note: "none found in captive AZ+NV prospect" });
+  }
 
   // -- Phase B: Independent (State Farm + Travelers), AZ + NV ---------------
   console.log("\nPhase B: Independent (SF + Travelers), AZ + NV");

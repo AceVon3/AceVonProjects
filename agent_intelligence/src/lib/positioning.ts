@@ -85,7 +85,8 @@ function fetchCellFilings(states: string[], opts?: PositioningOpts): Filing[] {
     SELECT id, serff_tracking_number, state, brand, line_of_business,
            overall_rate_impact, rate_activity, effective_date, filing_date,
            entity_count, total_policyholders, total_written_premium,
-           min_entity_impact, max_entity_impact, entity_names, disposition_status
+           min_entity_impact, max_entity_impact, entity_names, disposition_status,
+           sub_type
     FROM filings
     WHERE state IN (${placeholders(states.length)})
       AND rate_activity IN (${placeholders(activities.length)})

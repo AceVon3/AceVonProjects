@@ -85,6 +85,8 @@ async function main(): Promise<void> {
 
   const firstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Threat'", firstHeader === "Threat", { firstHeader });
+  const col4Header = (await page.locator("table thead th").nth(3).textContent())?.trim();
+  check("column 4 header = 'Sub-type'", col4Header === "Sub-type", { col4Header });
 
   const brands = await page.$$eval("table tbody tr td:first-child", cells =>
     cells.map(c => c.textContent?.trim() ?? ""),
@@ -93,8 +95,8 @@ async function main(): Promise<void> {
     brands.every(b => !b.includes("State Farm")), { brands });
 
   // Window badges (the 2nd <span> inside the Effective cell — first child is
-  // the date <div>). Pull badge text + computed background color.
-  const badges = await page.$$eval("table tbody tr td:nth-child(5) span", spans =>
+  // the date <div>). Effective is column 6 after the Sub-type column was added.
+  const badges = await page.$$eval("table tbody tr td:nth-child(6) span", spans =>
     spans.map(s => ({
       text: s.textContent?.trim() ?? "",
       bg: window.getComputedStyle(s as HTMLElement).backgroundColor,
