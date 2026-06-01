@@ -11,6 +11,7 @@ A public-facing web app that turns SERFF rate filing data into actionable signal
 5. **My Carriers Table** — (all agent types; labelled "My Carrier" for captives) every recent filing involving the carriers the agent sells.
 6. **Compliance** — per-state HR & insurance regulatory resources (Labor Dept, Tax/Revenue, Insurance Dept, Workers' Comp), keyed off the agent's employee work/live states, with on-demand AI summaries grounded in the official source pages.
 7. **Rate Positioning** — (all agent types) per (line, state), the agent's carrier's premium-weighted average rate *change* vs each competitor individually, with confidence tiering and a persistent "rate change, not price" frame. Sparse, comparison-first.
+8. **Sub-type column** — a Sub-type column in the filings tables (next to Line) with a clickable info bubble defining each of the 11 sub-types; single-valued per filing (recon-confirmed), catch-alls explicitly flagged.
 
 A further page, **Methodology**, is required for credibility but contains no interactive features.
 
@@ -1086,6 +1087,68 @@ A `verify_positioning.ts` (Node, no browser — like `verify_queries.ts`) must a
 - Independent selling all 8 brands → no competitor set → graceful empty state, not an empty grid.
 - All-null-premium group → unweighted mean + a "weighting unavailable" flag (≈never; 1/180).
 - Pending filings (`rate_change_pending`) are in the active set and marked "pending" in the audit panel.
+
+---
+
+## Feature 8: Sub-type column & info bubble (filings tables) — all agent types
+
+Adds a **Sub-type** column to the shared `FilingsTable` (so it appears on Prospect, Defend, and My Carriers), immediately after **Line**, with a clickable info bubble explaining each sub-type.
+
+### Recon basis (settled before building)
+
+`sub_type_of_insurance` lives in `filings_raw`, not the rolled `filings` table, because it can in theory vary across the entities that roll into one filing. The recon over the active set (active activities, 12-month, non-null effective) found:
+
+- **180 / 180 (100%) of active rolled filings are single-valued** — exactly one distinct non-null sub_type across their entities. **0 mixed, 0 all-null.** A single-value column is honest for every row; the theoretical "mixed" case does not occur in the data (the NAIC "Combinations" code already absorbs multi-sub-type filings upstream).
+- **11 distinct sub-types** total (5 Personal Auto, 6 Homeowners) — the active set covers the full vocabulary.
+
+### Data path (`import_filings.py`)
+
+- Add a `sub_type TEXT` column to the rolled **`filings`** table — keeps `filings_raw` out of the app's query path.
+- During rollup (group by `serff_tracking_number, line_of_business`), collect the distinct **non-null** `sub_type_of_insurance` across the group:
+  - **exactly 1 → store it** (the raw source string, e.g. `"19.0001 Private Passenger Auto (PPA)"`; label cleanup is display-time);
+  - **≥2 distinct → FAIL LOUDLY** (`raise`, same fail-loud pattern as the brand-derivation rules) — turns the theoretical mixed case into a loud guard on a future monthly refresh, not a silent surprise;
+  - **0 (all null) → store NULL + log a warning** (doesn't occur in the active set today; don't fail).
+- **Regeneration:** schema change ⇒ the committed `data/filings.db` must be rebuilt by re-running `import_filings.py`. `filings_raw` is already in the committed db, so it doubles as a cross-check and a fallback backfill source if the source xlsx isn't on hand.
+- **Verification the rebuilt db must reproduce** (assert in a verify script): active set **180/180 single-valued, 0 mixed**; **11 distinct** sub-types — Personal Auto: PPA **71**, Combinations **24**, Motorcycle **11**, RV **7**, Other **3**; Homeowners: Owner-Occupied **25**, Combinations **17**, Condo **10**, Other **7**, Tenant **3**, Mobile **2**.
+
+### Column presentation (shared `FilingsTable`)
+
+- New **"Sub-type"** column immediately after **Line**, on all three table modes.
+- Shows the **cleaned human label** (strip the NAIC code prefix and trailing abbreviation), per the explicit map below. A deterministic fallback (strip `^\d+\.\d+\s+` and a trailing ` (ABBR)`) keeps any future unmapped value legible.
+- **Layout cost:** inserting after Line **shifts every downstream `nth-child` index by +1** (tables go 7→8 columns; Defend 8→9 with its Action column). Re-budget the colgroup and bump `min-w` (~+140px). The position-based e2e selectors (`e2e_defend`, `e2e_my_carriers`, `e2e_prospect`, `e2e_filters`) must be updated in lockstep, plus a positive assertion that the column-4 header is "Sub-type" on all three modes.
+- **Mobile (375px):** the tables already scroll horizontally inside their `overflow-x-auto` wrapper; the extra column widens that scroll region (consistent with existing behavior — no new page-body overflow). The info bubble is **click-based** (not a `title` tooltip), so it is fully usable on touch.
+
+### Info bubble (the 11 definitions — source of truth)
+
+A clickable **`i`** next to each sub-type label opens a small dismissible popover (click-outside / Esc). **Click-based, not a `title` tooltip**, so it works on touch as well as desktop. The audience is insurance agents, so these definitions are accurate product descriptions, reviewed for correctness; the four catch-alls (**Combinations** ×2, **Other** ×2) are explicitly framed as "spans multiple / residual, not a single specific product."
+
+**Personal Auto (`19.xxxx`):**
+
+| Code (DB value) | Label | Bubble copy |
+|---|---|---|
+| 19.0001 Private Passenger Auto (PPA) | Private Passenger Auto | Standard personal auto coverage for private passenger vehicles — the everyday cars, SUVs, and light trucks individuals own for personal use. This is the core personal-auto product (liability, collision, comprehensive). |
+| 19.0000 Personal Auto Combinations | Personal Auto Combinations | **(catch-all)** A combination filing that spans multiple personal-auto sub-types at once (for example private passenger auto together with motorcycle or RV). Not a single specific product — it means this rate filing covers several personal-auto sub-types under one filing. |
+| 19.0002 Motorcycle | Motorcycle | Personal auto coverage written specifically for motorcycles (and often scooters and mopeds) — a distinct rating class from standard private passenger auto. |
+| 19.0003 Recreational Vehicle (RV) | Recreational Vehicle | Personal auto coverage for recreational vehicles — motorhomes, travel trailers, and campers. Rated separately from standard autos because of their use and value profile. |
+| 19.0004 Other | Other | **(catch-all)** A residual category for personal-auto filings that don't fall under the named sub-types (private passenger, motorcycle, RV). Not a specific product — it groups miscellaneous personal-auto sub-types. |
+
+**Homeowners (`04.xxxx`):**
+
+| Code (DB value) | Label | Bubble copy |
+|---|---|---|
+| 04.0003 Owner Occupied Homeowners | Owner-Occupied Homeowners | Standard homeowners insurance for a home occupied by its owner — the classic owner-occupant policy (e.g. HO-3) covering the dwelling, other structures, personal property, and personal liability. |
+| 04.0000 Homeowners Sub-TOI Combinations | Homeowners Combinations | **(catch-all)** A combination filing that spans multiple homeowners sub-types at once (for example owner-occupied together with condo or tenant). Not a single specific product — it means this rate filing covers several homeowners sub-types under one filing. |
+| 04.0001 Condominium Homeowners | Condominium Homeowners | Condominium unit-owner insurance (HO-6). Covers the unit's interior, personal property, and liability, sitting on top of the condo association's master policy that insures the building structure and common areas. |
+| 04.0005 Other Homeowners | Other Homeowners | **(catch-all)** A residual category the carrier uses for homeowners filings that don't map to a named sub-type (owner-occupied, condo, tenant, mobile). It can include things like umbrella or excess-liability policies the carrier files under the homeowners line. Not a single specific product, and the exact contents aren't broken out in the filing data — so a given filing here may or may not be umbrella. [†](#subtype-umbrella-provenance) |
+| 04.0004 Tenant Homeowners | Tenant Homeowners | Renters insurance (HO-4) for tenants. Covers personal property and personal liability for someone renting a home or apartment; it does not insure the building structure, which the landlord covers. |
+| 04.0002 Mobile Homeowners | Mobile Homeowners | Homeowners coverage adapted for manufactured and mobile homes — written on a specialized mobile/manufactured-home form that reflects their construction and risk profile. |
+
+<a id="subtype-umbrella-provenance"></a>**† Provenance of the 04.0005 umbrella mention.** The "can include umbrella / excess-liability" clause is from **domain knowledge — a working State Farm agent who confirms these filings can contain umbrella/excess-liability — NOT from any field in the data.** The dataset has no product/coverage-description field; recon of the 7 active "Other Homeowners" filings showed only entity name (6× State Farm Fire and Casualty Company, 1× Liberty Mutual Fire Insurance Company), state, impact, and the `sub_type` string — nothing that identifies umbrella at the row level. Hence the deliberately hedged wording ("can include", "may or may not be"): the category *can* contain umbrella, but the data can't confirm which specific rows are. Do not harden this into a certainty.
+
+### Verification numbers
+
+- Import/db: as listed under Data path (180/180 single-valued; 11 distinct with the per-sub-type rolled counts).
+- Column header text "Sub-type" present at column 4 on Prospect, Defend, My Carriers; existing per-mode counts unchanged (this is presentational + a new column — no row/count changes).
 
 ---
 
