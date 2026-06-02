@@ -93,8 +93,8 @@ export default function OverviewPage(): React.JSX.Element {
   }, [prospect, defend, asOf]);
 
   const carrierActivity = useMemo(
-    () => computeCarrierActivity(myCarriers),
-    [myCarriers],
+    () => computeCarrierActivity(myCarriers, profile?.licensed_states ?? []),
+    [myCarriers, profile],
   );
 
   const subtitle = useMemo(() => {
@@ -155,7 +155,8 @@ export default function OverviewPage(): React.JSX.Element {
           <CarrierActivity
             agentType={profile!.agent_type}
             brands={profile!.authorized_brands}
-            items={carrierActivity}
+            rows={carrierActivity.rows}
+            noFilingStates={carrierActivity.noFilingStates}
           />
         </div>
 

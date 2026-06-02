@@ -44,6 +44,21 @@ const CAPTIVE_ENCOMPASS_AZ = {
   created_at: "2026-05-28T00:00:00.000Z",
 };
 
+// A captive selling all 8 states whose carrier filed in only 5 of them —
+// exercises the per-state coverage floor AND the "No recent filings … in:
+// {states}" note (Progressive has no filings in ID, UT, WA).
+const CAPTIVE_PROGRESSIVE_8 = {
+  agent_type: "captive",
+  authorized_brands: ["Progressive"],
+  licensed_states: ["AZ", "CO", "ID", "MT", "NV", "OR", "UT", "WA"],
+  full_name: "Test Captive",
+  zip_code: "99206",
+  home_state: "WA",
+  employee_count: 5,
+  employee_states: ["WA"],
+  created_at: "2026-05-28T00:00:00.000Z",
+};
+
 const FORBIDDEN_COMPLIANCE_PHRASES = [
   /\bnew law\b/i,
   /\bchanges detected\b/i,
@@ -148,18 +163,56 @@ async function main(): Promise<void> {
     !!firstFeed && /Travelers/.test(firstFeed) && /defend/.test(firstFeed),
     { firstFeed });
 
-  // -- "Your carrier's activity" summary (populated: captive SF AZ+NV) ------
+  // -- "Your carrier's activity" recent-filings slice (captive SF AZ+NV) ----
+  // Floor = 2 (AZ + NV) + 3 extras (CARRIER_ACTIVITY_EXTRA) = 5 rows; both
+  // states have filings, so no "no-filings" note here.
   const ca = page.locator('[data-testid="carrier-activity"]');
   check("carrier-activity card present", (await ca.count()) === 1);
   const caTitle = (await ca.locator("h3").textContent())?.trim() ?? "";
-  check("captive title names the carrier ('Your carrier (State Farm) in your states')",
-    /Your carrier \(State Farm\) in your states/i.test(caTitle), { caTitle });
+  check("captive title names the carrier ('Your carrier (State Farm) — recent filings')",
+    /Your carrier \(State Farm\) — recent filings/i.test(caTitle), { caTitle });
   const caItems = await ca.locator('[data-testid="carrier-activity-item"]').count();
-  check("carrier-activity shows own-carrier line items (SF has filings in AZ+NV)",
-    caItems >= 1, { caItems });
-  const caText = (await ca.textContent()) ?? "";
-  check("activity references a line of business + state",
-    /Personal Auto|Homeowners/.test(caText), { caText: caText.slice(0, 120) });
+  check("carrier-activity shows 5 filing rows (floor 2 + 3 extras)",
+    caItems === 5, { caItems });
+  // Each row carries its own filing detail: line, signed change, dated year.
+  const firstRow = (await ca.locator('[data-testid="carrier-activity-item"]').first().textContent()) ?? "";
+  check("row shows a line of business", /Personal Auto|Homeowners/.test(firstRow), { firstRow });
+  check("row shows a signed rate change", /[+−]\d+\.\d%/.test(firstRow), { firstRow });
+  const firstEff = (await ca.locator('[data-testid="carrier-activity-eff"]').first().textContent())?.trim() ?? "";
+  check("row shows an effective date with year",
+    /^[A-Z][a-z]{2} \d{1,2}, 20\d{2}$/.test(firstEff), { firstEff });
+  // "See all" link to the full My Carrier table.
+  const seeAll = ca.locator('[data-testid="carrier-activity-seeall"]');
+  check("'See all' link present", (await seeAll.count()) === 1);
+  check("'See all' links to /my-carriers",
+    (await seeAll.getAttribute("href")) === "/my-carriers", { href: await seeAll.getAttribute("href") });
+  // Both AZ and NV filed → no no-filings note.
+  check("no 'no-filings' note when every licensed state has filings",
+    (await ca.locator('[data-testid="carrier-activity-nofilings"]').count()) === 0);
+
+  // -- Coverage floor + no-filings note (captive Progressive, all 8) --------
+  // Progressive filed in 5 of 8 states; ID/UT/WA must be noted, not dropped,
+  // and the 5 filed states must each still be represented by ≥1 row.
+  console.log("\nCoverage case: captive Progressive, all 8 states");
+  await setProfileAndOpen(page, CAPTIVE_PROGRESSIVE_8, "/");
+  await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
+  const caP = page.locator('[data-testid="carrier-activity"]');
+  const note = caP.locator('[data-testid="carrier-activity-nofilings"]');
+  check("no-filings note present", (await note.count()) === 1);
+  const noteText = (await note.textContent())?.trim() ?? "";
+  check("no-filings note lists exactly ID, UT, WA",
+    /No recent filings from your carrier in:\s*ID,\s*UT,\s*WA/i.test(noteText), { noteText });
+  // Coverage floor: each of the 5 filed states appears in at least one row.
+  const shownStates = new Set(
+    await caP.locator('[data-testid="carrier-activity-state"]').allTextContents(),
+  );
+  for (const st of ["AZ", "CO", "MT", "NV", "OR"]) {
+    check(`filed state ${st} is represented (coverage floor)`, shownStates.has(st),
+      { st, shown: Array.from(shownStates).sort() });
+  }
+  check("no-filings states (ID/UT/WA) are NOT shown as rows",
+    !["ID", "UT", "WA"].some(s => shownStates.has(s)),
+    { shown: Array.from(shownStates).sort() });
 
   // -- Empty case (captive Encompass AZ — carrier filed nothing) ------------
   console.log("\nEmpty case: captive Encompass in AZ");
@@ -171,8 +224,12 @@ async function main(): Promise<void> {
   check("plain empty message shown (no empty element)", (await empty.count()) === 1);
   check("empty message names the carrier ('No recent Encompass filings…')",
     /No recent Encompass filings in your states/i.test((await empty.textContent()) ?? ""));
-  check("no activity item chips in the empty case",
+  check("no activity item rows in the empty case",
     (await ca2.locator('[data-testid="carrier-activity-item"]').count()) === 0);
+  // With zero rows the empty message covers it; the per-state no-filings note
+  // is suppressed (it complements a populated list, not the empty state).
+  check("no-filings note suppressed in the all-empty case",
+    (await ca2.locator('[data-testid="carrier-activity-nofilings"]').count()) === 0);
 
   await browser.close();
 

@@ -6,7 +6,6 @@
 // just the .length of those arrays, so by construction they reconcile with
 // what /prospect and /defend show (spec §"Data note").
 
-import { premiumWeightedAvg } from "./aggregate";
 import type { Filing } from "./filings";
 
 export type OverviewClassification = "prospect" | "defend";
@@ -149,52 +148,77 @@ export function feedRowPillColor(r: FeedRow): "red" | "gray" {
 
 // --- "Your carrier's activity" Overview summary ----------------------------
 //
-// Summarizes the agent's OWN carrier(s) recent rate activity over the 12-month
-// window: one premium-weighted average per (brand, line, state). Input is the
-// exact same My Carriers filing set the /my-carriers page renders
-// (getMyCarriersFilings → /api/filings?mode=my-carriers), so the dashboard
-// summary and the My Carrier page cannot disagree — same filings, same source,
-// same premiumWeightedAvg helper used by Positioning.
+// A curated recent slice of the agent's OWN carrier(s) individual filings —
+// NOT aggregated averages. Input is the exact same My Carriers filing set the
+// /my-carriers page renders (getMyCarriersFilings → /api/filings?mode=my-carriers),
+// so the dashboard card and the My Carrier page cannot disagree: same filings,
+// same source. This is a different SLICE of that set, not a separate query.
+//
+// Selection, in this order:
+//   1. Coverage floor — the single most-recent filing from EACH state the
+//      agent sells in where the carrier has filings. Every such state gets at
+//      least one row, so a busy state can't crowd another state out.
+//   2. Fill — the next-most-recent filings across all states (recency only),
+//      capped at CARRIER_ACTIVITY_EXTRA on top of the floor. This is where a
+//      busy state earns a second row, but only after coverage is guaranteed.
+//   3. No-filings states — licensed states the carrier never filed in are
+//      surfaced separately (the card notes them), never silently dropped.
+// Selected rows are returned newest-first (effective date desc).
 
-export type CarrierActivityItem = {
-  brand: string;
-  line: "Personal Auto" | "Homeowners";
-  state: string;
-  avg: number;       // premium-weighted average rate change for this cell
-  count: number;     // filings in this (brand, line, state) group
-  weighted: boolean; // false = unweighted fallback (all premiums null/0)
+// Extra rows allowed beyond the per-state coverage floor. Small on purpose:
+// the card is a glanceable recent slice with a "See all" link to /my-carriers
+// for the complete table, not a second copy of it.
+export const CARRIER_ACTIVITY_EXTRA = 3;
+
+export type CarrierActivity = {
+  rows: Filing[];           // selected filings, effective-date desc
+  noFilingStates: string[]; // licensed states with no own-carrier filings, sorted
 };
 
-const ACTIVITY_LINE_ORDER = (l: string) => (l === "Personal Auto" ? 0 : 1);
+// Effective date as ms; nulls sink (so a pending/undated filing never wins the
+// floor slot over a dated one, and lands last in the displayed order).
+function effectiveMs(f: Filing): number {
+  return f.effective_date ? Date.parse(`${f.effective_date}T00:00:00Z`) : -Infinity;
+}
 
-export function computeCarrierActivity(myCarrierFilings: Filing[]): CarrierActivityItem[] {
-  const groups = new Map<string, Filing[]>();
-  for (const f of myCarrierFilings) {
-    const k = `${f.brand}@@${f.line_of_business}@@${f.state}`;
-    const arr = groups.get(k);
-    if (arr) arr.push(f);
-    else groups.set(k, [f]);
-  }
-
-  const items: CarrierActivityItem[] = [];
-  Array.from(groups.entries()).forEach(([k, fs]) => {
-    const [brand, line, state] = k.split("@@");
-    const { avg, weighted } = premiumWeightedAvg(fs);
-    items.push({
-      brand,
-      line: line as CarrierActivityItem["line"],
-      state,
-      avg,
-      count: fs.length,
-      weighted,
-    });
+export function computeCarrierActivity(
+  myCarrierFilings: Filing[],
+  licensedStates: string[],
+): CarrierActivity {
+  // Newest-first, with deterministic tie-breaks (|impact| desc, then SERFF) so
+  // the floor pick and the displayed order are stable across runs.
+  const byRecency = [...myCarrierFilings].sort((a, b) => {
+    const d = effectiveMs(b) - effectiveMs(a);
+    if (d !== 0) return d;
+    const m = Math.abs(b.overall_rate_impact) - Math.abs(a.overall_rate_impact);
+    if (m !== 0) return m;
+    return a.serff_tracking_number.localeCompare(b.serff_tracking_number);
   });
 
-  items.sort(
-    (a, b) =>
-      a.brand.localeCompare(b.brand)
-      || ACTIVITY_LINE_ORDER(a.line) - ACTIVITY_LINE_ORDER(b.line)
-      || a.state.localeCompare(b.state),
-  );
-  return items;
+  // 1. Coverage floor: first (most-recent) filing seen per state.
+  const floorIds = new Set<number>();
+  const statesWithFilings = new Set<string>();
+  for (const f of byRecency) {
+    if (!statesWithFilings.has(f.state)) {
+      statesWithFilings.add(f.state);
+      floorIds.add(f.id);
+    }
+  }
+
+  // 2. Fill: next-most-recent non-floor filings, up to the extra cap.
+  const selectedIds = new Set(floorIds);
+  for (const f of byRecency) {
+    if (selectedIds.size >= floorIds.size + CARRIER_ACTIVITY_EXTRA) break;
+    selectedIds.add(f.id); // Set ignores the floor ids already present
+  }
+
+  // byRecency is already desc; filtering preserves that order.
+  const rows = byRecency.filter(f => selectedIds.has(f.id));
+
+  // 3. Licensed states the carrier never filed in.
+  const noFilingStates = licensedStates
+    .filter(s => !statesWithFilings.has(s))
+    .sort();
+
+  return { rows, noFilingStates };
 }

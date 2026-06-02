@@ -1,87 +1,121 @@
 "use client";
 
-import { formatRateImpact } from "@/lib/format";
-import type { CarrierActivityItem } from "@/lib/overview";
+import Link from "next/link";
+
+import type { Filing } from "@/lib/filings";
+import {
+  formatEffectiveDate,
+  formatPolicyholders,
+  formatRateImpact,
+  rateImpactColor,
+} from "@/lib/format";
+import { resolveSubtype } from "@/lib/subtypes";
 
 type Props = {
   agentType: "captive" | "independent";
-  brands: string[];                 // authorized brands, in profile order
-  items: CarrierActivityItem[];     // from computeCarrierActivity (own-carrier filings)
+  brands: string[];        // authorized brands, in profile order
+  rows: Filing[];          // curated recent slice (computeCarrierActivity)
+  noFilingStates: string[]; // licensed states with no own-carrier filings
 };
 
-// |avg| ~ 0 reads "flat" (never "flat avg"); a single-filing group is NOT
-// called "avg" either (the average is just that one filing) — consistent
-// with the Positioning guardrail.
-function activityValue(item: CarrierActivityItem): string {
-  if (Math.abs(item.avg) < 0.05) return "flat";
-  const v = formatRateImpact(item.avg);
-  return item.count >= 2 ? `${v} avg` : v;
+// Signed rate change, colored on the same rules the My Carriers table uses
+// (red ≥ +5, green ≤ −2, ink otherwise) so a number reads identically here
+// and on the full table it links to.
+function changeClass(impact: number): string {
+  const c = rateImpactColor(impact, "my-carriers");
+  if (c === "red") return "text-red-text font-medium";
+  if (c === "green") return "text-green-text font-medium";
+  return "text-ink font-medium";
 }
 
-function Chip({ item }: { item: CarrierActivityItem }): React.JSX.Element {
+function ActivityRow({ f, last }: { f: Filing; last: boolean }): React.JSX.Element {
+  const { label } = resolveSubtype(f.sub_type);
   return (
-    <span
+    <div
       data-testid="carrier-activity-item"
-      className="inline-flex items-baseline gap-1 rounded-md bg-surface-2 px-2 py-1 text-12"
+      className={`grid grid-cols-[1fr_2.4fr_0.5fr_0.7fr_1fr_0.8fr] items-baseline gap-x-3 px-4 py-2.5 text-12 ${
+        last ? "" : "border-b border-hairline border-line"
+      }`}
     >
-      <span className="text-ink-2">{item.line}</span>
-      <span className="text-ink font-medium">{activityValue(item)}</span>
-      <span className="text-ink-3">· {item.state}</span>
-    </span>
+      {/* Carrier */}
+      <span className="text-ink font-medium truncate">{f.brand}</span>
+      {/* Line · sub-type */}
+      <span className="text-ink-2 truncate">
+        {f.line_of_business}
+        <span className="text-ink-3"> · {label}</span>
+      </span>
+      {/* State */}
+      <span data-testid="carrier-activity-state" className="text-ink-2">{f.state}</span>
+      {/* Signed rate change */}
+      <span className={changeClass(f.overall_rate_impact)}>
+        {formatRateImpact(f.overall_rate_impact)}
+      </span>
+      {/* Effective date (with year) */}
+      <span data-testid="carrier-activity-eff" className="text-ink-2">
+        {formatEffectiveDate(f.effective_date)}
+      </span>
+      {/* Policyholders (abbreviated, em-dash for null) */}
+      <span className={`text-right ${f.total_policyholders == null ? "text-ink-3" : "text-ink-2"}`}>
+        {formatPolicyholders(f.total_policyholders)}
+      </span>
+    </div>
   );
 }
 
-export default function CarrierActivity({ agentType, brands, items }: Props): React.JSX.Element {
+export default function CarrierActivity({
+  agentType,
+  brands,
+  rows,
+  noFilingStates,
+}: Props): React.JSX.Element {
   const isCaptive = agentType === "captive";
   const title = isCaptive
-    ? `Your carrier (${brands[0]}) in your states`
-    : "Your carriers' activity";
-
-  // Group items by brand, preserving the profile's brand order.
-  const byBrand = new Map<string, CarrierActivityItem[]>();
-  for (const it of items) {
-    const arr = byBrand.get(it.brand);
-    if (arr) arr.push(it);
-    else byBrand.set(it.brand, [it]);
-  }
-  const orderedBrands = brands.filter(b => byBrand.has(b));
+    ? `Your carrier (${brands[0]}) — recent filings`
+    : "Your carriers — recent filings";
+  // Match the My Carrier(s) page's own singular/plural framing.
+  const carrierWord = isCaptive ? "carrier" : "carriers";
 
   return (
     <div
       data-testid="carrier-activity"
       className="rounded-lg border border-hairline border-line overflow-hidden mb-5"
     >
-      <div className="bg-surface-2 border-b border-hairline border-line-2 px-4 py-2.5">
+      <div className="bg-surface-2 border-b border-hairline border-line-2 px-4 py-2.5 flex items-center justify-between gap-3">
         <h3 className="text-11 uppercase tracking-wider04 font-medium m-0 text-ink-2">
           {title}
         </h3>
+        <Link
+          href="/my-carriers"
+          data-testid="carrier-activity-seeall"
+          className="text-11 font-medium text-blue-text hover:underline shrink-0"
+        >
+          See all →
+        </Link>
       </div>
 
-      {items.length === 0 ? (
+      {rows.length === 0 ? (
         <div className="text-12 text-ink-3 px-4 py-4" data-testid="carrier-activity-empty">
           {isCaptive
             ? `No recent ${brands[0]} filings in your states.`
             : "No recent filings from your carriers in your states."}
         </div>
-      ) : isCaptive ? (
-        <div className="px-4 py-3 flex flex-wrap gap-2">
-          {items.map(it => (
-            <Chip key={`${it.line}@@${it.state}`} item={it} />
-          ))}
-        </div>
       ) : (
-        <div className="px-4 py-2">
-          {orderedBrands.map((brand, i) => (
-            <div
-              key={brand}
-              className={`flex flex-wrap items-center gap-2 py-2 ${i === orderedBrands.length - 1 ? "" : "border-b border-hairline border-line"}`}
-            >
-              <span className="text-13 font-medium text-ink min-w-[110px]">{brand}</span>
-              {byBrand.get(brand)!.map(it => (
-                <Chip key={`${it.line}@@${it.state}`} item={it} />
-              ))}
-            </div>
+        <>
+          {rows.map((f, i) => (
+            <ActivityRow key={f.id} f={f} last={i === rows.length - 1} />
           ))}
+        </>
+      )}
+
+      {/* The note complements a populated list. When there are no rows at all,
+          the empty message above already says "nothing in your states", so the
+          per-state note would just be redundant. */}
+      {rows.length > 0 && noFilingStates.length > 0 && (
+        <div
+          data-testid="carrier-activity-nofilings"
+          className="text-11 text-ink-3 px-4 py-2.5 border-t border-hairline border-line bg-surface-2/40"
+        >
+          No recent filings from your {carrierWord} in: {noFilingStates.join(", ")}
         </div>
       )}
     </div>

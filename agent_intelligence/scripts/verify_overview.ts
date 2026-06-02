@@ -16,11 +16,11 @@ import {
 } from "../src/lib/filings";
 import { getDataAsOf } from "../src/lib/db";
 import {
+  CARRIER_ACTIVITY_EXTRA,
   computeCarrierActivity,
   computeMostUrgent,
   computeRecentChanges,
 } from "../src/lib/overview";
-import { getPositioning } from "../src/lib/positioning";
 
 let failures = 0;
 function check(label: string, cond: boolean, detail?: unknown) {
@@ -84,38 +84,67 @@ check("top row brand = Travelers (spec verification)",
 check("top row classification = defend",
   feed[0]?.classification === "defend", { actual: feed[0]?.classification });
 
-// -- "Your carrier's activity" reconciliation ------------------------------
-// The dashboard summary is built from the SAME My Carriers filings the
-// /my-carriers page renders, and aggregated with the SAME premium-weighted
-// helper Positioning uses. So it must reconcile with both.
-console.log("\nCarrier-activity summary (captive State Farm, AZ+NV):");
+// -- "Your carrier's activity" curated recent slice ------------------------
+// The card shows individual own-carrier filings selected from the SAME My
+// Carriers set the /my-carriers page renders — a different SLICE of the same
+// data, never a separate query. So every displayed row must be one of those
+// filings (reconciliation), and the per-state coverage logic must hold.
+console.log("\nCarrier-activity slice (captive State Farm, AZ+NV):");
 const myc = getMyCarriersFilings(CAPTIVE_SF);
-const activity = computeCarrierActivity(myc);
+const mycIds = new Set(myc.map(f => f.id));
+const { rows, noFilingStates } = computeCarrierActivity(myc, CAPTIVE_SF.licensed_states);
+
 check("My Carriers source = 8 filings (matches /my-carriers)", myc.length === 8, { actual: myc.length });
-check("activity group counts sum to the My Carriers total (no rows lost/added)",
-  activity.reduce((s, i) => s + i.count, 0) === myc.length,
-  { sum: activity.reduce((s, i) => s + i.count, 0), total: myc.length });
-check("every activity item is State Farm (own carrier only)",
-  activity.every(i => i.brand === "State Farm"), { brands: Array.from(new Set(activity.map(i => i.brand))) });
 
-// Cross-check each (line, state) average against the Positioning State Farm
-// anchor for the same profile — identical source + helper ⇒ identical numbers.
-const pos = getPositioning(CAPTIVE_SF);
-const mismatches = activity.filter(it => {
-  const cell = pos.anchoredCells.find(c => c.line === it.line && c.state === it.state);
-  const anchor = cell?.anchors.find(a => a.agent.brand === "State Farm");
-  return !anchor || anchor.agent.count !== it.count || Math.abs(anchor.agent.avgChange - it.avg) > 1e-9;
-});
-check("each activity avg/count matches the Positioning State Farm anchor",
-  mismatches.length === 0,
-  { mismatches: mismatches.map(m => `${m.line}·${m.state}`) });
-activity.forEach(it =>
-  console.log(`  ${it.line.padEnd(14)} ${it.state}  ${it.avg >= 0 ? "+" : ""}${it.avg.toFixed(2)}%  (${it.count} filing${it.count === 1 ? "" : "s"})`),
+// Reconciliation: every shown row is a real My Carriers filing (same source).
+check("every shown row is one of the My Carriers filings (reconciles)",
+  rows.every(r => mycIds.has(r.id)), { shown: rows.length });
+check("no duplicate rows", new Set(rows.map(r => r.id)).size === rows.length);
+check("every shown row is State Farm (own carrier only)",
+  rows.every(r => r.brand === "State Farm"),
+  { brands: Array.from(new Set(rows.map(r => r.brand))) });
+
+// Coverage floor: each licensed state that HAS filings appears at least once;
+// states with none are noted, not dropped — and the two sets partition the
+// licensed states exactly.
+const filedStates = new Set(myc.map(f => f.state));
+const shownStates = new Set(rows.map(r => r.state));
+check("every filed state is represented (coverage floor)",
+  Array.from(filedStates).every(s => shownStates.has(s)),
+  { filed: Array.from(filedStates).sort(), shown: Array.from(shownStates).sort() });
+check("no-filings states are exactly the licensed states with no filings",
+  JSON.stringify(noFilingStates)
+    === JSON.stringify(CAPTIVE_SF.licensed_states.filter(s => !filedStates.has(s)).sort()),
+  { noFilingStates });
+check("floor + no-filings states partition the licensed set",
+  shownStates.size + noFilingStates.length === CAPTIVE_SF.licensed_states.length,
+  { shown: shownStates.size, none: noFilingStates.length, licensed: CAPTIVE_SF.licensed_states.length });
+
+// Cap: rows = per-state floor + up to CARRIER_ACTIVITY_EXTRA, never more than
+// the source set.
+check("row count = floor + min(extra, remaining), capped",
+  rows.length === Math.min(myc.length, filedStates.size + CARRIER_ACTIVITY_EXTRA),
+  { rows: rows.length, floor: filedStates.size, extra: CARRIER_ACTIVITY_EXTRA, source: myc.length });
+
+// Display order: newest-first (nulls last).
+const effMs = (d: string | null) => (d ? Date.parse(`${d}T00:00:00Z`) : -Infinity);
+const orderedDesc = rows.every((r, i) =>
+  i === 0 || effMs(rows[i - 1].effective_date) >= effMs(r.effective_date));
+check("rows are sorted by effective date desc (nulls last)", orderedDesc,
+  { dates: rows.map(r => r.effective_date) });
+
+rows.forEach(r =>
+  console.log(`  ${(r.effective_date ?? "—").padEnd(11)} ${r.brand.padEnd(11)} ${r.state}  ${r.line_of_business.padEnd(14)} ${r.overall_rate_impact >= 0 ? "+" : ""}${r.overall_rate_impact.toFixed(1)}%`),
 );
+console.log(`  no-filings states: ${noFilingStates.length ? noFilingStates.join(", ") : "(none)"}`);
 
-// Empty-input contract (drives the "No recent … filings" plain message).
-check("computeCarrierActivity([]) returns [] (empty-state trigger)",
-  computeCarrierActivity([]).length === 0);
+// Empty-input contract (drives the "No recent … filings" empty message).
+const emptySlice = computeCarrierActivity([], CAPTIVE_SF.licensed_states);
+check("computeCarrierActivity([], states) returns no rows (empty-state trigger)",
+  emptySlice.rows.length === 0);
+check("empty source ⇒ ALL licensed states are no-filings states",
+  JSON.stringify(emptySlice.noFilingStates) === JSON.stringify([...CAPTIVE_SF.licensed_states].sort()),
+  { noFilingStates: emptySlice.noFilingStates });
 
 console.log("\n" + "=".repeat(72));
 if (failures === 0) {
