@@ -1,41 +1,55 @@
-# Session checkpoint — 2026-06-01  ·  v1 COMPLETE & DEPLOYED
+# Session checkpoint — 2026-06-02  ·  v1 + Features 7–9 COMPLETE & DEPLOYED
 
-The build is finished and live. We are now in **iterate-and-deploy mode,
-not building**.
+The build is finished and live. We are in **iterate-and-deploy mode, not
+building**.
 
-- Monorepo HEAD: `43e07ea feat(positioning): Rate Positioning page`.
-- **Deployed (agent-intel/master): `7bc5bf8`** — the subtree-split equivalent
-  of monorepo `43e07ea`. All suites green at this commit.
+- Monorepo HEAD: `7ce30f9 fix(compliance): distinguish same-domain source links`.
+- **Deployed (agent-intel/master): `acd848c`** — in sync with the monorepo
+  subtree at this checkpoint. All suites green.
 
 ## Status: done
 
-All 13 build-order steps complete; all polish complete; Feature 7 (Rate
-Positioning) shipped and live.
+All 13 build-order steps + all polish complete; Features 7, 8, 9 shipped & live.
 
 ```
-1. Scaffold                            done
-2. import_filings.py                   done
-3. db.ts + filings.ts + queries        done
-4. /setup (ProfileForm + localStorage) done
-5. FilingsTable + /prospect            done
-6. /defend                             done
-7. /my-carriers                        done
-8. Overview                            done
-9. /compliance                         done
-10. NavBar + ScopeStrip                done
-11. /methodology                       done
-12. Polish (empty states, skeleton, token consolidation,
-    icon self-host, mobile, badge audit)           done
-13. Deploy to Vercel                                DONE (live)
+1–13  v1 build order + polish                       done (deployed)
 +  Post-v1 iterations (all shipped & deployed):
     - effective-date year fix
     - left sidebar nav + Defend table polish
     - click-to-sort headers + three-state sort affordance
-    - Recent Changes restyle + enriched feed
-    - window-badge wrap fix
+    - Recent Changes restyle + enriched feed; window-badge wrap fix
     - My Carriers opened to captives (singular "My Carrier")
-    - Feature 7: Rate Positioning (/positioning)    ← newest
+    - "Your carrier's activity" Overview summary
+    - Feature 7: Rate Positioning (/positioning)
+    - Feature 8: Sub-type column + click-based info bubble (filings tables)
+    - Feature 9: Compliance office briefing (/compliance)   ← newest
 ```
+
+## Feature 9 — Compliance office briefing (complete, deployed)
+
+Personalized grounded briefing at the top of `/compliance`, scoped to the
+agent's employee states, ordered by primary state; the existing 8-topic card
+grid stays below.
+
+- **Grounded figures shown** (decision B, reversed from the earlier qualitative
+  decision A): min wage $17.13 (2026, up from $16.66); overtime 1.5×; WA Cares
+  0.58%; **insurance-commissions B&O rate 0.484%** (grounded via the DOR
+  classifications page, framed for agencies + classification/confirm-with-DOR
+  caveat). PFML & B&O *general* rates honestly deferred (not on the fetched
+  pages — no number invented).
+- **Salary/exempt threshold**: shows the formula for transparency
+  (`2.25 × $17.13 × 40 = $1,541.70/week`, keeps "tiers currently match in 2026"),
+  a **derived annual ≈$80,168/yr** computed in the UI as weekly × 52 (ties by
+  construction), and its **own strong inline misclassification warning** (not
+  the generic band). Its generic size-gate was dropped (tiers match this year);
+  **PFML keeps its 50+ size-gate**.
+- **Two-tier disclaimer**: top band covers staleness; the salary box carries the
+  stronger figure-specific warning. **Per-section "as of {date}"** on each figure.
+- **Source links** show a distinguishing path segment (e.g.
+  `dor.wa.gov/…/business-occupation-tax-classifications`), not bare domain.
+- **WA-complete.** All other employee states (covered-but-unmapped AND
+  non-covered) render the honest **coming-soon** block — surfaced, not dropped.
+  State expansion is a separate effort.
 
 ## ⏰ Standing maintenance obligation — regenerate compliance figures yearly
 
@@ -85,9 +99,9 @@ Do NOT plain-`git push` to `agent-intel` (path layouts differ). After each
 deploy, update this file and subtree-push it so the deploy repo's record
 matches.
 
-## Test suites — all green at 7bc5bf8 (4 verify + 13 e2e)
+## Test suites — all green at acd848c (5 verify + 13 e2e)
 
-verify_queries · verify_profile · verify_overview · verify_positioning
+verify_queries · verify_profile · verify_overview · verify_positioning · verify_subtype
 e2e: setup · prospect · defend · my-carriers · overview · compliance · nav ·
 methodology · filters · empty_states · skeleton · mobile · positioning
 
