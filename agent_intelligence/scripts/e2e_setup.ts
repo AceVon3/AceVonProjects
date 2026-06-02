@@ -48,6 +48,20 @@ async function main(): Promise<void> {
   await page.selectOption("select", "WA"); // Home state
   await page.fill('input[placeholder="20"]', "20");
 
+  // Pay type (new required field). Choose Both.
+  await page.locator('[data-testid="pay-type-both"]').click();
+
+  // Remote count (new required field) — validated against headcount at entry.
+  // First an over-headcount value to confirm the inline guard fires…
+  await page.fill('input[placeholder="0"]', "25");
+  const remoteErr = page.locator("text=/can't exceed your total of 20/i");
+  check("remote > headcount shows inline error at entry (before submit)",
+    (await remoteErr.count()) >= 1);
+  // …then correct it to a sane value.
+  await page.fill('input[placeholder="0"]', "4");
+  check("inline remote error clears once corrected",
+    (await page.locator("text=/can't exceed your total of/i").count()) === 0);
+
   // Agent type: choose Independent (the default-looking option in the ref).
   await page.getByRole("button", { name: /Independent/ }).click();
 
@@ -92,6 +106,8 @@ async function main(): Promise<void> {
   check("  zip_code = '99206'",                          stored?.zip_code === "99206");
   check("  home_state = 'WA'",                           stored?.home_state === "WA");
   check("  employee_count = 20",                         stored?.employee_count === 20);
+  check("  pay_type = 'both'",                            stored?.pay_type === "both");
+  check("  remote_count = 4",                             stored?.remote_count === 4);
   check("  created_at is ISO timestamp",                 /^\d{4}-\d{2}-\d{2}T/.test(stored?.created_at ?? ""));
 
   // -- (3) Reload, expect to stay on / --------------------------------------

@@ -38,6 +38,8 @@ const PROFILE = {
   home_state: "WA",
   employee_count: 5,
   employee_states: ["WA", "OR", "AZ"],
+  pay_type: "both",   // → both salary + hourly relevance pointers
+  remote_count: 2,    // remote workers + OR/AZ uncovered → out-of-state flag fires
   created_at: "2026-05-28T00:00:00.000Z",
 };
 
@@ -235,6 +237,47 @@ async function main(): Promise<void> {
   const grounded = await waBlock.locator('[data-testid="briefing-section"][data-grounded="true"]').count();
   check("all 6 WA sections are grounded", grounded === 6, { grounded });
 
+  // -- Accordion: collapsed by default, keyboard-operable, caution pill ------
+  console.log("\nBriefing accordion (collapsed by default; expand/collapse; caution pill)");
+  const toggles = waBlock.locator('[data-testid="briefing-section-toggle"]');
+  check("each section has a real toggle button", (await toggles.count()) === 6);
+  const allCollapsed = await toggles.evaluateAll(
+    els => els.every(e => e.getAttribute("aria-expanded") === "false"));
+  check("all sections collapsed by default (aria-expanded=false)", allCollapsed);
+  const anyContentVisible = await waBlock.locator('[data-testid="briefing-section-content"]').evaluateAll(
+    els => els.some(e => (e as HTMLElement).offsetParent !== null));
+  check("no section content is visible while collapsed", anyContentVisible === false);
+
+  // Disclaimer band + out-of-state flag are NOT gated behind expansion.
+  check("disclaimer band visible while everything is collapsed",
+    await page.locator('[data-testid="briefing-disclaimer"]').isVisible());
+  check("out-of-state remote flag visible while everything is collapsed",
+    await page.locator('[data-testid="remote-out-of-state-flag"]').isVisible());
+
+  // Salary caution pill shows ON THE COLLAPSED HEADER.
+  const salaryToggle = waBlock.locator('[data-testid="briefing-section"][data-section="salary"] [data-testid="briefing-section-toggle"]');
+  const cautionPill = salaryToggle.locator('[data-testid="salary-caution-pill"]');
+  check("salary collapsed header shows the caution pill", await cautionPill.isVisible());
+  check("caution pill reads 'affects exempt status'",
+    /affects exempt status/i.test((await cautionPill.textContent()) ?? ""));
+  const salaryContent = waBlock.locator('[data-testid="briefing-section"][data-section="salary"] [data-testid="briefing-section-content"]');
+  check("salary full warning is hidden while collapsed",
+    !(await salaryContent.isVisible()));
+
+  // Keyboard-operable: focus + Enter expands; click collapses again.
+  await salaryToggle.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(120);
+  check("salary expands via keyboard (Enter) — aria-expanded=true",
+    (await salaryToggle.getAttribute("aria-expanded")) === "true");
+  check("salary content visible after expand", await salaryContent.isVisible());
+  check("salary warning box visible once expanded",
+    await salaryContent.locator('[data-testid="salary-warning"]').isVisible());
+  await salaryToggle.click(); // collapse again
+  await page.waitForTimeout(120);
+  check("salary collapses again on click — aria-expanded=false",
+    (await salaryToggle.getAttribute("aria-expanded")) === "false");
+
   // At-will section MUST carry the exceptions (the firm gate).
   const atwill = (await waBlock.locator('[data-testid="briefing-section"][data-section="atwill"]').textContent()) ?? "";
   check("at-will section states at-will", /at-will/i.test(atwill));
@@ -296,6 +339,159 @@ async function main(): Promise<void> {
     { gates });
   check("size-gate is never a determination ('you are exempt/subject')",
     gates.every(g => !/you are (exempt|subject|not required|required)/i.test(g)));
+
+  // -- Office summary (top of /compliance) ---------------------------------
+  console.log("\nOffice summary (home WA, N=5, remote 2, pay BOTH, emp WA+OR+AZ)");
+  const summary = page.locator('[data-testid="office-summary"]');
+  check("office summary present", (await summary.count()) === 1);
+  check("office summary is the ready variant (profile complete)",
+    (await summary.getAttribute("data-variant")) === "ready");
+
+  // Layout order: office summary ABOVE the not-legal/tax band ABOVE the briefing.
+  const yOf = async (sel: string) => {
+    const b = await page.locator(sel).first().boundingBox();
+    return b ? b.y : Number.POSITIVE_INFINITY;
+  };
+  const ySummary = await yOf('[data-testid="office-summary"]');
+  const yBand = await yOf('[data-testid="briefing-disclaimer"]');
+  const yBriefing = await yOf('[data-testid="briefing-state"]');
+  check("layout order: summary → not-legal/tax band → briefing",
+    ySummary < yBand && yBand < yBriefing, { ySummary, yBand, yBriefing });
+
+  // Factual recap reads back their own inputs.
+  const recap = (await summary.locator('[data-testid="office-summary-recap"]').textContent()) ?? "";
+  check("recap shows office location (Washington)", /Washington/.test(recap));
+  check("recap shows total employees (5)", /5 employees/.test(recap));
+  check("recap shows remote (2 of 5)", /2 of 5/.test(recap));
+  check("recap shows pay type (Both hourly and salaried)", /Both hourly and salaried/.test(recap));
+
+  // Relevance-pointing: present, carries their number, NEVER a determination.
+  const relevance = summary.locator('[data-testid="office-summary-relevance"]');
+  const pointers = await relevance.locator('[data-testid="relevance-pointer"]').allTextContents();
+  check("relevance: size pointer carries their number + the 50-line",
+    pointers.some(p => /5 employees/.test(p) && /50-employee line/.test(p)), { pointers });
+  check("relevance: salary pointer points at the exempt-salary threshold",
+    pointers.some(p => /salaried staff/i.test(p) && /exempt.salary threshold/i.test(p)));
+  check("relevance: hourly pointer points at minimum wage & overtime",
+    pointers.some(p => /hourly staff/i.test(p) && /minimum wage and overtime/i.test(p)));
+  const relevanceText = (await relevance.textContent()) ?? "";
+  const DETERMINATION = [
+    /\bapplies to you\b/i, /\bdoesn'?t apply to you\b/i, /\bdoes not apply to you\b/i,
+    /\byou are (exempt|subject|required|liable|covered)\b/i, /\byou must\b/i, /\byou qualify\b/i,
+  ];
+  check("relevance NEVER uses determination language",
+    !DETERMINATION.some(re => re.test(relevanceText)),
+    { matched: DETERMINATION.filter(re => re.test(relevanceText)).map(String) });
+
+  // The load-bearing out-of-state remote flag — present, lists OR + AZ, prominent.
+  const oosFlag = summary.locator('[data-testid="remote-out-of-state-flag"]');
+  check("out-of-state remote flag present", (await oosFlag.count()) === 1);
+  const oosList = (await oosFlag.locator('[data-testid="remote-out-of-state-list"]').textContent()) ?? "";
+  check("flag lists the uncovered remote states (Arizona + Oregon)",
+    /Arizona/.test(oosList) && /Oregon/.test(oosList), { oosList });
+  const oosText = (await oosFlag.textContent()) ?? "";
+  check("flag says those workers may be subject to their own states' rules",
+    /own states.{0,3} rules/i.test(oosText));
+  check("flag names the briefing's coverage (Washington) as NOT covering them",
+    /this briefing \(currently Washington\) does not cover/i.test(oosText));
+  // Prominence: not fine print — visibly bordered amber callout (2px border).
+  const oosBorderW = await oosFlag.evaluate(el => window.getComputedStyle(el as HTMLElement).borderTopWidth);
+  check("flag is visually prominent (2px border, not fine print)", oosBorderW === "2px", { oosBorderW });
+
+  // -- Relevance pointers as in-page links to briefing sections ------------
+  console.log("\nRelevance links (WA briefing renders → size/salary/hourly link; remote does not)");
+  const linkFor = (key: string) =>
+    relevance.locator(`[data-testid="relevance-pointer"][data-key="${key}"] [data-testid="relevance-link"]`);
+  // size → PFML, salary → salary, hourly → wage all render (WA is ready).
+  for (const [key, target] of [["size", "briefing-WA-pfml"], ["salary", "briefing-WA-salary"], ["hourly", "briefing-WA-wage"]] as const) {
+    const a = linkFor(key);
+    check(`'${key}' pointer is a link to #${target}`,
+      (await a.count()) === 1 && (await a.getAttribute("href")) === `#${target}`,
+      { href: await a.getAttribute("href").catch(() => null) });
+  }
+  // remote pointer has NO briefing section → must NOT be a link (no dead link).
+  check("'remote' pointer is NOT a link (no rendered target section)",
+    (await relevance.locator('[data-testid="relevance-pointer"][data-key="remote"] [data-testid="relevance-link"]').count()) === 0
+      && (await relevance.locator('[data-testid="relevance-pointer"][data-key="remote"]').getAttribute("data-linked")) === "false");
+  // Every rendered link points at a section element that actually exists.
+  const linkTargets = await relevance.locator('[data-testid="relevance-link"]').evaluateAll(
+    els => els.map(e => (e as HTMLAnchorElement).getAttribute("href")?.slice(1) ?? ""));
+  for (const id of linkTargets) {
+    check(`link target #${id} resolves to a rendered section (not a dead link)`,
+      (await page.locator(`#${id}[data-testid="briefing-section"]`).count()) === 1);
+  }
+
+  // CRITICAL: clicking a 'Worth reviewing' link must EXPAND its target section
+  // AND scroll to it — never land on a collapsed, empty row. Start from
+  // collapsed (the accordion test above re-collapsed salary), so this proves
+  // the link did the expanding.
+  console.log("\nClicking the salary relevance link EXPANDS the target + scrolls it into view");
+  check("salary section is collapsed before the click",
+    (await salaryToggle.getAttribute("aria-expanded")) === "false");
+  await linkFor("salary").click();
+  // Smooth-scroll settle: poll until scrollY stops changing.
+  await page.waitForFunction(() => {
+    const w = window as unknown as { __ly?: number; __stable?: number };
+    const y = window.scrollY;
+    if (w.__ly === y) { w.__stable = (w.__stable ?? 0) + 1; } else { w.__stable = 0; }
+    w.__ly = y;
+    return (w.__stable ?? 0) >= 3;
+  }, { timeout: 4000, polling: 100 }).catch(() => {});
+  check("clicking EXPANDED the target salary section (aria-expanded=true)",
+    (await salaryToggle.getAttribute("aria-expanded")) === "true");
+  check("expanded salary content is actually visible (not a collapsed row)",
+    await salaryContent.isVisible());
+  const landing = await page.evaluate(() => {
+    const band = document.querySelector('[data-testid="briefing-disclaimer"]') as HTMLElement;
+    const sec = document.getElementById("briefing-WA-salary") as HTMLElement;
+    const bandRect = band.getBoundingClientRect();
+    const secRect = sec.getBoundingClientRect();
+    return {
+      scrollY: Math.round(window.scrollY),
+      secTop: Math.round(secRect.top),
+      secBottom: Math.round(secRect.bottom),
+      bandBottom: Math.round(bandRect.bottom),
+      viewportH: window.innerHeight,
+      path: location.pathname,
+    };
+  });
+  check("in-page only — still on /compliance (not a navigation)", landing.path === "/compliance");
+  check("page actually scrolled to the section", landing.scrollY > 0, { scrollY: landing.scrollY });
+  check("target lands fully BELOW the sticky band (not tucked under it)",
+    landing.secTop >= landing.bandBottom - 1, { secTop: landing.secTop, bandBottom: landing.bandBottom });
+  check("target header is within the viewport after the jump",
+    landing.secTop >= 0 && landing.secTop < landing.viewportH, { secTop: landing.secTop, viewportH: landing.viewportH });
+
+  // -- No ready briefing state → relevance pointers are NOT links -----------
+  // Employee states OR + AZ (neither briefing-ready) → no briefing sections
+  // render, so the pointers must stay plain text rather than become dead links.
+  console.log("\nNo ready briefing state (emp OR+AZ) → pointers render but are NOT links");
+  await setProfileAndOpen(page, { ...PROFILE, home_state: "OR", employee_states: ["OR", "AZ"] });
+  const summaryNoReady = page.locator('[data-testid="office-summary"]');
+  check("office summary still renders (ready variant — profile complete)",
+    (await summaryNoReady.getAttribute("data-variant")) === "ready");
+  const noReadyRelevance = summaryNoReady.locator('[data-testid="office-summary-relevance"]');
+  check("relevance pointers still present",
+    (await noReadyRelevance.locator('[data-testid="relevance-pointer"]').count()) >= 1);
+  check("NO relevance link rendered (no briefing section to jump to)",
+    (await noReadyRelevance.locator('[data-testid="relevance-link"]').count()) === 0);
+  check("every pointer marked data-linked='false' (no dead links)",
+    (await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-linked="true"]').count()) === 0);
+
+  // -- Graceful upgrade path: old profile missing the new fields ------------
+  console.log("\nUpgrade path: profile saved before pay_type/remote_count existed");
+  const legacy: Record<string, unknown> = { ...PROFILE };
+  delete legacy.pay_type;
+  delete legacy.remote_count;
+  await setProfileAndOpen(page, legacy);
+  const upgradeSummary = page.locator('[data-testid="office-summary"]');
+  check("office summary shows the upgrade variant (not an error/wipe)",
+    (await upgradeSummary.getAttribute("data-variant")) === "upgrade");
+  check("upgrade prompt links to /setup",
+    (await upgradeSummary.locator('[data-testid="office-summary-upgrade-link"]').getAttribute("href")) === "/setup");
+  // The briefing still renders for a legacy profile (it doesn't need the new fields).
+  check("briefing still renders for a legacy profile (not blocked)",
+    (await page.locator('[data-testid="compliance-briefing"]').count()) === 1);
 
   // -- Non-covered employee state is SURFACED as coming-soon (not dropped) --
   console.log("\nNon-covered employee state surfacing (employees WA + CA)");

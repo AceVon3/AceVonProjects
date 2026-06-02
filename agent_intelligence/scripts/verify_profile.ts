@@ -26,6 +26,7 @@ import {
   PROFILE_KEY,
   clearProfile,
   loadProfile,
+  needsProfileUpgrade,
   saveProfile,
   validateProfile,
 } from "../src/lib/profile";
@@ -51,6 +52,8 @@ const VALID_INDEPENDENT: AgentProfile = {
   home_state: "WA",
   employee_count: 20,
   employee_states: ["WA", "OR", "AZ"],
+  pay_type: "both",
+  remote_count: 4,
   created_at: "2026-05-28T00:00:00.000Z",
 };
 
@@ -81,6 +84,12 @@ group("validateProfile: rejects each missing/invalid field", () => {
     ["no licensed_states",                                  { ...VALID_INDEPENDENT, licensed_states: [] },    "licensed_states"],
     ["licensed_states contains non-data_coverage (tamper)", { ...VALID_INDEPENDENT, licensed_states: ["WA", "CA"] }, "licensed_states"],
     ["no employee_states",                                  { ...VALID_INDEPENDENT, employee_states: [] },    "employee_states"],
+    ["missing pay_type",                                    { ...VALID_INDEPENDENT, pay_type: undefined as any }, "pay_type"],
+    ["invalid pay_type",                                    { ...VALID_INDEPENDENT, pay_type: "weekly" as any }, "pay_type"],
+    ["missing remote_count",                                { ...VALID_INDEPENDENT, remote_count: undefined as any }, "remote_count"],
+    ["negative remote_count",                               { ...VALID_INDEPENDENT, remote_count: -1 },       "remote_count"],
+    ["non-integer remote_count",                            { ...VALID_INDEPENDENT, remote_count: 2.5 },      "remote_count"],
+    ["remote_count exceeds headcount",                      { ...VALID_INDEPENDENT, employee_count: 5, remote_count: 6 }, "remote_count"],
   ];
   for (const [label, p, expectedField] of cases) {
     const errs = validateProfile(p);
@@ -92,6 +101,29 @@ group("validateProfile: rejects each missing/invalid field", () => {
 group("validateProfile: accepts valid profiles", () => {
   check("valid independent profile -> zero errors", validateProfile(VALID_INDEPENDENT).length === 0);
   check("valid captive profile -> zero errors",     validateProfile(VALID_CAPTIVE).length === 0);
+  check("remote_count == employee_count is allowed (boundary)",
+    validateProfile({ ...VALID_INDEPENDENT, employee_count: 5, remote_count: 5 }).length === 0);
+  check("remote_count == 0 is allowed",
+    validateProfile({ ...VALID_INDEPENDENT, remote_count: 0 }).length === 0);
+  for (const pt of ["hourly", "salary", "both"] as const) {
+    check(`pay_type '${pt}' is accepted`,
+      validateProfile({ ...VALID_INDEPENDENT, pay_type: pt }).length === 0);
+  }
+});
+
+group("needsProfileUpgrade: flags old profiles missing the new fields", () => {
+  check("null profile -> false (that's the redirect case, not an upgrade)",
+    needsProfileUpgrade(null) === false);
+  check("complete profile -> false", needsProfileUpgrade(VALID_INDEPENDENT) === false);
+  const oldProfile = { ...VALID_INDEPENDENT } as any;
+  delete oldProfile.pay_type;
+  delete oldProfile.remote_count;
+  check("profile missing pay_type + remote_count -> true",
+    needsProfileUpgrade(oldProfile as AgentProfile) === true);
+  check("profile missing only remote_count -> true",
+    needsProfileUpgrade({ ...VALID_INDEPENDENT, remote_count: undefined as any }) === true);
+  check("profile missing only pay_type -> true",
+    needsProfileUpgrade({ ...VALID_INDEPENDENT, pay_type: undefined as any }) === true);
 });
 
 group("saveProfile + loadProfile: round-trip via localStorage shim", () => {
@@ -112,6 +144,8 @@ group("saveProfile + loadProfile: round-trip via localStorage shim", () => {
     check("round-trip preserves home_state",        loaded.home_state === VALID_INDEPENDENT.home_state);
     check("round-trip preserves employee_count",    loaded.employee_count === VALID_INDEPENDENT.employee_count);
     check("round-trip preserves employee_states",   JSON.stringify(loaded.employee_states) === JSON.stringify(VALID_INDEPENDENT.employee_states));
+    check("round-trip preserves pay_type",          loaded.pay_type === VALID_INDEPENDENT.pay_type);
+    check("round-trip preserves remote_count",      loaded.remote_count === VALID_INDEPENDENT.remote_count);
   }
 
   // Raw localStorage shape sanity

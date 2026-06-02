@@ -7,8 +7,10 @@ import { BRANDS, Brand } from "@/lib/constants";
 import {
   AgentProfile,
   AgentType,
+  PayType,
   ValidationError,
   loadProfile,
+  needsProfileUpgrade,
   saveProfile,
   validateProfile,
 } from "@/lib/profile";
@@ -23,6 +25,8 @@ type FormState = {
   home_state: string;
   employee_count_str: string; // keep as string for input control
   employee_states: string[];
+  pay_type: PayType | "";
+  remote_count_str: string;   // keep as string for input control
 };
 
 const EMPTY: FormState = {
@@ -34,6 +38,8 @@ const EMPTY: FormState = {
   home_state: "",
   employee_count_str: "",
   employee_states: [],
+  pay_type: "",
+  remote_count_str: "",
 };
 
 function initialState(): FormState {
@@ -48,11 +54,21 @@ function initialState(): FormState {
     home_state: existing.home_state,
     employee_count_str: String(existing.employee_count),
     employee_states: existing.employee_states,
+    // Old profiles predate these fields — leave blank so they read as the
+    // required, unfilled inputs they now are (handled by the upgrade banner).
+    pay_type: (["hourly", "salary", "both"] as const).includes(existing.pay_type as PayType)
+      ? (existing.pay_type as PayType)
+      : "",
+    remote_count_str:
+      typeof existing.remote_count === "number" && Number.isInteger(existing.remote_count)
+        ? String(existing.remote_count)
+        : "",
   };
 }
 
 function toProfile(s: FormState): Partial<AgentProfile> {
   const n = Number(s.employee_count_str);
+  const r = Number(s.remote_count_str);
   return {
     agent_type: (s.agent_type || undefined) as AgentType | undefined,
     authorized_brands: s.authorized_brands,
@@ -62,6 +78,8 @@ function toProfile(s: FormState): Partial<AgentProfile> {
     home_state: s.home_state,
     employee_count: Number.isFinite(n) && s.employee_count_str !== "" ? n : undefined,
     employee_states: s.employee_states,
+    pay_type: (s.pay_type || undefined) as PayType | undefined,
+    remote_count: Number.isFinite(r) && s.remote_count_str !== "" ? r : undefined,
   };
 }
 
@@ -82,6 +100,21 @@ export default function ProfileForm(): React.JSX.Element {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [licSearch, setLicSearch] = useState("");
   const [empSearch, setEmpSearch] = useState("");
+  // Whether the agent arrived with an older profile missing the new required
+  // fields — drives the prompt banner. Computed once.
+  const [needsUpgrade] = useState(() => needsProfileUpgrade(loadProfile()));
+
+  // Live "remote can't exceed headcount" check — surfaced AS THE AGENT TYPES,
+  // the same entry-time guard the licensed-states picker uses, instead of
+  // waiting for submit. Only fires once both numbers are present and valid.
+  const liveRemoteError = useMemo(() => {
+    if (state.remote_count_str === "" || state.employee_count_str === "") return "";
+    const r = Number(state.remote_count_str);
+    const n = Number(state.employee_count_str);
+    if (!Number.isInteger(r) || !Number.isInteger(n)) return "";
+    if (r > n) return `Remote employees (${r}) can't exceed your total of ${n}.`;
+    return "";
+  }, [state.remote_count_str, state.employee_count_str]);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setState(prev => ({ ...prev, [key]: value }));
@@ -152,6 +185,8 @@ export default function ProfileForm(): React.JSX.Element {
       home_state: draft.home_state!,
       employee_count: draft.employee_count!,
       employee_states: draft.employee_states!,
+      pay_type: draft.pay_type!,
+      remote_count: draft.remote_count!,
       created_at: new Date().toISOString(),
     };
     const saveErrs = saveProfile(profile);
@@ -188,6 +223,22 @@ export default function ProfileForm(): React.JSX.Element {
     <form onSubmit={onSubmit} className="grid gap-4 lg:grid-cols-[1.7fr_1fr]" noValidate>
       {/* MAIN CARD */}
       <div className="rounded-xl p-[18px] bg-surface border border-hairline border-line">
+        {/* Upgrade prompt — shown when an older saved profile is missing the
+            new required fields. We don't wipe or block their data; we ask them
+            to fill the two new questions (highlighted below). */}
+        {needsUpgrade && (
+          <div
+            data-testid="profile-upgrade-banner"
+            className="mb-4 rounded-md bg-amber-fill text-amber-text border border-hairline border-line px-3 py-2.5 text-12 leading-[1.45]"
+          >
+            <span className="font-medium">Two new questions.</span> We added{" "}
+            <span className="font-medium">how you pay staff</span> and{" "}
+            <span className="font-medium">how many employees work remotely</span> to
+            personalize your Compliance page. Your other details are saved — just
+            fill these in and save.
+          </div>
+        )}
+
         {/* Card title */}
         <div className="flex items-center gap-2 mb-4 font-medium text-sm">
           <span aria-hidden className="text-red-text text-17">⌂</span>
@@ -268,7 +319,62 @@ export default function ProfileForm(): React.JSX.Element {
             />
             <FieldErr msg={errors.employee_count} />
           </div>
+
+          {/* Remote count — validated against headcount at entry time. */}
+          <div>
+            <label className="block text-11 mb-1 text-ink-2">
+              Remote employees <ReqStar />
+            </label>
+            <input
+              type="number"
+              min={0}
+              step={1}
+              value={state.remote_count_str}
+              onChange={e => update("remote_count_str", e.target.value)}
+              placeholder="0"
+              className={INPUT_CLS}
+              aria-invalid={!!(errors.remote_count || liveRemoteError)}
+            />
+            <p className="text-11 mt-1 text-ink-3">How many of your employees work remotely.</p>
+            <FieldErr msg={errors.remote_count || liveRemoteError} />
+          </div>
         </div>
+
+        {/* Pay type — drives the Compliance office summary's relevance
+            pointing (hourly → min wage/overtime; salary → exempt threshold). */}
+        <SecLabel>
+          How do you pay staff? <ReqStar />
+        </SecLabel>
+        <div className="flex gap-2 mb-1" role="radiogroup" aria-label="Pay type">
+          {(
+            [
+              { value: "hourly", title: "Hourly" },
+              { value: "salary", title: "Salary" },
+              { value: "both",   title: "Both" },
+            ] as const
+          ).map(opt => {
+            const sel = state.pay_type === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => update("pay_type", opt.value)}
+                data-testid={`pay-type-${opt.value}`}
+                className={[
+                  "flex-1 rounded-lg text-center px-[11px] py-[9px] cursor-pointer font-medium text-13",
+                  sel
+                    ? "border-2 border-blue-border bg-blue-fill text-blue-text"
+                    : "border border-hairline border-line-2 bg-surface text-ink",
+                ].join(" ")}
+                role="radio"
+                aria-checked={sel}
+              >
+                {opt.title}
+              </button>
+            );
+          })}
+        </div>
+        <FieldErr msg={errors.pay_type} />
 
         <div className="my-4 border-t border-hairline border-line" />
 

@@ -2,6 +2,7 @@
 
 import {
   BRIEFING_SECTIONS,
+  BriefingSectionDef,
   SALARY_WARNING,
   deriveAnnualFromWeekly,
   isBriefingReady,
@@ -14,6 +15,11 @@ type Props = {
   employeeStates: string[];
   homeState: string;
   employeeCount: number;
+  // Controlled accordion state (lifted to the page so the office-summary
+  // "Worth reviewing" links can expand a section before scrolling to it).
+  // Keyed by section element id (`briefing-{state}-{key}`).
+  expanded: Record<string, boolean>;
+  onToggle: (id: string) => void;
 };
 
 // Distinguishing source label: domain + the final path segment, so multiple
@@ -63,12 +69,140 @@ function SalaryWarningBox({ summary }: { summary: string | null }): React.JSX.El
   );
 }
 
+// One accordion item: a clickable title row (proper button, aria-expanded,
+// keyboard-operable) with a chevron and — for the salary section — a small
+// caution pill that stays visible on the COLLAPSED header. The full content
+// (including the misclassification warning) lives in the collapsible region.
+function BriefingAccordionItem({
+  state,
+  sec,
+  employeeCount,
+  isOpen,
+  onToggle,
+}: {
+  state: string;
+  sec: BriefingSectionDef;
+  employeeCount: number;
+  isOpen: boolean;
+  onToggle: (id: string) => void;
+}): React.JSX.Element {
+  const id = `briefing-${state}-${sec.key}`;
+  const contentId = `${id}-content`;
+  const headerId = `${id}-header`;
+  const s = sectionSummary(state, sec.topic);
+  const grounded = !!(s && s.title && s.summary);
+
+  return (
+    <div
+      // Anchor target for the office-summary relevance links. Must match
+      // briefingSectionAnchorId(). scroll-mt clears the sticky
+      // "not legal/tax advice" band so a jump lands fully below it.
+      id={id}
+      data-testid="briefing-section"
+      data-section={sec.key}
+      data-grounded={grounded ? "true" : "false"}
+      data-expanded={isOpen ? "true" : "false"}
+      className="scroll-mt-[88px]"
+    >
+      <h3 className="m-0">
+        <button
+          id={headerId}
+          type="button"
+          data-testid="briefing-section-toggle"
+          aria-expanded={isOpen}
+          aria-controls={contentId}
+          onClick={() => onToggle(id)}
+          className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left cursor-pointer bg-transparent border-none hover:bg-surface-2/60 transition-colors"
+        >
+          <span className="flex items-center gap-2 flex-wrap">
+            <span className="text-13 font-medium text-ink">{sec.label}</span>
+            {sec.salaryRisk && (
+              <span
+                data-testid="salary-caution-pill"
+                className="inline-flex items-center gap-1 text-10 font-medium rounded-full px-2 py-px bg-amber-fill text-amber-text"
+              >
+                ⚠ affects exempt status
+              </span>
+            )}
+          </span>
+          <i
+            aria-hidden
+            className={`ti ti-chevron-down text-15 text-ink-2 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+      </h3>
+
+      <div
+        id={contentId}
+        role="region"
+        aria-labelledby={headerId}
+        data-testid="briefing-section-content"
+        hidden={!isOpen}
+        className="px-4 pb-3.5 pt-0"
+      >
+        {grounded ? (
+          <p className="text-13 text-ink-2 m-0 leading-[1.5]">{s!.summary}</p>
+        ) : (
+          <p className="text-12 text-ink-3 m-0">Summary coming soon for this topic.</p>
+        )}
+
+        {/* Prominent per-section "as of" so staleness is visible per number. */}
+        {grounded && s!.last_checked && (
+          <div data-testid="section-asof" className="mt-1.5 text-11 text-ink-3">
+            <span className="font-medium text-ink-2">Figures as of {s!.last_checked}</span>
+            {" "}— confirm current numbers at the source.
+          </div>
+        )}
+
+        {/* Salary box: the misclassification-risk figure gets a stronger
+            figure-specific warning + the derived annual, instead of a generic
+            size-gate. PFML keeps its size-gate; others apply regardless. */}
+        {sec.salaryRisk ? (
+          <SalaryWarningBox summary={grounded ? s!.summary : null} />
+        ) : sec.sizeGate ? (
+          <div
+            data-testid="size-gate"
+            className="mt-2 rounded-md bg-blue-fill text-blue-text text-12 px-3 py-2 leading-[1.45]"
+          >
+            {sec.sizeGate.framing(employeeCount)}
+          </div>
+        ) : (
+          <div className="mt-1.5 text-11 text-ink-3">Applies regardless of company size.</div>
+        )}
+
+        {grounded && (
+          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-11 text-ink-3">
+            {s!.sources.map(u => (
+              <a
+                key={u}
+                href={u}
+                title={u}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="briefing-source"
+                className="text-blue-text no-underline hover:underline"
+              >
+                {sourceLabel(u)}
+              </a>
+            ))}
+            {s!.last_checked && <span>· Last checked {s!.last_checked}</span>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ReadyBriefing({
   state,
   employeeCount,
+  expanded,
+  onToggle,
 }: {
   state: string;
   employeeCount: number;
+  expanded: Record<string, boolean>;
+  onToggle: (id: string) => void;
 }): React.JSX.Element {
   return (
     <section
@@ -84,74 +218,16 @@ function ReadyBriefing({
       </div>
 
       <div className="divide-y divide-line">
-        {BRIEFING_SECTIONS.map(sec => {
-          const s = sectionSummary(state, sec.topic);
-          const grounded = !!(s && s.title && s.summary);
-          return (
-            <div
-              key={sec.key}
-              data-testid="briefing-section"
-              data-section={sec.key}
-              data-grounded={grounded ? "true" : "false"}
-              className="px-4 py-3"
-            >
-              <h3 className="text-13 font-medium m-0 text-ink mb-1">{sec.label}</h3>
-
-              {grounded ? (
-                <p className="text-13 text-ink-2 m-0 leading-[1.5]">{s!.summary}</p>
-              ) : (
-                <p className="text-12 text-ink-3 m-0">
-                  Summary coming soon for this topic.
-                </p>
-              )}
-
-              {/* Prominent per-section "as of" so staleness is visible per
-                  number, not just globally. */}
-              {grounded && s!.last_checked && (
-                <div data-testid="section-asof" className="mt-1.5 text-11 text-ink-3">
-                  <span className="font-medium text-ink-2">Figures as of {s!.last_checked}</span>
-                  {" "}— confirm current numbers at the source.
-                </div>
-              )}
-
-              {/* Salary box: the misclassification-risk figure gets a stronger
-                  figure-specific warning + the derived annual, instead of a
-                  generic size-gate (small/large tiers match in 2026). PFML
-                  keeps its size-gate; other sections apply regardless of size. */}
-              {sec.salaryRisk ? (
-                <SalaryWarningBox summary={grounded ? s!.summary : null} />
-              ) : sec.sizeGate ? (
-                <div
-                  data-testid="size-gate"
-                  className="mt-2 rounded-md bg-blue-fill text-blue-text text-12 px-3 py-2 leading-[1.45]"
-                >
-                  {sec.sizeGate.framing(employeeCount)}
-                </div>
-              ) : (
-                <div className="mt-1.5 text-11 text-ink-3">Applies regardless of company size.</div>
-              )}
-
-              {grounded && (
-                <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-11 text-ink-3">
-                  {s!.sources.map(u => (
-                    <a
-                      key={u}
-                      href={u}
-                      title={u}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      data-testid="briefing-source"
-                      className="text-blue-text no-underline hover:underline"
-                    >
-                      {sourceLabel(u)}
-                    </a>
-                  ))}
-                  {s!.last_checked && <span>· Last checked {s!.last_checked}</span>}
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {BRIEFING_SECTIONS.map(sec => (
+          <BriefingAccordionItem
+            key={sec.key}
+            state={state}
+            sec={sec}
+            employeeCount={employeeCount}
+            isOpen={!!expanded[`briefing-${state}-${sec.key}`]}
+            onToggle={onToggle}
+          />
+        ))}
       </div>
     </section>
   );
@@ -178,13 +254,15 @@ export default function ComplianceBriefing({
   employeeStates,
   homeState,
   employeeCount,
+  expanded,
+  onToggle,
 }: Props): React.JSX.Element {
   const ordered = orderedBriefingStates(employeeStates, homeState);
 
   return (
     <div data-testid="compliance-briefing" className="mb-6">
       {/* LOAD-BEARING framing — not legal/tax advice. Persistent + sticky,
-          prominent like Positioning's band; not fine print, not dismissible. */}
+          prominent like Positioning's band; never collapsible, not dismissible. */}
       <div
         data-testid="briefing-disclaimer"
         className="sticky top-0 z-10 mb-4 rounded-md bg-amber-fill text-amber-text border border-hairline border-line px-4 py-3 text-13 leading-[1.45]"
@@ -200,7 +278,13 @@ export default function ComplianceBriefing({
       ) : (
         ordered.map(state =>
           isBriefingReady(state) ? (
-            <ReadyBriefing key={state} state={state} employeeCount={employeeCount} />
+            <ReadyBriefing
+              key={state}
+              state={state}
+              employeeCount={employeeCount}
+              expanded={expanded}
+              onToggle={onToggle}
+            />
           ) : (
             <ComingSoonBriefing key={state} state={state} />
           ),

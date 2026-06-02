@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import ComplianceBriefing from "@/components/ComplianceBriefing";
 import ComplianceCard from "@/components/ComplianceCard";
+import OfficeSummary from "@/components/OfficeSummary";
 import {
   COMPLIANCE_SUMMARIES,
   ComplianceSummary,
@@ -42,6 +43,35 @@ export default function CompliancePage(): React.JSX.Element {
   const router = useRouter();
   const [phase, setPhase] = useState<"loading" | "ready">("loading");
   const [profile, setProfile] = useState<AgentProfile | null>(null);
+
+  // Accordion expansion state lives here so the office-summary "Worth
+  // reviewing" links can expand a section before scrolling to it. Keyed by
+  // section element id (`briefing-{state}-{key}`); collapsed by default.
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [scrollTarget, setScrollTarget] = useState<string | null>(null);
+
+  const toggleSection = useCallback((id: string) => {
+    setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+  }, []);
+
+  // Expand the target section, then scroll to it once the expanded content has
+  // laid out (rAF). scrollIntoView honors the section's scroll-margin-top, so
+  // it lands fully below the sticky disclaimer band.
+  const revealSection = useCallback((id: string) => {
+    setExpanded(prev => ({ ...prev, [id]: true }));
+    setScrollTarget(id);
+  }, []);
+
+  useEffect(() => {
+    if (!scrollTarget) return;
+    const el = document.getElementById(scrollTarget);
+    if (el) {
+      requestAnimationFrame(() => {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+    setScrollTarget(null);
+  }, [scrollTarget]);
 
   useEffect(() => {
     const p = loadProfile();
@@ -86,14 +116,23 @@ export default function CompliancePage(): React.JSX.Element {
           </p>
         </div>
 
+        {/* Office summary — at the very top: a factual recap of the agent's
+            own inputs, relevance-pointing (never a determination), and the
+            load-bearing out-of-state remote flag. Sits ABOVE the briefing's
+            "not legal/tax advice" band per the layout. */}
+        {profile && <OfficeSummary profile={profile} onJump={revealSection} />}
+
         {/* Office briefing — personalized, ordered by primary state, with the
             load-bearing "not legal/tax advice" band. Reuses the same grounded
-            summaries the card grid below reads. */}
+            summaries the card grid below reads. Topics are a collapsed
+            accordion; the office-summary links expand + scroll into them. */}
         {profile && (
           <ComplianceBriefing
             employeeStates={profile.employee_states}
             homeState={profile.home_state}
             employeeCount={profile.employee_count}
+            expanded={expanded}
+            onToggle={toggleSection}
           />
         )}
 
