@@ -3,9 +3,23 @@
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- Monorepo HEAD: `7ce30f9 fix(compliance): distinguish same-domain source links`.
-- **Deployed (agent-intel/master): `acd848c`** — in sync with the monorepo
+- Monorepo HEAD: `48cb173 docs(methodology): document Rate Positioning (Feature 7)`.
+- **Deployed (agent-intel/master): `6e261ea`** — in sync with the monorepo
   subtree at this checkpoint. All suites green.
+
+## Latest iteration — Methodology: Positioning section (2026-06-02, deployed)
+
+Added a "How Rate Positioning compares carriers" section to `/methodology`
+(between the thresholds and excluded-brands sections). Static documentation,
+no logic change; facts sourced from the Feature 7 spec. Leads with the
+load-bearing "rate changes, not prices" frame in the feature's own amber band
+(`bg-amber-fill text-amber-text`), then documents the premium-weighted
+computation (same active 12-month set as Prospect/Defend), the
+higher-confidence vs thin tiering + anchored-cell / insufficient-data honesty
+mechanics, and the sparsity limit. Deliberately omits the internal
+verification counts (10/41/24) and phrases the null-premium fallback durably
+rather than hardcoding "1 of 180." New section carries `data-testid=
+"section-positioning"`. Monorepo `48cb173` → deploy `6e261ea`.
 
 ## Status: done
 
