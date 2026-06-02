@@ -3,11 +3,35 @@
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- Monorepo HEAD: `48cb173 docs(methodology): document Rate Positioning (Feature 7)`.
-- **Deployed (agent-intel/master): `6e261ea`** — in sync with the monorepo
+- Monorepo HEAD: `cde0c95 feat(overview): carrier-activity card shows recent individual filings`.
+- **Deployed (agent-intel/master): `cc7bf2a`** — in sync with the monorepo
   subtree at this checkpoint. All suites green.
 
-## Latest iteration — Methodology: Positioning section (2026-06-02, deployed)
+## Latest iteration — Overview: carrier-activity recent-filings card (2026-06-02, deployed)
+
+Replaced the aggregated per-(brand,line,state) averages in the "Your carrier's
+activity" card with a curated recent slice of the carrier's own INDIVIDUAL
+filings. Selection order: (1) **coverage floor** — most-recent filing from each
+licensed state the carrier filed in (every filed state guaranteed ≥1 row);
+(2) **fill** — next-most-recent by recency only, capped at `CARRIER_ACTIVITY_EXTRA
+= 3` on top of the floor (busy state earns a 2nd row only after coverage);
+(3) licensed states with no filings noted at the card foot ("No recent filings
+from your carrier in: {states}", suppressed when the list is entirely empty —
+the empty message covers that). Each row: carrier/line/sub-type, signed change,
+state, effective date (with year), abbreviated policyholders — reusing
+`formatEffectiveDate`/`formatPolicyholders`/`formatRateImpact`/`rateImpactColor`
++ `resolveSubtype` label cleanup. Added a "See all →" link to `/my-carriers`.
+**No new query path** — same own-carrier set `/my-carriers` renders, a different
+slice; reconciles by construction. `computeCarrierActivity(filings, licensedStates)`
+now returns `{ rows: Filing[], noFilingStates: string[] }`.
+
+Tests: `verify_overview` rewritten (reconciliation, coverage floor, floor/
+no-filings partition, +3 cap, newest-first order); `e2e_overview` updated for
+the row-based card + "See all" link + a captive-Progressive-all-8 case (floor +
+ID/UT/WA no-filings note). Full suite green (5 verify + 13 e2e). Monorepo
+`cde0c95` → deploy `cc7bf2a`.
+
+## Earlier iteration — Methodology: Positioning section (2026-06-02, deployed)
 
 Added a "How Rate Positioning compares carriers" section to `/methodology`
 (between the thresholds and excluded-brands sections). Static documentation,
