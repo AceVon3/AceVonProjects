@@ -161,6 +161,87 @@ export default function MethodologyPage(): React.JSX.Element {
           </ul>
         </section>
 
+        {/* --- Rate Positioning --- */}
+        <section className={sectionCls} data-testid="section-positioning">
+          <h2 className={h2Cls}>How Rate Positioning compares carriers</h2>
+          <p className={pCls}>
+            The Positioning page (<span className={codeCls}>/positioning</span>)
+            compares, for each (line, state), the premium-weighted average rate{" "}
+            <em>change</em> your carrier filed against{" "}
+            <strong>each competitor individually</strong> — never a single blended
+            “field average.” A captive sees their one carrier versus the field; an
+            independent sees each carrier they sell versus the brands they don’t,
+            per carrier, never blended together.
+          </p>
+
+          {/* Load-bearing frame — the same callout the feature itself carries. */}
+          <div className="bg-amber-fill text-amber-text border border-hairline border-line rounded-md px-4 py-3 text-13 leading-[1.5] mt-3 mb-3">
+            <strong>These are rate changes, not prices.</strong> Every figure is the
+            average percentage a carrier <em>changed</em> its filed rates — not how
+            cheap it is. A favorable comparison means a competitor is raising rates
+            faster (or cutting them less) than your carrier; it says nothing about
+            whose premium is lower today. This is the easiest number on the site to
+            misread, so the feature repeats the frame in its column header
+            (“avg rate change”) and in every expanded audit panel.
+          </div>
+
+          <p className={pCls}>How the average is computed:</p>
+          <ul className="m-0 pl-[18px]">
+            <li className={liCls}>
+              <strong>Premium-weighted.</strong> Within each (line, state, brand)
+              group it is the average of{" "}
+              <span className={codeCls}>overall_rate_impact</span> weighted by each
+              filing’s written premium — a large book moves the average more than a
+              small one. (If every premium in a group were null it falls back to a
+              simple mean and flags it; that case is essentially nonexistent in the
+              data.)
+            </li>
+            <li className={liCls}>
+              <strong>Same active set as Prospect and Defend.</strong> It draws from
+              the exact same filings — active rate activities, non-null effective
+              date, inside the 12-month window anchored to{" "}
+              <span className={codeCls}>{lastUpdated}</span> — so the numbers
+              reconcile with the rest of the site rather than coming from a separate
+              query.
+            </li>
+          </ul>
+
+          <p className={pCls}>
+            Because filing data is sparse, every comparison is labeled with how much
+            evidence sits behind it. The confidence tier is the honesty signal, not
+            decoration:
+          </p>
+          <ul className="m-0 pl-[18px]">
+            <li className={liCls}>
+              <strong>Higher-confidence (≥ 2 filings on each side).</strong> Genuine
+              multi-filing averages on both sides. Only these show a computed point
+              spread between the two carriers.
+            </li>
+            <li className={liCls}>
+              <strong>Thin (exactly 1 filing on a side).</strong> Shown demoted and
+              never called an “average” — a lone filing renders as{" "}
+              <span className={codeCls}>“1 filing: +X%”</span>, not{" "}
+              <span className={codeCls}>“+X% avg”</span>, and no spread is computed
+              against it. Dressing one data point as an average is exactly the
+              overstatement the tiering prevents.
+            </li>
+            <li className={liCls}>
+              <strong>Anchored cells only.</strong> A (line, state) appears only
+              where your carrier actually filed. Competitors with no filing in that
+              cell are listed as <strong>insufficient data</strong> — surfaced
+              honestly, never computed or estimated.
+            </li>
+          </ul>
+
+          <p className={pCls}>
+            <strong>The limit this creates:</strong> with sparse filings, many
+            (line, state) cells cannot support a real comparison at all. The page
+            surfaces only the comparisons the data genuinely supports — and names the
+            gaps as insufficient data or “no filings from your carrier” — rather than
+            manufacturing a comparison out of one or two filings.
+          </p>
+        </section>
+
         {/* --- Excluded brands --- */}
         <section className={sectionCls} data-testid="section-excluded">
           <h2 className={h2Cls}>Excluded brands</h2>
