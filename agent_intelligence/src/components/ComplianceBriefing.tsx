@@ -16,9 +16,18 @@ type Props = {
   employeeCount: number;
 };
 
-function bareDomain(url: string): string {
+// Distinguishing source label: domain + the final path segment, so multiple
+// links on the same domain (e.g. three dor.wa.gov pages) read as clearly
+// different pages instead of three identical "dor.wa.gov" labels. The full URL
+// is on the anchor's href + title.
+function sourceLabel(url: string): string {
   try {
-    return new URL(url).hostname.replace(/^www\./, "");
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, "");
+    const segs = u.pathname.split("/").filter(Boolean);
+    if (segs.length === 0) return host;
+    const last = segs[segs.length - 1];
+    return segs.length > 1 ? `${host}/…/${last}` : `${host}/${last}`;
   } catch {
     return url;
   }
@@ -128,12 +137,13 @@ function ReadyBriefing({
                     <a
                       key={u}
                       href={u}
+                      title={u}
                       target="_blank"
                       rel="noopener noreferrer"
                       data-testid="briefing-source"
                       className="text-blue-text no-underline hover:underline"
                     >
-                      {bareDomain(u)}
+                      {sourceLabel(u)}
                     </a>
                   ))}
                   {s!.last_checked && <span>· Last checked {s!.last_checked}</span>}
