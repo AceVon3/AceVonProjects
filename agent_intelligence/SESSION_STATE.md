@@ -3,11 +3,44 @@
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- Monorepo HEAD: `cde0c95 feat(overview): carrier-activity card shows recent individual filings`.
-- **Deployed (agent-intel/master): `cc7bf2a`** — in sync with the monorepo
-  subtree at this checkpoint. All suites green.
+- Monorepo HEAD: `b3a94ac feat(compliance): office summary + accordion briefing`.
+- **Deployed (agent-intel/master): `71d448c`** — in sync with the monorepo
+  subtree at this checkpoint. All suites green (6 verify + 13 e2e).
 
-## Latest iteration — Overview: carrier-activity recent-filings card (2026-06-02, deployed)
+## Latest iteration — Compliance office summary + accordion (2026-06-02, deployed)
+
+Two new profile inputs feed a personalized office summary at the top of
+`/compliance`, and the briefing is now a collapsed accordion.
+
+- **Profile inputs:** `pay_type` (Hourly/Salary/Both) and `remote_count` (whole
+  number, validated at entry to not exceed `employee_count`). Both required. Old
+  saved profiles predate them: `loadProfile` stays tolerant; **`needsProfileUpgrade()`**
+  drives a prompt (banner on `/setup`, upgrade card on `/compliance`) — never
+  errors or wipes. New lib `src/lib/officeSummary.ts`; new verify
+  `scripts/verify_office_summary.ts`.
+- **Office summary** (`src/components/OfficeSummary.tsx`, above the disclaimer
+  band): factual recap of the agent's inputs; **"Worth reviewing for your office"**
+  relevance pointers (fact + their number, point at sections, NEVER a
+  determination — blocklist-tested); and the **load-bearing out-of-state remote
+  flag** (prominent amber callout, always visible, fires when remote workers are
+  in states the WA briefing doesn't cover).
+- **Accordion briefing:** each topic is an accessible accordion item (button +
+  aria-expanded/aria-controls, chevron, keyboard-operable), collapsed by default,
+  content in a `role=region` toggled via `hidden`. The **Salary** header carries a
+  visible **"affects exempt status"** caution pill while collapsed; the full
+  misclassification warning stays inside. The "not legal/tax advice" band stays
+  sticky + always-visible.
+- **Relevance links = primary nav into the briefing.** Expansion state lifted to
+  `compliance/page.tsx`; clicking a pointer EXPANDS its target section then scrolls
+  (rAF → `scrollIntoView`, honoring `scroll-mt-[88px]` so it lands below the sticky
+  band) — never a collapsed empty row. No-dead-link rule intact:
+  `briefingSectionAnchorId` only resolves when the target renders (no-WA profile →
+  zero links; remote pointer has no section → plain text).
+
+Structure/presentation only; no change to grounded summary content or
+determination-language honesty. Monorepo `b3a94ac` → deploy `71d448c`.
+
+## Earlier iteration — Overview: carrier-activity recent-filings card (2026-06-02, deployed)
 
 Replaced the aggregated per-(brand,line,state) averages in the "Your carrier's
 activity" card with a curated recent slice of the carrier's own INDIVIDUAL
