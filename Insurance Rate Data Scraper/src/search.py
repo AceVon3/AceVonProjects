@@ -68,7 +68,19 @@ def _wait_for_results(page: Page) -> None:
     )
 
 
-def _submit_search(page: Page, state: str, company: str) -> bool:
+def _submit_search(
+    page: Page,
+    state: str,
+    company: str,
+    *,
+    date_from: str = DATE_FROM,
+    date_to: str = DATE_TO,
+) -> bool:
+    """Submit one SERFF search. `date_from`/`date_to` default to the config
+    submission window; callers (e.g. an incremental back-fill) may pass a
+    narrower window to fetch only a new slice without re-fetching cached
+    filings. Defaults are bound at import time to config's values, so the
+    ~20 existing callers that pass no date args keep the full window."""
     page.goto(SERFF_HOME_URL.format(state=state), wait_until="domcontentloaded", timeout=30000)
     page.get_by_role("link", name=re.compile(r"begin\s*search", re.I)).first.click()
     page.wait_for_load_state("domcontentloaded", timeout=30000)
@@ -83,8 +95,8 @@ def _submit_search(page: Page, state: str, company: str) -> bool:
         return False
 
     _fill_and_blur(page, "simpleSearch:companyName", company)
-    _fill_and_blur(page, "simpleSearch:submissionStartDate_input", DATE_FROM)
-    _fill_and_blur(page, "simpleSearch:submissionEndDate_input", DATE_TO)
+    _fill_and_blur(page, "simpleSearch:submissionStartDate_input", date_from)
+    _fill_and_blur(page, "simpleSearch:submissionEndDate_input", date_to)
 
     _byid(page, "simpleSearch:saveBtn").first.click()
     try:
@@ -209,13 +221,55 @@ def _parse_date(s: str) -> Optional[date]:
     return None
 
 
+def _goto_row_page(page: Page, filing_id: str, max_pages: int = 50) -> bool:
+    """Paginate the results table until the row with the given stable
+    `data-rk` (the SERFF filing_id captured at search time) is on the visible
+    page. Returns True once found.
+
+    Keys off `data-rk`, NOT result-set position or page index, so it is robust
+    to paginated and reordered results — the row may land on any page and at
+    any index across re-runs (this is the bug behind the AZ enrichment skips:
+    the old code only inspected page 1 / the current page). Jumps to the first
+    page first so the forward scan covers the whole result set regardless of
+    where pagination currently sits. Note for TRVD-G filings the data-rk is NOT
+    the tracking-number suffix, so callers must pass the filing_id from the
+    search workbook, never derive it from the tracking string.
+    """
+    _set_rows_per_page_100(page)
+    first = page.locator(".ui-paginator-first").first
+    if first.count() and "ui-state-disabled" not in (first.get_attribute("class") or ""):
+        try:
+            first.click()
+            _wait_for_results(page)
+        except Exception:
+            pass
+    for _ in range(max_pages):
+        if page.locator(f'tr[data-rk="{filing_id}"]').count():
+            return True
+        nxt = page.locator(".ui-paginator-next").first
+        if not nxt.count() or "ui-state-disabled" in (nxt.get_attribute("class") or ""):
+            return False
+        try:
+            nxt.click()
+            _wait_for_results(page)
+        except Exception:
+            return False
+    return False
+
+
 def _click_row_to_detail(page: Page, filing_id: str) -> bool:
     """Click the SERFF Tracking cell on a results row to load its detail page.
 
     Direct URL navigation (filingSummary.xhtml?filingId=...) redirects to
     /sfa/500.xhtml because the detail page requires the JSF ViewState session
     produced by a row click on the results page.
+
+    Paginates to find the row by its stable `data-rk` before clicking, so rows
+    beyond page 1 (or reordered onto a different page) are reached rather than
+    silently skipped.
     """
+    if not _goto_row_page(page, filing_id):
+        return False
     row = page.locator(f'tr[data-rk="{filing_id}"]').first
     if not row.count():
         return False
@@ -268,18 +322,23 @@ def search_company(
     *,
     fetch_submission_dates: bool = True,
     delay_s: float = REQUEST_DELAY,
+    date_from: str = DATE_FROM,
+    date_to: str = DATE_TO,
 ) -> list[Filing]:
     """Run one search; return a Filing per results-table row across all pages.
 
     When `fetch_submission_dates` is True, we make a lightweight detail-page
     fetch per filing to populate `submission_date` (no PDF parsing here —
     that's Step 5). Reuses the search's browser context for session state.
+
+    `date_from`/`date_to` are passed through to `_submit_search` (default to
+    the config submission window).
     """
     ctx = browser.new_context(user_agent=USER_AGENT, accept_downloads=False)
     page = ctx.new_page()
     filings: list[Filing] = []
     try:
-        if not _submit_search(page, state, company):
+        if not _submit_search(page, state, company, date_from=date_from, date_to=date_to):
             return filings
         _set_rows_per_page_100(page)
 
@@ -324,21 +383,27 @@ def search_all(
     headless: bool = HEADLESS,
     delay_s: float = REQUEST_DELAY,
     checkpoint_cb=None,
+    date_from: str = DATE_FROM,
+    date_to: str = DATE_TO,
 ) -> list[Filing]:
     """Run search_company for each (state, company) pair with polite delays.
 
     `checkpoint_cb(all_filings_so_far)` is invoked after each (state, company)
     pair completes — lets the caller persist partial results so a later crash
     doesn't wipe an hour of search work.
+
+    `date_from`/`date_to` are passed through to each `search_company` call
+    (default to the config submission window). An incremental back-fill can
+    pass a narrower window to fetch only a new submission slice.
     """
     all_filings: list[Filing] = []
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=headless)
         try:
             for state, company in state_company_pairs:
-                print(f"[search] {state} / {company} ...", flush=True)
+                print(f"[search] {state} / {company}  [{date_from} -> {date_to}] ...", flush=True)
                 try:
-                    results = search_company(browser, state, company)
+                    results = search_company(browser, state, company, date_from=date_from, date_to=date_to)
                 except Exception as e:
                     print(f"  ! {state}/{company} failed: {e}", flush=True)
                     results = []

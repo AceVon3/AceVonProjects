@@ -272,18 +272,13 @@ def enrich_filing(page: Page, filing: Filing, *, download_pdfs: bool) -> bool:
     """Click into the filing's detail page, extract fields (and PDFs if
     Rate/Rule + enabled), then navigate back to results.
     """
-    # Make sure the row is visible in the current pagination view.
-    for _ in range(2):
-        if page.locator(f'tr[data-rk="{filing.filing_id}"]').count():
-            break
-        _set_rows_per_page_100(page)
-
-    if not page.locator(f'tr[data-rk="{filing.filing_id}"]').count():
-        print(f"  [skip] {filing.serff_tracking_number}: row not found in results", flush=True)
-        return False
-
+    # Navigate to the filing's detail page by its stable data-rk. Pagination
+    # across the FULL result set is handled inside _click_row_to_detail — do
+    # NOT assume the row is on the current/first page. The old page-1-only
+    # check here silently dropped in-scope Rate filings whose row paginated
+    # onto a later page (the AZ enrichment-skip bug).
     if not _click_row_to_detail(page, filing.filing_id):
-        print(f"  [skip] {filing.serff_tracking_number}: could not open detail", flush=True)
+        print(f"  [skip] {filing.serff_tracking_number}: could not open detail (row not found across pages)", flush=True)
         return False
 
     try:

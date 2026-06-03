@@ -30,10 +30,17 @@ from playwright.sync_api import sync_playwright
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.stdout.reconfigure(encoding="utf-8")
 
-from src.config import EFFECTIVE_DATE_FROM, EFFECTIVE_DATE_TO, HEADLESS, USER_AGENT
+from src.config import (
+    AMBEST_VALIDATED_FROM,
+    EFFECTIVE_DATE_FROM,
+    EFFECTIVE_DATE_TO,
+    HEADLESS,
+    USER_AGENT,
+)
 
 _EFF_WINDOW_FROM = datetime.strptime(EFFECTIVE_DATE_FROM, "%m/%d/%Y").date()
 _EFF_WINDOW_TO = datetime.strptime(EFFECTIVE_DATE_TO, "%m/%d/%Y").date()
+_AMBEST_VALIDATED_FROM = datetime.strptime(AMBEST_VALIDATED_FROM, "%m/%d/%Y").date()
 
 
 def _parse_pdf_eff_date(s):
@@ -59,6 +66,58 @@ def _in_effective_window(eff_str) -> bool:
     if d is None:
         return True
     return _EFF_WINDOW_FROM <= d <= _EFF_WINDOW_TO
+
+
+def _load_backfill_ids(state: str) -> set[str]:
+    """filing_ids in the state's 2026-06-02 back-extension slice
+    (output/{state}_all_companies_search_backfill2024.xlsx). Membership in this
+    set is the robust provenance signal for "recovered by the back-extension"
+    (equivalent to submitted before AMBEST_CROSSCHECK_SUBMISSION_FROM, but
+    reliable even when the per-row submission date failed to scrape). Empty set
+    if the slice workbook is absent (e.g. a state collected entirely fresh)."""
+    src = Path(f"output/{state.lower()}_all_companies_search_backfill2024.xlsx")
+    if not src.exists():
+        return set()
+    import openpyxl as _ox
+    wb = _ox.load_workbook(src, read_only=True)
+    ws = wb["Filings"]
+    hdr = [c.value for c in next(ws.iter_rows(max_row=1))]
+    fi = hdr.index("filing_id")
+    ids = {str(r[fi]) for r in ws.iter_rows(min_row=2, values_only=True) if r[fi] is not None}
+    wb.close()
+    return ids
+
+
+def _validation_tier(eff_str, is_backfill: bool) -> str:
+    """Per-row validation provenance — three tiers (2026-06-02 refinement):
+
+    "ambest_validated"        in the original cross-check dataset (NOT a
+                              back-extension recovery) and effective_date in the
+                              AM Best window (>= AMBEST_VALIDATED_FROM) or blank
+                              (blank-effective rows were kept in the original
+                              deliverable). The documented match rates apply.
+    "ambest_window_unmatched" recovered by the back-extension (in the
+                              2023-07-01 -> 2024-06-30 submission slice) with an
+                              in-window effective_date — postdates the
+                              cross-checks, never individually verified.
+    "pipeline_only"           effective_date below the AM Best window (the 2024
+                              back-extension), or a back-extension recovery with
+                              a blank effective_date.
+
+    Provenance is decided by SLICE MEMBERSHIP (`is_backfill`), not the per-row
+    submission date, because the original finals include rows whose submission
+    date failed to scrape (e.g. 5 in OR) and some back-extension TRVD rows have
+    blank submission dates. Slice membership is exact either way. Consequence:
+    filtering `validation_tier == "ambest_validated"` reproduces exactly the
+    original cross-checked set (including its blank-effective rows)."""
+    d = _parse_pdf_eff_date(eff_str)
+    # eff below the window is decisively the 2024 back-extension.
+    if d is not None and d < _AMBEST_VALIDATED_FROM:
+        return "pipeline_only"
+    # eff is in-window (>= 2025) or blank.
+    if is_backfill:
+        return "ambest_window_unmatched" if d is not None else "pipeline_only"
+    return "ambest_validated"
 from src.detail import download_system_summary_pdf
 from src.search import (
     _back_to_results,
@@ -280,29 +339,30 @@ def download_all_pdfs(state: str, targets: list[Target]) -> dict[str, str]:
                 if not remaining:
                     break
                 print(f"  [{grp}] search={search_term!r}, attempting {len(remaining)} filing(s)", flush=True)
-                if not _submit_with_retry(state, search_term):
-                    print(f"  [{grp}] search submission failed for {search_term!r} after retries", flush=True)
-                    continue
-                _set_rows_per_page_100(page)
                 still_remaining: list[Target] = []
                 for idx, t in enumerate(remaining, 1):
-                    found = False
-                    for _ in range(10):
-                        if page.locator(f'tr[data-rk="{t.filing_id}"]').count():
-                            found = True; break
-                        nxt = page.locator(".ui-paginator-next").first
-                        if not nxt.count() or "ui-state-disabled" in (nxt.get_attribute("class") or ""):
-                            break
-                        nxt.click(); page.wait_for_load_state("networkidle", timeout=15000)
-                    if not found:
+                    # Fresh context + fresh search PER uncached target.
+                    # Reusing one context across many navigate->download->
+                    # go_back cycles degrades the JSF results page so later-page
+                    # rows become unfindable — batch-loop state contamination,
+                    # observed as 9/9 OR Travelers misses that ALL recovered
+                    # under fresh contexts. download_system_summary_pdf then
+                    # paginates to the row by its stable data-rk via
+                    # _click_row_to_detail. (Only uncached targets reach here;
+                    # cached ones were filtered out above, so this re-search
+                    # cost is bounded to genuinely-missing filings.)
+                    _refresh_context()
+                    if not _submit_with_retry(state, search_term):
                         still_remaining.append(t)
                         continue
+                    _set_rows_per_page_100(page)
                     dest_dir = Path(f"output/pdfs/{state}/{t.filing_id}")
                     pdf = download_system_summary_pdf(page, t.filing_id, t.tracking, dest_dir)
-                    statuses[t.filing_id] = "ok" if pdf else "fail:download"
-                    print(f"    [{idx}/{len(remaining)}] {t.tracking}: {statuses[t.filing_id]}", flush=True)
-                    if not page.locator(".ui-paginator-next").count():
-                        _submit_with_retry(state, search_term); _set_rows_per_page_100(page)
+                    if pdf:
+                        statuses[t.filing_id] = "ok"
+                        print(f"    [{idx}/{len(remaining)}] {t.tracking}: ok", flush=True)
+                    else:
+                        still_remaining.append(t)
                 remaining = still_remaining
             for t in remaining:
                 statuses[t.filing_id] = "fail:row_not_found"
@@ -340,12 +400,18 @@ COLUMNS = [
     "disposition_status",
     "filing_date",
     "source_pdf",
+    # Appended after the 17 AM Best Disposition Page Data columns so their
+    # column order is preserved. Marks whether the row's effective_date falls
+    # in the AM Best-cross-checked window (2026-06-02 back-extension).
+    "validation_tier",
 ]
 
 
-def build_rows(state: str, targets: list[Target]) -> tuple[list[dict], dict]:
+def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None = None) -> tuple[list[dict], dict]:
     """Parse each cached PDF and emit one row per per-company rate row.
-    Returns (rows, stats)."""
+    `backfill_ids` = filing_ids recovered by the 2026-06-02 back-extension
+    (drives validation_tier). Returns (rows, stats)."""
+    backfill_ids = backfill_ids or set()
     rows: list[dict] = []
     stats = {
         "filings_total": len(targets),
@@ -418,6 +484,7 @@ def build_rows(state: str, targets: list[Target]) -> tuple[list[dict], dict]:
                 "disposition_status": fs.disposition_status,
                 "filing_date": (t.submission_date.isoformat() if hasattr(t.submission_date, "isoformat") else t.submission_date),
                 "source_pdf": rel_pdf,
+                "validation_tier": _validation_tier(eff, t.filing_id in backfill_ids),
             })
         stats["filings_emitted"] += 1
         stats["rows_emitted"] += len(fs.company_rates)
@@ -481,7 +548,10 @@ def main():
     targets = load_targets(state)
     print(f"loaded {len(targets)} target-TOI target-carrier filings")
     download_all_pdfs(state, targets)
-    rows, stats = build_rows(state, targets)
+    backfill_ids = _load_backfill_ids(state)
+    if backfill_ids:
+        print(f"loaded {len(backfill_ids)} back-extension filing_ids for tiering", flush=True)
+    rows, stats = build_rows(state, targets, backfill_ids)
     out = write_xlsx(rows, state)
     elapsed = time.time() - t0
 

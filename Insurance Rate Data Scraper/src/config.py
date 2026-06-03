@@ -45,11 +45,16 @@ TARGET_LINES = [
 STATES = ["WA", "ID", "CO", "OR", "UT", "AZ", "MT", "WY", "NV"]
 
 # Submission-window bounds for SERFF search (SERFF only filters by submission
-# date). Widened to a 6-month lookback so filings submitted before 2025-01-01
-# whose effective date falls inside the AM Best validation window are not
-# missed (e.g., the 6 Progressive UT subsidiaries on a filing eff 02/19/25 and
-# WA Progressive Casualty submitted 2024-12-12 eff 03/07/25).
-DATE_FROM = "07/01/2024"
+# date). A 6-month lookback before the effective-date floor so filings
+# submitted before the floor whose effective date falls inside the window are
+# not missed (e.g., the 6 Progressive UT subsidiaries on a filing eff 02/19/25
+# and WA Progressive Casualty submitted 2024-12-12 eff 03/07/25).
+#
+# 2026-06-02: pushed back from 2024-07-01 to 2023-07-01 alongside the
+# EFFECTIVE_DATE_FROM extension to 2024-01-01 (6-month lookback preserved).
+# Filings submitted 2024-07-01 onward are already cached from the prior run, so
+# the incremental search only needs the new 2023-07-01 -> 2024-06-30 slice.
+DATE_FROM = "07/01/2023"
 DATE_TO = "04/17/2026"
 
 # Effective-date emit filter applied at row emission (run_final_rates.py).
@@ -57,8 +62,35 @@ DATE_TO = "04/17/2026"
 # whose parsed effective_date falls outside this window are dropped at emit
 # time. Rows with BLANK effective_date are KEPT (filer omitted the field; we
 # do not silently drop them).
-EFFECTIVE_DATE_FROM = "01/01/2025"
+#
+# 2026-06-02: floor extended from 2025-01-01 to 2024-01-01 (back-extension to
+# capture calendar-year 2024 effective dates). See AMBEST_VALIDATED_FROM below
+# for the validation-tier boundary.
+EFFECTIVE_DATE_FROM = "01/01/2024"
 EFFECTIVE_DATE_TO = "04/17/2026"
+
+# AM Best validation boundary. The per-state AM Best cross-checks (see
+# dataset_summary.md "Validation") were run against AM Best exports scoped to
+# 2025-01-01 -> 2026-04-17. Rows with effective_date >= this date are inside
+# that validated window; rows below it (the 2024-01-01 back-extension added
+# 2026-06-02) are extracted by the identical pipeline but were NOT AM Best
+# cross-checked. This boundary is surfaced per-row in the `validation_tier`
+# column. Blank effective_date can never have been AM Best-matched
+# (cross-checks key on effective date), so blank-date rows are "pipeline_only".
+AMBEST_VALIDATED_FROM = "01/01/2025"
+
+# Original (pre-back-extension) submission-window start. Filings submitted on or
+# after this date were inside the SERFF search that the per-state AM Best
+# cross-checks were run against; filings submitted BEFORE it surface only via
+# the 2026-06-02 back-extension slice. A row that is in the AM Best effective
+# window (>= AMBEST_VALIDATED_FROM) but was submitted before this date was
+# recovered by the back-extension and therefore postdates the cross-checks —
+# it is tiered "ambest_window_unmatched" rather than "ambest_validated".
+# Three tiers total (see run_final_rates._validation_tier / dataset_summary.md):
+#   ambest_validated        eff >= 2025-01-01 AND in the original cross-check set
+#   ambest_window_unmatched eff >= 2025-01-01 BUT recovered by back-extension
+#   pipeline_only           eff <  2025-01-01 (or blank effective_date)
+AMBEST_CROSSCHECK_SUBMISSION_FROM = "07/01/2024"
 
 REQUEST_DELAY = 2.5
 

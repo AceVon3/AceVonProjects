@@ -7,13 +7,18 @@ is validated).
     ./.venv/Scripts/python.exe run_search.py                     # State Farm / WA
     ./.venv/Scripts/python.exe run_search.py --company GEICO     # GEICO / WA
     ./.venv/Scripts/python.exe run_search.py --all               # every target x state
+
+Incremental back-fill (fetch only a new submission slice into a separate
+workbook, then merge):
+    run_search.py --all-companies --state WY \
+        --date-to 06/30/2024 --out-suffix _backfill2024
 """
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
 
-from src.config import OUTPUT_DIR, STATES, TARGET_COMPANIES
+from src.config import DATE_FROM, DATE_TO, OUTPUT_DIR, STATES, TARGET_COMPANIES
 from src.output import write_excel
 from src.search import search_all
 
@@ -29,25 +34,34 @@ def main() -> int:
     ap.add_argument("--all", action="store_true", help="Run every TARGET_COMPANY x STATE pair")
     ap.add_argument("--all-companies", action="store_true",
                     help="Run all TARGET_COMPANIES against --state (default WA)")
+    ap.add_argument("--date-from", default=DATE_FROM,
+                    help=f"Submission-window start MM/DD/YYYY (default config {DATE_FROM})")
+    ap.add_argument("--date-to", default=DATE_TO,
+                    help=f"Submission-window end MM/DD/YYYY (default config {DATE_TO})")
+    ap.add_argument("--out-suffix", default="",
+                    help="Suffix appended to the output filename stem (e.g. _backfill2024) "
+                         "so an incremental slice does not overwrite an existing workbook")
     args = ap.parse_args()
 
     if args.all:
         pairs = [(s, c) for s in STATES for c in TARGET_COMPANIES]
-        out_name = "all_search.xlsx"
+        out_name = f"all_search{args.out_suffix}.xlsx"
     elif args.all_companies:
         pairs = [(args.state, c) for c in TARGET_COMPANIES]
-        out_name = f"{_slug(args.state)}_all_companies_search.xlsx"
+        out_name = f"{_slug(args.state)}_all_companies_search{args.out_suffix}.xlsx"
     else:
         pairs = [(args.state, args.company)]
-        out_name = f"{_slug(args.state)}_{_slug(args.company)}_search.xlsx"
+        out_name = f"{_slug(args.state)}_{_slug(args.company)}_search{args.out_suffix}.xlsx"
 
     out = Path(OUTPUT_DIR) / out_name
+    print(f"[run_search] submission window {args.date_from} -> {args.date_to}; out={out}", flush=True)
 
     def _checkpoint(so_far):
         write_excel(so_far, out)
         print(f"    [checkpoint] saved {len(so_far)} filings -> {out}", flush=True)
 
-    filings = search_all(pairs, checkpoint_cb=_checkpoint)
+    filings = search_all(pairs, checkpoint_cb=_checkpoint,
+                         date_from=args.date_from, date_to=args.date_to)
     write_excel(filings, out)
 
     print(f"\n=== Summary ===")

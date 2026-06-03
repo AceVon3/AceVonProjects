@@ -46,6 +46,7 @@ README_LINES: list[tuple[str, str]] = [
     ("disposition_status", "State decision: Approved/Filed/Withdrawn/Disapproved/Pending (case as filed)"),
     ("filing_date", "Date the filing was submitted to the state"),
     ("source_pdf", "Relative path to the cached system-generated Filing Summary PDF"),
+    ("validation_tier", "Confidence ladder. ambest_validated = eff >= 2025-01-01 AND submitted >= 2024-07-01 (in the original AM Best cross-check set). ambest_window_unmatched = eff >= 2025-01-01 BUT submitted before 2024-07-01 (recovered by the 2026-06-02 back-extension, postdates the cross-checks). pipeline_only = eff < 2025-01-01 or blank effective_date (below the AM Best window). Identical collection pipeline across all tiers"),
     ("", ""),
     ("LIMITATIONS", ""),
     ("Date range", "Filings present in SERFF Public Access at run time (no explicit date filter)"),
