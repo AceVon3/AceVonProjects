@@ -20,18 +20,20 @@ from __future__ import annotations
 
 import sys
 import time
+from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
 from openpyxl import load_workbook
+from playwright.sync_api import sync_playwright
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from src.config import OUTPUT_DIR
-from src.detail import enrich_filings
+from src.config import HEADLESS, OUTPUT_DIR, REQUEST_DELAY, USER_AGENT
+from src.detail import enrich_filing
 from src.models import Filing
 from src.output import write_excel
-from src.search import _parse_date
+from src.search import _parse_date, _set_rows_per_page_100, _submit_search
 
 SLICE_SUFFIX = "_backfill2024"
 
@@ -101,8 +103,68 @@ def main() -> int:
     rr = sum(1 for f in filings if f.filing_type == "Rate/Rule")
     print(f"[{state}] loaded {len(filings)} slice filings ({rr} Rate/Rule -> PDF download)", flush=True)
 
+    groups: dict[tuple[str, str], list[Filing]] = defaultdict(list)
+    for f in filings:
+        groups[(f.state, f.target_company)].append(f)
+
     t0 = time.time()
-    enrich_filings(filings, download_pdfs=True)
+    # Resilient per-group enrichment (mirrors run_{state}_full.py): retry
+    # _submit_search with context refresh, isolate per-group and per-filing
+    # failures, and CHECKPOINT-write after every group so a transient SERFF
+    # navigation timeout can't crash the run or lose completed work. (The bare
+    # enrich_filings orchestrator had none of this and a single Page.goto
+    # timeout aborted the whole CO run.)
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=HEADLESS)
+        ctx = browser.new_context(user_agent=USER_AGENT, accept_downloads=True)
+        page = ctx.new_page()
+
+        def _refresh_context():
+            nonlocal ctx, page
+            try:
+                ctx.close()
+            except Exception:
+                pass
+            ctx = browser.new_context(user_agent=USER_AGENT, accept_downloads=True)
+            page = ctx.new_page()
+
+        def _submit_with_retry(st: str, company: str, attempts: int = 3) -> bool:
+            for attempt in range(1, attempts + 1):
+                try:
+                    if _submit_search(page, st, company):
+                        return True
+                    print(f"  [submit {attempt}/{attempts}] returned False", flush=True)
+                except Exception as e:
+                    print(f"  [submit {attempt}/{attempts}] {type(e).__name__}: {e}", flush=True)
+                _refresh_context()
+            return False
+
+        order = sorted(groups.keys(), key=lambda k: len(groups[k]))
+        for gi, (st, company) in enumerate(order, 1):
+            group = groups[(st, company)]
+            print(f"\n[group {gi}/{len(order)}] {st} / {company}: {len(group)} filings", flush=True)
+            try:
+                if not _submit_with_retry(st, company):
+                    print(f"  ! search failed after retries, skipping {company}", flush=True)
+                    continue
+                _set_rows_per_page_100(page)
+                for i, f in enumerate(group, 1):
+                    try:
+                        enrich_filing(page, f, download_pdfs=True)
+                    except Exception as e:
+                        print(f"    [warn] {f.serff_tracking_number}: {type(e).__name__}: {e}", flush=True)
+                        _refresh_context()
+                        _submit_with_retry(st, company)
+                        _set_rows_per_page_100(page)
+                    time.sleep(REQUEST_DELAY)
+                    if i % 10 == 0:
+                        print(f"    {i}/{len(group)} enriched", flush=True)
+            except Exception as e:
+                print(f"  ! group {company} crashed: {type(e).__name__}: {e} — checkpointing and continuing", flush=True)
+            write_excel(filings, out)  # checkpoint after each group
+            print(f"  [checkpoint] wrote {out.name} ({len(filings)} filings)", flush=True)
+        browser.close()
+
     write_excel(filings, out)
     print(f"[{state}] wrote {out} ({len(filings)} filings) in {(time.time()-t0)/60:.1f} min", flush=True)
     return 0
