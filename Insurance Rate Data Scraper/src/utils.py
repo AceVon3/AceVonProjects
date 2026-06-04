@@ -643,6 +643,23 @@ _FS_RATE_ROW_RE_F = re.compile(
     r"\$(?P<prem_for>[\d,]+)\s+"
     r"%\s+%\s*$"
 )
+# Pattern G: full ind+imp + prem_chg + ph + max/min, but the written-premium-
+# FOR-PROGRAM ($) column is OMITTED. Seen in ID ALSE-133788858 (Encompass, all
+# 0.000% / 0 policyholders): "Encompass Indemnity 0.000% 0.000% $0 0 0.000% 0.000%"
+# The shape (ph followed directly by max%, with no "$prem_for" between) is
+# mutually exclusive with A-F — A/F require a "$prem_for" before max/min, D/E/B
+# require a bare leading "%", C has no money columns — so G is purely additive:
+# tried last, it only matches rows nothing else catches and cannot alter an
+# existing match. (2026-06-04 final parser pass.)
+_FS_RATE_ROW_RE_G = re.compile(
+    r"^(?P<name>.+?)\s+"
+    r"(?P<ind>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"\$\(?(?P<prem_chg>-?[\d,]+)\)?\s+"
+    r"(?P<ph>[\d,]+)\s+"
+    r"(?P<maxp>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<minp>-?\d+(?:\.\d+)?)%\s*$"
+)
 _FS_MULTI_INDICATED_RE = re.compile(r"Overall Percentage Rate Indicated For This Filing\s+(-?\d+(?:\.\d+)?)%")
 _FS_MULTI_IMPACT_RE    = re.compile(r"Overall Percentage Rate Impact For This Filing\s+(-?\d+(?:\.\d+)?)%")
 _FS_MULTI_PREMCHG_RE   = re.compile(r"Effect of Rate Filing[-\s]+Written Premium Change For This Program\s+\$\(?(-?[\d,]+)\)?")
@@ -721,6 +738,7 @@ def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "") -> Filin
         if not m: m = _FS_RATE_ROW_RE_D.match(ln)
         if not m: m = _FS_RATE_ROW_RE_E.match(ln)
         if not m: m = _FS_RATE_ROW_RE_C.match(ln)
+        if not m: m = _FS_RATE_ROW_RE_G.match(ln)  # additive: omitted-prem_for shape
         if not m:
             i += 1; continue
         gd = m.groupdict()
