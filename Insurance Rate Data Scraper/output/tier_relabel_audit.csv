@@ -1,0 +1,1006 @@
+state,serff_tracking_number,company_name,sub_type_of_insurance,effective_date,old_validation_tier,new_validation_tier,source,external_validation,label_changed
+ID,ALSE-133920243,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,01/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-133922065,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,01/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-133923427,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,01/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-133924608,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,01/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134145361,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),07/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134163422,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),08/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134168088,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),08/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134230449,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),10/07/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134230449,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),10/07/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134230449,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),10/07/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134296907,Allstate Indemnity Company,04.0002 Mobile Homeowners,11/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134297132,Allstate Insurance Company,04.0000 Homeowners Sub-TOI Combinations,11/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134311611,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),12/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134353685,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,01/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134355084,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,01/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134355105,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,01/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134358345,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,01/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134400261,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),03/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134447963,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),07/08/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134490732,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),05/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134545039,Allstate Fire and Casualty Insurance Company,19.0004 Other,06/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134644319,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),09/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134645740,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),09/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134645740,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),09/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134645740,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),09/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134724096,Allstate Insurance Company,04.0001 Condominium Homeowners,01/12/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134737223,Allstate Indemnity Company,04.0002 Mobile Homeowners,01/12/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134780087,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,03/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134810468,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,03/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134813879,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,03/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134817781,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,03/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134865728,Allstate North American Insurance Company,04.0003 Owner Occupied Homeowners,04/14/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-133933153,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),01/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134023631,Encompass Indemnity Company,04.0003 Owner Occupied Homeowners,04/14/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134145696,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),08/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134198284,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),08/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134228318,Encompass Indemnity Company,04.0003 Owner Occupied Homeowners,10/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,ALSE-134545996,Encompass Indemnity Company,04.0003 Owner Occupied Homeowners,03/16/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,ALSE-134592232,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),09/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,GMMX-134491469,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),06/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,GECC-133829918,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),05/23/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,GECC-133849972,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),08/02/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,GECC-134085231,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),08/03/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,GECC-134128210,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),09/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,GECC-134128210,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),09/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,GECC-134128210,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),09/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,GECC-134128210,GEICO Advantage Insurance Company,19.0001 Private Passenger Auto (PPA),09/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,GECC-134128210,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),09/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,GECC-134601148,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),05/08/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,GECC-134601148,GEICO Marine Insurance Company,19.0001 Private Passenger Auto (PPA),05/08/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,GECC-134653021,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),05/08/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,GECC-134653021,GEICO Marine Insurance Company,19.0001 Private Passenger Auto (PPA),05/08/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,GECC-134894381,GEICO Marine Insurance Company,19.0001 Private Passenger Auto (PPA),04/03/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,GECC-134894381,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),04/03/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-133922253,Liberty Mutual Fire Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-133922784,Liberty Insurance Corporation,04.0000 Homeowners Sub-TOI Combinations,01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-133922784,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-133923162,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-133923162,Liberty Mutual Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-134157751,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,07/30/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-134157751,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,07/30/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-134347248,Liberty Mutual Fire Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/05/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134347722,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134347722,Liberty Mutual Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134347807,Liberty Insurance Corporation,19.0000 Personal Auto Combinations,01/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134347807,Liberty Mutual Fire Insurance Company,19.0000 Personal Auto Combinations,01/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134347807,The First Liberty Insurance Corporation,19.0000 Personal Auto Combinations,01/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134348285,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,12/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-134348285,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,12/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-134399434,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,07/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134399434,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,07/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134488487,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134488487,Liberty Mutual Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,GNSC-134806133,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),01/23/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,PRGS-133878904,Progressive Direct Insurance Company,19.0003 Recreational Vehicle (RV),01/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,PRGS-133878904,Progressive Northwestern Insurance Company,19.0003 Recreational Vehicle (RV),01/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,PRGS-134144916,Progressive Direct Insurance Company,19.0003 Recreational Vehicle (RV),12/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,PRGS-134144916,Progressive Northwestern Insurance Company,19.0003 Recreational Vehicle (RV),12/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,PRGS-134147799,Progressive Direct Insurance Company,19.0002 Motorcycle,12/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,PRGS-134147799,Progressive Northwestern Insurance Company,19.0002 Motorcycle,12/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,PRGS-134218749,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),09/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,PRGS-134218749,Progressive Northern Insurance Company,19.0001 Private Passenger Auto (PPA),09/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,PRGS-134218749,Progressive Northwestern Insurance Company,19.0001 Private Passenger Auto (PPA),09/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,PRGS-134368750,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),01/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,PRGS-134368750,Progressive Northern Insurance Company,19.0001 Private Passenger Auto (PPA),01/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,PRGS-134368750,Progressive Northwestern Insurance Company,19.0001 Private Passenger Auto (PPA),01/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-133801944,Safeco Insurance Company of Illinois,19.0002 Motorcycle,03/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-133968105,Safeco Insurance Company of Illinois,04.0000 Homeowners Sub-TOI Combinations,02/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-134272035,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,12/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-134277608,Safeco Insurance Company of Illinois,04.0000 Homeowners Sub-TOI Combinations,11/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,LBPM-134326132,Safeco Insurance Company of Illinois,19.0002 Motorcycle,03/16/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134403897,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,05/12/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,LBPM-134760659,Safeco Insurance Company of Illinois,04.0000 Homeowners Sub-TOI Combinations,01/01/2026,ambest_validated,pipeline_only,original,unvalidated,True
+ID,SFMA-133807390,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,SFMA-133807390,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,SFMA-133920834,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,01/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,SFMA-133934434,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,03/04/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,SFMA-133934434,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,03/04/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,SFMA-133987158,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,04/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,SFMA-134083852,State Farm Fire and Casualty Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,SFMA-134083852,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,SFMA-134197056,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,10/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,SFMA-134294867,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,SFMA-134294867,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,SFMA-134329519,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,02/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,SFMA-134329519,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,02/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,SFMA-134676753,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,01/02/2026,ambest_validated,ambest_validated,original,validated,False
+ID,SFMA-134676753,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,01/02/2026,ambest_validated,ambest_validated,original,validated,False
+ID,TRVD-133877224,The Travelers Home and Marine Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,TRVD-133877224,Travelers Commercial Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+ID,TRVD-G134249162,The Travelers Home and Marine Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/25/2025,ambest_validated,pipeline_only,original,unvalidated,True
+ID,TRVD-G134249162,Travelers Commercial Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/25/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-133789684,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),01/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-133897373,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,02/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-133897486,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,02/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-133902389,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,02/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-133920075,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,03/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-133975008,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),04/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-134098985,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),08/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-134099016,Allstate Property and Casualty Insurance Company,19.0000 Personal Auto Combinations,08/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-134119095,Allstate Indemnity Company,04.0002 Mobile Homeowners,03/24/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+WA,ALSE-134135043,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),02/17/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+WA,ALSE-134138722,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),09/23/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-134142123,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),09/23/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-134206307,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),02/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134214513,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),11/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-134214513,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),11/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-134214513,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),11/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,ALSE-134326701,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,08/25/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134327525,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,08/25/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134328097,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,08/25/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134345731,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,04/07/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134416811,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),03/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134489276,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),07/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134489925,Allstate Property and Casualty Insurance Company,19.0000 Personal Auto Combinations,07/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134500694,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),07/24/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134517504,Allstate Vehicle and Property Insurance Company,04.0001 Condominium Homeowners,01/19/2026,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134538132,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),11/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134572006,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,08/04/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134597553,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),10/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134684477,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),11/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,ALSE-134095154,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),07/12/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+WA,ALSE-134095177,Encompass Indemnity Company,04.0000 Homeowners Sub-TOI Combinations,07/12/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+WA,ALSE-134214686,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),01/06/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,GMMX-134645542,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),,ambest_validated,pipeline_only,original,unvalidated,True
+WA,GMMX-134659152,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),12/13/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,GECC-134044540,GEICO Indemnity Company,19.0002 Motorcycle,07/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,GECC-134126215,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),10/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,GECC-134126215,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),10/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,GECC-134126294,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),10/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,GECC-134126318,GEICO Advantage Insurance Company,19.0001 Private Passenger Auto (PPA),10/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,GECC-134126318,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),10/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,GECC-134126318,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),10/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,GECC-134628136,GEICO General Insurance Company,19.0003 Recreational Vehicle (RV),09/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,GECC-134628136,Government Employees Insurance Company,19.0003 Recreational Vehicle (RV),09/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,GECC-134629877,GEICO Indemnity Company,19.0003 Recreational Vehicle (RV),09/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,GECC-134629950,GEICO Advantage Insurance Company,19.0003 Recreational Vehicle (RV),09/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,GECC-134629950,GEICO Choice Insurance Company,19.0003 Recreational Vehicle (RV),09/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,GECC-134629950,GEICO Secure Insurance Company,19.0003 Recreational Vehicle (RV),09/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,LBPM-133883711,Liberty Mutual Fire Insurance Company,04.0000 Homeowners Sub-TOI Combinations,03/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-133977065,Liberty Mutual Fire Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,PRGS-133899969,Progressive Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),04/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,PRGS-133899969,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),04/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,PRGS-134191751,Progressive Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),02/07/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,PRGS-134191751,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),02/07/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,LBPM-133779020,General Insurance Company of America,19.0000 Personal Auto Combinations,03/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-133779020,Safeco Insurance Company of America,19.0000 Personal Auto Combinations,03/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-133779020,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,03/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-133864197,Safeco Insurance Company of Illinois,19.0002 Motorcycle,06/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-133864423,Safeco Insurance Company of America,04.0000 Homeowners Sub-TOI Combinations,01/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-133979163,Safeco Insurance Company of America,04.0000 Homeowners Sub-TOI Combinations,04/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-134049356,General Insurance Company of America,19.0000 Personal Auto Combinations,09/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-134049356,Safeco Insurance Company of America,19.0000 Personal Auto Combinations,09/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-134049356,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,09/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-134066961,Safeco Insurance Company of Oregon,19.0000 Personal Auto Combinations,09/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,LBPM-134220016,Safeco Insurance Company of Illinois,19.0002 Motorcycle,03/16/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,LBPM-134619371,Safeco Insurance Company of America,04.0001 Condominium Homeowners,12/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,LBPM-134745236,Safeco Insurance Company of America,04.0000 Homeowners Sub-TOI Combinations,02/21/2026,ambest_validated,pipeline_only,original,unvalidated,True
+WA,SFMA-133686505,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,02/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,SFMA-133737144,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,01/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,SFMA-133737144,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,01/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,SFMA-133957681,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,06/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,SFMA-133957681,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,06/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,SFMA-134044384,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,07/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,SFMA-134076828,State Farm Fire and Casualty Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,SFMA-134076828,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,SFMA-134315085,State Farm Fire and Casualty Company,04.0005 Other Homeowners,12/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,SFMA-134315091,State Farm Fire and Casualty Company,04.0005 Other Homeowners,04/15/2026,ambest_validated,pipeline_only,original,unvalidated,True
+WA,SFMA-134422784,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,08/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,TRVD-133853983,The Travelers Home and Marine Insurance Company,19.0001 Private Passenger Auto (PPA),02/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,TRVD-133853983,Travelers Commercial Insurance Company,19.0001 Private Passenger Auto (PPA),02/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,TRVD-134151094,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/03/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+WA,TRVD-G134214259,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,12/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+WA,TRVD-G134262689,The Travelers Home and Marine Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/08/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,TRVD-G134262689,Travelers Commercial Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/08/2025,ambest_validated,pipeline_only,original,unvalidated,True
+WA,TRVD-G134336116,The Travelers Home and Marine Insurance Company,19.0001 Private Passenger Auto (PPA),03/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-133918784,Allstate Indemnity Company,04.0001 Condominium Homeowners,02/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-133918863,Allstate Vehicle and Property Insurance Company,04.0001 Condominium Homeowners,02/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-133987835,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,04/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-133995489,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,04/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-133995858,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,04/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-133996152,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,04/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134000194,Allstate Fire and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,04/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134055742,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),06/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134055841,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),06/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134068278,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),07/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134077198,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),06/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134077698,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),06/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134089013,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,07/04/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134133225,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,10/31/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134217022,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),10/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134217022,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),10/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134217022,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),10/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134256802,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),12/21/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134277277,Allstate Indemnity Company,04.0001 Condominium Homeowners,01/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134280614,Allstate Indemnity Company,04.0002 Mobile Homeowners,01/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134280615,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,12/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134280616,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,12/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134280632,Allstate Indemnity Company,04.0004 Tenant Homeowners,01/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134281334,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,12/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134281430,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,12/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134281580,Allstate Fire and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,12/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134298521,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),12/21/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134306404,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),12/21/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134306440,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),12/21/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134335798,Allstate Vehicle and Property Insurance Company,04.0001 Condominium Homeowners,01/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134493023,Allstate Fire and Casualty Insurance Company,19.0004 Other,06/07/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134493741,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),06/16/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134603438,Allstate Fire and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,09/04/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134603603,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,09/04/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134604410,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,09/04/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134604433,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,09/04/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134604451,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,09/04/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134629407,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),09/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134629407,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),09/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134629407,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),09/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134660932,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),10/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134679055,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),12/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134679258,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),12/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134681921,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),12/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134681972,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),12/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134749670,Allstate Vehicle and Property Insurance Company,04.0001 Condominium Homeowners,01/22/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-134755310,Allstate Indemnity Company,04.0001 Condominium Homeowners,01/22/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,ALSE-133934597,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),03/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-133934833,Encompass Indemnity Company,04.0000 Homeowners Sub-TOI Combinations,03/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134071887,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),07/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134171106,Encompass Indemnity Company,04.0000 Homeowners Sub-TOI Combinations,09/20/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,ALSE-134171119,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),09/20/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GMMX-134404218,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),03/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GMMX-134490929,Encompass Indemnity Company,19.0001 Private Passenger Auto (PPA),06/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GMMX-134663952,Encompass Indemnity Company,04.0000 Homeowners Sub-TOI Combinations,11/08/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GMMX-134694672,Encompass Insurance Company,19.0001 Private Passenger Auto (PPA),10/13/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-133944755,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),02/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-133944755,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),02/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-133944755,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),02/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-133944755,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),02/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-133944755,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),02/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-133944755,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),02/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134038858,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),05/02/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134038858,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),05/02/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134094390,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),08/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134208863,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),09/30/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134208863,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),09/30/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134221017,GEICO Indemnity Company,19.0002 Motorcycle,11/14/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134293642,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),11/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134293642,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),11/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134293642,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),11/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134293642,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),11/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134293642,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),11/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,GECC-134532692,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),07/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134532692,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),07/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134532692,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),07/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134532692,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),07/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134532692,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),07/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134532692,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),07/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134788014,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),01/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134788014,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),01/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134788014,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134788014,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134788014,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134788014,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134855405,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),04/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134855405,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),04/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134855405,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),04/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134855405,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),04/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134855405,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),04/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,GECC-134855405,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),04/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-133956914,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,02/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-133956914,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,02/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-133982771,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,03/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-133982981,Liberty Mutual Fire Insurance Company,04.0000 Homeowners Sub-TOI Combinations,04/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-133983256,Liberty Insurance Corporation,04.0000 Homeowners Sub-TOI Combinations,03/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-133983256,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,03/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-133983256,Liberty Mutual Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,03/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-134146801,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,06/30/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-134146801,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,06/30/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-134255177,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,09/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-134255177,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,09/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-134358341,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,02/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134358341,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,02/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134362517,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134488149,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134551958,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,05/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134551958,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,05/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134814553,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/13/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134814588,Liberty Mutual Fire Insurance Company,04.0000 Homeowners Sub-TOI Combinations,03/20/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134814602,Liberty Insurance Corporation,04.0000 Homeowners Sub-TOI Combinations,02/13/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134814602,Liberty Mutual Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/13/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,PRGS-133992978,Progressive Casualty Insurance Company,19.0002 Motorcycle,05/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-133992978,Progressive Direct Insurance Company,19.0002 Motorcycle,05/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-133992978,Progressive Preferred Insurance Company,19.0002 Motorcycle,05/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-134048683,Progressive Casualty Insurance Company,19.0003 Recreational Vehicle (RV),05/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-134048683,Progressive Direct Insurance Company,19.0003 Recreational Vehicle (RV),05/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-134048683,Progressive Preferred Insurance Company,19.0003 Recreational Vehicle (RV),05/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-134231187,Progressive Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),09/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-134231187,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),09/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-134231187,Progressive Preferred Insurance Company,19.0001 Private Passenger Auto (PPA),09/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-134231187,Progressive Specialty Insurance Company,19.0001 Private Passenger Auto (PPA),09/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-134231187,Progressive Mountain Insurance Company,19.0001 Private Passenger Auto (PPA),09/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,PRGS-134483202,Progressive Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),05/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,PRGS-134483202,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),05/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,PRGS-134483202,Progressive Preferred Insurance Company,19.0001 Private Passenger Auto (PPA),05/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,PRGS-134483202,Progressive Specialty Insurance Company,19.0001 Private Passenger Auto (PPA),05/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,PRGS-134483202,Progressive Mountain Insurance Company,19.0001 Private Passenger Auto (PPA),05/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,PRGS-134710552,Progressive Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),10/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,PRGS-134710552,Progressive Preferred Insurance Company,19.0001 Private Passenger Auto (PPA),10/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,PRGS-134710552,Progressive Specialty Insurance Company,19.0001 Private Passenger Auto (PPA),10/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,PRGS-134710552,Progressive Mountain Insurance Company,19.0001 Private Passenger Auto (PPA),10/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,PRGS-134710552,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),10/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-133980983,Safeco Insurance Company of America,19.0000 Personal Auto Combinations,05/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-134021186,Safeco Insurance Company of America,04.0000 Homeowners Sub-TOI Combinations,04/14/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,LBPM-134412448,Safeco Insurance Company of America,04.0000 Homeowners Sub-TOI Combinations,04/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134450061,Safeco Insurance Company of America,04.0001 Condominium Homeowners,04/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,LBPM-134762479,Safeco Insurance Company of America,19.0000 Personal Auto Combinations,02/15/2026,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-133813868,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-133813868,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-133854726,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134031583,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,05/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134063170,State Farm Fire and Casualty Company,19.0002 Motorcycle,06/24/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134063170,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,06/24/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134063195,State Farm Fire and Casualty Company,19.0003 Recreational Vehicle (RV),06/24/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134063195,State Farm Mutual Automobile Insurance Company,19.0003 Recreational Vehicle (RV),06/24/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134063219,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),06/24/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134063219,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),06/24/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134075540,State Farm Fire and Casualty Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134075540,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134105990,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,07/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134107198,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134195289,State Farm Fire and Casualty Company,04.0005 Other Homeowners,10/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134195306,State Farm Fire and Casualty Company,04.0005 Other Homeowners,10/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,SFMA-134294866,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134294866,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134320521,State Farm Fire and Casualty Company,19.0002 Motorcycle,01/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134320521,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,01/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134320536,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),01/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134320536,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),01/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134320543,State Farm Fire and Casualty Company,19.0003 Recreational Vehicle (RV),01/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134320543,State Farm Mutual Automobile Insurance Company,19.0003 Recreational Vehicle (RV),01/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134393639,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,03/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134452674,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,05/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134522369,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,07/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134532940,State Farm Fire and Casualty Company,19.0003 Recreational Vehicle (RV),07/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134532940,State Farm Mutual Automobile Insurance Company,19.0003 Recreational Vehicle (RV),07/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134532992,State Farm Fire and Casualty Company,19.0002 Motorcycle,07/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134532992,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,07/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134532998,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,07/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134532998,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,07/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134604280,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,09/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134620253,State Farm Fire and Casualty Company,04.0005 Other Homeowners,10/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134620275,State Farm Fire and Casualty Company,04.0005 Other Homeowners,10/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134702926,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),12/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134702926,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),12/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134702973,State Farm Fire and Casualty Company,19.0003 Recreational Vehicle (RV),12/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134702973,State Farm Mutual Automobile Insurance Company,19.0003 Recreational Vehicle (RV),12/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134702979,State Farm Fire and Casualty Company,19.0002 Motorcycle,12/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,SFMA-134702979,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,12/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,TRVD-133832294,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,TRVD-133970791,The Travelers Home and Marine Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,TRVD-133970791,Travelers Commercial Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,TRVD-134023175,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,TRVD-G134256940,The Travelers Home and Marine Insurance Company,04.0000 Homeowners Sub-TOI Combinations,11/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,TRVD-G134256940,Travelers Commercial Insurance Company,04.0000 Homeowners Sub-TOI Combinations,11/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+CO,TRVD-G134420284,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,03/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,TRVD-G134450451,The Travelers Home and Marine Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,TRVD-G134450451,Travelers Commercial Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,TRVD-G134585304,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,08/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+CO,TRVD-G134688466,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,11/16/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-133936057,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),01/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-133989722,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,02/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134119342,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),09/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134145619,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),08/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134230450,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),11/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134230450,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),11/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134230450,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),11/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134232468,Allstate Indemnity Company,04.0002 Mobile Homeowners,10/14/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134232948,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),09/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134232985,Allstate Insurance Company,04.0001 Condominium Homeowners,10/14/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134298911,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,12/02/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134298948,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,12/02/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134301863,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,12/02/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,ALSE-134399337,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,03/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134450781,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),03/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134490765,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),06/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134566002,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),06/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134570882,Allstate Insurance Company,19.0004 Other,07/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134580010,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),07/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134650509,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),11/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134650509,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),11/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134650509,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),11/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134653139,Allstate Insurance Company,04.0001 Condominium Homeowners,10/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134662416,Allstate Property and Casualty Insurance Company,19.0000 Personal Auto Combinations,10/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134829446,Allstate North American Insurance Company,04.0004 Tenant Homeowners,03/26/2026,ambest_validated,pipeline_only,original,unvalidated,True
+OR,ALSE-134886800,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),04/14/2026,ambest_validated,pipeline_only,original,unvalidated,True
+OR,GMMX-134183181,Encompass Insurance Company,19.0001 Private Passenger Auto (PPA),08/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GMMX-134184861,Encompass Insurance Company,04.0000 Homeowners Sub-TOI Combinations,08/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GMMX-134457186,Encompass Insurance Company,19.0001 Private Passenger Auto (PPA),04/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,GECC-133987585,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),03/14/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-133987585,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),03/14/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134017650,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),04/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134017650,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),04/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134048966,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),05/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134048966,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),05/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134048966,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),05/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134048966,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),05/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134048966,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),05/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134048966,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),05/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134107890,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),07/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134226462,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),09/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134226462,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),09/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134299569,GEICO Indemnity Company,19.0003 Recreational Vehicle (RV),12/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134299569,GEICO Casualty Company,19.0003 Recreational Vehicle (RV),12/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134299569,GEICO General Insurance Company,19.0003 Recreational Vehicle (RV),12/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134299569,Government Employees Insurance Company,19.0003 Recreational Vehicle (RV),12/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134299569,GEICO Secure Insurance Company,19.0003 Recreational Vehicle (RV),12/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GECC-134364417,GEICO Indemnity Company,19.0002 Motorcycle,02/06/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-133970497,Liberty Insurance Corporation,19.0000 Personal Auto Combinations,04/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-133970497,Liberty Mutual Fire Insurance Company,19.0000 Personal Auto Combinations,04/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-133970497,The First Liberty Insurance Corporation,19.0000 Personal Auto Combinations,04/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-133970907,Liberty Mutual Insurance Company,19.0001 Private Passenger Auto (PPA),03/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-133970907,Liberty Mutual Personal Insurance Company,19.0001 Private Passenger Auto (PPA),03/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134039086,Liberty Mutual Fire Insurance Company,04.0000 Homeowners Sub-TOI Combinations,06/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134039086,The First Liberty Insurance Corporation,04.0000 Homeowners Sub-TOI Combinations,06/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134039476,Liberty Insurance Corporation,04.0000 Homeowners Sub-TOI Combinations,05/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134039476,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134039515,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134050034,Liberty Mutual Insurance Company,19.0001 Private Passenger Auto (PPA),04/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134050034,Liberty Mutual Personal Insurance Company,19.0001 Private Passenger Auto (PPA),04/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134058466,Liberty Mutual Fire Insurance Company,04.0000 Homeowners Sub-TOI Combinations,06/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134058466,The First Liberty Insurance Corporation,04.0000 Homeowners Sub-TOI Combinations,06/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134058536,Liberty Insurance Corporation,04.0000 Homeowners Sub-TOI Combinations,05/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134058536,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134158206,Liberty Mutual Personal Insurance Company,19.0001 Private Passenger Auto (PPA),07/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134158432,Liberty Insurance Corporation,19.0000 Personal Auto Combinations,08/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134158432,Liberty Mutual Fire Insurance Company,19.0000 Personal Auto Combinations,08/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134158432,The First Liberty Insurance Corporation,19.0000 Personal Auto Combinations,08/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134206512,Liberty Mutual Insurance Company,19.0001 Private Passenger Auto (PPA),09/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134206512,Liberty Mutual Personal Insurance Company,19.0001 Private Passenger Auto (PPA),09/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134342681,Liberty Mutual Fire Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/05/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134342681,The First Liberty Insurance Corporation,04.0000 Homeowners Sub-TOI Combinations,02/05/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134342854,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134578347,Liberty Mutual Insurance Company,19.0001 Private Passenger Auto (PPA),08/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134578347,Liberty Mutual Personal Insurance Company,19.0001 Private Passenger Auto (PPA),08/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134773946,Liberty Mutual Insurance Company,19.0001 Private Passenger Auto (PPA),12/25/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134773946,Liberty Mutual Personal Insurance Company,19.0001 Private Passenger Auto (PPA),12/25/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,GNSC-134088677,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),05/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GNSC-134314140,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),11/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,GNSC-134675106,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),09/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,PRGS-133879277,Artisan and Truckers Casualty Company,19.0003 Recreational Vehicle (RV),01/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,PRGS-133998748,Artisan and Truckers Casualty Company,19.0001 Private Passenger Auto (PPA),04/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,PRGS-133998748,Progressive Universal Insurance Company,19.0001 Private Passenger Auto (PPA),04/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,PRGS-134194104,Artisan and Truckers Casualty Company,19.0001 Private Passenger Auto (PPA),09/20/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,PRGS-134194104,Progressive Universal Insurance Company,19.0001 Private Passenger Auto (PPA),09/20/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,PRGS-134398058,Artisan and Truckers Casualty Company,19.0001 Private Passenger Auto (PPA),02/28/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,PRGS-134398058,Progressive Universal Insurance Company,19.0001 Private Passenger Auto (PPA),02/28/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,PRGS-134578217,Artisan and Truckers Casualty Company,19.0002 Motorcycle,09/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,PRGS-134578217,Progressive Universal Insurance Company,19.0002 Motorcycle,09/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,PRGS-134641954,Artisan and Truckers Casualty Company,19.0001 Private Passenger Auto (PPA),10/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,PRGS-134641954,Progressive Universal Insurance Company,19.0001 Private Passenger Auto (PPA),10/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,PRGS-134771017,Artisan and Truckers Casualty Company,19.0001 Private Passenger Auto (PPA),01/16/2026,ambest_validated,pipeline_only,original,unvalidated,True
+OR,PRGS-134771017,Progressive Universal Insurance Company,19.0001 Private Passenger Auto (PPA),01/16/2026,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-133903081,Safeco Insurance Company of Oregon,19.0000 Personal Auto Combinations,03/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-133955884,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,01/20/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-133994900,Safeco Insurance Company of Oregon,19.0002 Motorcycle,06/21/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134045161,Safeco Insurance Company of Oregon,04.0000 Homeowners Sub-TOI Combinations,05/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134045161,Safeco Insurance Company of Illinois,04.0000 Homeowners Sub-TOI Combinations,05/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134116492,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,05/30/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134157767,Safeco Insurance Company of Oregon,19.0000 Personal Auto Combinations,08/31/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134247886,Safeco Insurance Company of Oregon,04.0001 Condominium Homeowners,11/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134247886,Safeco Insurance Company of Illinois,04.0001 Condominium Homeowners,11/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,LBPM-134491645,Safeco Insurance Company of Oregon,19.0002 Motorcycle,06/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134586842,Safeco Insurance Company of Oregon,19.0000 Personal Auto Combinations,08/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134586929,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,07/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134733690,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,01/19/2026,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134745304,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,12/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134759261,Safeco Insurance Company of Illinois,04.0000 Homeowners Sub-TOI Combinations,12/11/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,LBPM-134826073,Safeco Insurance Company of Illinois,04.0000 Homeowners Sub-TOI Combinations,03/15/2026,ambest_validated,pipeline_only,original,unvalidated,True
+OR,SFMA-133807568,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,SFMA-133807568,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,SFMA-134076665,State Farm Fire and Casualty Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,SFMA-134076665,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,SFMA-134155991,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,09/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,SFMA-134232601,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,11/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,SFMA-134232601,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,11/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,SFMA-134280657,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,12/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,SFMA-134294129,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,SFMA-134294129,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,SFMA-134421427,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,SFMA-134491344,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,06/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,SFMA-134491344,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,06/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,SFMA-134619497,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,10/06/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,SFMA-134619497,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,10/06/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,SFMA-134700697,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,12/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,SFMA-134700697,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,12/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+OR,TRVD-133993564,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/23/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,TRVD-134073481,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,04/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,TRVD-134171139,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,08/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,TRVD-G134217792,The Travelers Home and Marine Insurance Company,04.0000 Homeowners Sub-TOI Combinations,10/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+OR,TRVD-G134217792,Travelers Commercial Insurance Company,04.0000 Homeowners Sub-TOI Combinations,10/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-133980453,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,04/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-133981187,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,04/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-134019595,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,04/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-134020765,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,04/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-134148368,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),07/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-134149542,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),06/24/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-134182158,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),07/30/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-134221060,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134221152,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134221244,Allstate Indemnity Company,19.0002 Motorcycle,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134221581,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134221668,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134222219,Allstate Property and Casualty Insurance Company,19.0003 Recreational Vehicle (RV),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134223835,Allstate Property and Casualty Insurance Company,19.0000 Personal Auto Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134228970,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),09/23/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-134228970,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),09/23/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-134228970,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),09/23/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,ALSE-134353096,Allstate Indemnity Company,04.0001 Condominium Homeowners,01/13/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134412807,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),02/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134468969,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,04/07/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134485149,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),04/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134494538,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),05/05/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134507608,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),06/16/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134520039,Allstate Fire and Casualty Insurance Company,19.0004 Other,05/12/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134553327,Allstate North American Insurance Company,04.0003 Owner Occupied Homeowners,06/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134600254,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),08/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134604458,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,07/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134652121,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),09/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134652121,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),09/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134652121,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),09/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134740715,Allstate Property and Casualty Insurance Company,19.0002 Motorcycle,12/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134752872,Allstate North American Insurance Company,04.0004 Tenant Homeowners,02/12/2026,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134771605,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),01/19/2026,ambest_validated,pipeline_only,original,unvalidated,True
+UT,ALSE-134808921,Allstate Indemnity Company,04.0001 Condominium Homeowners,01/26/2026,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-133948780,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),02/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-133948780,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),02/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-133948780,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),02/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-133948780,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),02/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-133948780,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),02/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-133948780,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),02/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-134019362,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),04/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-134019362,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),04/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-134037419,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),05/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-134037419,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),05/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-134123703,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),09/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-134182398,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),08/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-134182398,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),08/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-134224320,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),10/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GECC-134263694,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134263694,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134263694,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134263694,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134263694,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134263694,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134264301,GEICO Indemnity Company,19.0002 Motorcycle,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134389837,GEICO Indemnity Company,19.0002 Motorcycle,03/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134419173,GEICO Indemnity Company,19.0002 Motorcycle,03/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134547737,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),06/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134547737,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),06/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134547737,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),06/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134547737,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),06/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134547737,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),06/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134547737,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),06/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134721778,GEICO Indemnity Company,19.0003 Recreational Vehicle (RV),03/17/2026,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134721778,GEICO Casualty Company,19.0003 Recreational Vehicle (RV),03/17/2026,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134721778,GEICO General Insurance Company,19.0003 Recreational Vehicle (RV),03/17/2026,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134721778,Government Employees Insurance Company,19.0003 Recreational Vehicle (RV),03/17/2026,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GECC-134721778,GEICO Secure Insurance Company,19.0003 Recreational Vehicle (RV),03/17/2026,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134055508,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,04/20/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134055508,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,04/20/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134255207,Liberty Insurance Corporation,19.0000 Personal Auto Combinations,10/29/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134255207,Liberty Mutual Fire Insurance Company,19.0000 Personal Auto Combinations,10/29/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134255207,The First Liberty Insurance Corporation,19.0000 Personal Auto Combinations,10/29/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134255471,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,09/24/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134255471,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,09/24/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134332238,Liberty Insurance Corporation,04.0000 Homeowners Sub-TOI Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134332238,Liberty Mutual Fire Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134332238,Liberty Mutual Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134332238,Liberty Mutual Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134385701,Liberty Insurance Corporation,19.0000 Personal Auto Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134385701,Liberty Mutual Fire Insurance Company,19.0000 Personal Auto Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134385701,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134385701,The First Liberty Insurance Corporation,19.0000 Personal Auto Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134597407,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,07/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134597407,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,07/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134677038,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,11/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134677038,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,11/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,GNSC-133962646,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),02/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GNSC-134231817,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),09/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,GNSC-134605705,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),07/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,PRGS-133884435,Progressive Casualty Insurance Company,19.0003 Recreational Vehicle (RV),01/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,PRGS-134161722,Progressive Advanced Insurance Company,19.0001 Private Passenger Auto (PPA),07/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,PRGS-134161722,Progressive Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),07/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,PRGS-134161722,Progressive Classic Insurance Company,19.0001 Private Passenger Auto (PPA),07/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,PRGS-134161722,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),07/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,PRGS-134161722,Progressive Northern Insurance Company,19.0001 Private Passenger Auto (PPA),07/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,PRGS-134161722,Progressive Preferred Insurance Company,19.0001 Private Passenger Auto (PPA),07/26/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,PRGS-134200135,Progressive Casualty Insurance Company,19.0002 Motorcycle,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,PRGS-134200159,Progressive Casualty Insurance Company,19.0003 Recreational Vehicle (RV),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,PRGS-134225668,Progressive Casualty Insurance Company,19.0003 Recreational Vehicle (RV),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,PRGS-134225724,Progressive Casualty Insurance Company,19.0002 Motorcycle,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,PRGS-134347002,Progressive Advanced Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,PRGS-134347002,Progressive Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,PRGS-134347002,Progressive Classic Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,PRGS-134347002,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,PRGS-134347002,Progressive Northern Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,PRGS-134347002,Progressive Preferred Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-133969102,Safeco Insurance Company of America,04.0000 Homeowners Sub-TOI Combinations,03/21/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134001834,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,06/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134139968,Safeco Insurance Company of Illinois,19.0003 Recreational Vehicle (RV),07/23/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134147313,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,07/20/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134179869,Safeco Insurance Company of Illinois,19.0002 Motorcycle,10/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134185145,Safeco Insurance Company of Illinois,19.0002 Motorcycle,10/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,LBPM-134320459,Safeco Insurance Company of America,04.0000 Homeowners Sub-TOI Combinations,02/12/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134386267,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134525495,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,07/08/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134654157,Safeco Insurance Company of Illinois,19.0002 Motorcycle,10/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134773745,Safeco Insurance Company of America,04.0000 Homeowners Sub-TOI Combinations,02/28/2026,ambest_validated,pipeline_only,original,unvalidated,True
+UT,LBPM-134829691,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,03/10/2026,ambest_validated,pipeline_only,original,unvalidated,True
+UT,SFMA-133807660,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-133807660,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-133953465,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,04/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-133953465,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,04/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-133956244,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,03/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-134084039,State Farm Fire and Casualty Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-134084039,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-134095911,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,07/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-134114755,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,07/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-134122438,State Farm Fire and Casualty Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-134122438,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,SFMA-134294156,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,SFMA-134294156,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,SFMA-134298166,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,SFMA-134298166,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,SFMA-134384912,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,03/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,SFMA-134574907,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,08/25/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,SFMA-134574907,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,08/25/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,SFMA-134676709,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,11/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,SFMA-134676709,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,11/20/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,TRVD-134069338,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,05/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+UT,TRVD-G134446033,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,03/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+UT,TRVD-G134766674,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,01/23/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-133960970,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),02/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134052323,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,04/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134052807,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,04/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134054902,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,04/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134054919,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,04/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134148254,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),07/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134180176,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),10/04/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134209181,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),08/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134316124,Allstate Indemnity Company,04.0001 Condominium Homeowners,11/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134316189,Allstate Indemnity Company,04.0002 Mobile Homeowners,11/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134322361,Allstate Vehicle and Property Insurance Company,04.0001 Condominium Homeowners,11/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134359169,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134406699,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),03/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134412703,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),02/24/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134458781,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),04/07/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134481010,Allstate Fire and Casualty Insurance Company,19.0004 Other,04/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134489237,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,04/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134489897,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,04/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134490600,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,04/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134491858,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,04/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134494603,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),05/05/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134545874,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),06/16/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134630441,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),08/25/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134648125,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),09/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134648125,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),09/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134648125,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),09/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134682748,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),10/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134702171,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,11/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134717230,Allstate North American Insurance Company,04.0003 Owner Occupied Homeowners,11/12/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134825039,Allstate North American Insurance Company,04.0004 Tenant Homeowners,03/26/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134832470,Allstate North American Insurance Company,04.0003 Owner Occupied Homeowners,02/17/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134842150,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),02/23/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134842297,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),02/23/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-134883938,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),03/31/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,ALSE-133925712,Encompass Property and Casualty Company,19.0003 Recreational Vehicle (RV),02/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-133925713,Encompass Property and Casualty Company,04.0001 Condominium Homeowners,02/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-133925714,Encompass Property and Casualty Company,19.0001 Private Passenger Auto (PPA),02/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-133925724,Encompass Property and Casualty Company,04.0003 Owner Occupied Homeowners,02/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-133925737,Encompass Property and Casualty Company,19.0002 Motorcycle,02/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-133926215,Encompass Property and Casualty Company,04.0004 Tenant Homeowners,02/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134148937,Encompass Property and Casualty Company,19.0001 Private Passenger Auto (PPA),08/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134163776,Encompass Property and Casualty Company,04.0003 Owner Occupied Homeowners,08/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134163849,Encompass Property and Casualty Company,19.0001 Private Passenger Auto (PPA),08/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134164334,Encompass Property and Casualty Company,04.0001 Condominium Homeowners,08/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134164624,Encompass Property and Casualty Company,04.0004 Tenant Homeowners,08/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,ALSE-134164643,Encompass Property and Casualty Company,19.0002 Motorcycle,08/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GMMX-134417350,Encompass Property and Casualty Company,19.0001 Private Passenger Auto (PPA),02/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,GMMX-134417367,Encompass Property and Casualty Company,04.0003 Owner Occupied Homeowners,02/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,GECC-133941485,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),02/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-133941485,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),02/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-133941485,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),02/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-133941485,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),02/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134023761,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),05/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134023761,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),05/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134108257,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),06/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134108257,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),06/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134122296,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),08/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134170639,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),08/29/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134170639,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),08/29/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134264259,GEICO Indemnity Company,19.0002 Motorcycle,12/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134298268,GEICO Indemnity Company,19.0003 Recreational Vehicle (RV),11/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134298268,GEICO Casualty Company,19.0003 Recreational Vehicle (RV),11/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134298268,GEICO General Insurance Company,19.0003 Recreational Vehicle (RV),11/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134298268,Government Employees Insurance Company,19.0003 Recreational Vehicle (RV),11/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134298268,GEICO Secure Insurance Company,19.0003 Recreational Vehicle (RV),11/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GECC-134785112,GEICO Advantage Insurance Company,19.0001 Private Passenger Auto (PPA),01/14/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,GECC-134785112,GEICO Marine Insurance Company,19.0001 Private Passenger Auto (PPA),01/14/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-133917374,Liberty Mutual Fire Insurance Company,04.0003 Owner Occupied Homeowners,02/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133917374,Liberty Mutual Insurance Company,04.0003 Owner Occupied Homeowners,02/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133917374,The First Liberty Insurance Corporation,04.0003 Owner Occupied Homeowners,02/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133917374,Liberty Mutual Personal Insurance Company,04.0003 Owner Occupied Homeowners,02/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133918708,Liberty Insurance Corporation,04.0004 Tenant Homeowners,02/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133918708,Liberty Mutual Fire Insurance Company,04.0004 Tenant Homeowners,02/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133918708,Liberty Mutual Insurance Company,04.0004 Tenant Homeowners,02/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133918708,Liberty Mutual Personal Insurance Company,04.0004 Tenant Homeowners,02/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133918842,Liberty Insurance Corporation,04.0001 Condominium Homeowners,02/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133918842,Liberty Mutual Fire Insurance Company,04.0001 Condominium Homeowners,02/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134033458,Liberty Mutual Insurance Company,19.0001 Private Passenger Auto (PPA),04/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134033458,Liberty Mutual Personal Insurance Company,19.0001 Private Passenger Auto (PPA),04/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134160175,Liberty Insurance Corporation,19.0001 Private Passenger Auto (PPA),06/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134160175,Liberty Mutual Fire Insurance Company,19.0001 Private Passenger Auto (PPA),06/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134160175,Liberty Mutual Insurance Company,19.0001 Private Passenger Auto (PPA),06/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134160175,The First Liberty Insurance Corporation,19.0001 Private Passenger Auto (PPA),06/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134160175,Liberty Mutual Personal Insurance Company,19.0001 Private Passenger Auto (PPA),06/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134192040,Liberty Mutual Fire Insurance Company,04.0003 Owner Occupied Homeowners,08/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134192040,Liberty Mutual Insurance Company,04.0003 Owner Occupied Homeowners,08/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134192040,The First Liberty Insurance Corporation,04.0003 Owner Occupied Homeowners,08/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134192040,Liberty Mutual Personal Insurance Company,04.0003 Owner Occupied Homeowners,08/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134518872,Liberty Mutual Insurance Company,04.0003 Owner Occupied Homeowners,06/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134617710,Liberty Insurance Corporation,19.0001 Private Passenger Auto (PPA),08/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134617710,Liberty Mutual Fire Insurance Company,19.0001 Private Passenger Auto (PPA),08/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134617710,Liberty Mutual Insurance Company,19.0001 Private Passenger Auto (PPA),08/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134617710,The First Liberty Insurance Corporation,19.0001 Private Passenger Auto (PPA),08/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134617710,Liberty Mutual Personal Insurance Company,19.0001 Private Passenger Auto (PPA),08/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134660836,Liberty Mutual Insurance Company,04.0003 Owner Occupied Homeowners,11/17/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134786890,Liberty Mutual Insurance Company,04.0003 Owner Occupied Homeowners,02/08/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134786890,The First Liberty Insurance Corporation,04.0003 Owner Occupied Homeowners,02/08/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134786890,Liberty Mutual Personal Insurance Company,04.0003 Owner Occupied Homeowners,02/08/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134786890,Liberty Mutual Fire Insurance Company,04.0003 Owner Occupied Homeowners,02/08/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,GNSC-134158469,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),06/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GNSC-134301599,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),10/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,GNSC-134540028,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),05/09/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,GNSC-134757908,"MGA Insurance Company, Inc.",19.0001 Private Passenger Auto (PPA),11/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,PRGS-133788171,Progressive Advanced Insurance Company,19.0002 Motorcycle,04/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,PRGS-133788171,Progressive Preferred Insurance Company,19.0002 Motorcycle,04/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,PRGS-134007460,Progressive Advanced Insurance Company,19.0001 Private Passenger Auto (PPA),03/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,PRGS-134007460,Progressive Preferred Insurance Company,19.0001 Private Passenger Auto (PPA),03/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,PRGS-134267496,Progressive Advanced Insurance Company,19.0001 Private Passenger Auto (PPA),11/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,PRGS-134267496,Progressive Preferred Insurance Company,19.0001 Private Passenger Auto (PPA),11/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,PRGS-134465892,Progressive Advanced Insurance Company,19.0001 Private Passenger Auto (PPA),04/11/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,PRGS-134465892,Progressive Preferred Insurance Company,19.0001 Private Passenger Auto (PPA),04/11/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,PRGS-134541278,Progressive Advanced Insurance Company,19.0002 Motorcycle,01/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,PRGS-134541278,Progressive Preferred Insurance Company,19.0002 Motorcycle,01/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,PRGS-134609556,Progressive Advanced Insurance Company,19.0001 Private Passenger Auto (PPA),07/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,PRGS-134609556,Progressive Preferred Insurance Company,19.0001 Private Passenger Auto (PPA),07/18/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,PRGS-134736377,Progressive Advanced Insurance Company,19.0001 Private Passenger Auto (PPA),12/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,PRGS-134736377,Progressive Preferred Insurance Company,19.0001 Private Passenger Auto (PPA),12/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-133993548,Safeco Insurance Company of America,04.0003 Owner Occupied Homeowners,05/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133993607,Safeco Insurance Company of America,04.0004 Tenant Homeowners,04/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-133993644,Safeco Insurance Company of America,04.0001 Condominium Homeowners,05/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134054846,Safeco Insurance Company of America,19.0001 Private Passenger Auto (PPA),12/02/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134183626,Safeco Insurance Company of America,04.0003 Owner Occupied Homeowners,09/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134184840,Safeco Insurance Company of Illinois,19.0002 Motorcycle,11/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,LBPM-134445585,Safeco Insurance Company of America,04.0001 Condominium Homeowners,05/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134450381,Safeco Insurance Company of America,19.0001 Private Passenger Auto (PPA),04/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134475059,Safeco Insurance Company of America,19.0004 Other,04/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134520103,Safeco Insurance Company of America,19.0001 Private Passenger Auto (PPA),05/29/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134666117,Safeco Insurance Company of Illinois,19.0002 Motorcycle,11/08/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,LBPM-134771930,Safeco Insurance Company of America,04.0003 Owner Occupied Homeowners,02/28/2026,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,SFMA-133807333,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-133807333,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-133904878,State Farm Fire and Casualty Company,04.0003 Owner Occupied Homeowners,02/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-133904912,State Farm Fire and Casualty Company,04.0004 Tenant Homeowners,02/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-133904914,State Farm Fire and Casualty Company,04.0001 Condominium Homeowners,02/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-133930050,State Farm Fire and Casualty Company,04.0003 Owner Occupied Homeowners,04/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-133930052,State Farm Fire and Casualty Company,04.0004 Tenant Homeowners,04/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-133930075,State Farm Fire and Casualty Company,04.0001 Condominium Homeowners,04/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-134066869,State Farm Fire and Casualty Company,19.0002 Motorcycle,06/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-134066869,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,06/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-134066907,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),06/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-134066907,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),06/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-134083631,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-134083631,State Farm Fire and Casualty Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,SFMA-134114374,State Farm Fire and Casualty Company,19.0002 Motorcycle,04/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,SFMA-134114374,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,04/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,SFMA-134114404,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),04/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,SFMA-134114404,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),04/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,SFMA-134204434,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,01/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,SFMA-134294865,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,SFMA-134294865,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,SFMA-134391751,State Farm Fire and Casualty Company,04.0003 Owner Occupied Homeowners,03/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,SFMA-134688027,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),11/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,SFMA-134688027,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),11/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-133942585,Travelers Property Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),02/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133957101,Travelers Property Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),02/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133977191,The Travelers Home and Marine Insurance Company,04.0003 Owner Occupied Homeowners,04/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133977191,Travelers Commercial Insurance Company,04.0003 Owner Occupied Homeowners,04/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133977209,The Travelers Home and Marine Insurance Company,04.0001 Condominium Homeowners,04/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133977209,Travelers Commercial Insurance Company,04.0001 Condominium Homeowners,04/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133977223,The Travelers Home and Marine Insurance Company,04.0004 Tenant Homeowners,04/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133977223,Travelers Commercial Insurance Company,04.0004 Tenant Homeowners,04/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133992350,Travelers Personal Insurance Company,04.0003 Owner Occupied Homeowners,03/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133998463,Travelers Personal Insurance Company,04.0004 Tenant Homeowners,03/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133998484,Travelers Personal Insurance Company,04.0001 Condominium Homeowners,03/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133998496,Travelers Personal Insurance Company,04.0005 Other Homeowners,03/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-133998499,Travelers Personal Insurance Company,04.0005 Other Homeowners,03/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+AZ,TRVD-G134412795,Travelers Property Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),03/07/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134416866,The Travelers Home and Marine Insurance Company,04.0005 Other Homeowners,04/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134416866,Travelers Commercial Insurance Company,04.0005 Other Homeowners,04/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134417169,The Travelers Home and Marine Insurance Company,04.0001 Condominium Homeowners,04/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134417169,Travelers Commercial Insurance Company,04.0001 Condominium Homeowners,04/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134444892,Travelers Personal Insurance Company,04.0001 Condominium Homeowners,03/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134445188,Travelers Personal Insurance Company,04.0004 Tenant Homeowners,03/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134445899,Travelers Personal Insurance Company,04.0005 Other Homeowners,03/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134445929,Travelers Personal Insurance Company,04.0005 Other Homeowners,03/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134448854,Travelers Personal Insurance Company,04.0003 Owner Occupied Homeowners,03/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134649827,Travelers Personal Insurance Company,04.0003 Owner Occupied Homeowners,09/05/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134669174,Travelers Property Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),09/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+AZ,TRVD-G134897815,Travelers Personal Insurance Company,04.0003 Owner Occupied Homeowners,04/17/2026,ambest_validated,pipeline_only,original,unvalidated,True
+MT,ALSE-133861908,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),01/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,ALSE-134133869,Allstate Indemnity Company,04.0002 Mobile Homeowners,07/29/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,ALSE-134137141,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,07/08/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,ALSE-134145280,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),07/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,ALSE-134457261,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),05/13/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,ALSE-134493932,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),06/02/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,ALSE-134556264,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,07/07/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,ALSE-134608548,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,10/06/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,ALSE-134649640,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),09/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,ALSE-134649640,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),09/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,ALSE-134649640,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),09/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,ALSE-134863872,Allstate Insurance Company,04.0001 Condominium Homeowners,04/06/2026,ambest_validated,pipeline_only,original,unvalidated,True
+MT,GECC-134044604,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),05/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,GECC-134044604,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),05/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,GECC-134044604,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),05/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,GECC-134044604,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),05/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,GECC-134902175,GEICO Advantage Insurance Company,19.0001 Private Passenger Auto (PPA),04/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+MT,GECC-134902175,GEICO Marine Insurance Company,19.0001 Private Passenger Auto (PPA),04/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+MT,LBPM-133923055,Liberty Mutual Fire Insurance Company,04.0005 Other Homeowners,02/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,LBPM-133923055,Liberty Mutual Insurance Company,04.0005 Other Homeowners,02/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,LBPM-133971219,Liberty Insurance Corporation,19.0000 Personal Auto Combinations,02/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,LBPM-133971219,Liberty Mutual Fire Insurance Company,19.0000 Personal Auto Combinations,02/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,LBPM-133971219,The First Liberty Insurance Corporation,19.0000 Personal Auto Combinations,02/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,LBPM-134778720,Liberty Mutual Fire Insurance Company,04.0005 Other Homeowners,01/31/2026,ambest_validated,pipeline_only,original,unvalidated,True
+MT,LBPM-134857087,Liberty Insurance Corporation,19.0000 Personal Auto Combinations,03/05/2026,ambest_validated,pipeline_only,original,unvalidated,True
+MT,LBPM-134857087,Liberty Mutual Fire Insurance Company,19.0000 Personal Auto Combinations,03/05/2026,ambest_validated,pipeline_only,original,unvalidated,True
+MT,LBPM-134857087,The First Liberty Insurance Corporation,19.0000 Personal Auto Combinations,03/05/2026,ambest_validated,pipeline_only,original,unvalidated,True
+MT,PRGS-133901358,Progressive Casualty Insurance Company,19.0003 Recreational Vehicle (RV),01/12/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,PRGS-133927798,Progressive Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),01/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,PRGS-133927798,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),01/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,PRGS-133927798,Progressive Northwestern Insurance Company,19.0001 Private Passenger Auto (PPA),01/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,PRGS-133927798,Progressive Specialty Insurance Company,19.0001 Private Passenger Auto (PPA),01/19/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,PRGS-134471019,Progressive Casualty Insurance Company,19.0002 Motorcycle,06/06/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,PRGS-134471019,Progressive Direct Insurance Company,19.0002 Motorcycle,06/06/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,PRGS-134471019,Progressive Northwestern Insurance Company,19.0002 Motorcycle,06/06/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,LBPM-133909702,Safeco Insurance Company of America,04.0005 Other Homeowners,04/22/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,LBPM-133961937,Safeco Insurance Company of Illinois,19.0002 Motorcycle,05/14/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,LBPM-134101230,Safeco Insurance Company of America,04.0005 Other Homeowners,10/23/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,LBPM-134141511,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,11/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,LBPM-134228709,Safeco Insurance Company of Illinois,19.0003 Recreational Vehicle (RV),09/30/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,LBPM-134350221,Safeco Insurance Company of Illinois,19.0002 Motorcycle,05/14/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,LBPM-134543988,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,07/19/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,SFMA-133900830,State Farm Fire and Casualty Company,04.0005 Other Homeowners,01/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,SFMA-134000554,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,05/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,SFMA-134000554,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,05/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,SFMA-134074421,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,07/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,SFMA-134075954,State Farm Fire and Casualty Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,SFMA-134075954,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,08/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,SFMA-134217410,State Farm Fire and Casualty Company,04.0005 Other Homeowners,10/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,SFMA-134293997,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,SFMA-134293997,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),04/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,SFMA-134310862,State Farm Fire and Casualty Company,19.0000 Personal Auto Combinations,03/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,SFMA-134310862,State Farm Mutual Automobile Insurance Company,19.0000 Personal Auto Combinations,03/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,SFMA-134524072,State Farm Fire and Casualty Company,04.0005 Other Homeowners,07/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+MT,TRVD-134030789,Travelers Personal Insurance Company,04.0005 Other Homeowners,04/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,TRVD-G134243122,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,10/04/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+MT,TRVD-G134776712,Travelers Personal Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/15/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-133925598,Allstate Indemnity Company,04.0001 Condominium Homeowners,09/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-133929661,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),04/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-133929692,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),08/05/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-133930227,Allstate Insurance Company,04.0001 Condominium Homeowners,09/16/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-133933195,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,06/10/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-133944728,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,05/13/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-133987625,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,11/25/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-134024995,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),07/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-134108451,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),07/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-134198233,Allstate Indemnity Company,04.0004 Tenant Homeowners,12/09/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-134212750,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),10/28/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-134218565,Allstate Insurance Company,19.0001 Private Passenger Auto (PPA),11/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-134218565,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),11/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-134218565,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),11/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,ALSE-134362303,Allstate Vehicle and Property Insurance Company,04.0003 Owner Occupied Homeowners,08/11/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-134440891,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),09/16/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-134452577,Allstate Property and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),05/12/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-134454335,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),05/26/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-134456115,Allstate Indemnity Company,19.0001 Private Passenger Auto (PPA),05/12/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-134489505,Allstate Fire and Casualty Insurance Company,19.0001 Private Passenger Auto (PPA),06/23/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-134500599,Allstate Insurance Company,04.0003 Owner Occupied Homeowners,12/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-134501724,Allstate Property and Casualty Insurance Company,04.0003 Owner Occupied Homeowners,12/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-134506974,Allstate Indemnity Company,04.0003 Owner Occupied Homeowners,12/01/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-134598852,Allstate Indemnity Company,04.0001 Condominium Homeowners,10/27/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,ALSE-134635543,Allstate North American Insurance Company,19.0001 Private Passenger Auto (PPA),04/06/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,GECC-133800350,GEICO Casualty Company,19.0000 Personal Auto Combinations,02/03/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,GECC-133800350,GEICO Advantage Insurance Company,19.0000 Personal Auto Combinations,02/03/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,GECC-133800350,GEICO Choice Insurance Company,19.0000 Personal Auto Combinations,02/03/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,GECC-133800350,GEICO Secure Insurance Company,19.0000 Personal Auto Combinations,02/03/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,GECC-134012732,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),01/09/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,GECC-134012732,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),01/09/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,GECC-134012732,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,GECC-134012732,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,GECC-134012732,GEICO Advantage Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,GECC-134012732,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,GECC-134012732,GEICO Secure Insurance,19.0001 Private Passenger Auto (PPA),01/09/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,GECC-134012732,GEICO Secure Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,GECC-134376338,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),03/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,GECC-134376338,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),03/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,GECC-134376338,Government Employees Insurance Company,19.0001 Private Passenger Auto (PPA),03/31/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,GECC-134604501,GEICO Casualty Company,19.0001 Private Passenger Auto (PPA),03/26/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,GECC-134604501,GEICO Advantage Insurance Company,19.0001 Private Passenger Auto (PPA),03/26/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,GECC-134604501,GEICO Choice Insurance Company,19.0001 Private Passenger Auto (PPA),03/26/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,GECC-134661852,GEICO Indemnity Company,19.0001 Private Passenger Auto (PPA),03/26/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,GECC-134661852,GEICO General Insurance Company,19.0001 Private Passenger Auto (PPA),03/26/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,LBPM-133813014,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,04/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,LBPM-133813014,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,04/11/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,LBPM-133917124,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,03/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,LBPM-133917124,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,03/18/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,LBPM-133917345,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,05/20/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,LBPM-133917345,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,05/20/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,LBPM-133959002,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,06/23/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,LBPM-133959002,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,06/23/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,LBPM-134070855,Liberty Mutual Insurance Company,04.0004 Tenant Homeowners,07/02/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,LBPM-134070855,Liberty Mutual Personal Insurance Company,04.0004 Tenant Homeowners,07/02/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,LBPM-134825266,Liberty Mutual Insurance Company,19.0000 Personal Auto Combinations,03/11/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,LBPM-134825266,Liberty Mutual Personal Insurance Company,19.0000 Personal Auto Combinations,03/11/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,PRGS-133796059,Progressive Direct Insurance Company,19.0002 Motorcycle,05/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,PRGS-133796059,Progressive Northern Insurance Company,19.0002 Motorcycle,05/17/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,PRGS-133908022,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),06/14/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,PRGS-133908022,Progressive Northern Insurance Company,19.0001 Private Passenger Auto (PPA),06/14/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,PRGS-134206539,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,PRGS-134206539,Progressive Northern Insurance Company,19.0001 Private Passenger Auto (PPA),01/09/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,PRGS-134304882,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),01/24/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,PRGS-134304882,Progressive Northern Insurance Company,19.0001 Private Passenger Auto (PPA),01/24/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,PRGS-134617486,Progressive Direct Insurance Company,19.0001 Private Passenger Auto (PPA),10/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,PRGS-134617486,Progressive Northern Insurance Company,19.0001 Private Passenger Auto (PPA),10/03/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,PRGS-134618970,Progressive Direct Insurance Company,19.0002 Motorcycle,11/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,PRGS-134618970,Progressive Northern Insurance Company,19.0002 Motorcycle,11/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,LBPM-134016380,Safeco Insurance Company of America,04.0000 Homeowners Sub-TOI Combinations,06/27/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,LBPM-134016692,Safeco Insurance Company of America,04.0001 Condominium Homeowners,10/02/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,LBPM-134446500,Safeco Insurance Company of Illinois,19.0000 Personal Auto Combinations,06/21/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,LBPM-134587304,Safeco Insurance Company of America,04.0000 Homeowners Sub-TOI Combinations,10/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-133718498,State Farm Fire and Casualty Company,04.0005 Other Homeowners,08/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133804248,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),02/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133804248,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),02/15/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133834795,State Farm Fire and Casualty Company,04.0002 Mobile Homeowners,01/01/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133866614,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),05/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133866614,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),05/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133866656,State Farm Fire and Casualty Company,19.0002 Motorcycle,05/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133866656,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,05/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133866769,State Farm Fire and Casualty Company,19.0003 Recreational Vehicle (RV),05/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133866769,State Farm Mutual Automobile Insurance Company,19.0003 Recreational Vehicle (RV),05/06/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133905060,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,03/21/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,SFMA-133937492,State Farm Fire and Casualty Company,04.0000 Homeowners Sub-TOI Combinations,05/15/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,SFMA-134076824,State Farm Fire and Casualty Company,19.0002 Motorcycle,02/13/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,SFMA-134076824,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,02/13/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,SFMA-134207336,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),01/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134207336,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),01/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134207352,State Farm Fire and Casualty Company,19.0002 Motorcycle,01/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134207352,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,01/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134207394,State Farm Fire and Casualty Company,19.0003 Recreational Vehicle (RV),01/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134207394,State Farm Mutual Automobile Insurance Company,19.0003 Recreational Vehicle (RV),01/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134207400,State Farm Fire and Casualty Company,19.0003 Recreational Vehicle (RV),01/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134207400,State Farm Mutual Automobile Insurance Company,19.0003 Recreational Vehicle (RV),01/30/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134293428,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),06/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134293428,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),06/10/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134400219,State Farm Fire and Casualty Company,04.0005 Other Homeowners,11/15/2025,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134576755,State Farm Fire and Casualty Company,19.0001 Private Passenger Auto (PPA),01/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134576755,State Farm Mutual Automobile Insurance Company,19.0001 Private Passenger Auto (PPA),01/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134657574,State Farm Fire and Casualty Company,19.0002 Motorcycle,01/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134657574,State Farm Mutual Automobile Insurance Company,19.0002 Motorcycle,01/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134657690,State Farm Fire and Casualty Company,19.0003 Recreational Vehicle (RV),01/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134657690,State Farm Mutual Automobile Insurance Company,19.0003 Recreational Vehicle (RV),01/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134657829,State Farm Fire and Casualty Company,19.0003 Recreational Vehicle (RV),01/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,SFMA-134657829,State Farm Mutual Automobile Insurance Company,19.0003 Recreational Vehicle (RV),01/02/2026,ambest_validated,pipeline_only,original,unvalidated,True
+NV,TRVD-133837636,Travelers Property Casualty Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/23/2024,pipeline_only,pipeline_only,extension,unvalidated,False
+NV,TRVD-134105768,Travelers Property Casualty Insurance Company,04.0000 Homeowners Sub-TOI Combinations,02/16/2025,ambest_window_unmatched,ambest_window_unmatched,extension,unvalidatable,False
+NV,TRVD-G134570380,Travelers Property Casualty Insurance Company,04.0000 Homeowners Sub-TOI Combinations,09/26/2025,ambest_validated,pipeline_only,original,unvalidated,True

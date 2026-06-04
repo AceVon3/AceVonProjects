@@ -118,6 +118,44 @@ def _validation_tier(eff_str, is_backfill: bool) -> str:
     if is_backfill:
         return "ambest_window_unmatched" if d is not None else "pipeline_only"
     return "ambest_validated"
+
+
+# The ONLY filing with a documented, all-field AM Best Disposition Page Data
+# match (SFMA-134676753, 14/14 — see verify_anchor + dataset_summary
+# "Validation"). The per-state cross-checks elsewhere were AGGREGATE COVERAGE
+# analyses (directional AM-Best->ours, largely date-relaxed, ID presence-only,
+# CO none) and do NOT substantiate per-row validation. So this is the only row
+# set that can honestly carry an external "validated" claim. (2026-06-04
+# tier-honesty pass.)
+_VALIDATED_ANCHORS = {"SFMA-134676753"}
+
+
+def _relabel(provenance_tier: str, tracking: str) -> tuple[str, str, str]:
+    """Map the provenance tier (+ tracking) to the honest
+    (source, external_validation, validation_tier) triple. Provenance != validation.
+
+      source: "original" (in the pre-extension 468) | "extension" (2024 back-extension)
+      external_validation:
+        "validated"     documented per-row all-field AM Best match (anchor),
+                        re-extracted value unchanged vs the validated figure
+        "unvalidatable" back-extension rows inside the AM Best window that
+                        postdate the cross-checks (no AM Best export covers them)
+        "unvalidated"   everything else (eff-2024, and originals never per-row
+                        validated)
+      validation_tier   RE-DERIVED 1:1 from external_validation (kept for app
+                        compatibility; values unchanged vocabulary).
+    """
+    if provenance_tier == "ambest_validated":           # eff>=2025, original set
+        source = "original"
+        ext = "validated" if tracking in _VALIDATED_ANCHORS else "unvalidated"
+    elif provenance_tier == "ambest_window_unmatched":  # back-extension recovery, eff>=2025
+        source, ext = "extension", "unvalidatable"
+    else:                                               # pipeline_only: eff<2025
+        source, ext = "extension", "unvalidated"
+    vt = {"validated": "ambest_validated",
+          "unvalidatable": "ambest_window_unmatched",
+          "unvalidated": "pipeline_only"}[ext]
+    return source, ext, vt
 from src.detail import download_system_summary_pdf
 from src.search import (
     _back_to_results,
@@ -401,9 +439,12 @@ COLUMNS = [
     "filing_date",
     "source_pdf",
     # Appended after the 17 AM Best Disposition Page Data columns so their
-    # column order is preserved. Marks whether the row's effective_date falls
-    # in the AM Best-cross-checked window (2026-06-02 back-extension).
+    # column order is preserved. validation_tier is now RE-DERIVED from
+    # external_validation (2026-06-04 tier-honesty pass); source +
+    # external_validation separate provenance from external validation.
     "validation_tier",
+    "source",
+    "external_validation",
 ]
 
 
@@ -462,6 +503,7 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
             stats["filings_excluded_out_of_effective_window"] += 1
             continue
         rel_pdf = pdf.relative_to(Path(".")).as_posix() if pdf.is_absolute() is False else pdf.as_posix()
+        _src, _ext, _vt = _relabel(_validation_tier(eff, t.filing_id in backfill_ids), t.tracking)
         for r in fs.company_rates:
             if _is_excluded_subsidiary(r.company_name):
                 stats["rows_excluded_filing_vehicle"] = stats.get("rows_excluded_filing_vehicle", 0) + 1
@@ -484,7 +526,9 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
                 "disposition_status": fs.disposition_status,
                 "filing_date": (t.submission_date.isoformat() if hasattr(t.submission_date, "isoformat") else t.submission_date),
                 "source_pdf": rel_pdf,
-                "validation_tier": _validation_tier(eff, t.filing_id in backfill_ids),
+                "validation_tier": _vt,
+                "source": _src,
+                "external_validation": _ext,
             })
         stats["filings_emitted"] += 1
         stats["rows_emitted"] += len(fs.company_rates)

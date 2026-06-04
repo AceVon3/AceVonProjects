@@ -8,7 +8,22 @@ Rate-filing rows for personal-lines insurance across **Idaho, Washington, Colora
 
 > **⚠ Back-extension in progress (started 2026-06-02).** The effective-date floor was extended from `2025-01-01` back to `2024-01-01` to add calendar-year-2024 filings. The submission window was widened to `2023-07-01` (6-month lookback preserved). This is being executed **incrementally, one state at a time**; the per-state row-count tables below still reflect the **pre-extension validated baseline (468 rows, effective ≥ 2025-01-01)** and will be rewritten when all states are re-emitted. See [Validation tiering](#validation-tiering-2026-06-02) for how 2024 rows are distinguished.
 
-### Validation tiering (2026-06-02)
+### Validation tiering (2026-06-02; corrected 2026-06-04)
+
+> **⚠ Correction (2026-06-04 tier-honesty pass).** The tier table below
+> originally labeled all 468 original rows `ambest_validated`, which overstated
+> what happened: the per-state cross-checks were **aggregate coverage analyses,
+> not per-row validations**, and CO had none. Substantiation review found the
+> **only** documented per-row all-field AM Best match is the anchor
+> `SFMA-134676753` (2 rows). The schema now separates **`source`** (provenance:
+> original vs extension) from **`external_validation`** (`validated` =
+> anchor only / `unvalidatable` = the 19 window rows / `unvalidated` =
+> everything else, 984), and `validation_tier` is re-derived 1:1 from
+> `external_validation`. So of 1,005 rows: **2 validated, 19 unvalidatable, 984
+> unvalidated.** This is a SERFF-sourced, pipeline-extracted collection — **not**
+> an AM Best-validated dataset beyond the anchor. Full detail + audit:
+> **`TIER_RELABEL.md`** and `output/tier_relabel_audit.csv`. The historical
+> framing below is retained for context.
 
 The 2024 back-extension is **not** covered by the per-state AM Best cross-checks (those exports are scoped `2025-01-01 → 2026-04-17`). Every row carries a **`validation_tier`** column with three tiers (a confidence ladder):
 
@@ -120,7 +135,9 @@ The dataset's date axis is therefore *effective date*, which matches AM Best's m
 | `disposition_status` | State decision: `Approved` / `Filed` / `Withdrawn` / `Disapproved` / `Pending` (case as filed) |
 | `filing_date` | Date submitted to the state |
 | `source_pdf` | Relative path to the cached system PDF |
-| `validation_tier` | Confidence ladder: `ambest_validated` (eff ≥ 2025-01-01 and in the original cross-check set) / `ambest_window_unmatched` (eff ≥ 2025-01-01 but back-extension-recovered, postdating the cross-checks) / `pipeline_only` (eff < 2025-01-01 or blank). See [Validation tiering](#validation-tiering-2026-06-02). Added 2026-06-02. |
+| `source` | Provenance (always true): `original` (in the pre-extension 468-row set) / `extension` (added by the 2026-06-02 back-extension). Added 2026-06-04. |
+| `external_validation` | External AM Best validation state (2026-06-04): `validated` (documented per-row all-field AM Best match, value unchanged — **only the `SFMA-134676753` anchor, 2 rows**) / `unvalidatable` (the 19 back-extension rows inside the AM Best window that postdate the cross-checks) / `unvalidated` (everything else — eff-2024, and originals whose "validated" claim is unsubstantiated). See `TIER_RELABEL.md`. |
+| `validation_tier` | **Re-derived 1:1 from `external_validation`** (kept for app compatibility): `validated→ambest_validated`, `unvalidatable→ambest_window_unmatched`, `unvalidated→pipeline_only`. No longer asserts provenance — use `source`. Redefined 2026-06-04 (was a provenance/validation conflation); see `TIER_RELABEL.md`. |
 
 ## Scope and limitations
 
