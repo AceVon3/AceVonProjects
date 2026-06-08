@@ -123,7 +123,7 @@ matched, missing = [], []
 for name, eff, disp, imp, pol, wpp, ind in AMBEST:
     k = (_norm_name(name), eff, imp)
     if k in my_lookup:
-        matched.append((name, eff, imp))
+        matched.append((name, eff, imp, my_lookup[k]))
     else:
         missing.append((name, eff, disp, imp, pol, wpp, ind))
 
@@ -153,3 +153,18 @@ print()
 print("=== OR HO (not in PPA-only AM Best report, expected) ===")
 for d in or_other:
     print(f"  {d['serff_tracking_number']:22s} {d['company_name']:48s} {d['sub_type_of_insurance']} imp={d['overall_rate_impact']}")
+
+# ---- per-row corroboration artifact (CROSS_CHECK_STANDARD.md) -----------------
+# OR uses a single match tier (subsidiary + effective_date + impact) = direct.
+from crosscheck_artifact import write_corroboration, print_summary
+_mm = {}
+for _name, _eff, _imp, _d in matched:
+    _mm[(_d["serff_tracking_number"], _d["company_name"])] = {
+        "ambest": {"subsidiary": _name, "effective_date": _eff, "impact": _imp, "policyholders": ""},
+        "strength": "direct",
+        "agreed": {"subsidiary": True, "impact": True, "eff_date": True, "policyholders": ""},
+    }
+_miss = [{"subsidiary": _n, "effective_date": _e, "impact": _i, "policyholders": _p}
+         for (_n, _e, _disp, _i, _p, _w, _ind) in missing]
+print()
+print_summary(write_corroboration("OR", "PPA", or_ppa, _mm, _miss))

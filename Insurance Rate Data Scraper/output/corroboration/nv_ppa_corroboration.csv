@@ -1,0 +1,80 @@
+state,line,our_serff_tracking_number,our_subsidiary,our_effective_date,our_impact,our_policyholders,matched_ambest_subsidiary,ambest_effective_date,ambest_impact,ambest_policyholders,agreed_subsidiary,agreed_impact,agreed_eff_date,agreed_policyholders,match_strength
+NV,PPA,ALSE-133929661,Allstate Property and Casualty Insurance Company,04/01/2024,12.544%,1478,,,,,,,,,none
+NV,PPA,ALSE-133929692,Allstate Insurance Company,08/05/2024,8.807%,3429,,,,,,,,,none
+NV,PPA,ALSE-134024995,Allstate Indemnity Company,07/01/2024,8.079%,2755,,,,,,,,,none
+NV,PPA,ALSE-134108451,Allstate Fire and Casualty Insurance Company,07/15/2024,0.000%,0,,,,,,,,,none
+NV,PPA,ALSE-134212750,Allstate Fire and Casualty Insurance Company,10/28/2024,10.811%,94804,,,,,,,,,none
+NV,PPA,ALSE-134218565,Allstate Insurance Company,11/11/2024,0.000%,0,,,,,,,,,none
+NV,PPA,ALSE-134218565,Allstate Property and Casualty Insurance Company,11/11/2024,0.000%,0,,,,,,,,,none
+NV,PPA,ALSE-134218565,Allstate Indemnity Company,11/11/2024,0.000%,0,,,,,,,,,none
+NV,PPA,ALSE-134440891,Allstate North American Insurance Company,09/16/2025,0.000%,2807,Allstate North American Insurance Company,09/16/25,0.0,2807,True,True,True,True,direct
+NV,PPA,ALSE-134452577,Allstate Property and Casualty Insurance Company,05/12/2025,17.368%,1304,Allstate Property and Casualty Insurance Company,05/12/25,17.368,1304,True,True,True,True,direct
+NV,PPA,ALSE-134454335,Allstate Fire and Casualty Insurance Company,05/26/2025,8.602%,82665,Allstate Fire and Casualty Insurance Company,05/26/25,8.602,82665,True,True,True,True,direct
+NV,PPA,ALSE-134456115,Allstate Indemnity Company,05/12/2025,11.499%,1653,Allstate Indemnity Company,05/12/25,11.499,1653,True,True,True,True,direct
+NV,PPA,ALSE-134489505,Allstate Fire and Casualty Insurance Company,06/23/2025,0.000%,0,Allstate Fire and Casualty Insurance Company,06/23/25,0.0,0,True,True,True,True,direct
+NV,PPA,ALSE-134635543,Allstate North American Insurance Company,04/06/2026,3.473%,17504,Allstate North American Insurance Company,02/02/26,3.473,17504,True,True,False,True,date_relaxed
+NV,PPA,GECC-133800350,GEICO Casualty Company,02/03/2024,10.693%,27937,,,,,,,,,none
+NV,PPA,GECC-133800350,GEICO Advantage Insurance Company,02/03/2024,16.784%,82241,,,,,,,,,none
+NV,PPA,GECC-133800350,GEICO Choice Insurance Company,02/03/2024,16.070%,29544,,,,,,,,,none
+NV,PPA,GECC-133800350,GEICO Secure Insurance Company,02/03/2024,20.181%,73711,,,,,,,,,none
+NV,PPA,GECC-134012732,GEICO Indemnity Company,01/09/2025,0.000%,2596,,,,,,,,,none
+NV,PPA,GECC-134012732,GEICO Casualty Company,01/09/2025,0.000%,26744,,,,,,,,,none
+NV,PPA,GECC-134012732,GEICO General Insurance Company,01/09/2025,0.000%,12312,,,,,,,,,none
+NV,PPA,GECC-134012732,Government Employees Insurance Company,01/09/2025,0.000%,4480,,,,,,,,,none
+NV,PPA,GECC-134012732,GEICO Advantage Insurance Company,01/09/2025,0.000%,71323,,,,,,,,,none
+NV,PPA,GECC-134012732,GEICO Choice Insurance Company,01/09/2025,0.000%,25260,,,,,,,,,none
+NV,PPA,GECC-134012732,GEICO Secure Insurance,01/09/2025,0.000%,70869,,,,,,,,,none
+NV,PPA,GECC-134012732,GEICO Secure Insurance Company,01/09/2025,0.000%,70869,,,,,,,,,none
+NV,PPA,GECC-134376338,GEICO Indemnity Company,03/31/2025,11.954%,2449,GEICO Indemnity Company,03/31/25,11.954,2449,True,True,True,True,direct
+NV,PPA,GECC-134376338,GEICO General Insurance Company,03/31/2025,17.274%,11746,GEICO General Insurance Company,03/31/25,17.274,11746,True,True,True,True,direct
+NV,PPA,GECC-134376338,Government Employees Insurance Company,03/31/2025,0.000%,0,Government Employees Insurance Company,03/31/25,0.0,0,True,True,True,True,direct
+NV,PPA,GECC-134604501,GEICO Casualty Company,03/26/2026,10.575%,22451,,,,,,,,,none
+NV,PPA,GECC-134604501,GEICO Advantage Insurance Company,03/26/2026,6.431%,47423,,,,,,,,,none
+NV,PPA,GECC-134604501,GEICO Choice Insurance Company,03/26/2026,1.019%,15791,,,,,,,,,none
+NV,PPA,GECC-134661852,GEICO Indemnity Company,03/26/2026,30.489%,2351,,,,,,,,,none
+NV,PPA,GECC-134661852,GEICO General Insurance Company,03/26/2026,56.469%,13269,,,,,,,,,none
+NV,PPA,LBPM-133813014,Liberty Mutual Insurance Company,04/11/2024,6.035%,184,,,,,,,,,none
+NV,PPA,LBPM-133813014,Liberty Mutual Personal Insurance Company,04/11/2024,12.464%,8004,,,,,,,,,none
+NV,PPA,LBPM-133917124,Liberty Mutual Insurance Company,03/18/2024,0.000%,184,,,,,,,,,none
+NV,PPA,LBPM-133917124,Liberty Mutual Personal Insurance Company,03/18/2024,0.000%,8004,,,,,,,,,none
+NV,PPA,LBPM-133917345,Liberty Mutual Insurance Company,05/20/2024,0.000%,184,,,,,,,,,none
+NV,PPA,LBPM-133917345,Liberty Mutual Personal Insurance Company,05/20/2024,0.000%,8004,,,,,,,,,none
+NV,PPA,LBPM-133959002,Liberty Mutual Insurance Company,06/23/2025,8.109%,97,Liberty Mutual Insurance Company,06/23/25,8.109,97,True,True,True,True,direct
+NV,PPA,LBPM-133959002,Liberty Mutual Personal Insurance Company,06/23/2025,-0.093%,7911,Liberty Mutual Personal Insurance Company,06/23/25,-0.093,7911,True,True,True,True,direct
+NV,PPA,LBPM-134825266,Liberty Mutual Insurance Company,03/11/2026,11.200%,165,,,,,,,,,none
+NV,PPA,LBPM-134825266,Liberty Mutual Personal Insurance Company,03/11/2026,10.000%,10266,,,,,,,,,none
+NV,PPA,PRGS-133796059,Progressive Direct Insurance Company,05/17/2024,8.464%,20514,,,,,,,,,none
+NV,PPA,PRGS-133796059,Progressive Northern Insurance Company,05/17/2024,7.720%,11559,,,,,,,,,none
+NV,PPA,PRGS-133908022,Progressive Direct Insurance Company,06/14/2024,2.767%,131147,,,,,,,,,none
+NV,PPA,PRGS-133908022,Progressive Northern Insurance Company,06/14/2024,4.857%,77006,,,,,,,,,none
+NV,PPA,PRGS-134206539,Progressive Direct Insurance Company,01/09/2026,-0.094%,212801,,,,,,,,,none
+NV,PPA,PRGS-134206539,Progressive Northern Insurance Company,01/09/2026,-0.034%,84134,,,,,,,,,none
+NV,PPA,PRGS-134304882,Progressive Direct Insurance Company,01/24/2025,4.976%,178171,Progressive Direct Insurance Company,03/21/25,4.976,178171,True,True,False,True,date_relaxed
+NV,PPA,PRGS-134304882,Progressive Northern Insurance Company,01/24/2025,4.415%,73976,Progressive Northern Insurance Company,03/21/25,4.415,73976,True,True,False,True,date_relaxed
+NV,PPA,PRGS-134617486,Progressive Direct Insurance Company,10/03/2025,6.865%,212801,Progressive Direct Insurance Company,10/03/25,6.865,212801,True,True,True,True,direct
+NV,PPA,PRGS-134617486,Progressive Northern Insurance Company,10/03/2025,-0.003%,84134,Progressive Northern Insurance Company,10/03/25,-0.003,84134,True,True,True,True,direct
+NV,PPA,PRGS-134618970,Progressive Direct Insurance Company,11/21/2025,12.637%,24758,Progressive Direct Insurance Company,01/30/26,12.637,24758,True,True,False,True,date_relaxed
+NV,PPA,PRGS-134618970,Progressive Northern Insurance Company,11/21/2025,11.765%,12489,Progressive Northern Insurance Company,01/30/26,11.765,12489,True,True,False,True,date_relaxed
+NV,PPA,LBPM-134446500,Safeco Insurance Company of Illinois,06/21/2025,9.604%,11770,Safeco Insurance Company of Illinois,06/21/25,9.604,11770,True,True,True,True,direct
+NV,PPA,SFMA-133804248,State Farm Fire and Casualty Company,02/15/2024,0.000%,12973,,,,,,,,,none
+NV,PPA,SFMA-133804248,State Farm Mutual Automobile Insurance Company,02/15/2024,0.000%,457151,,,,,,,,,none
+NV,PPA,SFMA-133866614,State Farm Fire and Casualty Company,05/06/2024,6.256%,13731,,,,,,,,,none
+NV,PPA,SFMA-133866614,State Farm Mutual Automobile Insurance Company,05/06/2024,16.114%,472743,,,,,,,,,none
+NV,PPA,SFMA-133866656,State Farm Fire and Casualty Company,05/06/2024,0.019%,993,,,,,,,,,none
+NV,PPA,SFMA-133866656,State Farm Mutual Automobile Insurance Company,05/06/2024,0.026%,12453,,,,,,,,,none
+NV,PPA,SFMA-134076824,State Farm Fire and Casualty Company,02/13/2025,0.239%,988,State Farm Fire and Casualty Company,02/13/25,0.239,988,True,True,True,True,direct
+NV,PPA,SFMA-134076824,State Farm Mutual Automobile Insurance Company,02/13/2025,0.053%,12302,State Farm Mutual Automobile Insurance Company,02/13/25,0.053,12302,True,True,True,True,direct
+NV,PPA,SFMA-134207336,State Farm Fire and Casualty Company,01/30/2025,5.562%,14992,State Farm Fire and Casualty Company,01/30/25,5.562,14992,True,True,True,True,direct
+NV,PPA,SFMA-134207336,State Farm Mutual Automobile Insurance Company,01/30/2025,8.451%,471771,State Farm Mutual Automobile Insurance Company,01/30/25,8.451,471771,True,True,True,True,direct
+NV,PPA,SFMA-134207352,State Farm Fire and Casualty Company,01/30/2025,3.928%,988,State Farm Fire and Casualty Company,01/30/25,3.928,988,True,True,True,True,direct
+NV,PPA,SFMA-134207352,State Farm Mutual Automobile Insurance Company,01/30/2025,0.935%,12302,State Farm Mutual Automobile Insurance Company,01/30/25,0.935,12302,True,True,True,True,direct
+NV,PPA,SFMA-134293428,State Farm Fire and Casualty Company,06/10/2025,0.000%,19632,State Farm Fire and Casualty Company,05/27/25,0.0,19632,True,True,False,True,date_relaxed
+NV,PPA,SFMA-134293428,State Farm Mutual Automobile Insurance Company,06/10/2025,0.000%,461410,State Farm Mutual Automobile Insurance Company,05/27/25,0.0,461410,True,True,False,True,date_relaxed
+NV,PPA,SFMA-134576755,State Farm Fire and Casualty Company,01/02/2026,2.861%,20202,State Farm Fire and Casualty Company,01/02/26,2.861,20202,True,True,True,True,direct
+NV,PPA,SFMA-134576755,State Farm Mutual Automobile Insurance Company,01/02/2026,2.694%,464314,State Farm Mutual Automobile Insurance Company,01/02/26,2.694,464314,True,True,True,True,direct
+NV,PPA,SFMA-134657574,State Farm Fire and Casualty Company,01/02/2026,-0.001%,1098,,,,,,,,,none
+NV,PPA,SFMA-134657574,State Farm Mutual Automobile Insurance Company,01/02/2026,0.000%,12013,,,,,,,,,none
+NV,PPA,SFMA-134207400,State Farm Fire and Casualty Company,01/30/2025,15.049%,89,State Farm Fire and Casualty Company,01/30/25,15.049,89,True,True,True,True,reclassified
+NV,PPA,SFMA-134207400,State Farm Mutual Automobile Insurance Company,01/30/2025,10.492%,23890,State Farm Mutual Automobile Insurance Company,01/30/25,10.492,23890,True,True,True,True,reclassified
+NV,PPA,SFMA-134207394,State Farm Fire and Casualty Company,01/30/2025,9.953%,60,State Farm Fire and Casualty Company,01/30/25,9.953,60,True,True,True,True,reclassified
+NV,PPA,SFMA-134207394,State Farm Mutual Automobile Insurance Company,01/30/2025,9.987%,3997,State Farm Mutual Automobile Insurance Company,01/30/25,9.987,3997,True,True,True,True,reclassified

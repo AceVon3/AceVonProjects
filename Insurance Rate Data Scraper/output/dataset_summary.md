@@ -6,49 +6,55 @@
 
 Rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, Utah, Arizona, Montana, Wyoming, and Nevada**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2024-01-01, 2026-04-17]`.
 
-> **⚠ Back-extension in progress (started 2026-06-02).** The effective-date floor was extended from `2025-01-01` back to `2024-01-01` to add calendar-year-2024 filings. The submission window was widened to `2023-07-01` (6-month lookback preserved). This is being executed **incrementally, one state at a time**; the per-state row-count tables below still reflect the **pre-extension validated baseline (468 rows, effective ≥ 2025-01-01)** and will be rewritten when all states are re-emitted. See [Validation tiering](#validation-tiering-2026-06-02) for how 2024 rows are distinguished.
+> **Dataset status (2026-06-08): 1,005 rows, nine states, complete.** Effective-date window `[2024-01-01, 2026-04-17]`; SERFF submission window `2023-07-01 → 2026-04-17`. The 2024 back-extension (started 2026-06-02) is finished and converged.
+>
+> **Honest one-liner:** of 1,005 rows — **2 field-validated** (the `SFMA-134676753` anchor, all-field match), **134 AM Best cross-checked** (100 direct / 34 date-relaxed+reclassified), **202 extracted in a validated window but not individually matched**, **667 pipeline-extracted** (CO, ID non-anchor, all eff-2024). **130 of the original 468 carry external corroboration.** This is a SERFF-sourced, pipeline-extracted collection — corroborated against AM Best only where `external_validation` marks it, honest where not. Full detail + audit: **`TIER_RELABEL.md`**, `output/tier_relabel_audit.csv`, `output/corroboration/`.
 
-### Validation tiering (2026-06-02; corrected 2026-06-04)
+### Validation tiering (four-tier, 2026-06-08)
 
-> **⚠ Correction (2026-06-04 tier-honesty pass).** The tier table below
-> originally labeled all 468 original rows `ambest_validated`, which overstated
-> what happened: the per-state cross-checks were **aggregate coverage analyses,
-> not per-row validations**, and CO had none. Substantiation review found the
-> **only** documented per-row all-field AM Best match is the anchor
-> `SFMA-134676753` (2 rows). The schema now separates **`source`** (provenance:
-> original vs extension) from **`external_validation`** (`validated` =
-> anchor only / `unvalidatable` = the 19 window rows / `unvalidated` =
-> everything else, 984), and `validation_tier` is re-derived 1:1 from
-> `external_validation`. So of 1,005 rows: **2 validated, 19 unvalidatable, 984
-> unvalidated.** This is a SERFF-sourced, pipeline-extracted collection — **not**
-> an AM Best-validated dataset beyond the anchor. Full detail + audit:
-> **`TIER_RELABEL.md`** and `output/tier_relabel_audit.csv`. The historical
-> framing below is retained for context.
+Two earlier passes corrected an original overstatement (all 468 labeled `ambest_validated`, when the per-state cross-checks were *aggregate coverage analyses, not per-row validations*; CO had none). The current scheme is an honest **evidence gradient** in `external_validation`, with **`source`** orthogonal (provenance) and **`validation_tier`** a coarse app-compat alias. Per-row corroboration records live in `output/corroboration/`; rationale + audit in `TIER_RELABEL.md`.
 
-The 2024 back-extension is **not** covered by the per-state AM Best cross-checks (those exports are scoped `2025-01-01 → 2026-04-17`). Every row carries a **`validation_tier`** column with three tiers (a confidence ladder):
+| `external_validation` | meaning | count |
+|---|---|--:|
+| `field_validated` | documented all-field per-row AM Best Disposition Page Data match (the `SFMA-134676753` anchor, value unchanged) | 2 |
+| `ambest_cross_checked` | matched an AM Best entry on subsidiary + impact (+ eff_date or policyholders); `match_strength` records `direct`/`date_relaxed`/`reclassified` | 134 |
+| `pipeline_extracted_in_validated_window` | effective_date ≥ 2025-01-01 in a cross-checked state (AZ/MT/NV/OR/UT/WA), not individually matched | 202 |
+| `pipeline_extracted` | CO (no cross-check), ID non-anchor, and all eff-2024 extension rows | 667 |
 
-| `validation_tier` | Meaning |
-|---|---|
-| `ambest_validated` | Part of the dataset the per-state AM Best cross-checks were run against — submitted on/after `2024-07-01` (the original pre-extension search window) with effective_date ≥ 2025-01-01 **or** blank (blank-effective rows were kept in the original deliverable). The documented match rates apply to this set. |
-| `ambest_window_unmatched` | `effective_date ≥ 2025-01-01` **but** submitted before `2024-07-01`, so recovered by the back-extension and **postdating** the cross-checks. In the AM Best effective window, but never individually verified against an AM Best export. (The original lookback missed these — filings made >6 months ahead of their effective date.) |
-| `pipeline_only` | `effective_date < 2025-01-01` (the 2024 back-extension), **or** a blank-effective row that was itself recovered by the back-extension (submitted before `2024-07-01`). Extracted by the **identical** pipeline — same scope, same parser, same filing-vehicle exclusions — but below / outside the AM Best window. |
+- **`source`**: `original` (pre-extension 468) / `extension` (2024 back-extension). **`validation_tier`** (legacy app-compat): `field_validated`+`ambest_cross_checked` → `ambest_validated`; the two pipeline tiers → `pipeline_only`. Use `external_validation` for the full gradient and `source` for provenance.
+- **source × external_validation:** original → field 2 / cross_checked **128** / in-window 189 / pipeline 149; extension → cross_checked **6** / in-window 13 / pipeline 518. So **128 of the 134 cross-checked are original-468, 6 are extension-recovered**; **130 of the original 468 carry external corroboration** (the extension did not inflate the count).
 
-Tiering rule (provenance by slice membership): an effective_date below the window is decisively `pipeline_only`. Otherwise (effective_date in-window or blank), provenance is decided by **back-extension slice membership** — whether the filing was discovered by the `2023-07-01 → 2024-06-30` back-extension search (`{state}_all_companies_search_backfill2024.xlsx`). A slice filing is `ambest_window_unmatched` (in-window effective date) or `pipeline_only` (blank effective date); a non-slice filing (the original cross-check dataset) is `ambest_validated`. Slice membership is used rather than the per-row submission date because some original rows have a blank submission date that failed to scrape (e.g. 5 in OR) and some back-extension TRVD rows likewise lack one — membership is exact regardless. Consequence: **filtering `validation_tier = ambest_validated` reproduces exactly the original cross-checked set** (including its blank-effective rows), and no originally-validated row is ever demoted.
+| state | field_validated | cross_checked | in_window_unmatched | pipeline | total |
+|---|--:|--:|--:|--:|--:|
+| AZ | 0 | 29 | 48 | 102 | 179 |
+| CO | 0 | 0 | 0 | 191 | 191 |
+| ID | 2 | 0 | 0 | 110 | 112 |
+| MT | 0 | 19 | 6 | 32 | 57 |
+| NV | 0 | 39 | 26 | 44 | 109 |
+| OR | 0 | 29 | 18 | 84 | 131 |
+| UT | 0 | 18 | 66 | 58 | 142 |
+| WA | 0 | 0 | 38 | 46 | 84 |
+
+**`match_strength`** (ambest_cross_checked): AZ 25 direct / 4 date_relaxed; OR 29 direct; MT 18 direct / 1 date_relaxed; NV 28 direct / 7 date_relaxed / 4 reclassified; **UT 0 direct / 17 date_relaxed / 1 reclassified — flagged mostly-date-relaxed (soft corroboration)**. Overall 100 direct / 29 date_relaxed / 5 reclassified.
+
+**WA limitation:** WA was cross-checked (documented 12/14 PPA) but **no reusable per-row artifact was built** (decision 2026-06-08), so WA's matched rows are **not** marked `ambest_cross_checked` — its in-window rows sit in `pipeline_extracted_in_validated_window`. WA's corroboration is documented-only, not per-row re-derivable. New states (per `CROSS_CHECK_STANDARD.md`) always build the artifact.
 
 **Scope is identical across the entire window.** The 8-brand scope (State Farm, GEICO, Allstate, Travelers, Progressive, Liberty Mutual, Safeco, Encompass), the filing-vehicle/specialty exclusions (LM General, Standard Fire, Integon/National General, American Economy, Peerless, Esurance, Drive, United Financial), and the TOI filters (19.0 / 04.0) apply unchanged to 2024 rows. No brand-status transition falls inside 2024 — Safeco's retirement (2026-04-25) is on the forward edge; Drive (2020) and Esurance (2020) were already retired and remain excluded. The only tier difference is the AM Best cross-check, not the collection methodology.
 
 | State | Rows |
 |------:|-----:|
-| ID    |   53 |
-| WA    |   34 |
-| CO    |   97 |
-| OR    |   47 |
-| UT    |   84 |
-| AZ    |   77 |
-| MT    |   25 |
+| ID    |  112 |
+| WA    |   84 |
+| CO    |  191 |
+| OR    |  131 |
+| UT    |  142 |
+| AZ    |  179 |
+| MT    |   57 |
 | WY    |    0 |
-| NV    |   51 |
-| **Σ** | **468** |
+| NV    |  109 |
+| **Σ** | **1,005** |
+
+*(Per-brand breakdown table below predates the back-extension and reflects the original 468; the canonical per-state/per-tier counts are in [Validation tiering](#validation-tiering-four-tier-2026-06-08).)*
 
 ### Per-state per-brand breakdown
 
@@ -136,8 +142,27 @@ The dataset's date axis is therefore *effective date*, which matches AM Best's m
 | `filing_date` | Date submitted to the state |
 | `source_pdf` | Relative path to the cached system PDF |
 | `source` | Provenance (always true): `original` (in the pre-extension 468-row set) / `extension` (added by the 2026-06-02 back-extension). Added 2026-06-04. |
-| `external_validation` | External AM Best validation state (2026-06-04): `validated` (documented per-row all-field AM Best match, value unchanged — **only the `SFMA-134676753` anchor, 2 rows**) / `unvalidatable` (the 19 back-extension rows inside the AM Best window that postdate the cross-checks) / `unvalidated` (everything else — eff-2024, and originals whose "validated" claim is unsubstantiated). See `TIER_RELABEL.md`. |
-| `validation_tier` | **Re-derived 1:1 from `external_validation`** (kept for app compatibility): `validated→ambest_validated`, `unvalidatable→ambest_window_unmatched`, `unvalidated→pipeline_only`. No longer asserts provenance — use `source`. Redefined 2026-06-04 (was a provenance/validation conflation); see `TIER_RELABEL.md`. |
+| `external_validation` | Evidence gradient (four-tier, 2026-06-08): `field_validated` (all-field anchor match, 2) / `ambest_cross_checked` (matched an AM Best entry; see `match_strength`, 134) / `pipeline_extracted_in_validated_window` (eff≥2025 in a cross-checked state, not matched, 202) / `pipeline_extracted` (CO, ID non-anchor, all eff-2024, 667). See `TIER_RELABEL.md` / `CROSS_CHECK_STANDARD.md`. |
+| `match_strength` | For `ambest_cross_checked`: `direct` (subsidiary+eff_date+impact agree) / `date_relaxed` (subsidiary+impact+policyholders agree, eff differs) / `reclassified` (agree, different sub-TOI). `field` for the anchor; blank otherwise. Per-row: `output/corroboration/*.csv`. |
+| `validation_tier` | Coarse app-compat alias, re-derived: `field_validated`+`ambest_cross_checked` → `ambest_validated`; both pipeline tiers → `pipeline_only`. Use `external_validation` for the full gradient, `source` for provenance. |
+
+## Disposition vocabulary catalog (all 9 states, accumulated)
+
+`disposition_status` is preserved as-filed (casing included); `rate_activity` is derived by substring rules. The classifier maps `WITHDRAWN`→`rate_change_withdrawn`, `DISAPPROV`/`REJECT`→`rate_change_disapproved`, `PENDING`/`OPEN`→`rate_change_pending`, else→`rate_change`.
+
+| State | disposition_status terms observed | → rate_activity |
+|---|---|---|
+| ID | `APPROVED`, `WITHDRAWN`, `DISAPPROVED` (ALL-CAPS) | rate_change / withdrawn / disapproved |
+| WA | `Approved` | rate_change |
+| CO | `Filed`, `Withdrawn by company`, `Review pending` | rate_change / withdrawn / pending |
+| OR | `Approved`, `Filed`, `Withdrawn by company`, `Review pending` | rate_change / … / withdrawn / pending |
+| UT | `FILED FOR USE`, `REJECTED` | rate_change / disapproved |
+| AZ | `Acknowledged` (file-and-use; as-filed = in effect) | rate_change |
+| MT | `Rates Reviewed and Filed`, `Received and Filed`, `Withdrawn` | rate_change / rate_change / withdrawn |
+| NV | `Approved`, `Approved with Stipulations`, `Open`, `Withdrawn` | rate_change / rate_change / pending / withdrawn |
+| WY | — (0 in-scope rate rows) | — |
+
+Notes: `Received and Filed` (MT) and `Approved with Stipulations` (NV) surfaced in the 2026-06 back-extension and classify correctly via fall-through (both are approvals/file-and-use). `Withdrawn by company` (CO/OR) matches the `WITHDRAWN` substring. `Open` (NV) and `Review pending` (CO/OR) map to `rate_change_pending`. No conditional approval in this dataset changes the as-filed rate (AZ/MT/UT are file-and-use; NV stipulated approvals carried the filed figure).
 
 ## Scope and limitations
 

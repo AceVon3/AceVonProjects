@@ -1,78 +1,86 @@
-# Validation-tier relabel — separating provenance from external validation
+# Validation relabel — four-tier external_validation (honest evidence gradient)
 
-**Date:** 2026-06-04 · **Scope:** label/schema columns only, **no rate-value mutation** (verified: 0 rate-value cells changed vs the original 468).
+**Dates:** 2026-06-04 (separate provenance from validation) → 2026-06-08 (refine
+to a four-tier evidence gradient with per-row corroboration). **Label/schema
+columns only — 0 rate-value cells changed** (verified across all 1,005 rows).
 
-## The bug
-`validation_tier` conflated two different things and, worse, claimed an AM Best
-check that was never performed per-row:
-- It labeled **all 468** original rows `ambest_validated`, implying each had been
-  validated against AM Best.
-- In reality the per-state cross-checks were **aggregate coverage analyses**
-  (directional "did AM Best's N entries appear in ours"), not per-row
-  validations — and they didn't cover every state.
+## The problem
+The original dataset labeled all 468 rows `ambest_validated`, implying each was
+validated against AM Best. Investigation showed the per-state cross-checks were
+**aggregate coverage analyses, not per-row validations** (UT Tier-1 direct = 0,
+all date-relaxed; ID `reconcile` was presence-only; CO had no cross-check at
+all). A binary validated/unvalidated then *under*-corrects, lumping a row that
+matched AM Best on subsidiary+eff+impact together with a CO row never checked.
 
-## Substantiation investigation (what actually happened)
-| State | Artifact | What it actually established |
-|---|---|---|
-| UT | `compare_ut_ambest.py`, `ut_ambest_compare_summary.txt` | **Tier-1 direct (subsidiary+eff_date+impact) = 0**; 11/21 via *date-relaxed* match (eff date did NOT agree). Coverage, not per-row validation. |
-| OR/AZ/MT/NV | `compare_*_ambest.py`, `ambest_*_text.txt` | Aggregate match rates (e.g. NV 28/33 PPA, 5/8 HO); directional; matched a *subset*. |
-| WA | `ambest_wa_ppa_text.txt` | 12/14 coverage; no per-row validation record. |
-| ID | `reconcile_id_ambest.py`, `reconcile_id_ambest.txt` | Presence-only — every entry says `[no rate_changes row — cannot compare values]`. |
-| **CO** | **none** | **No AM Best cross-check at all.** |
+## Four-tier scheme (ordinal evidence gradient)
+`external_validation`, with `source` orthogonal (provenance, always true) and
+`validation_tier` a coarse app-compat alias.
 
-**The only documented per-row, all-field AM Best Disposition Page Data match is
-the anchor `SFMA-134676753`** (14/14 — asserted every ID emit by
-`run_final_rates.verify_anchor`). Nothing else substantiates a per-row
-"validated" claim.
+| `external_validation` | meaning | count |
+|---|---|--:|
+| `field_validated` | documented all-field per-row AM Best match (the `SFMA-134676753` anchor, value unchanged) | **2** |
+| `ambest_cross_checked` | matched an AM Best entry on subsidiary + impact (+ eff_date or policyholders); per-row record in `output/corroboration/`. `match_strength` records direct/date_relaxed/reclassified | **134** |
+| `pipeline_extracted_in_validated_window` | eff ≥ 2025-01-01 in a cross-checked state (AZ/MT/NV/OR/UT/WA), not individually matched | **202** |
+| `pipeline_extracted` | CO (no cross-check), ID non-anchor, all eff-2024 extension | **667** |
 
-## Value diff (re-collection vs original 468)
-The 2024 back-extension re-collected every state on the fixed nav path. Diffing
-all 468 original rows against their pre-extension values (impact/indicated
-±0.1%; policyholders/eff/disposition exact): **468/468 unchanged, 0 moved, 0
-missing** — including the anchor. So no row is demoted for value drift; the
-relabel rests entirely on substantiation.
+`match_strength` (for `ambest_cross_checked`): `direct` (subsidiary+eff_date+impact
+agree) / `date_relaxed` (subsidiary+impact+policyholders agree, eff differs) /
+`reclassified` (agree but our row in a different sub-TOI). `field` for the anchor.
 
-## Decision rule
-A row keeps an external **`validated`** claim **only if** (a) its validation is
-*documented per-row* **and** (b) its re-extracted values match the
-originally-validated values within tolerance. Never-substantiated **or**
-value-changed → cannot claim validated.
+## Decision rules (per your sign-off)
+1. **CO eff≥2025 (97) → `pipeline_extracted`** — no cross-check existed.
+2. **ID non-anchor in-window (51) → `pipeline_extracted`** — only the 2 anchor
+   rows are `field_validated`; ID's `reconcile` was presence-only.
+3. **WA (12 documented matches) → `pipeline_extracted_in_validated_window`** —
+   no reusable artifact built; documented 12/14 only. **Limitation noted.**
+4. `ambest_cross_checked` includes `date_relaxed`/`reclassified`, but
+   `match_strength` distinguishes them so soft corroboration (UT) is visible.
 
-## New schema (two orthogonal fields; `validation_tier` re-derived)
-- **`source`** — provenance, always true: `original` (in the pre-extension 468)
-  | `extension` (added by the 2026-06-02 back-extension).
-- **`external_validation`** — external AM Best state:
-  - `validated` — documented per-row all-field match, value unchanged → **the anchor only**.
-  - `unvalidatable` — back-extension rows inside the AM Best window that
-    *postdate* the cross-checks (the 19 window rows; no AM Best export covers them).
-  - `unvalidated` — everything else (eff-2024, and the originals whose
-    "validated" claim is unsubstantiated).
-- **`validation_tier`** — kept for app compatibility, **re-derived 1:1** from
-  `external_validation`: `validated→ambest_validated`,
-  `unvalidatable→ambest_window_unmatched`, `unvalidated→pipeline_only`. It no
-  longer asserts provenance — use `source` for that.
+## Original vs extension (the matches did NOT inflate via the extension)
+| source | field_validated | ambest_cross_checked | in_window_unmatched | pipeline_extracted | total |
+|---|--:|--:|--:|--:|--:|
+| **original** | 2 | **128** | 189 | 149 | 468 |
+| **extension** | 0 | **6** | 13 | 518 | 537 |
+| **total** | **2** | **134** | **202** | **667** | **1,005** |
 
-## Outcome
-**Original 468 `ambest_validated` → 2 held, 466 demoted** (all for
-`unsubstantiated`; **0** for value-change).
+Of the 134 cross-checked, **128 are original-468, 6 are extension-recovered**
+(rows the back-extension added that genuinely matched AM Best). **130 of the
+original 468 carry external corroboration** (2 field + 128 cross-checked).
 
-Held (`validated`):
-- ID `SFMA-134676753` — State Farm Fire and Casualty Company
-- ID `SFMA-134676753` — State Farm Mutual Automobile Insurance Company
+## Per-state × per-tier
+| st | field_validated | cross_checked | in_window_unmatched | pipeline | total |
+|---|--:|--:|--:|--:|--:|
+| AZ | 0 | 29 | 48 | 102 | 179 |
+| CO | 0 | 0 | 0 | 191 | 191 |
+| ID | 2 | 0 | 0 | 110 | 112 |
+| MT | 0 | 19 | 6 | 32 | 57 |
+| NV | 0 | 39 | 26 | 44 | 109 |
+| OR | 0 | 29 | 18 | 84 | 131 |
+| UT | 0 | 18 | 66 | 58 | 142 |
+| WA | 0 | 0 | 38 | 46 | 84 |
 
-Demoted per state (466): ID 51, WA 34, CO 97, OR 47, UT 84, AZ 77, MT 25, NV 51.
+## match_strength breakdown (ambest_cross_checked)
+| state | direct | date_relaxed | reclassified |
+|---|--:|--:|--:|
+| AZ | 25 | 4 | 0 |
+| OR | 29 | 0 | 0 |
+| MT | 18 | 1 | 0 |
+| NV | 28 | 7 | 4 |
+| **UT** | **0** | **17** | **1** ← mostly date_relaxed (soft) |
+| **overall** | **100** | **29** | **5** |
 
-### Full distribution — `source` × `external_validation` (sums to 1,005)
-| source \ external_validation | validated | unvalidatable | unvalidated | total |
-|---|--:|--:|--:|--:|
-| original | 2 | 0 | 466 | 468 |
-| extension | 0 | 19 | 518 | 537 |
-| **total** | **2** | **19** | **984** | **1,005** |
+## Honest one-liner
+> Of 1,005 rows: **2 field-validated** (anchor), **134 AM Best cross-checked**
+> (100 direct / 34 date-relaxed+reclassified), **202 in a validated window but
+> not individually matched**, **667 pipeline-extracted** (CO, ID non-anchor, all
+> 2024). **130 of the original 468 carry external corroboration.** A
+> SERFF-sourced, pipeline-extracted collection — corroborated where shown,
+> honest where not.
 
-Per-row old→new labels for every row: `output/tier_relabel_audit.csv`.
-
-## Honest one-line summary
-Of 1,005 rows, **2** are externally AM Best-validated (the anchor), **19** are
-unvalidatable (postdate the cross-checks), and **984** are unvalidated. The
-dataset is a SERFF-sourced, pipeline-extracted collection; it is **not** an
-AM Best-validated dataset beyond the single anchor.
+## Mechanics
+- Per-row corroboration emitted by each `compare_{state}_ambest.py` via
+  `crosscheck_artifact.py` → `output/corroboration/{state}_{line}_corroboration.csv`.
+- Earned tier applied by `apply_validation_tiers.py` (post-cross-check).
+- `run_final_rates.py` emits base labels; `validation_tier` coarse alias:
+  `field_validated`/`ambest_cross_checked` → `ambest_validated`, else `pipeline_only`.
+- Going forward, new states earn tiers at ingestion per `CROSS_CHECK_STANDARD.md`.

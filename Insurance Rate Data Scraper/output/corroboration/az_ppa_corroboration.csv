@@ -1,0 +1,96 @@
+state,line,our_serff_tracking_number,our_subsidiary,our_effective_date,our_impact,our_policyholders,matched_ambest_subsidiary,ambest_effective_date,ambest_impact,ambest_policyholders,agreed_subsidiary,agreed_impact,agreed_eff_date,agreed_policyholders,match_strength
+AZ,PPA,ALSE-133960970,Allstate Fire and Casualty Insurance Company,02/19/2024,3.200%,151727,,,,,,,,,none
+AZ,PPA,ALSE-134148254,Allstate Fire and Casualty Insurance Company,07/01/2024,0.000%,0,,,,,,,,,none
+AZ,PPA,ALSE-134180176,Allstate North American Insurance Company,10/04/2024,1.200%,2691,,,,,,,,,none
+AZ,PPA,ALSE-134209181,Allstate Fire and Casualty Insurance Company,08/19/2024,3.500%,153257,,,,,,,,,none
+AZ,PPA,ALSE-134359169,Allstate North American Insurance Company,01/09/2025,-5.000%,13063,,,,,,,,,none
+AZ,PPA,ALSE-134406699,Allstate North American Insurance Company,03/18/2025,0.000%,16271,Allstate North American Insurance Company,03/18/25,0.0,16271,True,True,True,True,direct
+AZ,PPA,ALSE-134412703,Allstate Fire and Casualty Insurance Company,02/24/2025,2.200%,147446,Allstate Fire and Casualty Insurance Company,02/24/25,2.2,147446,True,True,True,True,direct
+AZ,PPA,ALSE-134458781,Allstate North American Insurance Company,04/07/2025,0.000%,16271,Allstate North American Insurance Company,04/07/25,0.0,16271,True,True,True,True,direct
+AZ,PPA,ALSE-134481010,Allstate Fire and Casualty Insurance Company,04/14/2025,18.600%,6831,Allstate Fire and Casualty Insurance Company,04/14/25,18.6,6831,True,True,True,True,direct
+AZ,PPA,ALSE-134494603,Allstate Fire and Casualty Insurance Company,05/05/2025,0.000%,0,Allstate Fire and Casualty Insurance Company,05/05/25,0.0,0,True,True,True,True,direct
+AZ,PPA,ALSE-134545874,Allstate North American Insurance Company,06/16/2025,3.000%,16271,,,,,,,,,none
+AZ,PPA,ALSE-134630441,Allstate Indemnity Company,08/25/2025,14.300%,1559,,,,,,,,,none
+AZ,PPA,ALSE-134648125,Allstate Insurance Company,09/15/2025,0.000%,0,,,,,,,,,none
+AZ,PPA,ALSE-134648125,Allstate Property and Casualty Insurance Company,09/15/2025,0.000%,0,,,,,,,,,none
+AZ,PPA,ALSE-134648125,Allstate Indemnity Company,09/15/2025,0.000%,0,,,,,,,,,none
+AZ,PPA,ALSE-134682748,Allstate North American Insurance Company,10/01/2025,-8.000%,42418,,,,,,,,,none
+AZ,PPA,ALSE-134842150,Allstate Indemnity Company,02/23/2026,14.000%,1186,,,,,,,,,none
+AZ,PPA,ALSE-134842297,Allstate Fire and Casualty Insurance Company,02/23/2026,3.000%,106883,,,,,,,,,none
+AZ,PPA,ALSE-134883938,Allstate North American Insurance Company,03/31/2026,-2.000%,58075,,,,,,,,,none
+AZ,PPA,ALSE-133925714,Encompass Property and Casualty Company,02/19/2024,19.800%,4479,,,,,,,,,none
+AZ,PPA,ALSE-133925737,Encompass Property and Casualty Company,02/19/2024,0.600%,33,,,,,,,,,none
+AZ,PPA,ALSE-134148937,Encompass Property and Casualty Company,08/19/2024,0.000%,0,,,,,,,,,none
+AZ,PPA,ALSE-134163849,Encompass Property and Casualty Company,08/19/2024,14.900%,3588,,,,,,,,,none
+AZ,PPA,ALSE-134164643,Encompass Property and Casualty Company,08/19/2024,7.800%,20,,,,,,,,,none
+AZ,PPA,GMMX-134417350,Encompass Property and Casualty Company,02/19/2025,1.300%,2656,Encompass Property and Casualty Company,02/19/25,1.3,2656,True,True,True,True,direct
+AZ,PPA,GECC-133941485,GEICO Indemnity Company,02/08/2024,0.000%,30917,,,,,,,,,none
+AZ,PPA,GECC-133941485,GEICO Casualty Company,02/08/2024,0.000%,1513557,,,,,,,,,none
+AZ,PPA,GECC-133941485,GEICO General Insurance Company,02/08/2024,0.000%,226523,,,,,,,,,none
+AZ,PPA,GECC-133941485,Government Employees Insurance Company,02/08/2024,0.000%,80425,,,,,,,,,none
+AZ,PPA,GECC-134023761,GEICO Choice Insurance Company,05/11/2024,-10.100%,3665,,,,,,,,,none
+AZ,PPA,GECC-134023761,GEICO Secure Insurance Company,05/11/2024,-3.900%,134617,,,,,,,,,none
+AZ,PPA,GECC-134108257,GEICO Choice Insurance Company,06/27/2024,0.000%,1694,,,,,,,,,none
+AZ,PPA,GECC-134108257,GEICO Secure Insurance Company,06/27/2024,0.000%,118208,,,,,,,,,none
+AZ,PPA,GECC-134122296,GEICO Choice Insurance Company,08/22/2024,0.000%,6786,,,,,,,,,none
+AZ,PPA,GECC-134170639,GEICO Choice Insurance Company,08/29/2024,-4.600%,10235,,,,,,,,,none
+AZ,PPA,GECC-134170639,GEICO Secure Insurance Company,08/29/2024,-3.700%,156407,,,,,,,,,none
+AZ,PPA,GECC-134264259,GEICO Indemnity Company,12/19/2024,-3.000%,44389,,,,,,,,,none
+AZ,PPA,GECC-134785112,GEICO Advantage Insurance Company,01/14/2026,0.000%,31773,,,,,,,,,none
+AZ,PPA,GECC-134785112,GEICO Marine Insurance Company,01/14/2026,0.000%,8834,,,,,,,,,none
+AZ,PPA,LBPM-134033458,Liberty Mutual Insurance Company,04/22/2024,1.330%,267,,,,,,,,,none
+AZ,PPA,LBPM-134033458,Liberty Mutual Personal Insurance Company,04/22/2024,0.070%,70176,,,,,,,,,none
+AZ,PPA,LBPM-134160175,Liberty Insurance Corporation,06/18/2024,-13.200%,1,,,,,,,,,none
+AZ,PPA,LBPM-134160175,Liberty Mutual Fire Insurance Company,06/18/2024,-11.600%,634,,,,,,,,,none
+AZ,PPA,LBPM-134160175,Liberty Mutual Insurance Company,06/18/2024,-8.400%,267,,,,,,,,,none
+AZ,PPA,LBPM-134160175,The First Liberty Insurance Corporation,06/18/2024,-10.800%,15,,,,,,,,,none
+AZ,PPA,LBPM-134160175,Liberty Mutual Personal Insurance Company,06/18/2024,-10.000%,70190,,,,,,,,,none
+AZ,PPA,LBPM-134617710,Liberty Insurance Corporation,08/14/2025,0.100%,1,,,,,,,,,none
+AZ,PPA,LBPM-134617710,Liberty Mutual Fire Insurance Company,08/14/2025,3.000%,452,,,,,,,,,none
+AZ,PPA,LBPM-134617710,Liberty Mutual Insurance Company,08/14/2025,1.300%,37,,,,,,,,,none
+AZ,PPA,LBPM-134617710,The First Liberty Insurance Corporation,08/14/2025,3.800%,13,,,,,,,,,none
+AZ,PPA,LBPM-134617710,Liberty Mutual Personal Insurance Company,08/14/2025,3.000%,36064,,,,,,,,,none
+AZ,PPA,GNSC-134158469,"MGA Insurance Company, Inc.",06/22/2024,0.000%,6415,,,,,,,,,none
+AZ,PPA,GNSC-134301599,"MGA Insurance Company, Inc.",10/17/2024,-4.500%,5426,,,,,,,,,none
+AZ,PPA,GNSC-134540028,"MGA Insurance Company, Inc.",05/09/2025,-7.800%,4771,"MGA Insurance Company, Inc.",05/09/25,-7.8,4771,True,True,True,True,direct
+AZ,PPA,GNSC-134757908,"MGA Insurance Company, Inc.",11/14/2025,-2.000%,14855,,,,,,,,,none
+AZ,PPA,PRGS-133788171,Progressive Advanced Insurance Company,04/05/2024,3.800%,58744,,,,,,,,,none
+AZ,PPA,PRGS-133788171,Progressive Preferred Insurance Company,04/05/2024,3.200%,47576,,,,,,,,,none
+AZ,PPA,PRGS-134007460,Progressive Advanced Insurance Company,03/01/2024,1.100%,362287,,,,,,,,,none
+AZ,PPA,PRGS-134007460,Progressive Preferred Insurance Company,03/01/2024,0.600%,208615,,,,,,,,,none
+AZ,PPA,PRGS-134267496,Progressive Advanced Insurance Company,11/01/2024,-0.100%,414519,,,,,,,,,none
+AZ,PPA,PRGS-134267496,Progressive Preferred Insurance Company,11/01/2024,0.100%,235674,,,,,,,,,none
+AZ,PPA,PRGS-134465892,Progressive Advanced Insurance Company,04/11/2025,0.000%,448271,Progressive Advanced Insurance Company,04/11/25,0.0,448271,True,True,True,True,direct
+AZ,PPA,PRGS-134465892,Progressive Preferred Insurance Company,04/11/2025,-2.500%,261867,Progressive Preferred Insurance Company,04/11/25,-2.5,261867,True,True,True,True,direct
+AZ,PPA,PRGS-134541278,Progressive Advanced Insurance Company,01/09/2026,1.300%,69620,,,,,,,,,none
+AZ,PPA,PRGS-134541278,Progressive Preferred Insurance Company,01/09/2026,1.300%,53447,,,,,,,,,none
+AZ,PPA,PRGS-134609556,Progressive Advanced Insurance Company,07/18/2025,1.400%,474467,,,,,,,,,none
+AZ,PPA,PRGS-134609556,Progressive Preferred Insurance Company,07/18/2025,-1.500%,274488,,,,,,,,,none
+AZ,PPA,PRGS-134736377,Progressive Advanced Insurance Company,12/19/2025,-5.100%,475831,,,,,,,,,none
+AZ,PPA,PRGS-134736377,Progressive Preferred Insurance Company,12/19/2025,-4.600%,274897,,,,,,,,,none
+AZ,PPA,LBPM-134054846,Safeco Insurance Company of America,12/02/2024,7.000%,60264,,,,,,,,,none
+AZ,PPA,LBPM-134184840,Safeco Insurance Company of Illinois,11/08/2024,12.500%,11381,,,,,,,,,none
+AZ,PPA,LBPM-134450381,Safeco Insurance Company of America,04/19/2025,-0.005%,40405,Safeco Insurance Company of America,04/19/25,-0.005,40405,True,True,True,True,direct
+AZ,PPA,LBPM-134475059,Safeco Insurance Company of America,04/19/2025,9.600%,3813,Safeco Insurance Company of America,04/19/25,9.6,3813,True,True,True,True,direct
+AZ,PPA,LBPM-134520103,Safeco Insurance Company of America,05/29/2025,-5.000%,40405,,,,,,,,,none
+AZ,PPA,LBPM-134666117,Safeco Insurance Company of Illinois,11/08/2025,10.000%,10716,,,,,,,,,none
+AZ,PPA,SFMA-133807333,State Farm Fire and Casualty Company,01/01/2024,0.000%,39521,,,,,,,,,none
+AZ,PPA,SFMA-133807333,State Farm Mutual Automobile Insurance Company,01/01/2024,0.000%,974877,,,,,,,,,none
+AZ,PPA,SFMA-134066869,State Farm Fire and Casualty Company,06/17/2024,0.000%,2342,,,,,,,,,none
+AZ,PPA,SFMA-134066869,State Farm Mutual Automobile Insurance Company,06/17/2024,0.100%,26565,,,,,,,,,none
+AZ,PPA,SFMA-134066907,State Farm Fire and Casualty Company,06/17/2024,3.400%,65235,,,,,,,,,none
+AZ,PPA,SFMA-134066907,State Farm Mutual Automobile Insurance Company,06/17/2024,4.700%,1179891,,,,,,,,,none
+AZ,PPA,SFMA-134083631,State Farm Mutual Automobile Insurance Company,08/01/2024,0.000%,26581,,,,,,,,,none
+AZ,PPA,SFMA-134083631,State Farm Fire and Casualty Company,08/01/2024,0.000%,2346,,,,,,,,,none
+AZ,PPA,SFMA-134114374,State Farm Fire and Casualty Company,04/21/2025,7.100%,2629,,,,,,,,,none
+AZ,PPA,SFMA-134114374,State Farm Mutual Automobile Insurance Company,04/21/2025,8.700%,27078,,,,,,,,,none
+AZ,PPA,SFMA-134114404,State Farm Fire and Casualty Company,04/21/2025,1.300%,71949,,,,,,,,,none
+AZ,PPA,SFMA-134114404,State Farm Mutual Automobile Insurance Company,04/21/2025,-2.600%,1218335,,,,,,,,,none
+AZ,PPA,SFMA-134294865,State Farm Fire and Casualty Company,04/15/2025,0.000%,64696,State Farm Fire and Casualty Company,04/15/25,0.0,64696,True,True,True,True,direct
+AZ,PPA,SFMA-134294865,State Farm Mutual Automobile Insurance Company,04/15/2025,0.000%,1112619,State Farm Mutual Automobile Insurance Company,04/15/25,0.0,1112619,True,True,True,True,direct
+AZ,PPA,SFMA-134688027,State Farm Fire and Casualty Company,11/01/2025,-5.000%,67377,,,,,,,,,none
+AZ,PPA,SFMA-134688027,State Farm Mutual Automobile Insurance Company,11/01/2025,-9.400%,1298752,,,,,,,,,none
+AZ,PPA,TRVD-133942585,Travelers Property Casualty Insurance Company,02/18/2024,0.000%,46621,,,,,,,,,none
+AZ,PPA,TRVD-133957101,Travelers Property Casualty Insurance Company,02/18/2024,8.000%,46621,,,,,,,,,none
+AZ,PPA,TRVD-G134412795,Travelers Property Casualty Insurance Company,03/07/2025,0.700%,51326,Travelers Property Casualty Insurance Company,03/07/25,0.7,51326,True,True,True,True,direct
+AZ,PPA,TRVD-G134669174,Travelers Property Casualty Insurance Company,09/19/2025,-3.000%,52539,,,,,,,,,none

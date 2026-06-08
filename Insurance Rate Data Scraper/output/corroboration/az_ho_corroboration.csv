@@ -1,0 +1,79 @@
+state,line,our_serff_tracking_number,our_subsidiary,our_effective_date,our_impact,our_policyholders,matched_ambest_subsidiary,ambest_effective_date,ambest_impact,ambest_policyholders,agreed_subsidiary,agreed_impact,agreed_eff_date,agreed_policyholders,match_strength
+AZ,HO,ALSE-134052323,Allstate Vehicle and Property Insurance Company,04/15/2024,9.700%,99636,,,,,,,,,none
+AZ,HO,ALSE-134052807,Allstate Property and Casualty Insurance Company,04/15/2024,10.600%,16681,,,,,,,,,none
+AZ,HO,ALSE-134054902,Allstate Insurance Company,04/15/2024,7.500%,8198,,,,,,,,,none
+AZ,HO,ALSE-134054919,Allstate Indemnity Company,04/15/2024,2.300%,7713,,,,,,,,,none
+AZ,HO,ALSE-134316124,Allstate Indemnity Company,11/25/2024,10.700%,4016,,,,,,,,,none
+AZ,HO,ALSE-134316189,Allstate Indemnity Company,11/25/2024,13.900%,3135,,,,,,,,,none
+AZ,HO,ALSE-134322361,Allstate Vehicle and Property Insurance Company,11/25/2024,17.500%,5308,,,,,,,,,none
+AZ,HO,ALSE-134489237,Allstate Vehicle and Property Insurance Company,04/21/2025,19.200%,112385,Allstate Vehicle and Property Insurance Company,04/21/25,19.2,112385,True,True,True,True,direct
+AZ,HO,ALSE-134489897,Allstate Indemnity Company,04/21/2025,19.500%,7173,Allstate Indemnity Company,04/21/25,19.5,7173,True,True,True,True,direct
+AZ,HO,ALSE-134490600,Allstate Insurance Company,04/21/2025,18.300%,7573,Allstate Insurance Company,04/21/25,18.3,7573,True,True,True,True,direct
+AZ,HO,ALSE-134491858,Allstate Property and Casualty Insurance Company,04/21/2025,12.700%,15459,Allstate Property and Casualty Insurance Company,04/21/25,12.7,15459,True,True,True,True,direct
+AZ,HO,ALSE-134702171,Allstate Vehicle and Property Insurance Company,11/03/2025,0.000%,114578,,,,,,,,,none
+AZ,HO,ALSE-134717230,Allstate North American Insurance Company,11/12/2025,-0.100%,9598,,,,,,,,,none
+AZ,HO,ALSE-134825039,Allstate North American Insurance Company,03/26/2026,0.000%,20015,,,,,,,,,none
+AZ,HO,ALSE-134832470,Allstate North American Insurance Company,02/17/2026,-6.000%,19540,,,,,,,,,none
+AZ,HO,ALSE-133925713,Encompass Property and Casualty Company,02/19/2024,41.800%,725,,,,,,,,,none
+AZ,HO,ALSE-133925724,Encompass Property and Casualty Company,02/19/2024,17.200%,3808,,,,,,,,,none
+AZ,HO,ALSE-133926215,Encompass Property and Casualty Company,02/19/2024,41.800%,412,,,,,,,,,none
+AZ,HO,ALSE-134163776,Encompass Property and Casualty Company,08/19/2024,5.400%,3225,,,,,,,,,none
+AZ,HO,ALSE-134164334,Encompass Property and Casualty Company,08/19/2024,4.600%,603,,,,,,,,,none
+AZ,HO,ALSE-134164624,Encompass Property and Casualty Company,08/19/2024,4.500%,313,,,,,,,,,none
+AZ,HO,GMMX-134417367,Encompass Property and Casualty Company,02/19/2025,10.100%,2683,Encompass Property and Casualty Company,02/19/25,10.1,2683,True,True,True,True,direct
+AZ,HO,LBPM-133917374,Liberty Mutual Fire Insurance Company,02/09/2024,20.000%,976,,,,,,,,,none
+AZ,HO,LBPM-133917374,Liberty Mutual Insurance Company,02/09/2024,20.000%,9830,,,,,,,,,none
+AZ,HO,LBPM-133917374,The First Liberty Insurance Corporation,02/09/2024,20.300%,937,,,,,,,,,none
+AZ,HO,LBPM-133917374,Liberty Mutual Personal Insurance Company,02/09/2024,20.000%,55437,,,,,,,,,none
+AZ,HO,LBPM-133918708,Liberty Insurance Corporation,02/09/2024,19.100%,1396,,,,,,,,,none
+AZ,HO,LBPM-133918708,Liberty Mutual Fire Insurance Company,02/09/2024,19.000%,65,,,,,,,,,none
+AZ,HO,LBPM-133918708,Liberty Mutual Insurance Company,02/09/2024,19.200%,20,,,,,,,,,none
+AZ,HO,LBPM-133918708,Liberty Mutual Personal Insurance Company,02/09/2024,19.000%,36504,,,,,,,,,none
+AZ,HO,LBPM-133918842,Liberty Insurance Corporation,02/09/2024,10.000%,3742,,,,,,,,,none
+AZ,HO,LBPM-133918842,Liberty Mutual Fire Insurance Company,02/09/2024,10.000%,236,,,,,,,,,none
+AZ,HO,LBPM-134192040,Liberty Mutual Fire Insurance Company,08/17/2024,-10.000%,786,,,,,,,,,none
+AZ,HO,LBPM-134192040,Liberty Mutual Insurance Company,08/17/2024,-9.800%,10795,,,,,,,,,none
+AZ,HO,LBPM-134192040,The First Liberty Insurance Corporation,08/17/2024,-10.000%,821,,,,,,,,,none
+AZ,HO,LBPM-134192040,Liberty Mutual Personal Insurance Company,08/17/2024,-9.900%,45179,,,,,,,,,none
+AZ,HO,LBPM-134518872,Liberty Mutual Insurance Company,06/21/2025,0.000%,14177,,,,,,,,,none
+AZ,HO,LBPM-134660836,Liberty Mutual Insurance Company,11/17/2025,0.000%,17743,,,,,,,,,none
+AZ,HO,LBPM-134786890,Liberty Mutual Insurance Company,02/08/2026,3.040%,21073,,,,,,,,,none
+AZ,HO,LBPM-134786890,The First Liberty Insurance Corporation,02/08/2026,3.000%,520,,,,,,,,,none
+AZ,HO,LBPM-134786890,Liberty Mutual Personal Insurance Company,02/08/2026,2.990%,26897,,,,,,,,,none
+AZ,HO,LBPM-134786890,Liberty Mutual Fire Insurance Company,02/08/2026,3.000%,494,,,,,,,,,none
+AZ,HO,LBPM-133993548,Safeco Insurance Company of America,05/27/2024,17.400%,17676,,,,,,,,,none
+AZ,HO,LBPM-133993607,Safeco Insurance Company of America,04/15/2024,5.100%,6427,,,,,,,,,none
+AZ,HO,LBPM-133993644,Safeco Insurance Company of America,05/27/2024,11.000%,906,,,,,,,,,none
+AZ,HO,LBPM-134183626,Safeco Insurance Company of America,09/28/2024,-10.000%,15686,,,,,,,,,none
+AZ,HO,LBPM-134445585,Safeco Insurance Company of America,05/27/2025,17.100%,747,,,,,,,,,none
+AZ,HO,LBPM-134771930,Safeco Insurance Company of America,02/28/2026,2.000%,11002,,,,,,,,,none
+AZ,HO,SFMA-133904878,State Farm Fire and Casualty Company,02/01/2024,16.500%,350815,,,,,,,,,none
+AZ,HO,SFMA-133904912,State Farm Fire and Casualty Company,02/01/2024,0.000%,112766,,,,,,,,,none
+AZ,HO,SFMA-133904914,State Farm Fire and Casualty Company,02/01/2024,18.900%,28323,,,,,,,,,none
+AZ,HO,SFMA-133930050,State Farm Fire and Casualty Company,04/01/2024,0.000%,350815,,,,,,,,,none
+AZ,HO,SFMA-133930052,State Farm Fire and Casualty Company,04/01/2024,0.000%,112766,,,,,,,,,none
+AZ,HO,SFMA-133930075,State Farm Fire and Casualty Company,04/01/2024,0.000%,28323,,,,,,,,,none
+AZ,HO,SFMA-134204434,State Farm Fire and Casualty Company,01/01/2025,17.800%,11394,State Farm Fire and Casualty Company,01/01/25,17.8,11394,True,True,True,True,direct
+AZ,HO,SFMA-134391751,State Farm Fire and Casualty Company,03/15/2025,1.100%,393200,State Farm Fire and Casualty Company,03/15/25,1.1,393200,True,True,True,True,direct
+AZ,HO,TRVD-133977191,The Travelers Home and Marine Insurance Company,04/27/2024,11.000%,27067,,,,,,,,,none
+AZ,HO,TRVD-133977191,Travelers Commercial Insurance Company,04/27/2024,11.800%,1142,,,,,,,,,none
+AZ,HO,TRVD-133977209,The Travelers Home and Marine Insurance Company,04/27/2024,11.000%,1906,,,,,,,,,none
+AZ,HO,TRVD-133977209,Travelers Commercial Insurance Company,04/27/2024,11.100%,76,,,,,,,,,none
+AZ,HO,TRVD-133977223,The Travelers Home and Marine Insurance Company,04/27/2024,5.000%,2946,,,,,,,,,none
+AZ,HO,TRVD-133977223,Travelers Commercial Insurance Company,04/27/2024,5.200%,129,,,,,,,,,none
+AZ,HO,TRVD-133992350,Travelers Personal Insurance Company,03/22/2024,10.000%,82646,,,,,,,,,none
+AZ,HO,TRVD-133998463,Travelers Personal Insurance Company,03/22/2024,2.000%,11968,,,,,,,,,none
+AZ,HO,TRVD-133998484,Travelers Personal Insurance Company,03/22/2024,15.000%,9081,,,,,,,,,none
+AZ,HO,TRVD-133998496,Travelers Personal Insurance Company,03/22/2024,6.000%,16940,,,,,,,,,none
+AZ,HO,TRVD-133998499,Travelers Personal Insurance Company,03/22/2024,14.500%,4034,,,,,,,,,none
+AZ,HO,TRVD-G134416866,The Travelers Home and Marine Insurance Company,04/27/2025,7.900%,23512,The Travelers Home and Marine Insurance Company,04/26/25,7.9,23512,True,True,False,True,date_relaxed
+AZ,HO,TRVD-G134416866,Travelers Commercial Insurance Company,04/27/2025,9.400%,994,Travelers Commercial Insurance Company,04/26/25,9.4,994,True,True,False,True,date_relaxed
+AZ,HO,TRVD-G134417169,The Travelers Home and Marine Insurance Company,04/27/2025,2.000%,1677,The Travelers Home and Marine Insurance Company,04/26/25,2.0,1677,True,True,False,True,date_relaxed
+AZ,HO,TRVD-G134417169,Travelers Commercial Insurance Company,04/27/2025,2.000%,61,Travelers Commercial Insurance Company,04/26/25,2.0,61,True,True,False,True,date_relaxed
+AZ,HO,TRVD-G134444892,Travelers Personal Insurance Company,03/21/2025,7.900%,9290,Travelers Personal Insurance Company,03/21/25,7.9,9290,True,True,True,True,direct
+AZ,HO,TRVD-G134445188,Travelers Personal Insurance Company,03/21/2025,0.000%,10203,,,,,,,,,none
+AZ,HO,TRVD-G134445899,Travelers Personal Insurance Company,03/21/2025,8.000%,21255,Travelers Personal Insurance Company,03/21/25,8.0,21255,True,True,True,True,direct
+AZ,HO,TRVD-G134445929,Travelers Personal Insurance Company,03/21/2025,7.100%,4339,Travelers Personal Insurance Company,03/21/25,7.1,4339,True,True,True,True,direct
+AZ,HO,TRVD-G134448854,Travelers Personal Insurance Company,03/21/2025,8.100%,92006,Travelers Personal Insurance Company,03/21/25,8.1,92006,True,True,True,True,direct
+AZ,HO,TRVD-G134649827,Travelers Personal Insurance Company,09/05/2025,-5.100%,93932,,,,,,,,,none
+AZ,HO,TRVD-G134897815,Travelers Personal Insurance Company,04/17/2026,-5.000%,44581,,,,,,,,,none

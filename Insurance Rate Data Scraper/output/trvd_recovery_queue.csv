@@ -1,0 +1,7 @@
+state,filing_id,tracking_number,line_of_business,sub_toi,notes_on_filing
+# REBUILT 2026-06-08 from the final emit's persistent no_pdf set: PERSISTENT TRVD GAP = 0.
+# All 21 provisional first-run entries (MT 5, WA 6, OR 10) were resolved by the
+# _click_row_to_detail pagination fix + fresh-context-per-target download (TRVD-not-found
+# = 0 across all states). The only persistent no_pdf rows dataset-wide are 4 non-TRVD
+# genuinely-empty filings (MT SFCI-134249794, ID GNSC-134159934, AZ ALSE-134165850/134168079).
+# See output/final_pass_investigation.md sections 1 & 2.

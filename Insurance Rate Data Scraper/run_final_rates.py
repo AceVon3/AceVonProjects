@@ -130,32 +130,32 @@ def _validation_tier(eff_str, is_backfill: bool) -> str:
 _VALIDATED_ANCHORS = {"SFMA-134676753"}
 
 
-def _relabel(provenance_tier: str, tracking: str) -> tuple[str, str, str]:
-    """Map the provenance tier (+ tracking) to the honest
-    (source, external_validation, validation_tier) triple. Provenance != validation.
+def _relabel(provenance_tier: str, tracking: str) -> tuple[str, str, str, str]:
+    """Emit-time BASE labels (provenance != validation). Returns
+    (source, external_validation, match_strength, validation_tier).
 
-      source: "original" (in the pre-extension 468) | "extension" (2024 back-extension)
-      external_validation:
-        "validated"     documented per-row all-field AM Best match (anchor),
-                        re-extracted value unchanged vs the validated figure
-        "unvalidatable" back-extension rows inside the AM Best window that
-                        postdate the cross-checks (no AM Best export covers them)
-        "unvalidated"   everything else (eff-2024, and originals never per-row
-                        validated)
-      validation_tier   RE-DERIVED 1:1 from external_validation (kept for app
-                        compatibility; values unchanged vocabulary).
-    """
+    The four-tier external_validation is EARNED at ingestion: the emitter sets a
+    base, then a cross-check + apply_validation_tiers.py step UPGRADES matched
+    rows to "ambest_cross_checked" (+ match_strength) and DOWNGRADES eff>=2025
+    rows in a non-cross-checked state (CO, ID non-anchor) to "pipeline_extracted".
+    See CROSS_CHECK_STANDARD.md.
+
+      source: "original" (pre-extension 468) | "extension" (2024 back-extension).
+      external_validation base:
+        "field_validated"  documented all-field per-row AM Best match (anchor).
+        "pipeline_extracted_in_validated_window"  eff>=2025 (provisional).
+        "pipeline_extracted"  eff<2025 / blank-effective back-extension.
+      match_strength: "field" for the anchor, "" otherwise.
+      validation_tier: coarse app-compat alias (ambest_validated for
+        field_validated/ambest_cross_checked, else pipeline_only)."""
+    if tracking in _VALIDATED_ANCHORS:
+        source = "original" if provenance_tier == "ambest_validated" else "extension"
+        return source, "field_validated", "field", "ambest_validated"
     if provenance_tier == "ambest_validated":           # eff>=2025, original set
-        source = "original"
-        ext = "validated" if tracking in _VALIDATED_ANCHORS else "unvalidated"
-    elif provenance_tier == "ambest_window_unmatched":  # back-extension recovery, eff>=2025
-        source, ext = "extension", "unvalidatable"
-    else:                                               # pipeline_only: eff<2025
-        source, ext = "extension", "unvalidated"
-    vt = {"validated": "ambest_validated",
-          "unvalidatable": "ambest_window_unmatched",
-          "unvalidated": "pipeline_only"}[ext]
-    return source, ext, vt
+        return "original", "pipeline_extracted_in_validated_window", "", "pipeline_only"
+    if provenance_tier == "ambest_window_unmatched":    # eff>=2025, back-extension
+        return "extension", "pipeline_extracted_in_validated_window", "", "pipeline_only"
+    return "extension", "pipeline_extracted", "", "pipeline_only"  # eff<2025 / blank
 from src.detail import download_system_summary_pdf
 from src.search import (
     _back_to_results,
@@ -445,6 +445,7 @@ COLUMNS = [
     "validation_tier",
     "source",
     "external_validation",
+    "match_strength",
 ]
 
 
@@ -503,7 +504,7 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
             stats["filings_excluded_out_of_effective_window"] += 1
             continue
         rel_pdf = pdf.relative_to(Path(".")).as_posix() if pdf.is_absolute() is False else pdf.as_posix()
-        _src, _ext, _vt = _relabel(_validation_tier(eff, t.filing_id in backfill_ids), t.tracking)
+        _src, _ext, _ms, _vt = _relabel(_validation_tier(eff, t.filing_id in backfill_ids), t.tracking)
         for r in fs.company_rates:
             if _is_excluded_subsidiary(r.company_name):
                 stats["rows_excluded_filing_vehicle"] = stats.get("rows_excluded_filing_vehicle", 0) + 1
@@ -529,6 +530,7 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
                 "validation_tier": _vt,
                 "source": _src,
                 "external_validation": _ext,
+                "match_strength": _ms,
             })
         stats["filings_emitted"] += 1
         stats["rows_emitted"] += len(fs.company_rates)

@@ -280,3 +280,10 @@ print()
 print(f"--- Our UT non-PPA (HO etc., excluded from AM Best PPA report by definition): {len(ut_other)} ---")
 for d in ut_other:
     print(f"  {d['serff_tracking_number']:22s} {d['company_name']:48s} {d['sub_type_of_insurance']} imp={d['overall_rate_impact']}")
+
+# ---- per-row corroboration artifact (CROSS_CHECK_STANDARD.md) -----------------
+from crosscheck_artifact import emit_from_tiers
+print()
+emit_from_tiers("UT", "PPA", ut_ppa, matched_tier1, matched_tier2, reclass, still_missing,
+                norm_name=_norm_name, our_eff=_our_eff, our_impact=_our_impact,
+                our_ph=_our_ph, norm_eff=_norm_eff)

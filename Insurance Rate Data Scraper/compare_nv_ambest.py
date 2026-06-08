@@ -186,6 +186,9 @@ def _our_ph(d):
     except (ValueError, TypeError): return None
 
 
+from crosscheck_artifact import emit_from_tiers
+
+
 def cross_check(ambest_rows: list[dict], our_rows: list[dict], our_other: list[dict], label: str):
     """Tier-1/2/3 cross-check, mirrors compare_ut_ambest.py logic."""
     my_lookup: dict[tuple, dict] = {}
@@ -252,6 +255,9 @@ def cross_check(ambest_rows: list[dict], our_rows: list[dict], our_other: list[d
         for r, d in reclass:
             print(f"  {r['subsidiary']:50s} eff={_norm_eff(r['effective_date'])} imp={r['impact_pct']}% -> our sub_toi={d['sub_type_of_insurance']}")
 
+    emit_from_tiers("NV", label, our_rows, matched_tier1, matched_tier2, reclass, truly_missing,
+                    norm_name=_norm_name, our_eff=_our_eff, our_impact=_our_impact,
+                    our_ph=_our_ph, norm_eff=_norm_eff)
     return matched, reclass, truly_missing
 
 
