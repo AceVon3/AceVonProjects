@@ -28,11 +28,11 @@ ANCHOR = "SFMA-134676753"
 # Only states with artifacts can earn ambest_cross_checked; WA is cross-checked
 # (documented 12/14) but has no reusable artifact, so its in-window rows stay
 # pipeline_extracted_in_validated_window (see TIER_RELABEL.md / decision 3).
-CROSS_CHECKED_STATES = {"AZ", "MT", "NV", "OR", "UT", "WA"}
+CROSS_CHECKED_STATES = {"AZ", "MT", "NV", "OR", "UT", "WA", "NM", "GA"}
 RANK = {"direct": 3, "date_relaxed": 2, "reclassified": 1}
 VT = {"field_validated": "ambest_validated", "ambest_cross_checked": "ambest_validated",
       "pipeline_extracted_in_validated_window": "pipeline_only", "pipeline_extracted": "pipeline_only"}
-ALL = ["wy", "mt", "wa", "or", "nv", "id", "ut", "az", "co"]
+ALL = ["wy", "mt", "wa", "or", "nv", "id", "ut", "az", "co", "nm", "ga"]
 
 
 def load_matched() -> dict:

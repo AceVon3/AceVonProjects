@@ -8,9 +8,11 @@ Detail-page scraping and PDF download are added in Step 5.
 """
 from __future__ import annotations
 
+import json
 import re
 import time
 from datetime import date, datetime
+from pathlib import Path
 from typing import Iterable, Optional
 
 from playwright.sync_api import Page, Browser, sync_playwright
@@ -68,6 +70,86 @@ def _wait_for_results(page: Page) -> None:
     )
 
 
+# --- SERFF failure diagnostics (2026-06-10) ---------------------------------
+# Every Begin-Search wall ever logged was the bare string "Locator.click:
+# Timeout ... exceeded" — page.goto's response was discarded and nothing read
+# the page that was actually served, so "rate limiting" has only ever been an
+# INFERENCE from timing behavior, never a measurement. When DIAG_DIR is set
+# (validate_batch_download.py, download_all_pdfs and the mini-pass set it),
+# every _submit_search appends one timestamped row to
+# <DIAG_DIR>/search_ledger.csv (outcome, duration, document HTTP statuses,
+# any Retry-After) — precise re-arm timing for free — and on failure dumps a
+# snapshot dir (exception, classification, all document responses with full
+# headers, page URL/title, body text, full HTML). Snapshot HTML dumps are
+# capped per process so a retry storm can't fill the disk. All diagnostic
+# code is exception-swallowed: it can never break or slow the main path.
+DIAG_DIR: Optional[Path] = None
+_DIAG_HTML_CAP = 12
+_diag_html_dumped = 0
+
+
+def _classify_exception(e: Exception) -> str:
+    msg = str(e)
+    if "net::ERR_CONNECTION" in msg or "net::ERR_NAME" in msg:
+        return "connection_error"          # never reached the server
+    if "net::ERR_TIMED_OUT" in msg or ("page.goto" in msg and "Timeout" in msg):
+        return "navigation_timeout"        # connected, document never finished
+    if "begin" in msg.lower() and "Locator.click" in msg:
+        return "begin_search_link_timeout" # page served, link never clickable
+    if "Timeout" in msg:
+        return "other_timeout"
+    return type(e).__name__
+
+
+def _diag_record(state: str, company: str, outcome: str, dur_s: float,
+                 doc_responses: list[dict], err: Optional[Exception], page: Page) -> None:
+    """Append a ledger row; on failure, dump a snapshot. Never raises."""
+    global _diag_html_dumped
+    try:
+        DIAG_DIR.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now()
+        last = doc_responses[-1] if doc_responses else {}
+        retry_after = next((d.get("retry_after") for d in reversed(doc_responses)
+                            if d.get("retry_after")), "")
+        ledger = DIAG_DIR / "search_ledger.csv"
+        new = not ledger.exists()
+        with open(ledger, "a", newline="", encoding="utf-8") as f:
+            if new:
+                f.write("timestamp,state,term,outcome,duration_s,n_doc_responses,"
+                        "last_doc_status,retry_after\n")
+            f.write(f"{ts.isoformat(timespec='milliseconds')},{state},{company},{outcome},"
+                    f"{dur_s:.1f},{len(doc_responses)},{last.get('status','')},{retry_after}\n")
+        if outcome == "ok":
+            return
+        snap = DIAG_DIR / f"fail_{ts.strftime('%Y%m%d_%H%M%S_%f')}"
+        snap.mkdir(parents=True, exist_ok=True)
+        info: dict = {
+            "timestamp": ts.isoformat(timespec="milliseconds"),
+            "state": state, "term": company, "outcome": outcome,
+            "duration_s": round(dur_s, 1),
+            "exception": repr(err) if err else None,
+            "document_responses": doc_responses,  # full headers incl. retry-after
+        }
+        for key, fn in (("page_url", lambda: page.url),
+                        ("page_title", lambda: page.title()),
+                        ("body_text_head", lambda: page.evaluate(
+                            "() => document.body ? document.body.innerText.slice(0, 3000) : null"))):
+            try:
+                info[key] = fn()
+            except Exception as ie:
+                info[key] = f"<capture failed: {type(ie).__name__}>"
+        with open(snap / "snapshot.json", "w", encoding="utf-8") as f:
+            json.dump(info, f, indent=2, default=str)
+        if _diag_html_dumped < _DIAG_HTML_CAP:
+            try:
+                (snap / "page.html").write_text(page.content(), encoding="utf-8")
+                _diag_html_dumped += 1
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
 def _submit_search(
     page: Page,
     state: str,
@@ -80,7 +162,59 @@ def _submit_search(
     submission window; callers (e.g. an incremental back-fill) may pass a
     narrower window to fetch only a new slice without re-fetching cached
     filings. Defaults are bound at import time to config's values, so the
-    ~20 existing callers that pass no date args keep the full window."""
+    ~20 existing callers that pass no date args keep the full window.
+
+    Semantics unchanged by the diagnostics wrapper: exceptions from
+    navigation/clicks still PROPAGATE to callers; form/results failures
+    still return False."""
+    if DIAG_DIR is None:
+        ok, _reason = _submit_search_attempt(page, state, company, date_from, date_to)
+        return ok
+
+    t0 = time.time()
+    doc_responses: list[dict] = []
+
+    def _on_response(resp):
+        try:
+            if resp.request.resource_type == "document":
+                h = resp.headers
+                doc_responses.append({
+                    "ts": datetime.now().isoformat(timespec="milliseconds"),
+                    "url": resp.url,
+                    "status": resp.status,
+                    "retry_after": h.get("retry-after"),
+                    "headers": h,
+                })
+        except Exception:
+            pass
+
+    try:
+        page.on("response", _on_response)
+    except Exception:
+        pass
+    err: Optional[Exception] = None
+    outcome = "ok"
+    try:
+        ok, reason = _submit_search_attempt(page, state, company, date_from, date_to)
+        if not ok:
+            outcome = reason
+        return ok
+    except Exception as e:
+        err = e
+        outcome = _classify_exception(e)
+        raise
+    finally:
+        try:
+            page.remove_listener("response", _on_response)
+        except Exception:
+            pass
+        _diag_record(state, company, outcome, time.time() - t0, doc_responses, err, page)
+
+
+def _submit_search_attempt(
+    page: Page, state: str, company: str, date_from: str, date_to: str
+) -> tuple[bool, str]:
+    """The original _submit_search body, returning (ok, failure_reason)."""
     page.goto(SERFF_HOME_URL.format(state=state), wait_until="domcontentloaded", timeout=30000)
     page.get_by_role("link", name=re.compile(r"begin\s*search", re.I)).first.click()
     page.wait_for_load_state("domcontentloaded", timeout=30000)
@@ -92,7 +226,7 @@ def _submit_search(
         pass
 
     if not _set_primefaces_select(page, "simpleSearch:businessType", r"property\s*&\s*casualty"):
-        return False
+        return False, "business_type_select_failed"
 
     _fill_and_blur(page, "simpleSearch:companyName", company)
     _fill_and_blur(page, "simpleSearch:submissionStartDate_input", date_from)
@@ -102,8 +236,8 @@ def _submit_search(
     try:
         _wait_for_results(page)
     except Exception:
-        return False
-    return True
+        return False, "results_timeout"
+    return True, "ok"
 
 
 def _set_rows_per_page_100(page: Page) -> None:
@@ -278,8 +412,13 @@ def _click_row_to_detail(page: Page, filing_id: str) -> bool:
     if n < 2:
         return False
     url_before = page.url
-    cells.nth(n - 1).click()
     try:
+        # The click itself must be inside the try: when the PrimeFaces table
+        # is mid-re-render (e.g. right after a download's go_back in a batched
+        # session) the cell can detach mid-click and Locator.click RAISES —
+        # observed crashing the 2026-06-10 GA validation burst at position 3.
+        # A raise here is a per-row miss, not a run-fatal error.
+        cells.nth(n - 1).click()
         page.wait_for_url(lambda u: u != url_before and "filingSummary" in u, timeout=15000)
         page.wait_for_load_state("domcontentloaded", timeout=15000)
         return True

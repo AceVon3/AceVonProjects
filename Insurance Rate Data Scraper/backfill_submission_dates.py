@@ -53,6 +53,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.stdout.reconfigure(encoding="utf-8")
 
 import run_final_rates as rf
+import src.search as _serff_search
 from src.config import HEADLESS, REQUEST_DELAY, USER_AGENT
 from src.search import (
     _click_row_to_detail,
@@ -60,6 +61,8 @@ from src.search import (
     _set_rows_per_page_100,
     _submit_search,
 )
+
+_serff_search.DIAG_DIR = Path("output/serff_diagnostics")
 
 ATTEMPTS_PER_TERM = 2
 

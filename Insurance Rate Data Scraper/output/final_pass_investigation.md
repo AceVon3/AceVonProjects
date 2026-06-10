@@ -68,3 +68,31 @@ Investigated all five. The "Allstate-layout parser gap" was largely benign:
 - Both confirmed 2026-06-08; neither is a TRVD/download issue. Remaining
   persistent no_pdf dataset-wide = these genuinely-empty cases (MT 1, ID 1,
   AZ 2), all accepted as correct 0-row emissions.
+
+## 5. NM PDF-present 0-row anomaly — DOCUMENTED, NOT FIXED 2026-06-08
+
+New Mexico expansion surfaced one more PDF-present / 0-rows-parsed case, of the
+same benign class as item 2:
+
+- **NM `ALSE-134500230`** (Allstate North American Insurance Company, PPA
+  19.0001, eff 06/10/2025). The Company Rate Information table IS present but the
+  per-company row is a **0.0% / 0.0%** filing (Easy Pay Rating Factor revision)
+  with a subsidiary name that wraps across two PDF lines AND `$0`-formatted /
+  collapsed numeric columns:
+  `Allstate North American 0.000% 0.000% $0 $0 4.100% -1.100%` (name continues
+  "Insurance Company" on the next line). No existing row pattern matches this
+  layout, so it emits 0 rows and is counted under `filings_excluded_no_pdf`
+  (PDF is present — not a download gap). It is the only persistent
+  `no_pdf`/0-row case in NM.
+
+**Decision (2026-06-08): leave documented, do NOT fix.** Rationale:
+1. It is a **0.0% filing** — no rate-effect signal, which is the core product.
+2. AM Best lists 0% filings as **N/A**, so it is not in the AM Best in-scope set
+   and does **not** affect the NM cross-check (PPA 36/37, HO 15/17).
+3. Adding a new row pattern touches the **shared** `parse_filing_summary_pdf`
+   used by the 1,005 committed rows — not worth the regression risk for a single
+   zero-signal row.
+
+Candidate for a future parser pattern only if 0% rows ever become in-scope for
+the product. Joins the genuinely-empty anomalies above (MT 1, ID 1, AZ 2) as an
+accepted correct 0-row emission; dataset-wide persistent no_pdf now = these 5.

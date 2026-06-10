@@ -277,7 +277,23 @@ def enrich_filing(page: Page, filing: Filing, *, download_pdfs: bool) -> bool:
     # NOT assume the row is on the current/first page. The old page-1-only
     # check here silently dropped in-scope Rate filings whose row paginated
     # onto a later page (the AZ enrichment-skip bug).
-    if not _click_row_to_detail(page, filing.filing_id):
+    #
+    # _click_row_to_detail can also RAISE (not just return False) when a
+    # row-click times out on a detached/unstable DOM element under SERFF
+    # throttling. That used to propagate and crash the whole enrichment run
+    # (observed: GA Liberty Mutual LBPM-133800909, 2026-06-09). Treat any such
+    # error as a per-filing skip — the deliverable re-derives everything from
+    # filing_summary.pdf in run_final_rates, so a missed enrichment is recovered.
+    try:
+        opened = _click_row_to_detail(page, filing.filing_id)
+    except Exception as e:
+        print(f"  [skip] {filing.serff_tracking_number}: row-click error ({type(e).__name__}); skipping", flush=True)
+        try:
+            _back_to_results(page)
+        except Exception:
+            pass
+        return False
+    if not opened:
         print(f"  [skip] {filing.serff_tracking_number}: could not open detail (row not found across pages)", flush=True)
         return False
 
@@ -378,7 +394,17 @@ def download_system_summary_pdf(
     if out_pdf.exists() and out_pdf.stat().st_size > 5000:
         return out_pdf
     if not _click_row_to_detail(page, filing_id):
-        return None
+        # One settle-and-retry: in a batched session the previous download's
+        # go_back can leave the results table mid-re-render (rows detach under
+        # the click — 2026-06-10 GA burst, miss at position 2 / crash at 3).
+        # Let the AJAX settle and try once more before calling it a miss.
+        try:
+            page.wait_for_load_state("networkidle", timeout=10000)
+        except Exception:
+            pass
+        page.wait_for_timeout(1500)
+        if not _click_row_to_detail(page, filing_id):
+            return None
     page.wait_for_load_state("networkidle", timeout=20000)
     page.wait_for_timeout(500)
     tmp_zip = dest_dir / f"{tracking or filing_id}.zip"

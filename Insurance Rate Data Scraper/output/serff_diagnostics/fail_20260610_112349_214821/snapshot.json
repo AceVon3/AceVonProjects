@@ -1,0 +1,47 @@
+{
+  "timestamp": "2026-06-10T11:23:49.214",
+  "state": "GA",
+  "term": "geico",
+  "outcome": "business_type_select_failed",
+  "duration_s": 1.3,
+  "exception": null,
+  "document_responses": [
+    {
+      "ts": "2026-06-10T11:23:48.190",
+      "url": "https://filingaccess.serff.com/sfa/home/GA",
+      "status": 200,
+      "retry_after": null,
+      "headers": {
+        "content-type": "text/html;charset=iso-8859-1",
+        "date": "Wed, 10 Jun 2026 15:23:47 GMT",
+        "server": "Apache/2.4.66 (Amazon Linux)",
+        "server-timing": "dtTrId;desc=\"32a952273a42f1ad8667d928d552a230\", dtSInfo;desc=\"0\"\ndtRpid;desc=\"565440561\"",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-oneagent-js-injection": "true",
+        "x-ua-compatible": "IE=edge"
+      }
+    },
+    {
+      "ts": "2026-06-10T11:23:48.531",
+      "url": "https://filingaccess.serff.com/sfa/userAgreement.xhtml",
+      "status": 200,
+      "retry_after": null,
+      "headers": {
+        "content-type": "text/html;charset=iso-8859-1",
+        "date": "Wed, 10 Jun 2026 15:23:47 GMT",
+        "server": "Apache/2.4.66 (Amazon Linux)",
+        "server-timing": "dtTrId;desc=\"26f81fdccfc743357869b9bfe205ad7e\", dtSInfo;desc=\"0\"\ndtRpid;desc=\"757025548\"",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-oneagent-js-injection": "true",
+        "x-ua-compatible": "IE=edge"
+      }
+    }
+  ],
+  "page_url": "https://filingaccess.serff.com/sfa/userAgreement.xhtml",
+  "page_title": "SERFF Filing Access - Georgia",
+  "body_text_head": " \nHelp\nSERFF Filing Access\nYou are currently operating in the state of Georgia.\n\nThe SERFF Filing Access Interface (\"Interface\") is the property of the NAIC. This system is intended to facilitate an alternative means of access to rate and form filings and health plan binders as made available by the State Insurance Department. The State has chosen to make this Interface available as an option for members of the public to use when obtaining publically available rate and form filings and health plan binders. These rate and form filings and health plan binders are also available directly from the State.\n\nThis Use Agreement is the exclusive statement of the terms under which the NAIC grants access to a user (\"you\"). You agree that you will not reverse engineer, reverse assemble or reverse compile the applications. You further acknowledge that circumvention or bypass of the intended workflow of the system in order to automate the download of data is prohibited. You also agree to observe all copyrights associated with the rate and form filings, health plan binders or any other materials or documents you access by use of the Interface. By clicking on the \"Agree\" button below you are accepting all terms of this agreement and understand that any unauthorized use or dissemination of the data or information from the system or violation of these terms may result in immediate termination of access and possibly other legal action.\n\nThe NAIC does not guarantee uninterrupted access to the Interface. The NAIC does not guarantee the truth, accuracy, adequacy or completeness of the data and is not responsible for any errors or omissions or the result obtained from the use of such data. The NAIC does not determine whether data displayed via the Interface is public; such determination is made by the State and the data displayed via the Interface is a reflection of the state\u2019s determination. Neither the State nor the NAIC are responsible for enforcing any copyrights associated with the data accessible through the Interface and therefore you may be subject to enforcement actions from a third party should you not observe all copyrights as noted above. The NAIC has MADE NO WARRANTY OR PROMISE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTY OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. The NAIC specifically disclaims any liability, whether based in contract, tort, strict liability or otherwise, for any direct, indirect, incidental, consequential or special damages arising out of or in any way connected with the access to or use of the Interface and the data obtained through it. You assume sole responsibility for your use of the Interface.\n\nThe laws of the State of Missouri shall be applicable to the interpretation of these terms, without regard to any conflict of law provisions. If any provision within these terms is held to be invalid or unenforceable, all remaining provisions shall be enforced. The NAIC may revise these Terms of "
+}

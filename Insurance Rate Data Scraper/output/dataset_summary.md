@@ -1,14 +1,14 @@
-# Insurance Rate Filings — Nine-State Dataset
+# Insurance Rate Filings — Eleven-State Dataset
 
 **Canonical deliverable:** `output/all_states_final_rates.xlsx` (sheet `rate_filings`) and `output/all_states_final_rates.csv`.
 
 ## What this dataset contains
 
-Rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, Utah, Arizona, Montana, Wyoming, and Nevada**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2024-01-01, 2026-04-17]`.
+Rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, Utah, Arizona, Montana, Wyoming, Nevada, New Mexico, and Georgia**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2024-01-01, 2026-04-17]`.
 
-> **Dataset status (2026-06-08): 1,005 rows, nine states, complete.** Effective-date window `[2024-01-01, 2026-04-17]`; SERFF submission window `2023-07-01 → 2026-04-17`. The 2024 back-extension (started 2026-06-02) is finished and converged.
+> **Dataset status (2026-06-10): 1,404 rows, eleven states, complete.** Effective-date window `[2024-01-01, 2026-04-17]`; SERFF submission window `2023-07-01 → 2026-04-17`. Georgia added 2026-06-10 (+268 rows) — the first eastern state and the largest single-state addition, both lines cross-checked at ingestion (PPA 90.3%, HO 93.8%); collection rode out the SERFF AWS-WAF bot-challenge throttle via the B1 search-universe pipeline + batched downloads (see "Georgia expansion"). New Mexico (2026-06-08, +131) completed the western cluster.
 >
-> **Honest one-liner:** of 1,005 rows — **2 field-validated** (the `SFMA-134676753` anchor, all-field match), **134 AM Best cross-checked** (100 direct / 34 date-relaxed+reclassified), **202 extracted in a validated window but not individually matched**, **667 pipeline-extracted** (CO, ID non-anchor, all eff-2024). **130 of the original 468 carry external corroboration.** This is a SERFF-sourced, pipeline-extracted collection — corroborated against AM Best only where `external_validation` marks it, honest where not. Full detail + audit: **`TIER_RELABEL.md`**, `output/tier_relabel_audit.csv`, `output/corroboration/`.
+> **Honest one-liner:** of 1,404 rows — **2 field-validated** (the `SFMA-134676753` anchor, all-field match), **299 AM Best cross-checked** (234 direct / 65 date-relaxed+reclassified), **254 extracted in a validated window but not individually matched**, **849 pipeline-extracted** (CO, ID non-anchor, all eff-2024). This is a SERFF-sourced, pipeline-extracted collection — corroborated against AM Best only where `external_validation` marks it, honest where not. Full detail + audit: **`TIER_RELABEL.md`**, `output/tier_relabel_audit.csv`, `output/corroboration/`.
 
 ### Validation tiering (four-tier, 2026-06-08)
 
@@ -17,25 +17,27 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 | `external_validation` | meaning | count |
 |---|---|--:|
 | `field_validated` | documented all-field per-row AM Best Disposition Page Data match (the `SFMA-134676753` anchor, value unchanged) | 2 |
-| `ambest_cross_checked` | matched an AM Best entry on subsidiary + impact (+ eff_date or policyholders); `match_strength` records `direct`/`date_relaxed`/`reclassified` | 134 |
-| `pipeline_extracted_in_validated_window` | effective_date ≥ 2025-01-01 in a cross-checked state (AZ/MT/NV/OR/UT/WA), not individually matched | 202 |
-| `pipeline_extracted` | CO (no cross-check), ID non-anchor, and all eff-2024 extension rows | 667 |
+| `ambest_cross_checked` | matched an AM Best entry on subsidiary + impact (+ eff_date or policyholders); `match_strength` records `direct`/`date_relaxed`/`reclassified` | 299 |
+| `pipeline_extracted_in_validated_window` | effective_date ≥ 2025-01-01 in a cross-checked state (AZ/GA/MT/NV/NM/OR/UT/WA), not individually matched | 254 |
+| `pipeline_extracted` | CO (no cross-check), ID non-anchor, and all eff-2024 extension rows | 849 |
 
 - **`source`**: `original` (pre-extension 468) / `extension` (2024 back-extension). **`validation_tier`** (legacy app-compat): `field_validated`+`ambest_cross_checked` → `ambest_validated`; the two pipeline tiers → `pipeline_only`. Use `external_validation` for the full gradient and `source` for provenance.
-- **source × external_validation:** original → field 2 / cross_checked **128** / in-window 189 / pipeline 149; extension → cross_checked **6** / in-window 13 / pipeline 518. So **128 of the 134 cross-checked are original-468, 6 are extension-recovered**; **130 of the original 468 carry external corroboration** (the extension did not inflate the count).
+- **source × external_validation:** original → field 2 / cross_checked **179** / in-window 207 / pipeline 149; extension → cross_checked **6** / in-window 13 / pipeline 580. (NM, added 2026-06-08, is a fresh single-pass collection: its 69 eff≥2025 rows carry the mechanical `source=original` label — 51 cross_checked + 18 in-window — and its 62 eff-2024 rows `source=extension`/pipeline.) Of the **original pre-NM 468**, 130 still carry external corroboration; the 51 new cross_checked are all New Mexico.
 
 | state | field_validated | cross_checked | in_window_unmatched | pipeline | total |
 |---|--:|--:|--:|--:|--:|
 | AZ | 0 | 29 | 48 | 102 | 179 |
 | CO | 0 | 0 | 0 | 191 | 191 |
+| GA | 0 | 114 | 34 | 120 | 268 |
 | ID | 2 | 0 | 0 | 110 | 112 |
 | MT | 0 | 19 | 6 | 32 | 57 |
+| NM | 0 | 51 | 18 | 62 | 131 |
 | NV | 0 | 39 | 26 | 44 | 109 |
 | OR | 0 | 29 | 18 | 84 | 131 |
 | UT | 0 | 18 | 66 | 58 | 142 |
 | WA | 0 | 0 | 38 | 46 | 84 |
 
-**`match_strength`** (ambest_cross_checked): AZ 25 direct / 4 date_relaxed; OR 29 direct; MT 18 direct / 1 date_relaxed; NV 28 direct / 7 date_relaxed / 4 reclassified; **UT 0 direct / 17 date_relaxed / 1 reclassified — flagged mostly-date-relaxed (soft corroboration)**. Overall 100 direct / 29 date_relaxed / 5 reclassified.
+**`match_strength`** (ambest_cross_checked): AZ 25 direct / 4 date_relaxed; OR 29 direct; MT 18 direct / 1 date_relaxed; NV 28 direct / 7 date_relaxed / 4 reclassified; **NM 44 direct / 0 date_relaxed / 7 reclassified — strong (zero date-relaxed; the 7 reclassified are GEICO/Progressive RV filings AM Best buckets under PPA)**; **GA 90 direct / 18 date_relaxed / 6 reclassified**; **UT 0 direct / 17 date_relaxed / 1 reclassified — flagged mostly-date-relaxed (soft corroboration)**. Overall 234 direct / 47 date_relaxed / 18 reclassified.
 
 **WA limitation:** WA was cross-checked (documented 12/14 PPA) but **no reusable per-row artifact was built** (decision 2026-06-08), so WA's matched rows are **not** marked `ambest_cross_checked` — its in-window rows sit in `pipeline_extracted_in_validated_window`. WA's corroboration is documented-only, not per-row re-derivable. New states (per `CROSS_CHECK_STANDARD.md`) always build the artifact.
 
@@ -52,7 +54,9 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 | MT    |   57 |
 | WY    |    0 |
 | NV    |  109 |
-| **Σ** | **1,005** |
+| NM    |  131 |
+| GA    |  268 |
+| **Σ** | **1,404** |
 
 *(Per-brand breakdown table below predates the back-extension and reflects the original 468; the canonical per-state/per-tier counts are in [Validation tiering](#validation-tiering-four-tier-2026-06-08).)*
 
@@ -146,9 +150,9 @@ The dataset's date axis is therefore *effective date*, which matches AM Best's m
 | `match_strength` | For `ambest_cross_checked`: `direct` (subsidiary+eff_date+impact agree) / `date_relaxed` (subsidiary+impact+policyholders agree, eff differs) / `reclassified` (agree, different sub-TOI). `field` for the anchor; blank otherwise. Per-row: `output/corroboration/*.csv`. |
 | `validation_tier` | Coarse app-compat alias, re-derived: `field_validated`+`ambest_cross_checked` → `ambest_validated`; both pipeline tiers → `pipeline_only`. Use `external_validation` for the full gradient, `source` for provenance. |
 
-## Disposition vocabulary catalog (all 9 states, accumulated)
+## Disposition vocabulary catalog (all 11 states, accumulated)
 
-`disposition_status` is preserved as-filed (casing included); `rate_activity` is derived by substring rules. The classifier maps `WITHDRAWN`→`rate_change_withdrawn`, `DISAPPROV`/`REJECT`→`rate_change_disapproved`, `PENDING`/`OPEN`→`rate_change_pending`, else→`rate_change`.
+`disposition_status` is preserved as-filed (casing included); `rate_activity` is derived by substring rules. The classifier maps `WITHDRAWN`→`rate_change_withdrawn`, `DISAPPROV`/`REJECT`→`rate_change_disapproved`, `PENDING`/`OPEN`/`RECEIVED`/`EXAM`→`rate_change_pending`, else→`rate_change`.
 
 | State | disposition_status terms observed | → rate_activity |
 |---|---|---|
@@ -161,19 +165,21 @@ The dataset's date axis is therefore *effective date*, which matches AM Best's m
 | MT | `Rates Reviewed and Filed`, `Received and Filed`, `Withdrawn` | rate_change / rate_change / withdrawn |
 | NV | `Approved`, `Approved with Stipulations`, `Open`, `Withdrawn` | rate_change / rate_change / pending / withdrawn |
 | WY | — (0 in-scope rate rows) | — |
+| NM | `File & Use With Review`, `Disapproved` | rate_change / disapproved |
+| GA | `Approved`, `Acknowledged`, `Filed`, `Received`, `Exam`, `Withdrawn` | rate_change ×3 / pending ×2 / withdrawn |
 
-Notes: `Received and Filed` (MT) and `Approved with Stipulations` (NV) surfaced in the 2026-06 back-extension and classify correctly via fall-through (both are approvals/file-and-use). `Withdrawn by company` (CO/OR) matches the `WITHDRAWN` substring. `Open` (NV) and `Review pending` (CO/OR) map to `rate_change_pending`. No conditional approval in this dataset changes the as-filed rate (AZ/MT/UT are file-and-use; NV stipulated approvals carried the filed figure).
+Notes: `Received and Filed` (MT) and `Approved with Stipulations` (NV) surfaced in the 2026-06 back-extension and classify correctly via fall-through (both are approvals/file-and-use). `Withdrawn by company` (CO/OR) matches the `WITHDRAWN` substring. `Open` (NV) and `Review pending` (CO/OR) map to `rate_change_pending`. No conditional approval in this dataset changes the as-filed rate (AZ/MT/UT are file-and-use; NV stipulated approvals carried the filed figure). **`File & Use With Review` (NM)** is New Mexico's file-and-use phrasing (129 of 131 NM rows), semantically equivalent to `Filed`/`Approved` → `rate_change` via fall-through. The literal `&` required widening the `_FS_DISP_STATUS_RE` / `_FS_STATE_STATUS_RE` character class in `src/utils.py` to `[A-Za-z\-& ]` (2026-06-08); without it the match truncated at `&` and NM rows recorded a blank `disposition_status` (rate_activity was unaffected). **The fix is additive — no prior state's disposition_status contains `&`, so the 1,005 pre-NM rows are unchanged** (verified: anchor SFMA-134676753 still 14/14).
 
 ## Scope and limitations
 
-- **States:** ID, WA, CO, OR, UT, AZ, MT, WY, NV.
+- **States:** ID, WA, CO, OR, UT, AZ, MT, WY, NV, NM, GA.
 - **Lines:** Personal Auto (TOI 19.0) and Homeowners (TOI 04.0) only. Farmowners explicitly out of scope.
 - **Carriers:** See Scope section above — 8 customer-facing brands; filing-vehicle subsidiaries and specialty acquisitions explicitly excluded.
 - **Date range:** Effective-date window 2024-01-01 → 2026-04-17. SERFF submission window 2023-07-01 → 2026-04-17 so pre-floor submissions with in-window effective dates are captured. The effective-date filter is applied at row emit time in `run_final_rates.py`. **Validation tiering:** only the 2025-01-01 → 2026-04-17 portion is AM Best cross-checked (`validation_tier = ambest_validated`); the 2024 back-extension (`pipeline_only`) is collected identically but not AM Best validated. *(Extended from 2025-01-01 on 2026-06-02.)*
 - **Disposition status:** PENDING / Re-Open / Withdrawn filings are kept and labeled in `rate_activity`; only filings with no rate data at all (filer flag below) are excluded.
 - **Filer flag:** When the filer flagged "Rate data does NOT apply to filing," the row is excluded — this flag is taken at face value.
 - **PDF parsing:** Six Disposition row patterns are supported (full / blank-indicated / sparse / blank-indicated+blank-max-min with and without premium change / full-with-blank-max-min). Within a filing, subsidiary rows are deduped by name so multi-amendment filings (multiple Disposition sections) emit one row per subsidiary using the most recent disposition's values. Subsidiary-name lines that wrap across multiple PDF lines are folded by the existing continuation loop after the first line matches a row pattern.
-- **Disposition cases:** ID uses ALL-CAPS (`APPROVED`); WA uses `Approved`; CO uses `Filed` (file-and-use); OR uses `Approved` / `Filed` / `Withdrawn by company`; UT uses `FILED FOR USE` (file-and-use) and `REJECTED` (equivalent to other states' `Disapproved`); MT uses `Rates Reviewed and Filed` and `Received and Filed` (both file-and-use, equivalent to `Filed`/`Approved`); NV uses `Approved`, `Approved with Stipulations` (approval with conditions, treated as `rate_change`), and `Open` (undisposed/in-review, equivalent to `Pending`). Casing preserved as filed. The `rate_activity` classifier maps `REJECTED → rate_change_disapproved` and `Open → rate_change_pending` alongside the standard `WITHDRAWN`/`DISAPPROVED`/`PENDING` substring patterns (`Withdrawn by company` → `rate_change_withdrawn` via the `WITHDRAWN` match). 2026-06 back-extension surfaced `Received and Filed` (MT), `Approved with Stipulations` (NV), and `Withdrawn by company` (OR) — all fall through / match correctly with no classifier change needed.
+- **Disposition cases:** ID uses ALL-CAPS (`APPROVED`); WA uses `Approved`; CO uses `Filed` (file-and-use); OR uses `Approved` / `Filed` / `Withdrawn by company`; UT uses `FILED FOR USE` (file-and-use) and `REJECTED` (equivalent to other states' `Disapproved`); MT uses `Rates Reviewed and Filed` and `Received and Filed` (both file-and-use, equivalent to `Filed`/`Approved`); NV uses `Approved`, `Approved with Stipulations` (approval with conditions, treated as `rate_change`), and `Open` (undisposed/in-review, equivalent to `Pending`); NM uses `File & Use With Review` (file-and-use, equivalent to `Filed`/`Approved`) and `Disapproved`. Casing preserved as filed. The `rate_activity` classifier maps `REJECTED → rate_change_disapproved` and `Open → rate_change_pending` alongside the standard `WITHDRAWN`/`DISAPPROVED`/`PENDING` substring patterns (`Withdrawn by company` → `rate_change_withdrawn` via the `WITHDRAWN` match). 2026-06 back-extension surfaced `Received and Filed` (MT), `Approved with Stipulations` (NV), and `Withdrawn by company` (OR) — all fall through / match correctly with no classifier change needed.
 - **Filing-vehicle subsidiary exclusion:** When a customer-facing-brand filing's per-company rate table lists subsidiary names that are themselves filing vehicles or out-of-scope specialty acquisitions (`LM General Insurance Company`, `LM Insurance Corporation`, `Standard Fire Insurance`, `Integon`, `National General`, `Esurance`, `Drive Insurance`, `United Financial`, `American Economy`, `Peerless`), those individual rows are dropped at emission time — the parent filing is kept but the filing-vehicle row is suppressed. Enforced in `run_final_rates.py:_is_excluded_subsidiary`.
 - **Disposition cases (AZ):** AZ uses `Acknowledged` (file-and-use: the AZ DOI acknowledges the filing and the filer's filed rate takes effect — there is no separate state-approved figure, so as-filed = in-effect and no stipulated-rate divergence arises). `Disposition Status: Acknowledged` / `State Status: Filing Acknowledged`. Classified `rate_change`. Reports per-subsidiary indicated/impact percentages in standard format. *(Corrected 2026-06-03: earlier text said "Approved" — both the original and re-collected AZ data show `Acknowledged`.)*
 
@@ -416,7 +422,79 @@ NV AM Best report contains both PPA and HO Multi-Peril filings.
 | AZ | 14/14 (100%) | 15/15 (100%) |
 | MT | 16/17 (94.1%) | 3/3 (100%) |
 | NV | 28/33 (84.8%) | 5/8 (62.5%) |
+| NM | 36/37 (97.3%) | 15/17 (88.2%) |
+| GA | 93/103 (90.3%) | 30/32 (93.8%) |
 | WA | 12/14 (86%) | — |
+
+## New Mexico expansion (added 2026-06-08)
+
+NM is the first **validated-expansion** state under `CROSS_CHECK_STANDARD.md` — both lines cross-checked at ingestion with a re-derivable per-row corroboration artifact before being folded into the canonical deliverable. It completes the western cluster and brings the dataset to **10 states / 1,136 rows** (+131 NM).
+
+- **Search:** 441 raw filings across 9 brand keywords (Travelers 100, Liberty Mutual 87, State Farm 73, Allstate 82, GEICO 39, Progressive 25, Safeco 21, MGA Insurance 8, Encompass 6). **Progressive silent-fail recovery:** Progressive timed out on the "Begin Search" link during the sequential all-companies sweep and returned 0 rows — the OR/NV silent-fail pattern. Verify-retry in isolation recovered 25 Progressive filings (`merge_nm_search.py`); the original 0 was a false zero, not a genuine absence.
+- **Final-rates funnel:** 209 target-TOI target-carrier filings → 77 emitted → 132 rows → **131** (1 filing-vehicle row dropped). Stage exclusions: Form/Rule 96, new-product 9, out-of-effective-window 20, rate-data-N/A 6, no-PDF 1 (the 0% anomaly below). Counts converged 112 → 129 → 131 → 131 across four passes as flaky downloads (SERFF throttled heavily under sustained load) succeeded on fresh-context retry.
+- **Per-brand:** State Farm 29, Liberty Mutual 28, Allstate 26, Progressive 21, GEICO 15, Safeco 5, Encompass 4, Travelers 3. Lines: PPA 94 / HO 37.
+- **New disposition vocabulary:** `File & Use With Review` (NM file-and-use, 129 rows) + `Disapproved` (2 rows). The `&` required widening `_FS_DISP_STATUS_RE` / `_FS_STATE_STATUS_RE` (additive; 1,005 prior rows unchanged) — see the disposition catalog above.
+- **PDF-present 0-row anomaly:** `ALSE-134500230` — a 0.0%/0.0% Allstate PPA filing with a wrapped subsidiary name + `$0`-formatted/collapsed columns no row pattern matches. Documented, **not fixed** (zero rate signal; AM Best lists 0% as N/A so it doesn't affect the cross-check; not worth a shared-parser change). See `final_pass_investigation.md` item 5.
+- **Anchor:** ID SFMA-134676753 still validates 14/14 (no pipeline regression from the disposition-regex change).
+
+## AM Best NM cross-check (2026-06-08 export, PPA + Homeowners Multi-Peril)
+
+Single PDF, both lines (AZ/MT/NV layout). 30,165 parsed rows → 441 unique after dedup. In-scope (8 brands × Rate × eff 2025-01-01→2026-04-17): **37 PPA + 17 HO**. Window-filtered to `DATE_TO=2026-04-17` so the ~7 weeks of AM Best entries to 2026-06-08 don't generate false "missing from ours" flags.
+
+| Result | PPA | HO |
+|---|---:|---:|
+| AM Best in-scope entries | 37 | 17 |
+| Tier 1 direct (subsidiary + eff_date + impact) | 29 | 15 |
+| Tier 2 date-relaxed | 0 | 0 |
+| Tier 3 sub-type reclass | 7 | 0 |
+| Still missing | 1 | 2 |
+| **In-scope match rate** | **36 / 37 (97.3%)** | **15 / 17 (88.2%)** |
+
+**Strong corroboration — zero date-relaxed matches** (the opposite of UT's flagged 100%-date-relaxed soft case). The 7 PPA reclassified are all GEICO/Progressive **RV (19.0003)** filings AM Best buckets under PPA; our rows sit in the RV sub-TOI — correct reclassification, matched on subsidiary + impact + policyholders.
+
+**3 misses — all structural (the public-SERFF ceiling, not scraper bugs):**
+
+1. **PPA — Safeco "General Insurance Company of America" 15.3% eff 02/28/25** (disp 11/08/24): not discoverable under any Safeco search keyword; our Safeco PPA filings enumerate only "Safeco Insurance Company of America". A **SERFF Public Access visibility gap** (filer Public-Access-Indicator=No), same structural limitation as WA/NV.
+2–3. **HO — "Liberty Insurance Corporation" eff 02/13/25 (−6.3%) & eff 01/09/26 (3.0%)**: the rate *events* ARE captured — our Liberty Mutual Insurance/Personal/Fire rows from the same filings (LBPM-134314003/134314125 and LBPM-134758200/134758580) matched AM Best **direct**. AM Best's Disposition Page Data additionally enumerates "Liberty Insurance Corporation" as a subsidiary on those events, but that name is **absent from the SERFF Filing Summary PDF's Company Rate Information table** we parse. A **subsidiary-coverage difference** between AM Best's licensed DOI feed and the public PDF — not recoverable via public scraping.
+
+Per-row artifacts: `output/corroboration/nm_ppa_corroboration.csv`, `nm_ho_corroboration.csv` (+ `*_missing.csv`). The "in our NM but not in AM Best" extras are the standard pattern: eff-2024 rows (below the AM Best 2025+ window), 0% impacts AM Best reports as N/A, sub-TOI variants, and filings past the 2026-04-17 export cutoff.
+
+## Georgia expansion (added 2026-06-10)
+
+GA is the first eastern state, the largest single-state addition (+268 rows → **11 states / 1,404 rows**), and the first state collected through the B1 pipeline-era infrastructure. Its collection story spans three sessions and produced four durable pipeline improvements.
+
+- **Search:** 872 raw filings across 9 brand keywords. **Four brands silent-failed** in the all-companies sweep (Allstate, Travelers, Liberty Mutual, Encompass — the OR/NV/NM silent-zero pattern under load) and were recovered by isolated verify-retries (`merge_ga_search.py`): Allstate 153, Travelers 300, Liberty Mutual 138, Encompass 55; plus State Farm 71, Safeco 58, GEICO 49, Progressive 38, MGA 10.
+- **Throttle wall → root cause MEASURED (2026-06-10):** the original run hard-stalled at 85/326 PDFs and a 6h-cooldown retry added only 14 before re-arming. New failure-signature diagnostics (`src/search.DIAG_DIR` ledger + snapshots) captured the wall for the first time: **HTTP 405 from `awselb/2.0` with `x-amzn-waf-action: captcha` serving a "Human Verification" page** — an AWS WAF rate-based bot challenge, not server overload. Strategy that worked: a 2–3 day full rest, then **batched downloads** (`DOWNLOAD_BATCH_SIZE=8` per fresh search session, validated in-vivo 8/8 with 4 cell-level parse-identical re-fetch probes) cut fresh Begin-Search submissions ~8× — the remaining 227 PDFs landed in ~2h with only intermittent, self-recovering challenges.
+- **Final-rates funnel:** 326 target filings → 145 emitted → 272 rows → **268** (4 filing-vehicle rows dropped). Exclusions: Form 71, new-product 18, out-of-window 31, no-PDF/zero-row 52. Converged 259 → 268 → 268 across three passes.
+- **THREE new GA vocabulary traps, all found via the 0-row deliverable the first build produced:**
+  1. **Filing types:** GA labels rate filings `Rate/Rule PPA-Prior Approval`, `Rate/Rule PPA- File and Use`, `Rate/Rule other than PPA` (prior states: bare `Rate`/`Rate/Rule`). The exact-membership check excluded all 247 — replaced with the `_is_rate_filing_type` prefix predicate.
+  2. **New-product false positives:** GA filing summaries embed a DOI questionnaire whose literal field `New Program (Type Yes or No): No` matched the bare `\bNew Program\b` keyword on 225/237 rate filings; plus `introduction of <Discount/rating-plan factor> … line of business` phrasing false-matched 4 more. Fixed with an answered-No lookahead (+ an answered-Yes trust-the-declaration alternative) and a discount/rating-plan/factor gap exclusion. NM/UT/ID regression after both regex changes: 0 cell diffs, anchor 14/14.
+  3. **Disposition vocabulary:** `Received` (58 rows) and `Exam` (1) are GA's in-review statuses → `rate_change_pending` (like NV's `Open`); `Acknowledged`/`Filed`/`Approved` are terminal-accepted.
+- **Zero-row audit (49 filings, `rate_data_applies=True`, 0 rows):** all 49 are genuinely rate-effect-free — 35 per-company tables with blank `%` cells, 14 `Rate Information for Multiple Company Filings` layouts with all-zero values; **0 nonzero values missed** (`tools/diag_ga_classify_zero_rows.py`). GA's broad `Rate/Rule` filing-type labels sweep rule-only changes into the rate funnel; prior states' `Rule` label excluded them earlier.
+- **Structural download misses (2):** TRVD-G134718262, TRVD-G134818683 (both Travelers HO) — row-not-found through batch + fresh-per-target fallback across three passes; neither corresponds to an AM Best in-scope miss.
+- **Anchor:** ID SFMA-134676753 still validates 14/14.
+
+## AM Best GA cross-check (2026-06-08/09 exports, PPA + Homeowners Multi-Peril)
+
+Three effective-date-range PDFs tile the window `[2024-01-01, 2026-06-08]` with no real gap; the 2024-10-31 boundary overlap (3 keys) collapses under dedup. 89,616 raw rows → 1,373 unique. In-scope (8 brands × Rate × eff 2025-01-01→2026-04-17): **103 PPA + 32 HO** — by far the largest AM Best denominators in the dataset.
+
+| Result | PPA | HO |
+|---|---:|---:|
+| AM Best in-scope entries | 103 | 32 |
+| Tier 1 direct (subsidiary + eff_date + impact) | 73 | 22 |
+| Tier 2 date-relaxed | 15 | 7 |
+| Tier 3 sub-type reclass | 5 | 1 |
+| Still missing | 10 | 2 |
+| **In-scope match rate** | **93 / 103 (90.3%)** | **30 / 32 (93.8%)** |
+
+**All 12 misses classified — none are scraper bugs:**
+
+1. **8 PPA = 2 Progressive filing events we CAPTURED with different values** (PRGS-134611011 + PRGS-134655228, both eff 12/05/25, same subsidiaries; ours −4.1%/0.6%/2.3% vs AM Best −2.7%/1.9%/3.6%). GA PPA is **prior-approval** (`Rate/Rule PPA-Prior Approval`): AM Best's Disposition Page Data reports disposed/approved figures, the public filing-summary PDF reflects the filed amendment. First state in the dataset where filed-vs-approved divergence is observable — a stage difference, not an extraction error.
+2. **1 PPA Travelers (eff 02/15/26, 0.3%)** = TRVD-G134746302, captured and parsed but its public rate table is blank (one of the 35 blank-table filings); the 0.3% exists only in AM Best's licensed DOI feed.
+3. **1 PPA Allstate North American (0.0%, 0 pol) + 1 HO Encompass (0.0%, 0 pol):** zero-impact entries matching the blank-table pattern — no rate signal in the public PDF.
+4. **1 HO Safeco of Oregon (eff 07/27/25, 18.5%):** event captured — we hold the same date's filed 9.9% (LBPM-134521388) plus a withdrawn 19.9% (LBPM-134467944); AM Best's 18.5% is again a disposition-stage figure.
+
+Per-row artifacts: `output/corroboration/ga_ppa_corroboration.csv`, `ga_ho_corroboration.csv` (+ `*_missing.csv`).
 
 ## Phase 2 backlog (consolidated)
 

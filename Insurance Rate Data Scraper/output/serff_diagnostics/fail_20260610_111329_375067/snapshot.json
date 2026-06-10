@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-06-10T11:13:29.375",
+  "state": "GA",
+  "term": "encompass",
+  "outcome": "results_timeout",
+  "duration_s": 33.3,
+  "exception": null,
+  "document_responses": [
+    {
+      "ts": "2026-06-10T11:12:56.335",
+      "url": "https://filingaccess.serff.com/sfa/home/GA",
+      "status": 200,
+      "retry_after": null,
+      "headers": {
+        "content-type": "text/html;charset=iso-8859-1",
+        "date": "Wed, 10 Jun 2026 15:12:55 GMT",
+        "server": "Apache/2.4.66 (Amazon Linux)",
+        "server-timing": "dtTrId;desc=\"8f9862c6def90cb02d013133e96277ad\", dtSInfo;desc=\"0\"\ndtRpid;desc=\"1903481430\"",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-oneagent-js-injection": "true",
+        "x-ua-compatible": "IE=edge"
+      }
+    },
+    {
+      "ts": "2026-06-10T11:12:56.692",
+      "url": "https://filingaccess.serff.com/sfa/userAgreement.xhtml",
+      "status": 200,
+      "retry_after": null,
+      "headers": {
+        "content-type": "text/html;charset=iso-8859-1",
+        "date": "Wed, 10 Jun 2026 15:12:55 GMT",
+        "server": "Apache/2.4.66 (Amazon Linux)",
+        "server-timing": "dtTrId;desc=\"c2ec302aad0a8c7237a92063af04bc6d\", dtSInfo;desc=\"0\"\ndtRpid;desc=\"1214979188\"",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-oneagent-js-injection": "true",
+        "x-ua-compatible": "IE=edge"
+      }
+    },
+    {
+      "ts": "2026-06-10T11:12:56.949",
+      "url": "https://filingaccess.serff.com/sfa/search/filingSearch.xhtml",
+      "status": 200,
+      "retry_after": null,
+      "headers": {
+        "content-type": "text/html;charset=iso-8859-1",
+        "date": "Wed, 10 Jun 2026 15:12:56 GMT",
+        "server": "Apache/2.4.66 (Amazon Linux)",
+        "server-timing": "dtTrId;desc=\"e3cf5ee152905f3b18d8a848bd5bdd07\", dtSInfo;desc=\"0\"\ndtRpid;desc=\"530746034\"",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-oneagent-js-injection": "true",
+        "x-ua-compatible": "IE=edge"
+      }
+    }
+  ],
+  "page_url": "https://filingaccess.serff.com/sfa/search/filingSearch.xhtml",
+  "page_title": "SERFF Filing Access - Georgia",
+  "body_text_head": " \nHelp\nSERFF Filing Access\nYou are currently operating in the state of Georgia.\nFiling Search\nClear Search\nHealth Plan Binder Search\nFiling Search\nSearch Options\nBusiness Type:\n-- Select --\nProperty & Casualty\nLife, Accident/Health, Annuity, Credit\nProperty & Casualty\nProduct Coding Matrix:\nhttps://serff.com/serff_participation_map.htm\nType of Insurance:\nType of Insurance\n0 Types of Insurance selected\nCompany Name:\n\t\nBegins With\n\t\n\t\nContains\nNAIC Company Code:\nInsurance Product Name:\n\t\nBegins With\n\t\n\t\nContains\nSERFF Tracking Number:\nStart Submission Date:\nui-button\nStart Disposition Date:\nui-button\nEnd Submission Date:\nui-button\nEnd Disposition Date:\nui-button\n\n\n\nSearch\n\n\nSERFF Filing Access Help Desk\n(816) 783-8500\nsfahelp@naic.org\nRelated Sites\nwww.naic.org\nwww.serff.com\nNAIC Central Office\n1100 Walnut St.\nSuite 1500\nKansas City, MO 64108\nPhone: (816) 842-3600\nFax: (816) 783-8175\n8 a.m. to 5 p.m. (CST)\nMonday - Friday\nCopyright \u00a9 2017 National Association of Insurance Commissioners. All Rights Reserved."
+}

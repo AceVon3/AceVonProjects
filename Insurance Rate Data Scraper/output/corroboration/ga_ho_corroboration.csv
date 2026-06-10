@@ -1,0 +1,48 @@
+state,line,our_serff_tracking_number,our_subsidiary,our_effective_date,our_impact,our_policyholders,matched_ambest_subsidiary,ambest_effective_date,ambest_impact,ambest_policyholders,agreed_subsidiary,agreed_impact,agreed_eff_date,agreed_policyholders,match_strength
+GA,HO,ALSE-133963434,Allstate Vehicle and Property Insurance Company,09/09/2024,19.900%,260610,,,,,,,,,none
+GA,HO,ALSE-134255227,Allstate Insurance Company,02/17/2025,24.900%,1166,Allstate Insurance Company,10/27/25,24.9,1166,True,True,False,True,date_relaxed
+GA,HO,ALSE-134255248,Allstate Indemnity Company,02/17/2025,24.900%,4747,Allstate Indemnity Company,10/27/25,24.9,4747,True,True,False,True,date_relaxed
+GA,HO,ALSE-134255284,Allstate Vehicle and Property Insurance Company,02/17/2025,24.900%,11376,Allstate Vehicle and Property Insurance Company,10/27/25,24.9,11376,True,True,False,True,date_relaxed
+GA,HO,ALSE-134383250,Allstate Property and Casualty Insurance Company,05/19/2025,9.900%,27784,Allstate Property and Casualty Insurance Company,05/19/25,9.9,27784,True,True,True,True,direct
+GA,HO,ALSE-134383342,Allstate Indemnity Company,05/19/2025,12.900%,6785,Allstate Indemnity Company,05/19/25,12.9,6785,True,True,True,True,direct
+GA,HO,ALSE-134383358,Allstate Fire and Casualty Insurance Company,05/19/2025,12.900%,14294,Allstate Fire and Casualty Insurance Company,05/19/25,12.9,14294,True,True,True,True,direct
+GA,HO,ALSE-134383361,Allstate Insurance Company,05/19/2025,9.900%,30833,Allstate Insurance Company,05/19/25,9.9,30833,True,True,True,True,direct
+GA,HO,ALSE-134450768,Allstate Vehicle and Property Insurance Company,09/22/2025,12.400%,306116,Allstate Vehicle and Property Insurance Company,09/22/25,12.4,306116,True,True,True,True,direct
+GA,HO,ALSE-134505145,Allstate Insurance Company,11/24/2025,14.900%,2389,Allstate Insurance Company,11/24/25,14.9,2389,True,True,True,True,direct
+GA,HO,ALSE-134505218,Allstate Indemnity Company,11/24/2025,14.900%,10564,Allstate Indemnity Company,11/24/25,14.9,10564,True,True,True,True,direct
+GA,HO,ALSE-134505274,Allstate Insurance Company,11/24/2025,9.300%,59547,Allstate Insurance Company,11/24/25,9.3,59547,True,True,True,True,direct
+GA,HO,ALSE-134175885,Encompass Independent Insurance Company,09/11/2024,12.900%,8015,,,,,,,,,none
+GA,HO,GMMX-134690801,Encompass Independent Insurance Company,12/22/2025,25.000%,10719,,,,,,,,,none
+GA,HO,GMMX-134802306,Encompass Insurance Company,02/23/2026,-26.000%,5,Encompass Insurance Company,02/23/26,-26.0,5,True,True,True,True,direct
+GA,HO,LBPM-134203450,Liberty Mutual Fire Insurance Company,11/09/2024,13.300%,3275,,,,,,,,,none
+GA,HO,LBPM-134204300,Liberty Mutual Insurance Company,10/05/2024,14.900%,39400,,,,,,,,,none
+GA,HO,LBPM-134339984,Liberty Mutual Insurance Company,03/01/2025,0.000%,6,Liberty Mutual Insurance Company,03/01/25,0.0,6,True,True,True,True,direct
+GA,HO,LBPM-134339984,Liberty Mutual Personal Insurance Company,03/01/2025,0.000%,245,Liberty Mutual Personal Insurance Company,03/01/25,0.0,245,True,True,True,True,direct
+GA,HO,LBPM-134447335,Liberty Mutual Insurance Company,06/21/2025,0.000%,0,Liberty Mutual Insurance Company,06/21/25,0.0,0,True,True,True,True,direct
+GA,HO,LBPM-134447335,Liberty Mutual Personal Insurance Company,06/21/2025,0.000%,0,Liberty Mutual Personal Insurance Company,06/21/25,0.0,0,True,True,True,True,direct
+GA,HO,LBPM-134449044,Liberty Mutual Fire Insurance Company,07/26/2025,0.000%,0,Liberty Mutual Fire Insurance Company,07/26/25,0.0,0,True,True,True,True,direct
+GA,HO,LBPM-134613660,Liberty Mutual Insurance Company,10/05/2025,9.900%,26451,Liberty Mutual Insurance Company,10/05/25,9.9,26451,True,True,True,True,direct
+GA,HO,LBPM-134618541,Liberty Mutual Insurance Company,10/05/2025,0.100%,52,Liberty Mutual Insurance Company,10/05/25,0.1,52,True,True,True,True,direct
+GA,HO,LBPM-134618541,Liberty Mutual Personal Insurance Company,10/05/2025,0.000%,1649,Liberty Mutual Personal Insurance Company,10/05/25,0.0,1649,True,True,True,True,direct
+GA,HO,LBPM-134662995,Liberty Mutual Personal Insurance Company,01/19/2026,0.000%,1914,Liberty Mutual Personal Insurance Company,01/19/26,0.0,1914,True,True,True,True,direct
+GA,HO,LBPM-133875010,Safeco Insurance Company of Oregon,01/27/2024,17.900%,24290,,,,,,,,,none
+GA,HO,LBPM-133875029,Safeco Insurance Company of Indiana,01/27/2024,17.500%,26803,,,,,,,,,none
+GA,HO,LBPM-133966862,Safeco Insurance Company of Oregon,03/16/2024,0.000%,0,,,,,,,,,none
+GA,HO,LBPM-133991454,Safeco Insurance Company of Oregon,04/11/2024,0.000%,24920,,,,,,,,,none
+GA,HO,LBPM-134167230,Safeco Insurance Company of Oregon,06/21/2025,0.000%,23706,Safeco Insurance Company of Oregon,04/19/25,0.0,23706,True,True,False,True,date_relaxed
+GA,HO,LBPM-134333717,Safeco Insurance Company of Oregon,03/01/2025,0.000%,19981,Safeco Insurance Company of Oregon,03/01/25,0.0,19981,True,True,True,True,direct
+GA,HO,LBPM-134466356,Safeco Insurance Company of Indiana,07/27/2025,19.600%,20226,,,,,,,,,none
+GA,HO,LBPM-134467944,Safeco Insurance Company of Oregon,07/27/2025,19.900%,24620,,,,,,,,,none
+GA,HO,LBPM-134520474,Safeco Insurance Company of Indiana,07/27/2025,9.900%,20226,Safeco Insurance Company of Indiana,07/27/25,9.9,20226,True,True,True,True,direct
+GA,HO,LBPM-134521388,Safeco Insurance Company of Oregon,07/27/2025,9.900%,24620,,,,,,,,,none
+GA,HO,LBPM-134745559,Safeco Insurance Company of Oregon,01/08/2026,0.000%,14821,Safeco Insurance Company of Oregon,02/03/26,0.0,14821,True,True,False,True,date_relaxed
+GA,HO,SFMA-133885337,State Farm Fire and Casualty Company,03/15/2024,9.400%,833775,,,,,,,,,none
+GA,HO,SFMA-133964481,State Farm Fire and Casualty Company,04/15/2024,0.000%,833775,,,,,,,,,none
+GA,HO,SFMA-134042440,State Farm Fire and Casualty Company,03/15/2025,5.600%,848295,State Farm Fire and Casualty Company,03/15/25,5.6,848295,True,True,True,True,direct
+GA,HO,SFMA-134275619,State Farm Fire and Casualty Company,03/01/2025,0.000%,23715,State Farm Fire and Casualty Company,03/01/25,0.0,23715,True,True,True,True,direct
+GA,HO,TRVD-133778191,Travelers Personal Insurance Company,02/18/2024,14.500%,158258,Travelers Personal Insurance Company,05/01/25,14.5,158258,True,True,False,True,date_relaxed
+GA,HO,TRVD-133894014,The Travelers Home and Marine Insurance Company,05/11/2024,7.100%,45525,,,,,,,,,none
+GA,HO,TRVD-133894014,Travelers Commercial Insurance Company,05/11/2024,7.200%,4755,,,,,,,,,none
+GA,HO,TRVD-G134201841,Travelers Personal Insurance Company,07/13/2025,0.000%,155331,,,,,,,,,none
+GA,HO,TRVD-G134332321,Travelers Personal Insurance Company,02/21/2025,14.900%,155331,Travelers Personal Insurance Company,04/18/25,14.9,155331,True,True,False,True,date_relaxed
+GA,HO,LBPM-134030059,The First Liberty Insurance Corporation,05/15/2024,0.000%,0,The First Liberty Insurance Corporation,06/21/25,0.0,0,True,True,False,True,reclassified

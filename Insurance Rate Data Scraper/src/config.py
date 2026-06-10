@@ -42,7 +42,7 @@ TARGET_LINES = [
     "homeowners",
 ]
 
-STATES = ["WA", "ID", "CO", "OR", "UT", "AZ", "MT", "WY", "NV"]
+STATES = ["WA", "ID", "CO", "OR", "UT", "AZ", "MT", "WY", "NV", "NM", "GA"]
 
 # Submission-window bounds for SERFF search (SERFF only filters by submission
 # date). A 6-month lookback before the effective-date floor so filings

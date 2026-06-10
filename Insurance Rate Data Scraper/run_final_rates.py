@@ -162,6 +162,7 @@ def _relabel(provenance_tier: str, tracking: str) -> tuple[str, str, str, str]:
     if provenance_tier == "ambest_window_unmatched":    # eff>=2025, back-extension
         return "extension", "pipeline_extracted_in_validated_window", "", "pipeline_only"
     return "extension", "pipeline_extracted", "", "pipeline_only"  # eff<2025 / blank
+import src.search as _serff_search
 from src.detail import download_system_summary_pdf
 from src.search import (
     _back_to_results,
@@ -215,7 +216,14 @@ NEW_PRODUCT_RE = re.compile(
     # Table" SERFF supporting-document boilerplate via negative lookahead
     # (Issue #3, 2026-05-26). Without the lookahead, 5 Travelers HO rate filings
     # in AZ were false-positively excluded as new-product launches.
-    r"|\bNew Program\b(?!\s+Table)"
+    # GA (2026-06-10): GA filing summaries embed a DOI questionnaire with the
+    # literal field "New Program (Type Yes or No): No" — the bare keyword
+    # matched the QUESTION on 225/237 GA rate filings whose answer is "No"
+    # (0-row deliverable). The "...: No" lookahead skips the answered-No
+    # questionnaire; the explicit "...: Yes" alternative below trusts the
+    # answered-Yes declaration outright.
+    r"|New Program\s*\(Type Yes or No\)\s*:\s*Yes"
+    r"|\bNew Program\b(?!\s+Table)(?!\s*\(Type Yes or No\)\s*:\s*No)"
     # `\bnew product\b` now requires introduction/rollout context within 40
     # chars (Issue #5, 2026-05-27 MT/WY/NV expansion). Without anchoring, the
     # bare \bnew product\b matched narrative/regulator-commentary references
@@ -224,11 +232,27 @@ NEW_PRODUCT_RE = re.compile(
     # rate filings across CO/AZ/MT/NV.
     r"|\b(?:introduc\w+|launch\w+)\b[\s\S]{0,40}\bnew product\b"
     r"|\bnew product\b[\s\S]{0,40}\b(?:will\s+be\s+(?:offered|available|launched|introduced)|to\s+new\s+business\s+only)\b"
-    r"|\bintroduction of\b[\s\S]{0,120}\b(?:Program|line of business|lines of business)\b"
+    # The gap must not contain discount/rating-plan/factor terms: GA showed
+    # "introduction of an IBHS Fortified Home Discount for its Homeowners line
+    # of business" and "introduction of the Easy Pay Factor rating plan ...
+    # Program" (2026-06-10) — those introduce a RATING ELEMENT to an existing
+    # product (legitimate rate filings), not a product launch.
+    r"|\bintroduction of\b(?:(?!\b(?:discount|rating\s+plan|factor)\b)[\s\S]){0,120}\b(?:Program|line of business|lines of business)\b"
     r")",
     re.IGNORECASE,
 )
 RATE_FILING_TYPES = {"Rate", "Rate/Rule"}
+
+
+def _is_rate_filing_type(ft) -> bool:
+    """State filing-type vocabularies differ: WA..NM use bare "Rate"/"Rate/Rule",
+    but GA labels its rate filings "Rate/Rule PPA-Prior Approval", "Rate/Rule
+    PPA- File and Use" and "Rate/Rule other than PPA" (found 2026-06-10 when the
+    exact-membership check excluded ALL 247 GA rate filings as form_or_rule ->
+    0-row deliverable). Exact "Rate" or a "Rate/Rule" prefix counts; nothing
+    else ("Form", "Reporting", ...) does."""
+    ft = (ft or "").strip()
+    return ft == "Rate" or ft.startswith("Rate/Rule")
 PDF_FILING_TYPE_RE = re.compile(r"Filing Type:\s*([A-Za-z/ \-]+)\s*$", re.MULTILINE)
 
 # Per-company rate-table rows for these subsidiary names are dropped at emission
@@ -543,8 +567,39 @@ def load_targets(state: str) -> list[Target]:
     return targets
 
 
-def download_all_pdfs(state: str, targets: list[Target]) -> dict[str, str]:
-    """Download system PDF for every target. Returns {filing_id: download_status}."""
+# Batched download mode (2026-06-10, Step 2 of the rest/batch/resume plan):
+# one fresh "Begin Search" session per batch of DOWNLOAD_BATCH_SIZE uncached
+# targets instead of one per target. Fresh-per-target was the deliberate fix
+# for JSF results-page degradation (OR Travelers: 9/9 misses over a long
+# reused session, all recovered under fresh contexts) — but the SERFF throttle
+# rations fresh Begin-Search submissions (observed burst capacity 85 -> 14 ->
+# ~12 across consecutive heavy days), so one-search-per-target makes
+# final-rates cost ~1 burst-unit per filing and dominates every state's
+# throttle bill. Batching cuts that ~batch_size-fold.
+#
+# Why this is miss-safe (not corruption-risky): download_system_summary_pdf
+# clicks rows by stable filing_id (data-rk, pagination-aware) and the PDF is
+# server-generated per filing — a degraded session can only FAIL TO FIND rows,
+# never fetch the wrong filing's data. Misses fall through to the proven
+# fresh-per-target FALLBACK pass below, and convergence re-runs retry whatever
+# remains. Validate in vivo with validate_batch_download.py (Step 3) before a
+# full batched state run.
+DOWNLOAD_BATCH_SIZE = 8  # tune against JSF degradation; 1 = legacy fresh-per-target only
+# End a batch session early after this many consecutive misses — the OR
+# degradation signature is misses starting partway through a session. The
+# batch's unattempted targets go back to the remaining pool (fallback /
+# convergence), so aborting early costs nothing but a fresh search.
+BATCH_ABORT_CONSECUTIVE_MISSES = 2
+
+
+def download_all_pdfs(state: str, targets: list[Target], *,
+                      batch_size: int = DOWNLOAD_BATCH_SIZE) -> dict[str, str]:
+    """Download system PDF for every target. Returns {filing_id: download_status}.
+    Primary path: batched (batch_size downloads per fresh search session).
+    Stragglers then get the legacy fresh-search-per-target fallback."""
+    # Failure-signature capture for every fresh search this run makes
+    # (ledger row per search + snapshot on failure — see src/search.DIAG_DIR).
+    _serff_search.DIAG_DIR = Path("output/serff_diagnostics")
     by_group: dict[str, list[Target]] = {}
     for t in targets:
         by_group.setdefault(t.group, []).append(t)
@@ -573,6 +628,39 @@ def download_all_pdfs(state: str, targets: list[Target]) -> dict[str, str]:
                 _refresh_context()
             return False
 
+        def _run_batch(term: str, batch: list[Target]) -> list[Target]:
+            """One fresh search session, then sequential downloads for the
+            whole batch. Returns the targets still missing (misses + any
+            unattempted after an early abort)."""
+            _refresh_context()
+            if not _submit_with_retry(state, term):
+                return list(batch)
+            _set_rows_per_page_100(page)
+            misses: list[Target] = []
+            consecutive = 0
+            for j, t in enumerate(batch, 1):
+                dest_dir = Path(f"output/pdfs/{state}/{t.filing_id}")
+                try:
+                    pdf = download_system_summary_pdf(page, t.filing_id, t.tracking, dest_dir)
+                except Exception as e:
+                    print(f"    [batch {j}/{len(batch)}] {t.tracking}: error {type(e).__name__} -> miss", flush=True)
+                    pdf = None
+                if pdf:
+                    statuses[t.filing_id] = "ok"
+                    consecutive = 0
+                    print(f"    [batch {j}/{len(batch)}] {t.tracking}: ok", flush=True)
+                else:
+                    misses.append(t)
+                    consecutive += 1
+                    print(f"    [batch {j}/{len(batch)}] {t.tracking}: miss", flush=True)
+                    if consecutive >= BATCH_ABORT_CONSECUTIVE_MISSES and j < len(batch):
+                        rest = batch[j:]
+                        print(f"    [batch] {consecutive} consecutive misses — ending session early "
+                              f"({len(rest)} unattempted -> retried later)", flush=True)
+                        misses.extend(rest)
+                        break
+            return misses
+
         for grp, items in by_group.items():
             uncached = []
             for t in items:
@@ -586,29 +674,43 @@ def download_all_pdfs(state: str, targets: list[Target]) -> dict[str, str]:
             search_terms = GROUP_SEARCH[grp]
             print(f"[{grp}] searches={search_terms!r}, downloading {len(uncached)}/{len(items)}", flush=True)
             remaining = list(uncached)
+
+            # --- primary path: batched sessions per search term ---
+            if batch_size > 1:
+                for search_term in search_terms:
+                    if not remaining:
+                        break
+                    print(f"  [{grp}] BATCH search={search_term!r}, "
+                          f"{len(remaining)} filing(s) in chunks of {batch_size}", flush=True)
+                    still_remaining: list[Target] = []
+                    for i in range(0, len(remaining), batch_size):
+                        still_remaining.extend(_run_batch(search_term, remaining[i:i + batch_size]))
+                    remaining = still_remaining
+
+            # --- fallback: proven fresh context + fresh search PER target ---
+            # Reusing one context across many navigate->download->go_back
+            # cycles degrades the JSF results page so later-page rows become
+            # unfindable — batch-loop state contamination, observed as 9/9 OR
+            # Travelers misses that ALL recovered under fresh contexts.
+            # download_system_summary_pdf paginates to the row by its stable
+            # data-rk via _click_row_to_detail. Only batch misses reach here.
             for search_term in search_terms:
                 if not remaining:
                     break
-                print(f"  [{grp}] search={search_term!r}, attempting {len(remaining)} filing(s)", flush=True)
-                still_remaining: list[Target] = []
+                print(f"  [{grp}] FALLBACK search={search_term!r}, attempting {len(remaining)} filing(s)", flush=True)
+                still_remaining = []
                 for idx, t in enumerate(remaining, 1):
-                    # Fresh context + fresh search PER uncached target.
-                    # Reusing one context across many navigate->download->
-                    # go_back cycles degrades the JSF results page so later-page
-                    # rows become unfindable — batch-loop state contamination,
-                    # observed as 9/9 OR Travelers misses that ALL recovered
-                    # under fresh contexts. download_system_summary_pdf then
-                    # paginates to the row by its stable data-rk via
-                    # _click_row_to_detail. (Only uncached targets reach here;
-                    # cached ones were filtered out above, so this re-search
-                    # cost is bounded to genuinely-missing filings.)
                     _refresh_context()
                     if not _submit_with_retry(state, search_term):
                         still_remaining.append(t)
                         continue
                     _set_rows_per_page_100(page)
                     dest_dir = Path(f"output/pdfs/{state}/{t.filing_id}")
-                    pdf = download_system_summary_pdf(page, t.filing_id, t.tracking, dest_dir)
+                    try:
+                        pdf = download_system_summary_pdf(page, t.filing_id, t.tracking, dest_dir)
+                    except Exception as e:
+                        print(f"    [{idx}/{len(remaining)}] {t.tracking}: error {type(e).__name__} -> miss", flush=True)
+                        pdf = None
                     if pdf:
                         statuses[t.filing_id] = "ok"
                         print(f"    [{idx}/{len(remaining)}] {t.tracking}: ok", flush=True)
@@ -698,7 +800,7 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
         pdf_text = _read_pdf_text(pdf)
         ft_pdf, is_new = detect_filing_type_and_new_product(pdf, text=pdf_text)
         ft = ft_pdf or t.filing_type_xlsx
-        if ft not in RATE_FILING_TYPES:
+        if not _is_rate_filing_type(ft):
             stats["filings_excluded_form_or_rule"] += 1; continue
         if is_new:
             stats["filings_excluded_new_product"] += 1; continue
@@ -714,13 +816,17 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
         # Determine rate_activity from disposition status. UT uses REJECTED for
         # disapproved filings; other states use Disapproved/DISAPPROVED. NV uses
         # "Open" for undisposed/in-review filings (added 2026-05-27 in MT/WY/NV
-        # expansion — equivalent to PENDING).
+        # expansion — equivalent to PENDING). GA (2026-06-10) adds "Received"
+        # (with the state, no disposition yet) and "Exam" (under examination) —
+        # both in-review, classified pending like NV's Open; GA's terminal
+        # accepted vocabulary ("Acknowledged", "Filed", "Approved") falls
+        # through to rate_change.
         ds = (fs.disposition_status or "").upper()
         if "WITHDRAWN" in ds:
             activity = "rate_change_withdrawn"
         elif "DISAPPROV" in ds or "REJECT" in ds:
             activity = "rate_change_disapproved"
-        elif "PENDING" in ds or ds == "OPEN":
+        elif "PENDING" in ds or ds in ("OPEN", "RECEIVED", "EXAM"):
             activity = "rate_change_pending"
         else:
             activity = "rate_change"
