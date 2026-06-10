@@ -669,8 +669,13 @@ _FS_EFF_RENEWAL_RE = re.compile(r"Effective Date\s+(\d{1,2}/\d{1,2}/\d{2,4})\s*\
 _FS_DISP_DATE_RE = re.compile(r"Disposition Date:\s*(\d{1,2}/\d{1,2}/\d{2,4})")
 # anchor to end-of-line so empty "Disposition Status:" doesn't eat letters from later lines.
 # allow mixed-case (e.g., WA "Approved", "Re-Open Processed") in addition to ID's all-caps.
-_FS_DISP_STATUS_RE = re.compile(r"Disposition Status:\s*([A-Za-z][A-Za-z\- ]+?)\s*$", re.MULTILINE)
-_FS_STATE_STATUS_RE = re.compile(r"State Status:\s*([A-Za-z][A-Za-z\- ]+?)\s*$", re.MULTILINE)
+# `&` is allowed so NM's file-and-use phrasing "File & Use With Review" is captured
+# (added 2026-06-08, NM expansion — without it the `&` truncated the match and 76/77
+# NM filings recorded a blank disposition_status; rate_activity was unaffected because
+# the activity classifier falls through to rate_change for file-and-use). Additive only:
+# no prior state's disposition_status contains `&`, so existing rows are unchanged.
+_FS_DISP_STATUS_RE = re.compile(r"Disposition Status:\s*([A-Za-z][A-Za-z\-& ]+?)\s*$", re.MULTILINE)
+_FS_STATE_STATUS_RE = re.compile(r"State Status:\s*([A-Za-z][A-Za-z\-& ]+?)\s*$", re.MULTILINE)
 _FS_RATE_DATA_APPLIES_RE = re.compile(r"Rate data\s+(does NOT apply|applies)\s+to filing\.", re.IGNORECASE)
 _FS_CONT_STOP = re.compile(
     r"(Overall|Schedule|Rate|Effective|D\s*isposition|Status|Comment|"
@@ -686,17 +691,26 @@ def _fs_normalize_money(s: str) -> str:
     return s
 
 
-def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "") -> FilingSummary:
+def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "", *,
+                             text: str | None = None) -> FilingSummary:
     """Parse the SERFF system-generated Filing Summary PDF.
 
     Extracts the Disposition / Company Rate Information table and the
     `rate_data_applies` flag. Per-company rate rows handle three sparseness
     patterns observed in real filings (full, blank-indicated, near-empty).
+
+    `text`: optional pre-extracted full PDF text. When provided, the PDF is NOT
+    re-opened — the caller already read it (e.g. run_final_rates.build_rows reads
+    each PDF once and shares the text with detect_filing_type_and_new_product,
+    halving the per-filing text-extraction cost; audit decision C, 2026-06-08).
     """
     import pdfplumber  # local import to avoid forcing dependency on this whole module
     fs = FilingSummary(tracking_number=tracking_number, company_rates=[])
-    with pdfplumber.open(str(pdf_path)) as pdf:
-        full = "\n".join((pg.extract_text() or "") for pg in pdf.pages)
+    if text is not None:
+        full = text
+    else:
+        with pdfplumber.open(str(pdf_path)) as pdf:
+            full = "\n".join((pg.extract_text() or "") for pg in pdf.pages)
 
     if m := _FS_DISP_DATE_RE.search(full): fs.disposition_date = m.group(1)
     if m := _FS_DISP_STATUS_RE.search(full):

@@ -5,11 +5,17 @@ Usage:
     python run_final_rates.py WA
     python run_final_rates.py CO
 
-Reads the state's intermediate file `output/{state.lower()}_final.xlsx`,
-filters to target-TOI target-carrier filings, downloads each filing's
-system Filing Summary PDF (cached), parses it via
-`utils.parse_filing_summary_pdf`, and emits one row per per-company rate
-row in AM Best Disposition Page Data format.
+B1 pipeline (standard since 2026-06-10, validated 0-cell-diff on NM/UT/ID —
+see followup_B_enrichment_redundancy.md): reads the state's SEARCH-workbook
+universe (union of output/{state}_all_companies_search.xlsx + side workbooks,
+deduped by filing_id — see _search_universe_paths), filters to target-TOI
+target-carrier filings, downloads each filing's system Filing Summary PDF
+(cached), parses it via `utils.parse_filing_summary_pdf`, and emits one row
+per per-company rate row in AM Best Disposition Page Data format. The
+enrichment phase (run_{state}_full.py) is NO LONGER required: its only unique
+contribution to the deliverable was submission_date for search-phase fetch
+failures, now supplied by backfill_submission_dates.py (sidecar CSV) or, for
+legacy states, the existing enriched workbook.
 
 Non-rate filings (Form, Rule, new-product Rate/Rule) are excluded.
 """
@@ -286,7 +292,10 @@ class Target:
     group: str
 
 
-def load_targets(state: str) -> list[Target]:
+def load_targets_enriched(state: str) -> list[Target]:
+    """LEGACY loader (pre-B1): targets from the enriched {state}_final.xlsx.
+    Kept as the reference path for validate_b1.py's A-vs-B diff; production
+    now uses load_targets (search-universe)."""
     src = Path(f"output/{state.lower()}_final.xlsx")
     wb = openpyxl.load_workbook(src, read_only=True)
     ws = wb.active
@@ -328,6 +337,210 @@ def load_targets(state: str) -> list[Target]:
             group=grp,
         ))
     return out
+
+
+# ============================================================
+# B1 loaders — search-workbook universe (standard since 2026-06-10)
+# ============================================================
+
+# Workbook-name patterns that are archives/inputs already folded into the
+# universe, never universe members themselves.
+_ARCHIVE_WORKBOOK_RE = re.compile(r"(prebackfill|pre_lookback|backfill2024|\.bak)")
+
+
+def _search_universe_paths(state: str) -> list[Path]:
+    """The search workbooks that together form the state's filing universe.
+
+    States collected after MGA Insurance became a search keyword (Item #3a,
+    2026-05-15 — e.g. NM, GA) carry all 9 keywords in the single all_companies
+    sweep. Legacy states (UT, ID, ...) keep the MGA scrape in a side workbook
+    that was merged into the enriched final but never folded back into
+    all_companies — the 2026-06-09 B1 validation caught path B missing
+    7 UT + 2 ID GNSC targets because of exactly this."""
+    paths = [Path(f"output/{state.lower()}_all_companies_search.xlsx")]
+    mga = Path(f"output/{state.lower()}_mga_insurance_search.xlsx")
+    if mga.exists():
+        paths.append(mga)
+    return paths
+
+
+def _workbook_filing_ids(path: Path) -> set[str]:
+    wb = openpyxl.load_workbook(path, read_only=True)
+    ws = wb["Filings"] if "Filings" in wb.sheetnames else wb.active
+    hdr = [c.value for c in next(ws.iter_rows(max_row=1))]
+    fi = hdr.index("filing_id")
+    out = {str(r[fi]) for r in ws.iter_rows(min_row=2, values_only=True) if r[fi] is not None}
+    wb.close()
+    return out
+
+
+def verify_search_universe(state: str, universe_ids: set[str]) -> None:
+    """HARD GATE: every non-archive {state}_*_search*.xlsx side workbook must be
+    a subset of the universe. A side workbook with filing_ids the universe
+    lacks means a legacy-style unmerged scrape exists and B1 would silently
+    drop its rows — refuse to run until it is merged into all_companies (or
+    added to _search_universe_paths) or renamed with an archive suffix.
+    Audited clean across all 11 states on 2026-06-10
+    (tools/audit_search_universe.py)."""
+    universe_names = {p.name for p in _search_universe_paths(state)}
+    problems = []
+    for p in sorted(Path("output").glob(f"{state.lower()}_*_search*.xlsx")):
+        if p.name in universe_names or _ARCHIVE_WORKBOOK_RE.search(p.name):
+            continue
+        extra = _workbook_filing_ids(p) - universe_ids
+        if extra:
+            problems.append(f"  {p.name}: {len(extra)} filing_id(s) not in universe, e.g. {sorted(extra)[:5]}")
+    if problems:
+        raise SystemExit(
+            f"SEARCH-UNIVERSE VIOLATION for {state} — side workbook(s) contain filings "
+            f"missing from the universe (would be silently dropped):\n" + "\n".join(problems)
+        )
+
+
+def _load_sidecar_dates(state: str) -> dict[str, object]:
+    """submission_date backfill sidecar written by backfill_submission_dates.py
+    ({filing_id: datetime.date}). Rows whose fetch failed (blank date) are
+    skipped — the deliverable keeps a blank filing_date for those (precedented:
+    OR ships 5 such rows; tiering uses slice membership, not dates)."""
+    import csv
+    p = Path(f"output/{state.lower()}_submission_date_backfill.csv")
+    if not p.exists():
+        return {}
+    out: dict[str, object] = {}
+    with open(p, newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = (row.get("submission_date") or "").strip()
+            if d:
+                out[str(row["filing_id"])] = datetime.strptime(d, "%Y-%m-%d").date()
+    return out
+
+
+def _load_enriched_dates(state: str) -> dict[str, object]:
+    """submission_date by filing_id from the legacy enriched workbook, if one
+    exists (states collected before B1). New B1 states have none."""
+    src = Path(f"output/{state.lower()}_final.xlsx")
+    if not src.exists():
+        return {}
+    wb = openpyxl.load_workbook(src, read_only=True)
+    ws = wb.active
+    hdr = [c.value for c in next(ws.iter_rows(max_row=1))]
+    ix = {h: i for i, h in enumerate(hdr)}
+    out: dict[str, object] = {}
+    for r in ws.iter_rows(min_row=2, values_only=True):
+        fid = str(r[ix["filing_id"]] or "")
+        if fid and r[ix["submission_date"]] not in (None, ""):
+            out[fid] = r[ix["submission_date"]]
+    wb.close()
+    return out
+
+
+def load_targets_search(state: str) -> tuple[list[Target], dict]:
+    """B1 target loader: search-workbook universe + layered submission_date
+    resolution (search value -> legacy enriched workbook -> mini-pass sidecar
+    -> blank). Returns (targets, report)."""
+    enriched_dates = _load_enriched_dates(state)
+    sidecar_dates = _load_sidecar_dates(state)
+
+    universe_rows: list[tuple] = []
+    seen_fids: set[str] = set()
+    hdr: list | None = None
+    universe_files: list[tuple[str, int]] = []
+    for src in _search_universe_paths(state):
+        wb = openpyxl.load_workbook(src, read_only=True)
+        ws = wb["Filings"] if "Filings" in wb.sheetnames else wb.active
+        h = [c.value for c in next(ws.iter_rows(max_row=1))]
+        if hdr is None:
+            hdr = h
+        elif h != hdr:
+            raise SystemExit(f"header mismatch in {src}")
+        n_new = 0
+        fi = h.index("filing_id")
+        for r in ws.iter_rows(min_row=2, values_only=True):
+            fid = str(r[fi] or "")
+            if fid and fid in seen_fids:
+                continue
+            seen_fids.add(fid)
+            universe_rows.append(r)
+            n_new += 1
+        wb.close()
+        universe_files.append((src.name, n_new))
+    verify_search_universe(state, seen_fids)
+
+    ix = {h: i for i, h in enumerate(hdr)}
+    out: list[Target] = []
+    search_blank: list[tuple[str, str, str]] = []  # (tracking, filing_id, group)
+    filled_enriched: list[tuple[str, object]] = []
+    filled_sidecar: list[tuple[str, object]] = []
+    still_blank: list[str] = []
+    for r in universe_rows:
+        toi = r[ix["type_of_insurance"]] or ""
+        sub_toi = r[ix["sub_type_of_insurance"]] or ""
+        # Parent TOI is blank in search workbooks; derive from the sub-TOI
+        # prefix (same rule the enriched path used as fallback).
+        if not toi and sub_toi:
+            if sub_toi.startswith("19."):
+                toi = "19.0 Personal Auto"
+            elif sub_toi.startswith("04."):
+                toi = "04.0 Homeowners"
+        if not any(toi.startswith(p) for p in TARGET_TOI):
+            continue
+        grp = carrier_group(r[ix["company_name"]], r[ix["target_company"]])
+        if not grp:
+            continue
+        fid = str(r[ix["filing_id"]] or "")
+        tracking = r[ix["serff_tracking_number"]] or ""
+        sub_date = r[ix["submission_date"]]
+        if sub_date in (None, ""):
+            search_blank.append((tracking, fid, grp))
+            if fid in enriched_dates:
+                sub_date = enriched_dates[fid]
+                filled_enriched.append((tracking, sub_date))
+            elif fid in sidecar_dates:
+                sub_date = sidecar_dates[fid]
+                filled_sidecar.append((tracking, sub_date))
+            else:
+                still_blank.append(tracking)
+        out.append(Target(
+            tracking=tracking,
+            filing_id=fid,
+            company=r[ix["company_name"]] or "",
+            toi=toi,
+            sub_toi=sub_toi,
+            filing_type_xlsx=r[ix["filing_type"]] or "",
+            submission_date=sub_date,
+            disposition_date=r[ix["disposition_date"]],
+            disposition_status_xlsx=r[ix["disposition_status"]] or "",
+            group=grp,
+        ))
+    report = {
+        "universe_files": universe_files,
+        "universe_size": len(universe_rows),
+        "search_blank": search_blank,
+        "filled_enriched": filled_enriched,
+        "filled_sidecar": filled_sidecar,
+        "still_blank": still_blank,
+    }
+    return out, report
+
+
+def load_targets(state: str) -> list[Target]:
+    """Standard (B1) entry point used by main()."""
+    targets, rep = load_targets_search(state)
+    for name, n in rep["universe_files"]:
+        print(f"  search universe: {name} -> +{n} filings", flush=True)
+    print(
+        f"  submission_date: {len(rep['filled_enriched'])} from legacy enriched workbook, "
+        f"{len(rep['filled_sidecar'])} from backfill sidecar, "
+        f"{len(rep['still_blank'])} blank",
+        flush=True,
+    )
+    if rep["still_blank"]:
+        print(
+            f"  blank submission_date targets (run backfill_submission_dates.py {state}): "
+            f"{rep['still_blank']}",
+            flush=True,
+        )
+    return targets
 
 
 def download_all_pdfs(state: str, targets: list[Target]) -> dict[str, str]:
@@ -409,10 +622,19 @@ def download_all_pdfs(state: str, targets: list[Target]) -> dict[str, str]:
     return statuses
 
 
-def detect_filing_type_and_new_product(pdf_path: Path) -> tuple[Optional[str], bool]:
-    """Read PDF text once, return (filing_type, is_new_product)."""
+def _read_pdf_text(pdf_path: Path) -> str:
+    """Extract full text from a PDF once (pdfplumber, all pages)."""
     with pdfplumber.open(str(pdf_path)) as pdf:
-        text = "\n".join((pg.extract_text() or "") for pg in pdf.pages)
+        return "\n".join((pg.extract_text() or "") for pg in pdf.pages)
+
+
+def detect_filing_type_and_new_product(pdf_path: Path, text: str | None = None) -> tuple[Optional[str], bool]:
+    """Return (filing_type, is_new_product) from the PDF text. `text`: optional
+    pre-extracted full text so the caller can read the PDF once and share it with
+    parse_filing_summary_pdf (audit decision C, 2026-06-08); when None the PDF is
+    opened here (back-compat for other callers, e.g. audit_no_pdf.py)."""
+    if text is None:
+        text = _read_pdf_text(pdf_path)
     ft = None
     if m := PDF_FILING_TYPE_RE.search(text):
         ft = m.group(1).strip()
@@ -470,13 +692,17 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
         pdf = Path(f"output/pdfs/{state}/{t.filing_id}/filing_summary.pdf")
         if not pdf.exists() or pdf.stat().st_size < 5000:
             stats["filings_excluded_no_pdf"] += 1; continue
-        ft_pdf, is_new = detect_filing_type_and_new_product(pdf)
+        # Read the PDF text ONCE and share it with both consumers (audit decision
+        # C, 2026-06-08) — previously detect_* and parse_* each opened + extracted
+        # the full PDF independently (two reads per filing per pass).
+        pdf_text = _read_pdf_text(pdf)
+        ft_pdf, is_new = detect_filing_type_and_new_product(pdf, text=pdf_text)
         ft = ft_pdf or t.filing_type_xlsx
         if ft not in RATE_FILING_TYPES:
             stats["filings_excluded_form_or_rule"] += 1; continue
         if is_new:
             stats["filings_excluded_new_product"] += 1; continue
-        fs = parse_filing_summary_pdf(pdf, t.tracking)
+        fs = parse_filing_summary_pdf(pdf, t.tracking, text=pdf_text)
         if not fs.rate_data_applies:
             stats["filings_excluded_rate_data_does_not_apply"] += 1; continue
         if not fs.company_rates:
