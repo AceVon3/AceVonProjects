@@ -72,11 +72,8 @@ NV,PPA,SFMA-134293428,State Farm Fire and Casualty Company,06/10/2025,0.000%,196
 NV,PPA,SFMA-134293428,State Farm Mutual Automobile Insurance Company,06/10/2025,0.000%,461410,State Farm Mutual Automobile Insurance Company,05/27/25,0.0,461410,True,True,False,True,date_relaxed
 NV,PPA,SFMA-134576755,State Farm Fire and Casualty Company,01/02/2026,2.861%,20202,State Farm Fire and Casualty Company,01/02/26,2.861,20202,True,True,True,True,direct
 NV,PPA,SFMA-134576755,State Farm Mutual Automobile Insurance Company,01/02/2026,2.694%,464314,State Farm Mutual Automobile Insurance Company,01/02/26,2.694,464314,True,True,True,True,direct
-NV,PPA,SFMA-134657574,State Farm Fire and Casualty Company,01/02/2026,-0.001%,1098,State Farm Fire and Casualty Company,01/02/26,-0.001,1098,True,True,True,True,direct
-NV,PPA,SFMA-134657574,State Farm Mutual Automobile Insurance Company,01/02/2026,0.000%,12013,State Farm Mutual Automobile Insurance Company,01/02/26,0.0,22159,True,True,True,False,direct
-NV,PPA,SFMA-134657829,State Farm Fire and Casualty Company,01/02/2026,0.000%,129,State Farm Fire and Casualty Company,01/02/26,0.0,129,True,True,True,True,reclassified
-NV,PPA,SFMA-134657829,State Farm Mutual Automobile Insurance Company,01/02/2026,-0.001%,3383,State Farm Mutual Automobile Insurance Company,01/02/26,-0.001,3383,True,True,True,True,reclassified
-NV,PPA,SFMA-134657690,State Farm Fire and Casualty Company,01/02/2026,0.000%,93,State Farm Fire and Casualty Company,01/02/26,0.0,93,True,True,True,True,reclassified
+NV,PPA,SFMA-134657574,State Farm Fire and Casualty Company,01/02/2026,-0.001%,1098,,,,,,,,,none
+NV,PPA,SFMA-134657574,State Farm Mutual Automobile Insurance Company,01/02/2026,0.000%,12013,,,,,,,,,none
 NV,PPA,SFMA-134207400,State Farm Fire and Casualty Company,01/30/2025,15.049%,89,State Farm Fire and Casualty Company,01/30/25,15.049,89,True,True,True,True,reclassified
 NV,PPA,SFMA-134207400,State Farm Mutual Automobile Insurance Company,01/30/2025,10.492%,23890,State Farm Mutual Automobile Insurance Company,01/30/25,10.492,23890,True,True,True,True,reclassified
 NV,PPA,SFMA-134207394,State Farm Fire and Casualty Company,01/30/2025,9.953%,60,State Farm Fire and Casualty Company,01/30/25,9.953,60,True,True,True,True,reclassified

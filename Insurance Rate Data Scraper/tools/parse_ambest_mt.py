@@ -18,7 +18,11 @@ from __future__ import annotations
 
 import csv
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from ambest_subline import iter_subsidiary_matches
 
 INPUT_TXT = Path("output/ambest_mt_text.txt")
 OUTPUT_CSV = Path("tools/ambest_mt_data.csv")
@@ -50,7 +54,7 @@ RATE_LINE_RE = re.compile(
 # 7.200% 7.200% 425 9.600% 7.100%" lacks the $prem_chg column).
 SUB_LINE_RE = re.compile(
     r"^(?P<name>[A-Z][A-Za-z .,&\-/]+?)\s+"
-    r"(?P<ind>[­\-]?\d+\.\d+)%\s+"
+    r"(?P<ind>[­\-]?\d+\.\d+)?%\s+"  # number OPTIONAL: bare `%` = blank indicated (2026-06-11 fix)
     r"(?P<imp>[­\-]?\d+\.\d+)%\s+"
     r"(?:\$?(?P<prem_chg>[­\-]?[\d,]+)\s+)?"
     r"(?P<pol>[\d,]+)\s+"
@@ -114,20 +118,21 @@ def extract_subsidiary_rates(block: str) -> list[dict]:
     if "Disposition Page Data N/A" in block:
         return []
     rows = []
-    for line in block.splitlines():
-        m = SUB_LINE_RE.match(line.strip())
-        if m:
-            prem_chg_raw = m.group("prem_chg")
-            rows.append({
-                "subsidiary": m.group("name").strip(),
-                "indicated_pct": float(_clean_num(m.group("ind"))),
-                "impact_pct": float(_clean_num(m.group("imp"))),
-                "written_premium_change": int(_clean_num(prem_chg_raw)) if prem_chg_raw else None,
-                "policyholders_affected": int(_clean_num(m.group("pol"))),
-                "written_premium_for_program": int(_clean_num(m.group("prem_pgm"))),
-                "maximum_pct": float(_clean_num(m.group("max"))),
-                "minimum_pct": float(_clean_num(m.group("min"))),
-            })
+    # Wrapped-name-aware matching (2026-06-11 fix — see tools/ambest_subline.py):
+    # single-line matches behave exactly as before; rows whose long subsidiary
+    # name wrapped across lines are now recovered instead of silently dropping.
+    for m in iter_subsidiary_matches(block, SUB_LINE_RE):
+        prem_chg_raw = m.group("prem_chg")
+        rows.append({
+            "subsidiary": m.group("name").strip(),
+            "indicated_pct": float(_clean_num(m.group("ind"))) if m.group("ind") else None,
+            "impact_pct": float(_clean_num(m.group("imp"))),
+            "written_premium_change": int(_clean_num(prem_chg_raw)) if prem_chg_raw else None,
+            "policyholders_affected": int(_clean_num(m.group("pol"))),
+            "written_premium_for_program": int(_clean_num(m.group("prem_pgm"))),
+            "maximum_pct": float(_clean_num(m.group("max"))),
+            "minimum_pct": float(_clean_num(m.group("min"))),
+        })
     return rows
 
 

@@ -12,10 +12,10 @@ UT,PPA,ALSE-134228970,Allstate Insurance Company,09/23/2024,0.000%,0,,,,,,,,,non
 UT,PPA,ALSE-134228970,Allstate Property and Casualty Insurance Company,09/23/2024,0.000%,0,,,,,,,,,none
 UT,PPA,ALSE-134228970,Allstate Indemnity Company,09/23/2024,0.000%,0,,,,,,,,,none
 UT,PPA,ALSE-134412807,Allstate North American Insurance Company,02/27/2025,-10.000%,11400,,,,,,,,,none
-UT,PPA,ALSE-134485149,Allstate North American Insurance Company,04/21/2025,0.000%,11400,Allstate North American Insurance Company,05/19/25,0.0,11400,True,True,False,True,date_relaxed
-UT,PPA,ALSE-134494538,Allstate Fire and Casualty Insurance Company,05/05/2025,0.000%,0,Allstate Fire and Casualty Insurance Company,05/05/25,0.0,0,True,True,True,True,direct
+UT,PPA,ALSE-134485149,Allstate North American Insurance Company,04/21/2025,0.000%,11400,,,,,,,,,none
+UT,PPA,ALSE-134494538,Allstate Fire and Casualty Insurance Company,05/05/2025,0.000%,0,,,,,,,,,none
 UT,PPA,ALSE-134507608,Allstate Fire and Casualty Insurance Company,06/16/2025,1.400%,86301,Allstate Fire and Casualty Insurance Company,05/19/25,1.4,86301,True,True,False,True,date_relaxed
-UT,PPA,ALSE-134600254,Allstate North American Insurance Company,08/19/2025,-0.300%,17653,Allstate North American Insurance Company,07/23/25,-0.3,17653,True,True,False,True,date_relaxed
+UT,PPA,ALSE-134600254,Allstate North American Insurance Company,08/19/2025,-0.300%,17653,,,,,,,,,none
 UT,PPA,ALSE-134652121,Allstate Insurance Company,09/15/2025,0.000%,0,,,,,,,,,none
 UT,PPA,ALSE-134652121,Allstate Property and Casualty Insurance Company,09/15/2025,0.000%,0,,,,,,,,,none
 UT,PPA,ALSE-134652121,Allstate Indemnity Company,09/15/2025,0.000%,0,,,,,,,,,none
@@ -42,14 +42,14 @@ UT,PPA,GECC-134263694,Government Employees Insurance Company,01/01/2025,0.000%,0
 UT,PPA,GECC-134263694,GEICO Choice Insurance Company,01/01/2025,0.000%,0,,,,,,,,,none
 UT,PPA,GECC-134263694,GEICO Secure Insurance Company,01/01/2025,0.000%,0,,,,,,,,,none
 UT,PPA,GECC-134264301,GEICO Indemnity Company,01/01/2025,0.000%,0,,,,,,,,,none
-UT,PPA,GECC-134389837,GEICO Indemnity Company,03/10/2025,0.000%,13481,GEICO Indemnity Company,03/04/25,0.0,13481,True,True,False,True,date_relaxed
+UT,PPA,GECC-134389837,GEICO Indemnity Company,03/10/2025,0.000%,13481,,,,,,,,,none
 UT,PPA,GECC-134419173,GEICO Indemnity Company,03/10/2025,0.000%,13481,,,,,,,,,none
-UT,PPA,GECC-134547737,GEICO Indemnity Company,06/19/2025,0.000%,924,GEICO Indemnity Company,07/14/25,0.0,924,True,True,False,True,date_relaxed
-UT,PPA,GECC-134547737,GEICO Casualty Company,06/19/2025,0.000%,41257,GEICO Casualty Company,07/14/25,0.0,41257,True,True,False,True,date_relaxed
-UT,PPA,GECC-134547737,GEICO General Insurance Company,06/19/2025,0.000%,6801,GEICO General Insurance Company,07/14/25,0.0,6801,True,True,False,True,date_relaxed
-UT,PPA,GECC-134547737,Government Employees Insurance Company,06/19/2025,0.000%,2316,Government Employees Insurance Company,07/14/25,0.0,2316,True,True,False,True,date_relaxed
-UT,PPA,GECC-134547737,GEICO Choice Insurance Company,06/19/2025,0.000%,6098,GEICO Choice Insurance Company,07/14/25,0.0,6098,True,True,False,True,date_relaxed
-UT,PPA,GECC-134547737,GEICO Secure Insurance Company,06/19/2025,0.000%,43122,GEICO Secure Insurance Company,07/14/25,0.0,43122,True,True,False,True,date_relaxed
+UT,PPA,GECC-134547737,GEICO Indemnity Company,06/19/2025,0.000%,924,,,,,,,,,none
+UT,PPA,GECC-134547737,GEICO Casualty Company,06/19/2025,0.000%,41257,,,,,,,,,none
+UT,PPA,GECC-134547737,GEICO General Insurance Company,06/19/2025,0.000%,6801,,,,,,,,,none
+UT,PPA,GECC-134547737,Government Employees Insurance Company,06/19/2025,0.000%,2316,,,,,,,,,none
+UT,PPA,GECC-134547737,GEICO Choice Insurance Company,06/19/2025,0.000%,6098,,,,,,,,,none
+UT,PPA,GECC-134547737,GEICO Secure Insurance Company,06/19/2025,0.000%,43122,,,,,,,,,none
 UT,PPA,LBPM-134055508,Liberty Mutual Insurance Company,04/20/2024,6.100%,24,,,,,,,,,none
 UT,PPA,LBPM-134055508,Liberty Mutual Personal Insurance Company,04/20/2024,5.100%,14361,,,,,,,,,none
 UT,PPA,LBPM-134255207,Liberty Insurance Corporation,10/29/2024,-3.100%,6,,,,,,,,,none
@@ -57,10 +57,10 @@ UT,PPA,LBPM-134255207,Liberty Mutual Fire Insurance Company,10/29/2024,-3.000%,8
 UT,PPA,LBPM-134255207,The First Liberty Insurance Corporation,10/29/2024,0.000%,0,,,,,,,,,none
 UT,PPA,LBPM-134255471,Liberty Mutual Insurance Company,09/24/2024,-1.900%,16,,,,,,,,,none
 UT,PPA,LBPM-134255471,Liberty Mutual Personal Insurance Company,09/24/2024,-3.000%,15460,,,,,,,,,none
-UT,PPA,LBPM-134385701,Liberty Insurance Corporation,01/01/2025,0.000%,5,Liberty Insurance Corporation,02/26/25,0.0,5,True,True,False,True,date_relaxed
-UT,PPA,LBPM-134385701,Liberty Mutual Fire Insurance Company,01/01/2025,0.000%,672,Liberty Mutual Fire Insurance Company,02/26/25,0.0,672,True,True,False,True,date_relaxed
-UT,PPA,LBPM-134385701,Liberty Mutual Insurance Company,01/01/2025,0.000%,13794,Liberty Mutual Insurance Company,02/26/25,0.0,13794,True,True,False,True,date_relaxed
-UT,PPA,LBPM-134385701,The First Liberty Insurance Corporation,01/01/2025,0.000%,7,The First Liberty Insurance Corporation,02/26/25,0.0,7,True,True,False,True,date_relaxed
+UT,PPA,LBPM-134385701,Liberty Insurance Corporation,01/01/2025,0.000%,5,,,,,,,,,none
+UT,PPA,LBPM-134385701,Liberty Mutual Fire Insurance Company,01/01/2025,0.000%,672,,,,,,,,,none
+UT,PPA,LBPM-134385701,Liberty Mutual Insurance Company,01/01/2025,0.000%,13794,,,,,,,,,none
+UT,PPA,LBPM-134385701,The First Liberty Insurance Corporation,01/01/2025,0.000%,7,,,,,,,,,none
 UT,PPA,LBPM-134597407,Liberty Mutual Insurance Company,07/10/2025,4.600%,8,Liberty Mutual Insurance Company,07/30/25,4.6,8,True,True,False,True,date_relaxed
 UT,PPA,LBPM-134597407,Liberty Mutual Personal Insurance Company,07/10/2025,0.000%,14257,Liberty Mutual Personal Insurance Company,11/25/25,0.0,14257,True,True,False,True,date_relaxed
 UT,PPA,LBPM-134677038,Liberty Mutual Insurance Company,11/17/2025,0.000%,8,Liberty Mutual Insurance Company,11/25/25,0.0,8,True,True,False,True,date_relaxed
@@ -86,8 +86,8 @@ UT,PPA,LBPM-134001834,Safeco Insurance Company of Illinois,06/18/2024,21.000%,25
 UT,PPA,LBPM-134147313,Safeco Insurance Company of Illinois,07/20/2024,-13.000%,51714,,,,,,,,,none
 UT,PPA,LBPM-134179869,Safeco Insurance Company of Illinois,10/27/2024,14.600%,9047,,,,,,,,,none
 UT,PPA,LBPM-134185145,Safeco Insurance Company of Illinois,10/27/2024,14.600%,9047,,,,,,,,,none
-UT,PPA,LBPM-134386267,Safeco Insurance Company of Illinois,01/01/2025,0.000%,50202,Safeco Insurance Company of Illinois,02/26/25,0.0,50202,True,True,False,True,date_relaxed
-UT,PPA,LBPM-134525495,Safeco Insurance Company of Illinois,07/08/2025,0.000%,16348,Safeco Insurance Company of Illinois,07/09/25,0.0,16348,True,True,False,True,date_relaxed
+UT,PPA,LBPM-134386267,Safeco Insurance Company of Illinois,01/01/2025,0.000%,50202,,,,,,,,,none
+UT,PPA,LBPM-134525495,Safeco Insurance Company of Illinois,07/08/2025,0.000%,16348,,,,,,,,,none
 UT,PPA,LBPM-134654157,Safeco Insurance Company of Illinois,10/27/2025,9.700%,8739,Safeco Insurance Company of Illinois,09/15/25,9.7,8739,True,True,False,True,date_relaxed
 UT,PPA,LBPM-134829691,Safeco Insurance Company of Illinois,03/10/2026,3.000%,11639,Safeco Insurance Company of Illinois,02/18/26,3.0,11639,True,True,False,True,date_relaxed
 UT,PPA,SFMA-133807660,State Farm Fire and Casualty Company,01/01/2024,0.000%,12353,,,,,,,,,none
@@ -98,12 +98,12 @@ UT,PPA,SFMA-134084039,State Farm Fire and Casualty Company,08/01/2024,0.000%,129
 UT,PPA,SFMA-134084039,State Farm Mutual Automobile Insurance Company,08/01/2024,0.000%,18486,,,,,,,,,none
 UT,PPA,SFMA-134122438,State Farm Fire and Casualty Company,08/01/2024,0.000%,1294,,,,,,,,,none
 UT,PPA,SFMA-134122438,State Farm Mutual Automobile Insurance Company,08/01/2024,0.000%,18486,,,,,,,,,none
-UT,PPA,SFMA-134294156,State Farm Fire and Casualty Company,04/15/2025,0.000%,14016,State Farm Fire and Casualty Company,03/14/25,0.0,14016,True,True,False,True,date_relaxed
-UT,PPA,SFMA-134294156,State Farm Mutual Automobile Insurance Company,04/15/2025,0.000%,462911,State Farm Mutual Automobile Insurance Company,03/14/25,0.0,462911,True,True,False,True,date_relaxed
+UT,PPA,SFMA-134294156,State Farm Fire and Casualty Company,04/15/2025,0.000%,14016,,,,,,,,,none
+UT,PPA,SFMA-134294156,State Farm Mutual Automobile Insurance Company,04/15/2025,0.000%,462911,,,,,,,,,none
 UT,PPA,SFMA-134298166,State Farm Fire and Casualty Company,01/01/2025,-4.300%,15971,,,,,,,,,none
 UT,PPA,SFMA-134298166,State Farm Mutual Automobile Insurance Company,01/01/2025,-1.700%,548179,,,,,,,,,none
-UT,PPA,SFMA-134574907,State Farm Fire and Casualty Company,08/25/2025,-1.900%,15062,State Farm Fire and Casualty Company,12/17/25,-1.9,15062,True,True,False,True,date_relaxed
-UT,PPA,SFMA-134574907,State Farm Mutual Automobile Insurance Company,08/25/2025,-1.900%,560065,State Farm Mutual Automobile Insurance Company,12/17/25,-1.9,560065,True,True,False,True,date_relaxed
+UT,PPA,SFMA-134574907,State Farm Fire and Casualty Company,08/25/2025,-1.900%,15062,,,,,,,,,none
+UT,PPA,SFMA-134574907,State Farm Mutual Automobile Insurance Company,08/25/2025,-1.900%,560065,,,,,,,,,none
 UT,PPA,SFMA-134676709,State Farm Fire and Casualty Company,11/20/2025,-6.900%,14939,State Farm Fire and Casualty Company,10/09/25,-6.9,14939,True,True,False,True,date_relaxed
 UT,PPA,SFMA-134676709,State Farm Mutual Automobile Insurance Company,11/20/2025,-6.000%,584013,State Farm Mutual Automobile Insurance Company,10/09/25,-6.0,584013,True,True,False,True,date_relaxed
 UT,PPA,ALSE-134520039,Allstate Fire and Casualty Insurance Company,05/12/2025,18.600%,9260,Allstate Fire and Casualty Insurance Company,06/04/25,18.6,9260,True,True,False,True,reclassified

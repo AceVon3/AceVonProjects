@@ -30,10 +30,13 @@ from pathlib import Path
 SRC = Path("output/ambest_ut_ppa_text.txt")
 OUT = Path("tools/ambest_ut_data.csv")
 
-# Header line with three dates and overall %
+# Header line with three dates and overall %.
+# Starred overall ("*****") may appear WITHOUT a trailing % — requiring the %
+# silently dropped those entire blocks, disposition tables and all (6,780 of
+# 11,996 blocks; UT's variant of the blank-value artifact, fixed 2026-06-11).
 HDR_RE = re.compile(
     r"Approved\s+UT\s+(\d{2}/\d{2}/\d{2})\s+Passenger.*?"
-    r"\b(Rate|Form)\s+(\d{2}/\d{2}/\d{2})\s+(\d{2}/\d{2}/\d{2})\s+([\-\d\.]+|\*+)\s*%",
+    r"\b(Rate|Form)\s+(\d{2}/\d{2}/\d{2})\s+(\d{2}/\d{2}/\d{2})\s+(?:([\-\d\.]+)\s*%|(\*+)\s*%?)",
     re.DOTALL,
 )
 
@@ -92,7 +95,8 @@ def parse_filings(text: str) -> list[dict]:
         hm = HDR_RE.search(block)
         if not hm:
             continue
-        added_date, action, filing_date, effective_date, overall = hm.groups()
+        added_date, action, filing_date, effective_date, overall_num, overall_stars = hm.groups()
+        overall = overall_num if overall_num is not None else overall_stars
 
         # Group: line containing "Group" but excluding "Group Name"
         gm = re.search(r"\n([^\n]+? Group)\s+\*", block)

@@ -1,0 +1,25 @@
+state,line,our_serff_tracking_number,our_subsidiary,our_effective_date,our_impact,our_policyholders,matched_ambest_subsidiary,ambest_effective_date,ambest_impact,ambest_policyholders,agreed_subsidiary,agreed_impact,agreed_eff_date,agreed_policyholders,match_strength
+NV,HO,ALSE-133925598,Allstate Indemnity Company,09/16/2024,16.700%,5463,,,,,,,,,none
+NV,HO,ALSE-133930227,Allstate Insurance Company,09/16/2024,34.897%,676,,,,,,,,,none
+NV,HO,ALSE-133933195,Allstate Property and Casualty Insurance Company,06/10/2024,10.305%,10507,,,,,,,,,none
+NV,HO,ALSE-133944728,Allstate Indemnity Company,05/13/2024,16.410%,3317,,,,,,,,,none
+NV,HO,ALSE-133987625,Allstate Insurance Company,11/25/2024,2.301%,4209,,,,,,,,,none
+NV,HO,ALSE-134198233,Allstate Indemnity Company,12/09/2024,5.008%,25044,,,,,,,,,none
+NV,HO,ALSE-134362303,Allstate Vehicle and Property Insurance Company,08/11/2025,20.499%,40758,Allstate Vehicle and Property Insurance Company,08/11/25,20.499,40758,True,True,True,True,direct
+NV,HO,ALSE-134500599,Allstate Insurance Company,12/01/2025,27.813%,3751,,,,,,,,,none
+NV,HO,ALSE-134501724,Allstate Property and Casualty Insurance Company,12/01/2025,10.470%,8856,,,,,,,,,none
+NV,HO,ALSE-134506974,Allstate Indemnity Company,12/01/2025,36.182%,2917,,,,,,,,,none
+NV,HO,ALSE-134598852,Allstate Indemnity Company,10/27/2025,23.195%,5488,Allstate Indemnity Company,10/27/25,23.195,5488,True,True,True,True,direct
+NV,HO,LBPM-134070855,Liberty Mutual Insurance Company,07/02/2024,25.010%,23600,,,,,,,,,none
+NV,HO,LBPM-134070855,Liberty Mutual Personal Insurance Company,07/02/2024,26.230%,21,,,,,,,,,none
+NV,HO,LBPM-134016380,Safeco Insurance Company of America,06/27/2024,15.963%,7054,,,,,,,,,none
+NV,HO,LBPM-134016692,Safeco Insurance Company of America,10/02/2024,7.136%,1570,,,,,,,,,none
+NV,HO,LBPM-134587304,Safeco Insurance Company of America,10/30/2025,14.979%,5203,Safeco Insurance Company of America,10/30/25,14.979,5203,True,True,True,True,direct
+NV,HO,SFMA-133718498,State Farm Fire and Casualty Company,08/15/2024,-0.002%,42178,,,,,,,,,none
+NV,HO,SFMA-133834795,State Farm Fire and Casualty Company,01/01/2024,-0.037%,3459,,,,,,,,,none
+NV,HO,SFMA-133905060,State Farm Fire and Casualty Company,03/21/2024,0.000%,213904,,,,,,,,,none
+NV,HO,SFMA-133937492,State Farm Fire and Casualty Company,05/15/2025,9.943%,214157,State Farm Fire and Casualty Company,05/15/25,9.943,214157,True,True,True,True,direct
+NV,HO,SFMA-134400219,State Farm Fire and Casualty Company,11/15/2025,24.908%,10157,State Farm Fire and Casualty Company,11/15/25,24.908,10157,True,True,True,True,direct
+NV,HO,TRVD-133837636,Travelers Property Casualty Insurance Company,02/23/2024,14.469%,61714,,,,,,,,,none
+NV,HO,TRVD-134105768,Travelers Property Casualty Insurance Company,02/16/2025,0.007%,63226,Travelers Property Casualty Insurance Company,02/16/25,0.007,63226,True,True,True,True,direct
+NV,HO,TRVD-G134570380,Travelers Property Casualty Insurance Company,09/26/2025,14.416%,58932,Travelers Property Casualty Insurance Company,09/26/25,14.416,58932,True,True,True,True,direct

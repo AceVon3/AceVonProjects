@@ -8,7 +8,7 @@ Rate-filing rows for personal-lines insurance across **Idaho, Washington, Colora
 
 > **Dataset status (2026-06-10): 1,616 rows, eleven states, THIRTEEN brands.** Effective-date window `[2024-01-01, 2026-04-17]`; SERFF submission window `2023-07-01 → 2026-04-17`. The 13-brand expansion (USAA, Farmers, Nationwide, American Family, Country Financial — `SCOPE.md`) was validated on Georgia against its committed 268-row 8-brand baseline: all 268 rows byte-identical after the re-run (zero keyword bleed), +212 new-carrier rows, GA cross-check improved to PPA 92.8% / HO 94.3%. Georgia itself (added 2026-06-10) is the first eastern state; collection rode out the SERFF AWS-WAF bot-challenge throttle via the B1 search-universe pipeline + batched downloads (see "Georgia expansion").
 >
-> **Honest one-liner:** of 1,616 rows — **2 field-validated** (the `SFMA-134676753` anchor, all-field match), **388 AM Best cross-checked** (310 direct / 78 date-relaxed+reclassified), **276 extracted in a validated window but not individually matched**, **950 pipeline-extracted** (CO, ID non-anchor, all eff-2024). *(GA counts reflect the 2026-06-11 AM Best blank-indicated parser fix — 25 additional direct matches recovered; NM/AZ re-measurement with the fixed parser pending.)* This is a SERFF-sourced, pipeline-extracted collection — corroborated against AM Best only where `external_validation` marks it, honest where not. Full detail + audit: **`TIER_RELABEL.md`**, `output/tier_relabel_audit.csv`, `output/corroboration/`.
+> **Honest one-liner:** of 1,616 rows — **2 field-validated** (the `SFMA-134676753` anchor, all-field match), **432 AM Best cross-checked** (332 direct / 100 date-relaxed+reclassified), **232 extracted in a validated window but not individually matched**, **950 pipeline-extracted** (CO, ID non-anchor, all eff-2024). *(All artifact-standard cross-checked states are now measured with the fixed AM Best parsers — see "Western-state re-measurement (2026-06-11)"; rate cells unchanged, labels only.)* This is a SERFF-sourced, pipeline-extracted collection — corroborated against AM Best only where `external_validation` marks it, honest where not. Full detail + audit: **`TIER_RELABEL.md`**, `output/tier_relabel_audit.csv`, `output/corroboration/`.
 
 ### Validation tiering (four-tier, 2026-06-08)
 
@@ -17,29 +17,29 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 | `external_validation` | meaning | count |
 |---|---|--:|
 | `field_validated` | documented all-field per-row AM Best Disposition Page Data match (the `SFMA-134676753` anchor, value unchanged) | 2 |
-| `ambest_cross_checked` | matched an AM Best entry on subsidiary + impact (+ eff_date or policyholders); `match_strength` records `direct`/`date_relaxed`/`reclassified` | 388 |
-| `pipeline_extracted_in_validated_window` | effective_date ≥ 2025-01-01 in a cross-checked state (AZ/GA/MT/NV/NM/OR/UT/WA), not individually matched | 276 |
+| `ambest_cross_checked` | matched an AM Best entry on subsidiary + impact (+ eff_date or policyholders); `match_strength` records `direct`/`date_relaxed`/`reclassified` | 432 |
+| `pipeline_extracted_in_validated_window` | effective_date ≥ 2025-01-01 in a cross-checked state (AZ/GA/MT/NV/NM/OR/UT/WA), not individually matched | 232 |
 | `pipeline_extracted` | CO (no cross-check), ID non-anchor, and all eff-2024 extension rows | 950 |
 
 - **`source`**: `original` (pre-extension 468) / `extension` (2024 back-extension). **`validation_tier`** (legacy app-compat): `field_validated`+`ambest_cross_checked` → `ambest_validated`; the two pipeline tiers → `pipeline_only`. Use `external_validation` for the full gradient and `source` for provenance.
-- **source × external_validation:** original → field 2 / cross_checked **179** / in-window 207 / pipeline 149; extension → cross_checked **6** / in-window 13 / pipeline 580. (NM, added 2026-06-08, is a fresh single-pass collection: its 69 eff≥2025 rows carry the mechanical `source=original` label — 51 cross_checked + 18 in-window — and its 62 eff-2024 rows `source=extension`/pipeline.) Of the **original pre-NM 468**, 130 still carry external corroboration; the 51 new cross_checked are all New Mexico.
+- **source × external_validation** (2026-06-11 re-measurement): original → field 2 / cross_checked **416** / in-window 219 / pipeline 150; extension → cross_checked **16** / in-window 13 / pipeline 800. (NM, added 2026-06-08, is a fresh single-pass collection: its eff≥2025 rows carry the mechanical `source=original` label and its eff-2024 rows `source=extension`.)
 
 | state | field_validated | cross_checked | in_window_unmatched | pipeline | total |
 |---|--:|--:|--:|--:|--:|
-| AZ | 0 | 29 | 48 | 102 | 179 |
+| AZ | 0 | 33 | 44 | 102 | 179 |
 | CO | 0 | 0 | 0 | 191 | 191 |
 | GA | 0 | 203 | 56 | 221 | 480 |
 | ID | 2 | 0 | 0 | 110 | 112 |
-| MT | 0 | 19 | 6 | 32 | 57 |
-| NM | 0 | 51 | 18 | 62 | 131 |
-| NV | 0 | 39 | 26 | 44 | 109 |
+| MT | 0 | 20 | 5 | 32 | 57 |
+| NM | 0 | 65 | 4 | 62 | 131 |
+| NV | 0 | 44 | 21 | 44 | 109 |
 | OR | 0 | 29 | 18 | 84 | 131 |
-| UT | 0 | 18 | 66 | 58 | 142 |
+| UT | 0 | 38 | 46 | 58 | 142 |
 | WA | 0 | 0 | 38 | 46 | 84 |
 
-**`match_strength`** (ambest_cross_checked): AZ 25 direct / 4 date_relaxed; OR 29 direct; MT 18 direct / 1 date_relaxed; NV 28 direct / 7 date_relaxed / 4 reclassified; **NM 44 direct / 0 date_relaxed / 7 reclassified — strong (zero date-relaxed; the 7 reclassified are GEICO/Progressive RV filings AM Best buckets under PPA)**; **GA 166 direct / 31 date_relaxed / 6 reclassified (13-brand, post-parser-fix)**; **UT 0 direct / 17 date_relaxed / 1 reclassified — flagged mostly-date-relaxed (soft corroboration)**. Overall 310 direct / 60 date_relaxed / 18 reclassified.
+**`match_strength`** (ambest_cross_checked, post-2026-06-11 re-measurement): AZ 29 direct / 4 date_relaxed; OR 29 direct; MT 19 direct / 1 date_relaxed; NV 30 direct / 7 date_relaxed / 7 reclassified; **NM 58 direct / 0 date_relaxed / 7 reclassified — strong (zero date-relaxed; the 7 reclassified are GEICO/Progressive RV filings AM Best buckets under PPA)**; **GA 166 direct / 31 date_relaxed / 6 reclassified (13-brand, post-parser-fix)**; **UT 1 direct / 36 date_relaxed / 1 reclassified — flagged mostly-date-relaxed (soft corroboration; AM Best records renewal effective dates for UT, so date-relaxed — exact subsidiary + impact + policyholders — is the expected match shape there)**. Overall 332 direct / 79 date_relaxed / 21 reclassified.
 
-**WA limitation:** WA was cross-checked (documented 12/14 PPA) but **no reusable per-row artifact was built** (decision 2026-06-08), so WA's matched rows are **not** marked `ambest_cross_checked` — its in-window rows sit in `pipeline_extracted_in_validated_window`. WA's corroboration is documented-only, not per-row re-derivable. New states (per `CROSS_CHECK_STANDARD.md`) always build the artifact.
+**WA limitation:** WA was cross-checked (documented 12/14 PPA) but **no reusable per-row artifact was built** (decision 2026-06-08), so WA's matched rows are **not** marked `ambest_cross_checked` — its in-window rows sit in `pipeline_extracted_in_validated_window`. WA's corroboration is documented-only, not per-row re-derivable. New states (per `CROSS_CHECK_STANDARD.md`) always build the artifact. **WA is the one cross-checked western state not on the artifact standard** — the 2026-06-11 re-measurement left it unchanged rather than overturn the recorded decision (TIER_RELABEL.md decision 3); its measurement basis remains explicitly the older documented-12/14 method. *Backlog: build a WA corroboration artifact from the on-disk report text (`output/ambest_wa_ppa_text.txt`) to bring WA onto the artifact standard — new comparator work, not a re-run.*
 
 **Scope is identical across the entire window.** The 8-brand scope (State Farm, GEICO, Allstate, Travelers, Progressive, Liberty Mutual, Safeco, Encompass), the filing-vehicle/specialty exclusions (LM General, Standard Fire, Integon/National General, American Economy, Peerless, Esurance, Drive, United Financial), and the TOI filters (19.0 / 04.0) apply unchanged to 2024 rows. No brand-status transition falls inside 2024 — Safeco's retirement (2026-04-25) is on the forward edge; Drive (2020) and Esurance (2020) were already retired and remain excluded. The only tier difference is the AM Best cross-check, not the collection methodology.
 
@@ -148,7 +148,7 @@ The dataset's date axis is therefore *effective date*, which matches AM Best's m
 | `filing_date` | Date submitted to the state |
 | `source_pdf` | Relative path to the cached system PDF |
 | `source` | Provenance (always true): `original` (in the pre-extension 468-row set) / `extension` (added by the 2026-06-02 back-extension). Added 2026-06-04. |
-| `external_validation` | Evidence gradient (four-tier, 2026-06-08): `field_validated` (all-field anchor match, 2) / `ambest_cross_checked` (matched an AM Best entry; see `match_strength`, 134) / `pipeline_extracted_in_validated_window` (eff≥2025 in a cross-checked state, not matched, 202) / `pipeline_extracted` (CO, ID non-anchor, all eff-2024, 667). See `TIER_RELABEL.md` / `CROSS_CHECK_STANDARD.md`. |
+| `external_validation` | Evidence gradient (four-tier, 2026-06-08): `field_validated` (all-field anchor match, 2) / `ambest_cross_checked` (matched an AM Best entry; see `match_strength`, 432) / `pipeline_extracted_in_validated_window` (eff≥2025 in a cross-checked state, not matched, 232) / `pipeline_extracted` (CO, ID non-anchor, all eff-2024, 950). See `TIER_RELABEL.md` / `CROSS_CHECK_STANDARD.md`. |
 | `match_strength` | For `ambest_cross_checked`: `direct` (subsidiary+eff_date+impact agree) / `date_relaxed` (subsidiary+impact+policyholders agree, eff differs) / `reclassified` (agree, different sub-TOI). `field` for the anchor; blank otherwise. Per-row: `output/corroboration/*.csv`. |
 | `validation_tier` | Coarse app-compat alias, re-derived: `field_validated`+`ambest_cross_checked` → `ambest_validated`; both pipeline tiers → `pipeline_only`. Use `external_validation` for the full gradient, `source` for provenance. |
 
@@ -568,14 +568,78 @@ blank-public-table family). GA tiers re-applied: exactly 25 rows upgraded
 in-window → cross_checked, **0 rate-cell changes** (verified against the
 committed file). Measurement-only by construction.
 
-**PENDING (first task next session):** NM/AZ (+ MT/NV/UT/WA where artifacts
-exist) re-measurement with the fixed parser — their committed tiers were
-computed with the broken parser and are under-counted relative to GA. Fully
-OFFLINE (re-parse texts on disk + re-run compares). Same gates as GA.
+**RESOLVED 2026-06-11:** the western re-measurement below applied the fix
+consistently across every artifact-standard cross-checked state.
+
+## Western-state re-measurement (2026-06-11)
+
+The blank-indicated fix had been applied to GA only; NM/AZ/MT/NV/UT tiers
+were still measured with the broken parsers. Re-measured fully offline
+(re-parse on-disk report texts + re-run compares), same integrity gates as
+GA: zero lost matches, every gained match individually verified (same-named
+AM Best entity, same filing, impact agreement, absent from the pre-fix parse
+universe), 0 rate-cell changes (verified vs the committed xlsx on all 18
+base columns), anchor SFMA-134676753 intact.
+
+| state | AM Best rows | dedup universe | in-scope denom (PPA/HO) | matches | gained |
+|---|---|---|---|---|---|
+| AZ | 14,973 → 15,075 | 238 → 241 | 14→17 / 15→16 | 29 → 33 | +4 (all direct) |
+| NM | 30,165 → 31,140 | 441 → 456 | 37→45 / 17→27 | 51 → 65 | +14 (all direct) |
+| MT | 9,541 → 9,661 | 164 → 167 | 17→17 / 3→4 | 19 → 20 | +1 (direct) |
+| NV | 16,383 → 16,633 | 248 → 252 | 33→39 / 8→8 | 39 → 44 | +5 (2 direct, 3 reclass) |
+| UT | 7,237 → **15,017** | 110 → **260** | 19→41 (PPA-only) | 18 → 38 | +20 (1 direct, 19 date-relaxed) |
+
+Tier impact: **+44 upgrades, 0 downgrades**, all
+`pipeline_extracted_in_validated_window → ambest_cross_checked`
+(UT +20, NM +14, NV +5, AZ +4, MT +1). New split: 2 field_validated /
+432 cross_checked (332 direct / 79 date_relaxed / 21 reclassified) /
+232 in-window / 950 pipeline — 1,616 rows, every rate cell unchanged.
+
+State-specific findings:
+
+- **UT had a different, bigger bug.** Its parser tolerated blank indicated
+  cells, but the block-header regex required a `%` after the overall-rate
+  field; filings with a starred overall (`Rate 08/25/25 12/17/25 *****`)
+  have none, and **6,780 of 11,996 blocks (57%) were dropped whole** —
+  disposition tables and all. Fixed in `tools/parse_ambest_ut.py` (HDR_RE);
+  UT's parse doubled. One pre-fix row-tuple was itself a misparse (the old
+  DOTALL scan scavenged wrong dates from later in the block) and is now
+  corrected — verified against the raw block text.
+- **State Farm files blank-indicated routinely** — 24 of the 44 gained
+  matches are State Farm (the same pattern as USAA in GA). Any future
+  state's cross-check should expect blank-indicated entries from day one.
+- **MT/NV** had both the blank-indicated and wrapped-name bugs (parsers
+  predate `tools/ambest_subline.py`); both fixes applied. The wrap fix also
+  corrected 80 MT rows garbled to subsidiary "Company" — actually **American
+  Family Connect Property and Casualty Insurance Company**, which is
+  **out of scope** (CONNECT/Costco channel, SCOPE.md): the rows improve AM
+  Best parse completeness but correctly add zero AmFam corroboration (no
+  Connect match appears in any corroboration artifact; western comparators
+  target the original 8 brands).
+- **OR — never had the bug:** its AM Best data was hand-transcribed into
+  `compare_or_ambest.py` from the PDF (blank indicateds captured as `None`
+  by the transcriber). Not re-measurable by re-parsing, and correct as-is.
+- **WA — left unchanged:** see "WA limitation" above; its 12/14 cross-check
+  predates the artifact standard and re-measuring it would be new comparator
+  work overturning a recorded decision, not a re-run.
+
+Pre-fix baselines are preserved as `tools/ambest_{mt,nv,ut}_data.pre_fix.csv`,
+`tools/ambest_{az,ga,nm}_data.pre_wrapfix.csv`, and
+`output/corroboration/*_corroboration.pre_fix.csv`; the lost/gained gate is
+re-derivable via `tools/diag_fix_match_delta.py <state>`.
 
 ## Phase 2 backlog (consolidated)
 
 Items deferred from Phase 1 collection. Each was identified and documented during a Phase 1 milestone but not addressed inline because the scope or risk warranted a dedicated pass.
+
+### 0. WA corroboration artifact (added 2026-06-11)
+Build a per-row WA corroboration artifact from the on-disk report text
+(`output/ambest_wa_ppa_text.txt`) so WA joins the artifact standard
+(`CROSS_CHECK_STANDARD.md`) like every other cross-checked state. This is
+**new comparator work** (the old 12/14 check used pre-standard tooling,
+`tools/compare_ambest_wa.py`), not a re-run — deferred from the 2026-06-11
+western re-measurement on that basis. Until then WA's measurement basis is
+explicitly the older documented-12/14 method (see "WA limitation").
 
 ### 1. `refresh_pending.py` — periodic pending-status refresh
 Build a job that re-queries SERFF detail pages for filings in our dataset where `disposition_status ∈ {Pending, Review pending, PENDING, Active Suspense}`. Decouples pending-status freshness from full-search re-runs and keeps `DATE_TO` aligned with AM Best validation cutoffs. Surfaced during the WA pending coverage characterization (commit `bfbdfd2`).

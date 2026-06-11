@@ -1,0 +1,38 @@
+state,line,our_serff_tracking_number,our_subsidiary,our_effective_date,our_impact,our_policyholders,matched_ambest_subsidiary,ambest_effective_date,ambest_impact,ambest_policyholders,agreed_subsidiary,agreed_impact,agreed_eff_date,agreed_policyholders,match_strength
+NM,HO,ALSE-134280602,Allstate Insurance Company,11/11/2024,5.300%,5153,,,,,,,,,none
+NM,HO,ALSE-134286620,Allstate Property and Casualty Insurance Company,11/11/2024,15.900%,5144,,,,,,,,,none
+NM,HO,ALSE-134286662,Allstate Indemnity Company,11/11/2024,11.000%,3515,,,,,,,,,none
+NM,HO,ALSE-134287264,Allstate Vehicle and Property Insurance Company,11/11/2024,18.900%,32229,,,,,,,,,none
+NM,HO,ALSE-134326430,Allstate Indemnity Company,12/16/2024,8.300%,973,,,,,,,,,none
+NM,HO,ALSE-134328167,Allstate Insurance Company,12/16/2024,15.800%,706,,,,,,,,,none
+NM,HO,ALSE-134614219,Allstate North American Insurance Company,08/07/2025,-5.000%,1161,Allstate North American Insurance Company,08/07/25,-5.0,1161,True,True,True,True,direct
+NM,HO,ALSE-134651218,Allstate North American Insurance Company,08/07/2025,0.000%,1161,Allstate North American Insurance Company,08/07/25,0.0,1161,True,True,True,True,direct
+NM,HO,ALSE-134706613,Allstate Indemnity Company,11/17/2025,11.500%,3175,Allstate Indemnity Company,11/17/25,11.5,3175,True,True,True,True,direct
+NM,HO,ALSE-134714016,Allstate Vehicle and Property Insurance Company,11/17/2025,6.200%,32993,Allstate Vehicle and Property Insurance Company,11/17/25,6.2,32993,True,True,True,True,direct
+NM,HO,ALSE-134714032,Allstate Insurance Company,11/17/2025,5.200%,4657,Allstate Insurance Company,11/17/25,5.2,4657,True,True,True,True,direct
+NM,HO,ALSE-134774586,Allstate Vehicle and Property Insurance Company,01/12/2026,0.000%,35169,Allstate Vehicle and Property Insurance Company,01/12/26,0.0,35169,True,True,True,True,direct
+NM,HO,ALSE-134790550,Allstate Indemnity Company,02/02/2026,17.600%,979,Allstate Indemnity Company,02/02/26,17.6,979,True,True,True,True,direct
+NM,HO,GMMX-134513633,Encompass Indemnity Company,05/12/2025,18.600%,549,Encompass Indemnity Company,05/12/25,18.6,549,True,True,True,True,direct
+NM,HO,LBPM-133912699,Liberty Mutual Fire Insurance Company,02/05/2024,27.000%,937,,,,,,,,,none
+NM,HO,LBPM-133912871,Liberty Insurance Corporation,01/01/2024,27.000%,12137,,,,,,,,,none
+NM,HO,LBPM-133912871,Liberty Mutual Insurance Company,01/01/2024,0.000%,0,,,,,,,,,none
+NM,HO,LBPM-133912871,Liberty Mutual Personal Insurance Company,01/01/2024,27.000%,2429,,,,,,,,,none
+NM,HO,LBPM-134314003,Liberty Mutual Insurance Company,01/09/2025,-6.200%,8,Liberty Mutual Insurance Company,01/09/25,-6.2,8,True,True,True,True,direct
+NM,HO,LBPM-134314003,Liberty Mutual Personal Insurance Company,01/09/2025,-6.300%,179,Liberty Mutual Personal Insurance Company,01/09/25,-6.3,179,True,True,True,True,direct
+NM,HO,LBPM-134314125,Liberty Mutual Fire Insurance Company,02/13/2025,-6.300%,762,Liberty Mutual Fire Insurance Company,02/13/25,-6.3,762,True,True,True,True,direct
+NM,HO,LBPM-134656574,Liberty Mutual Insurance Company,11/17/2025,0.000%,54,,,,,,,,,none
+NM,HO,LBPM-134656574,Liberty Mutual Personal Insurance Company,11/17/2025,0.000%,1977,,,,,,,,,none
+NM,HO,LBPM-134758200,Liberty Mutual Fire Insurance Company,02/13/2026,3.000%,591,Liberty Mutual Fire Insurance Company,02/13/26,3.0,591,True,True,True,True,direct
+NM,HO,LBPM-134758580,Liberty Mutual Insurance Company,01/09/2026,3.100%,80,Liberty Mutual Insurance Company,01/09/26,3.1,80,True,True,True,True,direct
+NM,HO,LBPM-134758580,Liberty Mutual Personal Insurance Company,01/09/2026,3.000%,2822,Liberty Mutual Personal Insurance Company,01/09/26,3.0,2822,True,True,True,True,direct
+NM,HO,LBPM-133977587,Safeco Insurance Company of America,03/05/2024,30.300%,13420,,,,,,,,,none
+NM,HO,LBPM-134783263,Safeco Insurance Company of America,03/12/2026,3.000%,7487,Safeco Insurance Company of America,03/12/26,3.0,7487,True,True,True,True,direct
+NM,HO,SFMA-133947505,State Farm Fire and Casualty Company,03/01/2024,9.700%,142862,,,,,,,,,none
+NM,HO,SFMA-134295579,State Farm Fire and Casualty Company,01/01/2025,16.600%,19624,State Farm Fire and Casualty Company,01/01/25,16.6,19624,True,True,True,True,direct
+NM,HO,SFMA-134394212,State Farm Fire and Casualty Company,04/01/2025,0.000%,8631,State Farm Fire and Casualty Company,04/01/25,0.0,8631,True,True,True,True,direct
+NM,HO,SFMA-134400419,State Farm Fire and Casualty Company,03/15/2025,4.500%,150410,State Farm Fire and Casualty Company,03/15/25,4.5,150410,True,True,True,True,direct
+NM,HO,SFMA-134606450,State Farm Fire and Casualty Company,09/15/2025,0.000%,152584,State Farm Fire and Casualty Company,09/15/25,0.0,152584,True,True,True,True,direct
+NM,HO,SFMA-134693034,State Farm Fire and Casualty Company,11/15/2025,15.100%,9244,State Farm Fire and Casualty Company,11/15/25,15.1,9244,True,True,True,True,direct
+NM,HO,TRVD-134003616,The Travelers Home and Marine Insurance Company,05/11/2024,6.800%,7749,,,,,,,,,none
+NM,HO,TRVD-134003616,Travelers Commercial Insurance Company,05/11/2024,7.300%,357,,,,,,,,,none
+NM,HO,TRVD-G134414176,Travelers Personal Insurance Company,02/28/2025,0.000%,27859,Travelers Personal Insurance Company,02/28/25,0.0,27859,True,True,True,True,direct

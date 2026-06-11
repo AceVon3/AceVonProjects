@@ -3,7 +3,7 @@ AZ,PPA,ALSE-133960970,Allstate Fire and Casualty Insurance Company,02/19/2024,3.
 AZ,PPA,ALSE-134148254,Allstate Fire and Casualty Insurance Company,07/01/2024,0.000%,0,,,,,,,,,none
 AZ,PPA,ALSE-134180176,Allstate North American Insurance Company,10/04/2024,1.200%,2691,,,,,,,,,none
 AZ,PPA,ALSE-134209181,Allstate Fire and Casualty Insurance Company,08/19/2024,3.500%,153257,,,,,,,,,none
-AZ,PPA,ALSE-134359169,Allstate North American Insurance Company,01/09/2025,-5.000%,13063,Allstate North American Insurance Company,01/09/25,-5.0,13063,True,True,True,True,direct
+AZ,PPA,ALSE-134359169,Allstate North American Insurance Company,01/09/2025,-5.000%,13063,,,,,,,,,none
 AZ,PPA,ALSE-134406699,Allstate North American Insurance Company,03/18/2025,0.000%,16271,Allstate North American Insurance Company,03/18/25,0.0,16271,True,True,True,True,direct
 AZ,PPA,ALSE-134412703,Allstate Fire and Casualty Insurance Company,02/24/2025,2.200%,147446,Allstate Fire and Casualty Insurance Company,02/24/25,2.2,147446,True,True,True,True,direct
 AZ,PPA,ALSE-134458781,Allstate North American Insurance Company,04/07/2025,0.000%,16271,Allstate North American Insurance Company,04/07/25,0.0,16271,True,True,True,True,direct
@@ -82,8 +82,8 @@ AZ,PPA,SFMA-134066907,State Farm Fire and Casualty Company,06/17/2024,3.400%,652
 AZ,PPA,SFMA-134066907,State Farm Mutual Automobile Insurance Company,06/17/2024,4.700%,1179891,,,,,,,,,none
 AZ,PPA,SFMA-134083631,State Farm Mutual Automobile Insurance Company,08/01/2024,0.000%,26581,,,,,,,,,none
 AZ,PPA,SFMA-134083631,State Farm Fire and Casualty Company,08/01/2024,0.000%,2346,,,,,,,,,none
-AZ,PPA,SFMA-134114374,State Farm Fire and Casualty Company,04/21/2025,7.100%,2629,State Farm Fire and Casualty Company,04/21/25,7.1,2629,True,True,True,True,direct
-AZ,PPA,SFMA-134114374,State Farm Mutual Automobile Insurance Company,04/21/2025,8.700%,27078,State Farm Mutual Automobile Insurance Company,04/21/25,8.7,27078,True,True,True,True,direct
+AZ,PPA,SFMA-134114374,State Farm Fire and Casualty Company,04/21/2025,7.100%,2629,,,,,,,,,none
+AZ,PPA,SFMA-134114374,State Farm Mutual Automobile Insurance Company,04/21/2025,8.700%,27078,,,,,,,,,none
 AZ,PPA,SFMA-134114404,State Farm Fire and Casualty Company,04/21/2025,1.300%,71949,,,,,,,,,none
 AZ,PPA,SFMA-134114404,State Farm Mutual Automobile Insurance Company,04/21/2025,-2.600%,1218335,,,,,,,,,none
 AZ,PPA,SFMA-134294865,State Farm Fire and Casualty Company,04/15/2025,0.000%,64696,State Farm Fire and Casualty Company,04/15/25,0.0,64696,True,True,True,True,direct

@@ -1,0 +1,95 @@
+state,line,our_serff_tracking_number,our_subsidiary,our_effective_date,our_impact,our_policyholders,matched_ambest_subsidiary,ambest_effective_date,ambest_impact,ambest_policyholders,agreed_subsidiary,agreed_impact,agreed_eff_date,agreed_policyholders,match_strength
+NM,PPA,ALSE-133990584,Allstate Fire and Casualty Insurance Company,03/04/2024,2.700%,42197,,,,,,,,,none
+NM,PPA,ALSE-134108387,Allstate Fire and Casualty Insurance Company,06/03/2024,0.000%,0,,,,,,,,,none
+NM,PPA,ALSE-134209197,Allstate Fire and Casualty Insurance Company,09/09/2024,0.000%,42009,,,,,,,,,none
+NM,PPA,ALSE-134217987,Allstate Insurance Company,09/09/2024,0.000%,0,,,,,,,,,none
+NM,PPA,ALSE-134217987,Allstate Property and Casualty Insurance Company,09/09/2024,0.000%,0,,,,,,,,,none
+NM,PPA,ALSE-134217987,Allstate Indemnity Company,09/09/2024,0.000%,0,,,,,,,,,none
+NM,PPA,ALSE-134422238,Allstate Fire and Casualty Insurance Company,03/10/2025,2.300%,42058,Allstate Fire and Casualty Insurance Company,03/10/25,2.3,42058,True,True,True,True,direct
+NM,PPA,ALSE-134422258,Allstate Indemnity Company,03/10/2025,2.200%,920,Allstate Indemnity Company,03/10/25,2.2,920,True,True,True,True,direct
+NM,PPA,ALSE-134494530,Allstate Fire and Casualty Insurance Company,05/05/2025,0.000%,0,Allstate Fire and Casualty Insurance Company,05/05/25,0.0,0,True,True,True,True,direct
+NM,PPA,ALSE-134629045,Allstate Insurance Company,08/18/2025,0.000%,0,Allstate Insurance Company,08/18/25,0.0,0,True,True,True,True,direct
+NM,PPA,ALSE-134629045,Allstate Property and Casualty Insurance Company,08/18/2025,0.000%,0,Allstate Property and Casualty Insurance Company,08/18/25,0.0,0,True,True,True,True,direct
+NM,PPA,ALSE-134629045,Allstate Indemnity Company,08/18/2025,0.000%,0,Allstate Indemnity Company,08/18/25,0.0,0,True,True,True,True,direct
+NM,PPA,ALSE-134689922,Allstate North American Insurance Company,10/20/2025,-7.000%,3107,Allstate North American Insurance Company,10/20/25,-7.0,3107,True,True,True,True,direct
+NM,PPA,ALSE-134113978,Encompass Indemnity Company,07/15/2024,0.000%,0,,,,,,,,,none
+NM,PPA,GMMX-134490358,Encompass Indemnity Company,06/23/2025,0.000%,0,Encompass Indemnity Company,06/23/25,0.0,0,True,True,True,True,direct
+NM,PPA,GMMX-134513161,Encompass Indemnity Company,05/12/2025,10.100%,344,Encompass Indemnity Company,05/12/25,10.1,344,True,True,True,True,direct
+NM,PPA,GECC-133985623,GEICO Indemnity Company,03/14/2024,0.000%,2503,,,,,,,,,none
+NM,PPA,GECC-133985623,GEICO Casualty Company,03/14/2024,0.000%,33,,,,,,,,,none
+NM,PPA,GECC-133985623,GEICO General Insurance Company,03/14/2024,0.000%,9723,,,,,,,,,none
+NM,PPA,GECC-133985623,Government Employees Insurance Company,03/14/2024,0.000%,5555,,,,,,,,,none
+NM,PPA,GECC-133985623,GEICO Advantage Insurance Company,03/14/2024,0.000%,23373,,,,,,,,,none
+NM,PPA,GECC-133985623,GEICO Choice Insurance Company,03/14/2024,0.000%,8575,,,,,,,,,none
+NM,PPA,GECC-133985623,GEICO Secure Insurance Company,03/14/2024,0.000%,29734,,,,,,,,,none
+NM,PPA,GECC-134027727,GEICO Secure Insurance Company,04/11/2024,-0.700%,33945,,,,,,,,,none
+NM,PPA,GECC-134652522,GEICO Secure Insurance Company,09/22/2025,2.500%,44348,GEICO Secure Insurance Company,09/22/25,2.5,44348,True,True,True,True,direct
+NM,PPA,LBPM-133915768,Liberty Mutual Insurance Company,01/22/2024,0.000%,51,,,,,,,,,none
+NM,PPA,LBPM-133915768,Liberty Mutual Personal Insurance Company,01/22/2024,0.000%,10089,,,,,,,,,none
+NM,PPA,LBPM-133923739,Liberty Insurance Corporation,02/26/2024,22.000%,5,,,,,,,,,none
+NM,PPA,LBPM-133923739,Liberty Mutual Fire Insurance Company,02/26/2024,19.900%,408,,,,,,,,,none
+NM,PPA,LBPM-133923739,The First Liberty Insurance Corporation,02/26/2024,20.800%,14,,,,,,,,,none
+NM,PPA,LBPM-134160476,Liberty Mutual Insurance Company,07/02/2024,-7.000%,26,,,,,,,,,none
+NM,PPA,LBPM-134160476,Liberty Mutual Personal Insurance Company,07/02/2024,-10.500%,8285,,,,,,,,,none
+NM,PPA,LBPM-134160588,Liberty Insurance Corporation,08/06/2024,-3.300%,5,,,,,,,,,none
+NM,PPA,LBPM-134160588,Liberty Mutual Fire Insurance Company,08/06/2024,-7.300%,323,,,,,,,,,none
+NM,PPA,LBPM-134160588,The First Liberty Insurance Corporation,08/06/2024,-6.500%,11,,,,,,,,,none
+NM,PPA,LBPM-134276691,Liberty Mutual Insurance Company,11/18/2024,0.000%,26,,,,,,,,,none
+NM,PPA,LBPM-134276691,Liberty Mutual Personal Insurance Company,11/18/2024,0.000%,8285,,,,,,,,,none
+NM,PPA,LBPM-134571022,Liberty Mutual Insurance Company,07/18/2025,0.000%,15,Liberty Mutual Insurance Company,07/18/25,0.0,15,True,True,True,True,direct
+NM,PPA,LBPM-134571022,Liberty Mutual Personal Insurance Company,07/18/2025,0.000%,8474,Liberty Mutual Personal Insurance Company,07/18/25,0.0,8474,True,True,True,True,direct
+NM,PPA,LBPM-134861413,Liberty Mutual Insurance Company,03/27/2026,4.200%,11,,,,,,,,,none
+NM,PPA,LBPM-134861413,Liberty Mutual Personal Insurance Company,03/27/2026,3.000%,14025,,,,,,,,,none
+NM,PPA,GNSC-134003220,"MGA Insurance Company, Inc.",02/25/2024,9.100%,8022,,,,,,,,,none
+NM,PPA,GNSC-134070488,"MGA Insurance Company, Inc.",04/18/2024,0.000%,8117,,,,,,,,,none
+NM,PPA,GNSC-134334623,"MGA Insurance Company, Inc.",12/06/2024,0.000%,7864,,,,,,,,,none
+NM,PPA,GNSC-134571446,"MGA Insurance Company, Inc.",06/20/2025,-10.600%,7811,"MGA Insurance Company, Inc.",06/20/25,-10.6,7811,True,True,True,True,direct
+NM,PPA,GNSC-134767424,"MGA Insurance Company, Inc.",01/23/2026,-11.200%,7748,"MGA Insurance Company, Inc.",01/23/26,-11.2,7748,True,True,True,True,direct
+NM,PPA,PRGS-134031926,Progressive Casualty Insurance Company,03/15/2024,0.000%,91,,,,,,,,,none
+NM,PPA,PRGS-134031926,Progressive Direct Insurance Company,03/15/2024,0.000%,98329,,,,,,,,,none
+NM,PPA,PRGS-134031926,Progressive Northern Insurance Company,03/15/2024,0.000%,63211,,,,,,,,,none
+NM,PPA,PRGS-134031926,Progressive Preferred Insurance Company,03/15/2024,0.000%,475,,,,,,,,,none
+NM,PPA,PRGS-134054508,Progressive Casualty Insurance Company,05/10/2024,-1.900%,92,,,,,,,,,none
+NM,PPA,PRGS-134054508,Progressive Direct Insurance Company,05/10/2024,0.000%,102325,,,,,,,,,none
+NM,PPA,PRGS-134054508,Progressive Northern Insurance Company,05/10/2024,-2.800%,63651,,,,,,,,,none
+NM,PPA,PRGS-134054508,Progressive Preferred Insurance Company,05/10/2024,-2.200%,464,,,,,,,,,none
+NM,PPA,PRGS-134348046,Progressive Casualty Insurance Company,01/24/2025,-5.500%,92,Progressive Casualty Insurance Company,01/24/25,-5.5,92,True,True,True,True,direct
+NM,PPA,PRGS-134348046,Progressive Direct Insurance Company,01/24/2025,0.000%,105202,Progressive Direct Insurance Company,01/24/25,0.0,105202,True,True,True,True,direct
+NM,PPA,PRGS-134348046,Progressive Northern Insurance Company,01/24/2025,-2.100%,64093,Progressive Northern Insurance Company,01/24/25,-2.1,64093,True,True,True,True,direct
+NM,PPA,PRGS-134348046,Progressive Preferred Insurance Company,01/24/2025,1.400%,455,Progressive Preferred Insurance Company,01/24/25,1.4,455,True,True,True,True,direct
+NM,PPA,PRGS-134642589,Progressive Casualty Insurance Company,08/29/2025,-8.500%,83,Progressive Casualty Insurance Company,08/29/25,-8.5,83,True,True,True,True,direct
+NM,PPA,PRGS-134642589,Progressive Direct Insurance Company,08/29/2025,-0.500%,121648,Progressive Direct Insurance Company,08/29/25,-0.5,121648,True,True,True,True,direct
+NM,PPA,PRGS-134642589,Progressive Northern Insurance Company,08/29/2025,-2.800%,67332,Progressive Northern Insurance Company,08/29/25,-2.8,67332,True,True,True,True,direct
+NM,PPA,PRGS-134642589,Progressive Preferred Insurance Company,08/29/2025,-7.500%,419,Progressive Preferred Insurance Company,08/29/25,-7.5,419,True,True,True,True,direct
+NM,PPA,PRGS-134749112,Progressive Casualty Insurance Company,12/19/2025,-6.900%,92,Progressive Casualty Insurance Company,12/19/25,-6.9,92,True,True,True,True,direct
+NM,PPA,PRGS-134749112,Progressive Direct Insurance Company,12/19/2025,-1.900%,105181,Progressive Direct Insurance Company,12/19/25,-1.9,105181,True,True,True,True,direct
+NM,PPA,PRGS-134749112,Progressive Northern Insurance Company,12/19/2025,-7.100%,64079,Progressive Northern Insurance Company,12/19/25,-7.1,64079,True,True,True,True,direct
+NM,PPA,PRGS-134749112,Progressive Preferred Insurance Company,12/19/2025,-6.500%,455,Progressive Preferred Insurance Company,12/19/25,-6.5,455,True,True,True,True,direct
+NM,PPA,LBPM-133982853,Safeco Insurance Company of America,04/19/2024,21.000%,16040,,,,,,,,,none
+NM,PPA,LBPM-134145620,Safeco Insurance Company of America,08/06/2024,-10.000%,15144,,,,,,,,,none
+NM,PPA,LBPM-134397565,Safeco Insurance Company of America,04/19/2025,0.000%,11780,Safeco Insurance Company of America,04/19/25,0.0,11780,True,True,True,True,direct
+NM,PPA,SFMA-133807566,State Farm Fire and Casualty Company,01/01/2024,0.000%,15050,,,,,,,,,none
+NM,PPA,SFMA-133807566,State Farm Mutual Automobile Insurance Company,01/01/2024,0.000%,397514,,,,,,,,,none
+NM,PPA,SFMA-133966121,State Farm Fire and Casualty Company,04/22/2024,6.700%,16751,,,,,,,,,none
+NM,PPA,SFMA-133966121,State Farm Mutual Automobile Insurance Company,04/22/2024,7.200%,458115,,,,,,,,,none
+NM,PPA,SFMA-134076527,State Farm Fire and Casualty Company,08/01/2024,0.000%,1424,,,,,,,,,none
+NM,PPA,SFMA-134076527,State Farm Mutual Automobile Insurance Company,08/01/2024,0.000%,12633,,,,,,,,,none
+NM,PPA,SFMA-134179096,State Farm Fire and Casualty Company,10/07/2024,3.700%,17573,,,,,,,,,none
+NM,PPA,SFMA-134179096,State Farm Mutual Automobile Insurance Company,10/07/2024,3.200%,469783,,,,,,,,,none
+NM,PPA,SFMA-134294039,State Farm Fire and Casualty Company,04/15/2025,0.000%,17621,State Farm Fire and Casualty Company,04/15/25,0.0,17621,True,True,True,True,direct
+NM,PPA,SFMA-134294039,State Farm Mutual Automobile Insurance Company,04/15/2025,0.000%,476034,State Farm Mutual Automobile Insurance Company,04/15/25,0.0,476034,True,True,True,True,direct
+NM,PPA,SFMA-134369514,State Farm Fire and Casualty Company,04/21/2025,-0.100%,17621,,,,,,,,,none
+NM,PPA,SFMA-134369514,State Farm Mutual Automobile Insurance Company,04/21/2025,-1.400%,476034,,,,,,,,,none
+NM,PPA,SFMA-134419736,State Farm Fire and Casualty Company,04/21/2025,0.000%,17621,,,,,,,,,none
+NM,PPA,SFMA-134419736,State Farm Mutual Automobile Insurance Company,04/21/2025,0.000%,476034,,,,,,,,,none
+NM,PPA,SFMA-134703558,State Farm Fire and Casualty Company,11/10/2025,-15.200%,14397,,,,,,,,,none
+NM,PPA,SFMA-134703558,State Farm Mutual Automobile Insurance Company,11/10/2025,-8.600%,490552,,,,,,,,,none
+NM,PPA,SFMA-134810677,State Farm Fire and Casualty Company,04/06/2026,1.200%,13306,,,,,,,,,none
+NM,PPA,SFMA-134810677,State Farm Mutual Automobile Insurance Company,04/06/2026,-0.800%,493455,,,,,,,,,none
+NM,PPA,PRGS-134641885,Progressive Direct Insurance Company,10/10/2025,6.100%,18176,Progressive Direct Insurance Company,10/10/25,6.1,18176,True,True,True,True,reclassified
+NM,PPA,GECC-134394042,GEICO Advantage Insurance Company,03/06/2025,2.000%,1669,GEICO Advantage Insurance Company,03/06/25,2.0,1669,True,True,True,True,reclassified
+NM,PPA,GECC-134394042,GEICO Choice Insurance Company,03/06/2025,2.000%,315,GEICO Choice Insurance Company,03/06/25,2.0,315,True,True,True,True,reclassified
+NM,PPA,GECC-134394042,GEICO General Insurance Company,03/06/2025,0.800%,699,GEICO General Insurance Company,03/06/25,0.8,699,True,True,True,True,reclassified
+NM,PPA,GECC-134394042,GEICO Indemnity Company,03/06/2025,0.800%,131,GEICO Indemnity Company,03/06/25,0.8,131,True,True,True,True,reclassified
+NM,PPA,GECC-134394042,GEICO Secure Insurance Company,03/06/2025,-0.400%,1238,GEICO Secure Insurance Company,03/06/25,-0.4,1238,True,True,True,True,reclassified
+NM,PPA,GECC-134394042,Government Employees Insurance Company,03/06/2025,0.800%,505,Government Employees Insurance Company,03/06/25,0.8,505,True,True,True,True,reclassified

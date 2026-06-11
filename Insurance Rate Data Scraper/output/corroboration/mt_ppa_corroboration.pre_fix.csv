@@ -1,0 +1,39 @@
+state,line,our_serff_tracking_number,our_subsidiary,our_effective_date,our_impact,our_policyholders,matched_ambest_subsidiary,ambest_effective_date,ambest_impact,ambest_policyholders,agreed_subsidiary,agreed_impact,agreed_eff_date,agreed_policyholders,match_strength
+MT,PPA,ALSE-133861908,Allstate Fire and Casualty Insurance Company,01/15/2024,0.000%,12585,,,,,,,,,none
+MT,PPA,ALSE-134145280,Allstate Fire and Casualty Insurance Company,07/01/2024,0.000%,0,,,,,,,,,none
+MT,PPA,ALSE-134457261,Allstate North American Insurance Company,05/13/2025,1.000%,1368,Allstate North American Insurance Company,05/13/25,1.0,1368,True,True,True,True,direct
+MT,PPA,ALSE-134493932,Allstate Fire and Casualty Insurance Company,06/02/2025,0.000%,0,Allstate Fire and Casualty Insurance Company,06/02/25,0.0,0,True,True,True,True,direct
+MT,PPA,ALSE-134649640,Allstate Insurance Company,09/15/2025,0.000%,0,,,,,,,,,none
+MT,PPA,ALSE-134649640,Allstate Property and Casualty Insurance Company,09/15/2025,0.000%,0,,,,,,,,,none
+MT,PPA,ALSE-134649640,Allstate Indemnity Company,09/15/2025,0.000%,0,,,,,,,,,none
+MT,PPA,GECC-134044604,GEICO Indemnity Company,05/15/2024,0.800%,6317,,,,,,,,,none
+MT,PPA,GECC-134044604,GEICO Casualty Company,05/15/2024,0.800%,1358,,,,,,,,,none
+MT,PPA,GECC-134044604,GEICO General Insurance Company,05/15/2024,3.700%,21035,,,,,,,,,none
+MT,PPA,GECC-134044604,Government Employees Insurance Company,05/15/2024,3.700%,4593,,,,,,,,,none
+MT,PPA,GECC-134902175,GEICO Advantage Insurance Company,04/09/2026,-3.600%,4214,GEICO Advantage Insurance Company,04/09/26,-3.6,4214,True,True,True,True,direct
+MT,PPA,GECC-134902175,GEICO Marine Insurance Company,04/09/2026,-3.300%,424,GEICO Marine Insurance Company,04/09/26,-3.3,424,True,True,True,True,direct
+MT,PPA,LBPM-133971219,Liberty Insurance Corporation,02/13/2024,3.400%,12,,,,,,,,,none
+MT,PPA,LBPM-133971219,Liberty Mutual Fire Insurance Company,02/13/2024,4.400%,2284,,,,,,,,,none
+MT,PPA,LBPM-133971219,The First Liberty Insurance Corporation,02/13/2024,4.800%,164,,,,,,,,,none
+MT,PPA,LBPM-134857087,Liberty Insurance Corporation,03/05/2026,-2.200%,11,Liberty Insurance Corporation,03/05/26,-2.2,11,True,True,True,True,direct
+MT,PPA,LBPM-134857087,Liberty Mutual Fire Insurance Company,03/05/2026,-5.000%,1725,Liberty Mutual Fire Insurance Company,03/05/26,-5.0,1725,True,True,True,True,direct
+MT,PPA,LBPM-134857087,The First Liberty Insurance Corporation,03/05/2026,-6.400%,95,The First Liberty Insurance Corporation,03/05/26,-6.4,95,True,True,True,True,direct
+MT,PPA,PRGS-133927798,Progressive Casualty Insurance Company,01/19/2024,-1.300%,28,,,,,,,,,none
+MT,PPA,PRGS-133927798,Progressive Direct Insurance Company,01/19/2024,3.600%,61301,,,,,,,,,none
+MT,PPA,PRGS-133927798,Progressive Northwestern Insurance Company,01/19/2024,7.000%,47339,,,,,,,,,none
+MT,PPA,PRGS-133927798,Progressive Specialty Insurance Company,01/19/2024,0.700%,81,,,,,,,,,none
+MT,PPA,PRGS-134471019,Progressive Casualty Insurance Company,06/06/2025,6.800%,9,Progressive Casualty Insurance Company,06/06/25,6.8,9,True,True,True,True,direct
+MT,PPA,PRGS-134471019,Progressive Direct Insurance Company,06/06/2025,4.500%,9548,Progressive Direct Insurance Company,06/06/25,4.5,9548,True,True,True,True,direct
+MT,PPA,PRGS-134471019,Progressive Northwestern Insurance Company,06/06/2025,7.000%,11935,Progressive Northwestern Insurance Company,06/06/25,7.0,11935,True,True,True,True,direct
+MT,PPA,LBPM-133961937,Safeco Insurance Company of Illinois,05/14/2024,26.900%,4689,,,,,,,,,none
+MT,PPA,LBPM-134141511,Safeco Insurance Company of Illinois,11/09/2024,3.000%,39502,,,,,,,,,none
+MT,PPA,LBPM-134350221,Safeco Insurance Company of Illinois,05/14/2025,7.200%,4170,Safeco Insurance Company of Illinois,07/05/25,7.2,4170,True,True,False,True,date_relaxed
+MT,PPA,LBPM-134543988,Safeco Insurance Company of Illinois,07/19/2025,-4.000%,33557,Safeco Insurance Company of Illinois,07/19/25,-4.0,33557,True,True,True,True,direct
+MT,PPA,SFMA-134000554,State Farm Fire and Casualty Company,05/06/2024,8.600%,9349,,,,,,,,,none
+MT,PPA,SFMA-134000554,State Farm Mutual Automobile Insurance Company,05/06/2024,5.000%,294447,,,,,,,,,none
+MT,PPA,SFMA-134075954,State Farm Fire and Casualty Company,08/01/2024,0.000%,442,,,,,,,,,none
+MT,PPA,SFMA-134075954,State Farm Mutual Automobile Insurance Company,08/01/2024,0.000%,6662,,,,,,,,,none
+MT,PPA,SFMA-134293997,State Farm Fire and Casualty Company,04/15/2025,0.000%,9302,State Farm Fire and Casualty Company,04/15/25,0.0,9302,True,True,True,True,direct
+MT,PPA,SFMA-134293997,State Farm Mutual Automobile Insurance Company,04/15/2025,0.000%,254760,State Farm Mutual Automobile Insurance Company,04/15/25,0.0,254760,True,True,True,True,direct
+MT,PPA,SFMA-134310862,State Farm Fire and Casualty Company,03/03/2025,-0.300%,10015,State Farm Fire and Casualty Company,03/03/25,-0.3,10015,True,True,True,True,direct
+MT,PPA,SFMA-134310862,State Farm Mutual Automobile Insurance Company,03/03/2025,-1.800%,305575,State Farm Mutual Automobile Insurance Company,03/03/25,-1.8,305575,True,True,True,True,direct
