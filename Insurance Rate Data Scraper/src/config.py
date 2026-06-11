@@ -25,6 +25,19 @@ TARGET_COMPANIES = [
     # search keyword (Item #3a). Classification via GROUP_KW folds it back
     # into State Farm in the final dataset — the 8-brand scope is unchanged.
     "MGA Insurance",
+    # 13-brand expansion (2026-06-10, SCOPE.md). Multiple keywords per brand
+    # where SERFF entity names don't contain the brand string (GA portal
+    # check: usaa/united services/garrison are three disjoint NAIC buckets).
+    "USAA",
+    "United Services",           # USAA parent: United Services Automobile Association
+    "Garrison",                  # USAA: Garrison Property and Casualty
+    "Farmers",
+    "Mid-Century",               # Farmers underwriter, no "farmers" in name
+    "Fire Insurance Exchange",   # Farmers HO exchange
+    "Truck Insurance Exchange",  # Farmers exchange (mostly commercial; cheap)
+    "Nationwide",
+    "American Family",
+    "Country",                   # COUNTRY Mutual / Preferred / Casualty
 ]
 # Excluded as out-of-scope (specialty / wound-down):
 #   Drive Insurance (Progressive subsidiary, retired)

@@ -45,4 +45,60 @@ GA,HO,TRVD-133894014,The Travelers Home and Marine Insurance Company,05/11/2024,
 GA,HO,TRVD-133894014,Travelers Commercial Insurance Company,05/11/2024,7.200%,4755,,,,,,,,,none
 GA,HO,TRVD-G134201841,Travelers Personal Insurance Company,07/13/2025,0.000%,155331,,,,,,,,,none
 GA,HO,TRVD-G134332321,Travelers Personal Insurance Company,02/21/2025,14.900%,155331,Travelers Personal Insurance Company,04/18/25,14.9,155331,True,True,False,True,date_relaxed
+GA,HO,USAA-133877250,United Services Automobile Association,08/02/2024,9.900%,84170,,,,,,,,,none
+GA,HO,USAA-133877250,USAA Casualty Insurance Company,08/02/2024,9.900%,60381,,,,,,,,,none
+GA,HO,USAA-133877250,USAA General Indemnity Company,08/02/2024,9.900%,45271,,,,,,,,,none
+GA,HO,USAA-133877250,Garrison Property and Casualty Insurance Company,08/02/2024,9.900%,21456,,,,,,,,,none
+GA,HO,USAA-134073334,United Services Automobile Association,09/14/2024,9.400%,16111,,,,,,,,,none
+GA,HO,USAA-134073334,USAA Casualty Insurance Company,09/14/2024,9.100%,24781,,,,,,,,,none
+GA,HO,USAA-134073334,USAA General Indemnity Company,09/14/2024,9.400%,19545,,,,,,,,,none
+GA,HO,USAA-134073334,Garrison Property and Casualty Insurance Company,09/14/2024,9.400%,17982,,,,,,,,,none
+GA,HO,USAA-134673885,Garrison Property and Casualty Insurance Company,11/14/2025,0.000%,0,,,,,,,,,none
+GA,HO,USAA-134673885,United Services Automobile Association,11/14/2025,0.000%,0,,,,,,,,,none
+GA,HO,USAA-134673885,USAA Casualty Insurance Company,11/14/2025,0.000%,0,,,,,,,,,none
+GA,HO,USAA-134673885,USAA General Indemnity Company,11/14/2025,0.000%,0,,,,,,,,,none
+GA,HO,USAA-134413811,United Services Automobile Association,05/17/2025,7.100%,85907,United Services Automobile Association,05/17/25,7.1,85907,True,True,True,True,direct
+GA,HO,USAA-134413811,USAA Casualty Insurance Company,05/17/2025,4.700%,64006,USAA Casualty Insurance Company,05/17/25,4.7,64006,True,True,True,True,direct
+GA,HO,USAA-134413811,USAA General Indemnity Company,05/17/2025,5.800%,46675,USAA General Indemnity Company,05/17/25,5.8,46675,True,True,True,True,direct
+GA,HO,USAA-134413811,Garrison Property and Casualty Insurance Company,05/17/2025,4.100%,23568,Garrison Property and Casualty Insurance Company,05/17/25,4.1,23568,True,True,True,True,direct
+GA,HO,FAIG-134000055,Farmers Group Property and Casualty Insurance Company,05/13/2024,13.400%,4451,,,,,,,,,none
+GA,HO,FAIG-134443477,Farmers Group Property and Casualty Insurance Company,05/13/2025,7.000%,4278,Farmers Group Property and Casualty Insurance Company,05/13/25,7.0,4278,True,True,True,True,direct
+GA,HO,FAIG-134623862,Farmers Group Property and Casualty Insurance Company,08/09/2025,0.000%,0,Farmers Group Property and Casualty Insurance Company,09/01/25,0.0,0,True,True,False,True,date_relaxed
+GA,HO,FARM-134467294,Farmers Insurance Exchange,07/15/2025,0.200%,64010,Farmers Insurance Exchange,07/15/25,0.2,64010,True,True,True,True,direct
+GA,HO,FARM-134467294,Fire Insurance Exchange,07/15/2025,0.400%,8381,Fire Insurance Exchange,07/15/25,0.4,8381,True,True,True,True,direct
+GA,HO,FARM-134066732,Farmers Insurance Exchange,07/15/2024,0.000%,79157,,,,,,,,,none
+GA,HO,FARM-134066732,Fire Insurance Exchange,07/15/2024,9.875%,2731,,,,,,,,,none
+GA,HO,FARM-134521372,Farmers Insurance Exchange,09/15/2025,5.000%,44203,,,,,,,,,none
+GA,HO,FARM-134522394,Farmers Insurance Exchange,09/15/2025,5.000%,7020,Farmers Insurance Exchange,09/15/25,5.0,44203,True,True,True,False,direct
+GA,HO,FAIG-133994702,Farmers Property and Casualty Insurance Company,05/13/2024,14.700%,3248,,,,,,,,,none
+GA,HO,FAIG-134433368,Farmers Property and Casualty Insurance Company,05/13/2025,7.000%,2736,Farmers Property and Casualty Insurance Company,05/15/25,7.0,2736,True,True,False,True,date_relaxed
+GA,HO,FAIG-134623738,Farmers Property and Casualty Insurance Company,08/09/2025,0.000%,0,Farmers Property and Casualty Insurance Company,08/09/25,0.0,0,True,True,True,True,direct
+GA,HO,FARM-134480997,Fire Insurance Exchange,08/11/2025,5.000%,8381,Fire Insurance Exchange,08/11/25,5.0,8381,True,True,True,True,direct
+GA,HO,FARM-134509703,Fire Insurance Exchange,10/13/2025,0.000%,8381,Fire Insurance Exchange,10/13/25,0.0,8381,True,True,True,True,direct
+GA,HO,FARM-133959735,Fire Insurance Exchange,05/11/2024,0.000%,1658,,,,,,,,,none
+GA,HO,FARM-134357205,Fire Insurance Exchange,03/10/2025,0.000%,0,Fire Insurance Exchange,03/10/25,0.0,0,True,True,True,True,direct
+GA,HO,FARM-134236024,Fire Insurance Exchange,02/18/2025,0.000%,2783,Fire Insurance Exchange,02/18/25,0.0,2783,True,True,True,True,direct
+GA,HO,FARM-134336636,Fire Insurance Exchange,05/12/2025,0.000%,6067,Fire Insurance Exchange,05/12/25,0.0,6067,True,True,True,True,direct
+GA,HO,FARM-134107559,Fire Insurance Exchange,11/11/2024,0.000%,2783,,,,,,,,,none
+GA,HO,NWPP-134021993,Nationwide Insurance Company of America,07/10/2024,12.900%,4716,,,,,,,,,none
+GA,HO,NWPP-134021993,Nationwide General Insurance Company,07/10/2024,-0.300%,22719,,,,,,,,,none
+GA,HO,NWPP-134021993,Nationwide Mutual Insurance Company,07/10/2024,-0.200%,5094,,,,,,,,,none
+GA,HO,NWPP-134021993,Nationwide Property and Casualty Insurance Company,07/10/2024,-0.500%,6930,,,,,,,,,none
+GA,HO,NWPP-134524125,Nationwide Mutual Insurance Company,10/07/2025,-0.300%,4142,Nationwide Mutual Insurance Company,10/07/25,-0.3,4142,True,True,True,True,direct
+GA,HO,NWPP-134524125,Nationwide Property and Casualty Insurance Company,10/07/2025,-0.400%,5863,Nationwide Property and Casualty Insurance Company,10/07/25,-0.4,5863,True,True,True,True,direct
+GA,HO,NWPP-134485376,Nationwide Insurance Company of America,09/07/2025,9.100%,4046,Nationwide Insurance Company of America,09/07/25,9.1,4046,True,True,True,True,direct
+GA,HO,NWPP-134485376,Nationwide General Insurance Company,09/07/2025,2.100%,18186,Nationwide General Insurance Company,09/07/25,2.1,18186,True,True,True,True,direct
+GA,HO,AMFC-134110874,American Family Insurance Company,09/01/2024,14.900%,10829,,,,,,,,,none
+GA,HO,AMFC-134475444,American Family Insurance Company,09/01/2025,12.500%,9182,American Family Insurance Company,09/01/25,12.5,9182,True,True,True,True,direct
+GA,HO,AMFC-134415552,American Family Insurance Company,03/01/2025,0.000%,8721,American Family Insurance Company,03/01/25,0.0,8721,True,True,True,True,direct
+GA,HO,AMFC-134334710,American Family Insurance Company,08/01/2025,0.000%,348,American Family Insurance Company,08/01/25,0.0,348,True,True,True,True,direct
+GA,HO,AMFC-134208498,American Family Insurance Company,02/15/2025,0.000%,0,,,,,,,,,none
+GA,HO,CFPC-134612933,COUNTRY Preferred Insurance Company,12/15/2025,0.000%,0,,,,,,,,,none
+GA,HO,CFPC-134515175,COUNTRY Preferred Insurance Company,12/15/2025,0.000%,0,COUNTRY Preferred Insurance Company,12/15/25,0.0,0,True,True,True,True,direct
+GA,HO,CFPC-133979587,COUNTRY Preferred Insurance Company,03/09/2025,30.035%,58678,COUNTRY Preferred Insurance Company,05/01/25,30.035,58678,True,True,False,True,date_relaxed
+GA,HO,CFPC-134603059,COUNTRY Preferred Insurance Company,03/09/2026,3.004%,52455,COUNTRY Preferred Insurance Company,03/09/26,3.004,52455,True,True,True,True,direct
+GA,HO,CFPC-134509882,COUNTRY Preferred Insurance Company,07/07/2025,0.000%,58678,COUNTRY Preferred Insurance Company,07/07/25,0.0,58678,True,True,True,True,direct
+GA,HO,CFPC-134282329,COUNTRY Preferred Insurance Company,12/07/2024,0.000%,58678,,,,,,,,,none
+GA,HO,CFPC-134282265,COUNTRY Mutual Insurance Company,12/07/2024,0.000%,59270,COUNTRY Mutual Insurance Company,01/11/25,0.0,59270,True,True,False,True,date_relaxed
+GA,HO,CFPC-134282265,COUNTRY Casualty Insurance Company,12/07/2024,0.000%,1589,COUNTRY Casualty Insurance Company,01/11/25,0.0,1589,True,True,False,True,date_relaxed
 GA,HO,LBPM-134030059,The First Liberty Insurance Corporation,05/15/2024,0.000%,0,The First Liberty Insurance Corporation,06/21/25,0.0,0,True,True,False,True,reclassified

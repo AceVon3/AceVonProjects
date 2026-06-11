@@ -187,6 +187,15 @@ GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate 
     # own name; it does NOT surface under a "liberty mutual" search.
     "Liberty Mutual": ["liberty mutual", "safeco"],
     "Progressive":    ["progressive"],
+    # 13-brand expansion (2026-06-10, SCOPE.md). USAA needs three keywords —
+    # the parent files as "United Services Automobile Association" and
+    # Garrison carries neither string (GA portal check: three disjoint NAIC
+    # buckets). Farmers' exchanges/Mid-Century likewise lack "farmers".
+    "USAA":             ["usaa", "united services", "garrison"],
+    "Farmers":          ["farmers", "mid-century", "fire insurance exchange", "truck insurance exchange"],
+    "Nationwide":       ["nationwide"],
+    "American Family":  ["american family"],
+    "Country Financial": ["country"],
 }
 GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent group
     "State Farm":     ["state farm", "mga insurance"],
@@ -195,6 +204,23 @@ GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent g
     "Travelers":      ["travelers", "standard fire"],
     "Liberty Mutual": ["liberty mutual", "safeco", "first national insurance company of america", "general insurance company of america", "american states"],
     "Progressive":    ["progressive"],
+    # 13-brand expansion (2026-06-10, SCOPE.md). Anchors are tighter than the
+    # search keywords where bare keywords risk stray matches (Farm-Bureau-
+    # style names, Country-Wide); the bare forms remain at the END of each
+    # list because the target_company label fallback for "Multiple"-company
+    # filings carries the short label ("Farmers", "Country"). Known stray /
+    # collision entities are suppressed per-row via
+    # EXCLUDED_SUBSIDIARY_PATTERNS (esp. the Munich Re "American Family Home"
+    # collision, NAIC 23450).
+    "USAA":             ["usaa", "united services", "garrison"],
+    "Farmers":          ["farmers insurance exchange", "fire insurance exchange",
+                         "truck insurance exchange", "mid-century",
+                         "farmers insurance company", "farmers casualty",
+                         "farmers property and casualty", "farmers direct",
+                         "farmers group property", "farmers"],
+    "Nationwide":       ["nationwide"],
+    "American Family":  ["american family"],
+    "Country Financial": ["country mutual", "country preferred", "country casualty", "country"],
 }
 # Out-of-scope subsidiaries (do NOT classify as one of our groups):
 #   - Esurance (Allstate, wound down 2020)
@@ -280,6 +306,36 @@ EXCLUDED_SUBSIDIARY_PATTERNS = (
     # Best rating consolidated under LM. Same filing-vehicle pattern as LM
     # General / American Economy (Thread 1, 2026-05-26).
     "peerless",
+    # --- 13-brand expansion exclusions (2026-06-10, SCOPE.md) -------------
+    # USAA: Noblr is a distinct telematics brand.
+    "noblr",
+    # Farmers: distinct sub-brands + legacy-MetLife vehicles.
+    "foremost",
+    "bristol west",
+    "coast national",
+    "toggle insurance",
+    "economy fire",
+    "economy premier",
+    "economy preferred",
+    # Nationwide: Allied brand retired ~2020 (Peerless precedent) + non-standard.
+    "amco insurance",
+    "allied property and casualty",
+    "depositors insurance",
+    "titan indemnity",
+    "victoria fire",
+    # American Family: distinct brands/vehicles, and the NAME COLLISION —
+    # "American Family Home Insurance Company" (NAIC 23450) is Munich Re /
+    # American Modern, NOT AmFam (verified 2026-06-10). The sibling "American
+    # Modern *" entities ride the same filings' rate tables (caught by the
+    # Phase 3 guardrail differ as 3 unclassified rows, 2026-06-10).
+    "american family home",
+    "american modern",
+    "american family connect",
+    "homesite",
+    "midvale",
+    "main street america",
+    "permanent general",
+    "general automobile",
 )
 
 

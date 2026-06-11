@@ -212,6 +212,161 @@ GA,PPA,SFMA-134459996,State Farm Fire and Casualty Company,06/13/2025,-4.600%,57
 GA,PPA,SFMA-134459996,State Farm Mutual Automobile Insurance Company,06/13/2025,-4.400%,2039249,State Farm Mutual Automobile Insurance Company,06/06/25,-4.4,2039249,True,True,False,True,date_relaxed
 GA,PPA,SFMA-134677514,State Farm Fire and Casualty Company,11/28/2025,-1.500%,54683,State Farm Fire and Casualty Company,12/21/25,-1.5,54683,True,True,False,True,date_relaxed
 GA,PPA,SFMA-134677514,State Farm Mutual Automobile Insurance Company,11/28/2025,-3.000%,2069411,State Farm Mutual Automobile Insurance Company,12/21/25,-3.0,2069411,True,True,False,True,date_relaxed
+GA,PPA,USAA-133943045,United Services Automobile Association,05/01/2024,0.000%,106574,,,,,,,,,none
+GA,PPA,USAA-133943045,USAA Casualty Insurance Company,05/01/2024,0.000%,110227,,,,,,,,,none
+GA,PPA,USAA-133943045,USAA General Indemnity Company,05/01/2024,0.000%,76323,,,,,,,,,none
+GA,PPA,USAA-133943045,Garrison Property and Casualty Insurance Company,05/01/2024,0.000%,47512,,,,,,,,,none
+GA,PPA,USAA-134199714,United Services Automobile Association,11/18/2024,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134199714,USAA Casualty Insurance Company,11/18/2024,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134199714,USAA General Indemnity Company,11/18/2024,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134199714,Garrison Property and Casualty Insurance Company,11/18/2024,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134047459,Garrison Property and Casualty Insurance Company,05/25/2024,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134047459,United Services Automobile Association,05/25/2024,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134047459,USAA Casualty Insurance Company,05/25/2024,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134047459,USAA General Indemnity Company,05/25/2024,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134387937,Garrison Property and Casualty Insurance Company,08/01/2025,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134387937,United Services Automobile Association,08/01/2025,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134387937,USAA Casualty Insurance Company,08/01/2025,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134387937,USAA General Indemnity Company,08/01/2025,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134740517,United Services Automobile Association,04/03/2026,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134740517,USAA Casualty Insurance Company,04/03/2026,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134740517,USAA General Indemnity Company,04/03/2026,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134740517,Garrison Property and Casualty Insurance Company,04/03/2026,0.000%,0,,,,,,,,,none
+GA,PPA,USAA-134208290,United Services Automobile Association,05/17/2025,0.000%,104426,,,,,,,,,none
+GA,PPA,USAA-134208290,USAA Casualty Insurance Company,05/17/2025,0.000%,107273,,,,,,,,,none
+GA,PPA,USAA-134208290,USAA General Indemnity Company,05/17/2025,0.000%,75337,,,,,,,,,none
+GA,PPA,USAA-134208290,Garrison Property and Casualty Insurance Company,05/17/2025,0.000%,46089,,,,,,,,,none
+GA,PPA,FAIG-134019038,Farmers Group Property and Casualty Insurance Company,05/06/2024,12.600%,55,,,,,,,,,none
+GA,PPA,FAIG-134018930,Farmers Group Property and Casualty Insurance Company,05/06/2024,12.900%,6323,,,,,,,,,none
+GA,PPA,FAIG-134716067,Farmers Group Property and Casualty Insurance Company,02/02/2026,5.000%,5185,Farmers Group Property and Casualty Insurance Company,01/24/26,5.0,5185,True,True,False,True,date_relaxed
+GA,PPA,FAIG-134505916,Farmers Group Property and Casualty Insurance Company,06/20/2025,22.800%,73,,,,,,,,,none
+GA,PPA,FAIG-134505696,Farmers Group Property and Casualty Insurance Company,06/20/2025,7.000%,7726,Farmers Group Property and Casualty Insurance Company,06/20/25,7.0,7726,True,True,True,True,direct
+GA,PPA,FARM-134755086,Farmers Insurance Exchange,04/13/2026,0.000%,8366,,,,,,,,,none
+GA,PPA,FARM-134406664,Farmers Insurance Exchange,03/29/2025,0.000%,0,Farmers Insurance Exchange,03/29/25,0.0,0,True,True,True,True,direct
+GA,PPA,FARM-133979618,Farmers Insurance Exchange,03/25/2024,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134567206,Farmers Insurance Exchange,01/12/2026,0.000%,8892,Farmers Insurance Exchange,01/12/26,0.0,8892,True,True,True,True,direct
+GA,PPA,FARM-134174662,Farmers Insurance Exchange,09/29/2024,0.000%,4480,,,,,,,,,none
+GA,PPA,FARM-134603070,Farmers Insurance Exchange,08/29/2025,0.000%,0,Farmers Insurance Exchange,08/29/25,0.0,0,True,True,True,True,direct
+GA,PPA,FARM-134809737,Farmers Insurance Exchange,03/16/2026,0.000%,0,Farmers Insurance Exchange,03/16/26,0.0,0,True,True,True,True,direct
+GA,PPA,FARM-134220168,Farmers Insurance Exchange,10/12/2024,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134117222,Farmers Insurance Exchange,07/15/2024,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134736554,Farmers Insurance Exchange,02/09/2026,0.000%,8892,Farmers Insurance Exchange,02/09/26,0.0,8366,True,True,True,False,direct
+GA,PPA,FARM-133959499,Farmers Insurance Exchange,04/08/2024,0.000%,198,,,,,,,,,none
+GA,PPA,FARM-134086937,Farmers Insurance Exchange,07/15/2024,12.500%,4480,,,,,,,,,none
+GA,PPA,FAIG-134595721,Farmers Property and Casualty Insurance Company,09/01/2025,0.000%,0,Farmers Property and Casualty Insurance Company,09/01/25,0.0,0,True,True,True,True,direct
+GA,PPA,FAIG-134595721,Farmers Group Property and Casualty Insurance Company,09/01/2025,0.000%,0,Farmers Group Property and Casualty Insurance Company,09/01/25,0.0,0,True,True,True,True,direct
+GA,PPA,FAIG-134595721,Farmers Direct Property and Casualty Insurance Company,09/01/2025,0.000%,0,Farmers Direct Property and Casualty Insurance Company,09/01/25,0.0,0,True,True,True,True,direct
+GA,PPA,FAIG-134595721,Farmers Casualty Insurance Company,09/01/2025,0.000%,0,Farmers Casualty Insurance Company,09/01/25,0.0,0,True,True,True,True,direct
+GA,PPA,FAIG-134018531,Farmers Property and Casualty Insurance Company,05/06/2024,8.500%,4,,,,,,,,,none
+GA,PPA,FAIG-134018531,Farmers Direct Property and Casualty Insurance Company,05/06/2024,0.000%,0,,,,,,,,,none
+GA,PPA,FAIG-134018531,Farmers Casualty Insurance Company,05/06/2024,14.600%,10,,,,,,,,,none
+GA,PPA,FAIG-134018260,Farmers Property and Casualty Insurance Company,05/06/2024,5.900%,954,,,,,,,,,none
+GA,PPA,FAIG-134018260,Farmers Direct Property and Casualty Insurance Company,05/06/2024,0.000%,63,,,,,,,,,none
+GA,PPA,FAIG-134018260,Farmers Casualty Insurance Company,05/06/2024,8.900%,1803,,,,,,,,,none
+GA,PPA,FAIG-134504831,Farmers Property and Casualty Insurance Company,06/20/2025,10.900%,2,,,,,,,,,none
+GA,PPA,FAIG-134504831,Farmers Casualty Insurance Company,06/20/2025,11.900%,10,,,,,,,,,none
+GA,PPA,FAIG-134504059,Farmers Property and Casualty Insurance Company,06/20/2025,7.300%,904,Farmers Property and Casualty Insurance Company,06/20/25,7.3,904,True,True,True,True,direct
+GA,PPA,FAIG-134504059,Farmers Direct Property and Casualty Insurance Company,06/20/2025,9.900%,65,Farmers Direct Property and Casualty Insurance Company,06/20/25,9.9,65,True,True,True,True,direct
+GA,PPA,FAIG-134504059,Farmers Casualty Insurance Company,06/20/2025,9.000%,1769,Farmers Casualty Insurance Company,06/20/25,9.0,1769,True,True,True,True,direct
+GA,PPA,FAIG-134715546,Farmers Property and Casualty Insurance Company,02/02/2026,4.600%,709,Farmers Property and Casualty Insurance Company,01/24/26,4.6,709,True,True,False,True,date_relaxed
+GA,PPA,FAIG-134715546,Farmers Direct Property and Casualty Insurance Company,02/02/2026,5.000%,53,Farmers Direct Property and Casualty Insurance Company,01/24/26,5.0,53,True,True,False,True,date_relaxed
+GA,PPA,FAIG-134715546,Farmers Casualty Insurance Company,02/02/2026,5.000%,1208,Farmers Casualty Insurance Company,01/24/26,5.0,1208,True,True,False,True,date_relaxed
+GA,PPA,FARM-134220046,Mid-Century Insurance Company,10/12/2024,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-133979606,Mid-Century Insurance Company,03/25/2024,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134599856,Mid-Century Insurance Company,08/29/2025,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134808149,Mid-Century Insurance Company,03/16/2026,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134406005,Mid-Century Insurance Company,03/29/2025,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134265217,Mid-Century Insurance Company,01/24/2025,12.500%,13,,,,,,,,,none
+GA,PPA,FARM-133847072,Mid-Century Insurance Company,02/18/2024,11.700%,18,,,,,,,,,none
+GA,PPA,FARM-134472408,Mid-Century Insurance Company,07/25/2025,12.500%,7,,,,,,,,,none
+GA,PPA,FARM-134322016,Mid-Century Insurance Company,04/04/2025,0.000%,13,,,,,,,,,none
+GA,PPA,FARM-134267331,Mid-Century Insurance Company,01/24/2025,12.400%,4906,,,,,,,,,none
+GA,PPA,FARM-133847076,Mid-Century Insurance Company,02/18/2024,12.500%,6594,,,,,,,,,none
+GA,PPA,FARM-134322400,Mid-Century Insurance Company,04/04/2025,0.000%,4906,,,,,,,,,none
+GA,PPA,FARM-134472421,Mid-Century Insurance Company,07/25/2025,8.800%,3312,,,,,,,,,none
+GA,PPA,FARM-133843957,Mid-Century Insurance Company,05/11/2024,12.500%,42285,,,,,,,,,none
+GA,PPA,FARM-134808853,Mid-Century Insurance Company,03/16/2026,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-133979617,Mid-Century Insurance Company,03/25/2024,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134472372,Mid-Century Insurance Company,07/25/2025,8.700%,20883,,,,,,,,,none
+GA,PPA,FARM-134603069,Mid-Century Insurance Company,08/29/2025,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134267457,Mid-Century Insurance Company,01/24/2025,12.100%,33354,,,,,,,,,none
+GA,PPA,FARM-134406637,Mid-Century Insurance Company,03/29/2025,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134320366,Mid-Century Insurance Company,04/04/2025,0.000%,33354,,,,,,,,,none
+GA,PPA,FARM-134220408,Mid-Century Insurance Company,10/12/2024,0.000%,0,,,,,,,,,none
+GA,PPA,NWPP-134428376,Nationwide Insurance Company of America,09/19/2025,0.000%,4852,,,,,,,,,none
+GA,PPA,NWPP-134428376,Nationwide General Insurance Company,09/19/2025,0.000%,9548,,,,,,,,,none
+GA,PPA,NWPP-134428376,Nationwide Mutual Insurance Company,09/19/2025,-8.000%,1826,,,,,,,,,none
+GA,PPA,NWPP-134428376,Nationwide Property and Casualty Insurance Company,09/19/2025,-7.800%,3047,,,,,,,,,none
+GA,PPA,NWPP-134428376,Nationwide Affinity Insurance Company of America,09/19/2025,1.500%,3426,,,,,,,,,none
+GA,PPA,NWPP-134064379,Nationwide Insurance Company of America,08/25/2024,14.500%,6156,,,,,,,,,none
+GA,PPA,NWPP-134064379,Nationwide General Insurance Company,08/25/2024,10.000%,14694,,,,,,,,,none
+GA,PPA,NWPP-134064379,Nationwide Mutual Insurance Company,08/25/2024,5.000%,2367,,,,,,,,,none
+GA,PPA,NWPP-134064379,Nationwide Property and Casualty Insurance Company,08/25/2024,10.000%,4149,,,,,,,,,none
+GA,PPA,NWPP-134064379,Nationwide Affinity Insurance Company of America,08/25/2024,5.000%,4200,,,,,,,,,none
+GA,PPA,NWPP-134058722,Nationwide Insurance Company of America,08/25/2024,0.000%,2,,,,,,,,,none
+GA,PPA,NWPP-134058722,Nationwide General Insurance Company,08/25/2024,0.000%,140,,,,,,,,,none
+GA,PPA,NWPP-134058722,Nationwide Mutual Insurance Company,08/25/2024,0.000%,105,,,,,,,,,none
+GA,PPA,NWPP-134058722,Nationwide Property and Casualty Insurance Company,08/25/2024,0.000%,263,,,,,,,,,none
+GA,PPA,NWPP-134058722,Nationwide Affinity Insurance Company of America,08/25/2024,0.000%,103,,,,,,,,,none
+GA,PPA,NWPP-134460219,Nationwide Insurance Company of America,06/01/2025,0.000%,4852,Nationwide Insurance Company of America,06/01/25,0.0,4852,True,True,True,True,direct
+GA,PPA,NWPP-134460219,Nationwide General Insurance Company,06/01/2025,0.000%,9548,Nationwide General Insurance Company,06/01/25,0.0,9548,True,True,True,True,direct
+GA,PPA,NWPP-134460219,Nationwide Mutual Insurance Company,06/01/2025,0.000%,1826,Nationwide Mutual Insurance Company,06/01/25,0.0,1826,True,True,True,True,direct
+GA,PPA,NWPP-134460219,Nationwide Property and Casualty Insurance Company,06/01/2025,0.000%,3047,Nationwide Property and Casualty Insurance Company,06/01/25,0.0,3047,True,True,True,True,direct
+GA,PPA,NWPP-134460219,Nationwide Affinity Insurance Company of America,06/01/2025,0.000%,3426,Nationwide Affinity Insurance Company of America,06/01/25,0.0,3426,True,True,True,True,direct
+GA,PPA,NWPP-133877432,Nationwide Insurance Company of America,02/23/2024,14.000%,6597,,,,,,,,,none
+GA,PPA,NWPP-133877432,Nationwide General Insurance Company,02/23/2024,14.000%,17401,,,,,,,,,none
+GA,PPA,NWPP-133877432,Nationwide Mutual Insurance Company,02/23/2024,5.100%,2675,,,,,,,,,none
+GA,PPA,NWPP-133877432,Nationwide Property and Casualty Insurance Company,02/23/2024,15.000%,4760,,,,,,,,,none
+GA,PPA,NWPP-133877432,Nationwide Affinity Insurance Company of America,02/23/2024,5.000%,4653,,,,,,,,,none
+GA,PPA,NWPP-134056622,Nationwide Property and Casualty Insurance Company,08/25/2024,10.000%,4149,,,,,,,,,none
+GA,PPA,NWPP-134056622,Nationwide Affinity Insurance Company of America,08/25/2024,5.000%,4200,,,,,,,,,none
+GA,PPA,NWPP-134056622,Nationwide Insurance Company of America,08/25/2024,14.500%,6156,,,,,,,,,none
+GA,PPA,NWPP-134056622,Nationwide General Insurance Company,08/25/2024,10.000%,14694,,,,,,,,,none
+GA,PPA,NWPP-134056622,Nationwide Mutual Insurance Company,08/25/2024,5.000%,2367,,,,,,,,,none
+GA,PPA,NWPP-133987915,Nationwide Insurance Company of America,05/01/2024,0.000%,6159,,,,,,,,,none
+GA,PPA,NWPP-133987915,Nationwide General Insurance Company,05/01/2024,0.000%,14739,,,,,,,,,none
+GA,PPA,NWPP-133987915,Nationwide Mutual Insurance Company,05/01/2024,0.000%,2474,,,,,,,,,none
+GA,PPA,NWPP-133987915,Nationwide Property and Casualty Insurance Company,05/01/2024,0.000%,4416,,,,,,,,,none
+GA,PPA,NWPP-133987915,Nationwide Affinity Insurance Company of America,05/01/2024,0.000%,4305,,,,,,,,,none
+GA,PPA,NWPP-134320933,Nationwide Insurance Company of America,02/28/2025,0.000%,5513,Nationwide Insurance Company of America,02/28/25,0.0,5513,True,True,True,True,direct
+GA,PPA,AMFC-134270029,American Family Insurance Company,12/01/2024,9.900%,282,,,,,,,,,none
+GA,PPA,AMFC-133927525,American Family Insurance Company,05/01/2024,12.600%,1689,,,,,,,,,none
+GA,PPA,AMFC-134475936,American Family Insurance Company,07/20/2025,3.700%,1849,American Family Insurance Company,06/01/25,3.7,1849,True,True,False,True,date_relaxed
+GA,PPA,AMFC-134269866,American Family Insurance Company,12/01/2024,14.400%,282,,,,,,,,,none
+GA,PPA,AMFC-133927497,American Family Insurance Company,05/01/2024,9.900%,1168,,,,,,,,,none
+GA,PPA,CFPC-134106017,COUNTRY Casualty Insurance Company,08/28/2024,0.000%,503,COUNTRY Casualty Insurance Company,06/17/25,0.0,503,True,True,False,True,date_relaxed
+GA,PPA,CFPC-134269589,COUNTRY Casualty Insurance Company,12/31/2024,0.000%,379,,,,,,,,,none
+GA,PPA,CFPC-134349743,COUNTRY Casualty Insurance Company,09/21/2025,0.000%,624,COUNTRY Casualty Insurance Company,09/21/25,0.0,624,True,True,True,True,direct
+GA,PPA,CFPC-133859085,COUNTRY Casualty Insurance Company,02/18/2024,0.000%,541,,,,,,,,,none
+GA,PPA,CFPC-134190527,COUNTRY Casualty Insurance Company,11/29/2024,0.000%,45,,,,,,,,,none
+GA,PPA,CFPC-134021694,COUNTRY Casualty Insurance Company,05/29/2024,0.000%,541,,,,,,,,,none
+GA,PPA,CFPC-134225211,COUNTRY Mutual Insurance Company,,0.000%,5050,COUNTRY Mutual Insurance Company,06/17/25,0.0,5050,True,True,False,True,date_relaxed
+GA,PPA,CFPC-134225211,COUNTRY Preferred Insurance Company,,0.000%,14878,COUNTRY Preferred Insurance Company,06/17/25,0.0,14878,True,True,False,True,date_relaxed
+GA,PPA,CFPC-134225211,COUNTRY Casualty Insurance Company,,0.000%,503,,,,,,,,,none
+GA,PPA,CFPC-134508132,COUNTRY Preferred Insurance Company,07/24/2025,0.000%,24888,COUNTRY Preferred Insurance Company,07/24/25,0.0,24888,True,True,True,True,direct
+GA,PPA,CFPC-134508132,COUNTRY Casualty Insurance Company,07/24/2025,0.000%,624,COUNTRY Casualty Insurance Company,07/24/25,0.0,624,True,True,True,True,direct
+GA,PPA,CFPC-134492015,COUNTRY Mutual Insurance Company,12/15/2025,0.000%,0,,,,,,,,,none
+GA,PPA,CFPC-134492015,COUNTRY Preferred Insurance Company,12/15/2025,0.000%,0,,,,,,,,,none
+GA,PPA,CFPC-134492015,COUNTRY Casualty Insurance Company,12/15/2025,0.000%,0,,,,,,,,,none
+GA,PPA,CFPC-134294144,COUNTRY Preferred Insurance Company,09/21/2025,3.321%,24888,COUNTRY Preferred Insurance Company,09/21/25,3.321,24888,True,True,True,True,direct
+GA,PPA,CFPC-134294144,COUNTRY Casualty Insurance Company,09/21/2025,4.756%,624,COUNTRY Casualty Insurance Company,09/21/25,4.756,624,True,True,True,True,direct
+GA,PPA,CFPC-134105974,COUNTRY Mutual Insurance Company,08/28/2024,9.229%,5050,,,,,,,,,none
+GA,PPA,CFPC-134105974,COUNTRY Preferred Insurance Company,08/28/2024,10.381%,14878,,,,,,,,,none
+GA,PPA,CFPC-134105974,COUNTRY Casualty Insurance Company,08/28/2024,9.577%,503,,,,,,,,,none
+GA,PPA,CFPC-134269577,COUNTRY Mutual Insurance Company,12/31/2024,-0.116%,4469,,,,,,,,,none
+GA,PPA,CFPC-134269577,COUNTRY Preferred Insurance Company,12/31/2024,-0.124%,14523,,,,,,,,,none
+GA,PPA,CFPC-134269577,COUNTRY Casualty Insurance Company,12/31/2024,-0.152%,379,,,,,,,,,none
+GA,PPA,CFPC-134577851,COUNTRY Mutual Insurance Company,12/01/2025,0.000%,14823,COUNTRY Mutual Insurance Company,12/01/25,0.0,14823,True,True,True,True,direct
+GA,PPA,CFPC-134577851,COUNTRY Preferred Insurance Company,12/01/2025,0.000%,24888,COUNTRY Preferred Insurance Company,12/01/25,0.0,24888,True,True,True,True,direct
+GA,PPA,CFPC-134577851,COUNTRY Casualty Insurance Company,12/01/2025,0.000%,624,COUNTRY Casualty Insurance Company,12/01/25,0.0,624,True,True,True,True,direct
+GA,PPA,CFPC-133859077,COUNTRY Preferred Insurance Company,02/18/2024,16.740%,14681,,,,,,,,,none
+GA,PPA,CFPC-133859077,COUNTRY Casualty Insurance Company,02/18/2024,20.382%,541,,,,,,,,,none
+GA,PPA,CFPC-134190524,COUNTRY Mutual Insurance Company,11/29/2024,4.006%,8823,,,,,,,,,none
+GA,PPA,CFPC-134190524,COUNTRY Preferred Insurance Company,11/29/2024,3.968%,9448,,,,,,,,,none
+GA,PPA,CFPC-134190524,COUNTRY Casualty Insurance Company,11/29/2024,4.257%,45,,,,,,,,,none
+GA,PPA,CFPC-134021692,COUNTRY Mutual Insurance Company,05/29/2024,5.660%,9749,,,,,,,,,none
+GA,PPA,CFPC-134021692,COUNTRY Preferred Insurance Company,05/29/2024,5.387%,10079,,,,,,,,,none
+GA,PPA,CFPC-134021692,COUNTRY Casualty Insurance Company,05/29/2024,5.532%,54,,,,,,,,,none
 GA,PPA,GECC-134337863,GEICO Casualty Company,01/18/2025,0.000%,615,GEICO Casualty Company,01/18/25,0.0,615,True,True,True,True,reclassified
 GA,PPA,GECC-134337863,GEICO General Insurance Company,01/18/2025,0.000%,3174,GEICO General Insurance Company,01/18/25,0.0,3174,True,True,True,True,reclassified
 GA,PPA,GECC-134337863,GEICO Indemnity Company,01/18/2025,0.000%,247,GEICO Indemnity Company,01/18/25,0.0,247,True,True,True,True,reclassified

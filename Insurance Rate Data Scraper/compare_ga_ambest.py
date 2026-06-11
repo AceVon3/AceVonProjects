@@ -38,6 +38,17 @@ TARGET_KEYWORDS: dict[str, tuple[str, ...]] = {
     "Liberty Mutual": ("liberty", "american states"),
     "Safeco":         ("safeco", "first national insurance company of america", "general insurance company of america"),
     "Progressive":    ("progressive", "artisan and truckers"),
+    # 13-brand expansion (2026-06-10, SCOPE.md) — anchored on the exact
+    # entity names the AM Best reports use (Phase 1 confirmation).
+    "USAA":             ("usaa", "united services", "garrison"),
+    "Farmers":          ("farmers insurance exchange", "fire insurance exchange",
+                         "truck insurance exchange", "mid-century",
+                         "farmers insurance company", "farmers casualty",
+                         "farmers property and casualty", "farmers direct",
+                         "farmers group property"),
+    "Nationwide":       ("nationwide",),
+    "American Family":  ("american family",),
+    "Country Financial": ("country mutual", "country preferred", "country casualty"),
 }
 
 EXCLUDED_SUBSIDIARY_PATTERNS = (
@@ -51,6 +62,30 @@ EXCLUDED_SUBSIDIARY_PATTERNS = (
     "united financial",
     "american economy",
     "peerless",
+    # 13-brand expansion exclusions (SCOPE.md). Checked BEFORE brand keywords
+    # in carrier_brand, which is what keeps the Munich Re "American Family
+    # Home" (NAIC 23450) collision out of the American Family bucket.
+    "noblr",
+    "foremost",
+    "bristol west",
+    "coast national",
+    "toggle insurance",
+    "economy fire",
+    "economy premier",
+    "economy preferred",
+    "amco insurance",
+    "allied property and casualty",
+    "depositors insurance",
+    "titan indemnity",
+    "victoria fire",
+    "american family home",
+    "american modern",
+    "american family connect",
+    "homesite",
+    "midvale",
+    "main street america",
+    "permanent general",
+    "general automobile",
 )
 
 DATE_FROM = datetime(2025, 1, 1)

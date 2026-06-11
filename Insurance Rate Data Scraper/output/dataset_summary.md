@@ -6,9 +6,9 @@
 
 Rate-filing rows for personal-lines insurance across **Idaho, Washington, Colorado, Oregon, Utah, Arizona, Montana, Wyoming, Nevada, New Mexico, and Georgia**, structured to match AM Best's Disposition Page Data export. Each row represents one carrier subsidiary's per-program rate impact under a specific SERFF filing whose **effective date** falls in `[2024-01-01, 2026-04-17]`.
 
-> **Dataset status (2026-06-10): 1,404 rows, eleven states, complete.** Effective-date window `[2024-01-01, 2026-04-17]`; SERFF submission window `2023-07-01 → 2026-04-17`. Georgia added 2026-06-10 (+268 rows) — the first eastern state and the largest single-state addition, both lines cross-checked at ingestion (PPA 90.3%, HO 93.8%); collection rode out the SERFF AWS-WAF bot-challenge throttle via the B1 search-universe pipeline + batched downloads (see "Georgia expansion"). New Mexico (2026-06-08, +131) completed the western cluster.
+> **Dataset status (2026-06-10): 1,616 rows, eleven states, THIRTEEN brands.** Effective-date window `[2024-01-01, 2026-04-17]`; SERFF submission window `2023-07-01 → 2026-04-17`. The 13-brand expansion (USAA, Farmers, Nationwide, American Family, Country Financial — `SCOPE.md`) was validated on Georgia against its committed 268-row 8-brand baseline: all 268 rows byte-identical after the re-run (zero keyword bleed), +212 new-carrier rows, GA cross-check improved to PPA 92.8% / HO 94.3%. Georgia itself (added 2026-06-10) is the first eastern state; collection rode out the SERFF AWS-WAF bot-challenge throttle via the B1 search-universe pipeline + batched downloads (see "Georgia expansion").
 >
-> **Honest one-liner:** of 1,404 rows — **2 field-validated** (the `SFMA-134676753` anchor, all-field match), **299 AM Best cross-checked** (234 direct / 65 date-relaxed+reclassified), **254 extracted in a validated window but not individually matched**, **849 pipeline-extracted** (CO, ID non-anchor, all eff-2024). This is a SERFF-sourced, pipeline-extracted collection — corroborated against AM Best only where `external_validation` marks it, honest where not. Full detail + audit: **`TIER_RELABEL.md`**, `output/tier_relabel_audit.csv`, `output/corroboration/`.
+> **Honest one-liner:** of 1,616 rows — **2 field-validated** (the `SFMA-134676753` anchor, all-field match), **363 AM Best cross-checked** (285 direct / 78 date-relaxed+reclassified), **301 extracted in a validated window but not individually matched**, **950 pipeline-extracted** (CO, ID non-anchor, all eff-2024). This is a SERFF-sourced, pipeline-extracted collection — corroborated against AM Best only where `external_validation` marks it, honest where not. Full detail + audit: **`TIER_RELABEL.md`**, `output/tier_relabel_audit.csv`, `output/corroboration/`.
 
 ### Validation tiering (four-tier, 2026-06-08)
 
@@ -17,9 +17,9 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 | `external_validation` | meaning | count |
 |---|---|--:|
 | `field_validated` | documented all-field per-row AM Best Disposition Page Data match (the `SFMA-134676753` anchor, value unchanged) | 2 |
-| `ambest_cross_checked` | matched an AM Best entry on subsidiary + impact (+ eff_date or policyholders); `match_strength` records `direct`/`date_relaxed`/`reclassified` | 299 |
-| `pipeline_extracted_in_validated_window` | effective_date ≥ 2025-01-01 in a cross-checked state (AZ/GA/MT/NV/NM/OR/UT/WA), not individually matched | 254 |
-| `pipeline_extracted` | CO (no cross-check), ID non-anchor, and all eff-2024 extension rows | 849 |
+| `ambest_cross_checked` | matched an AM Best entry on subsidiary + impact (+ eff_date or policyholders); `match_strength` records `direct`/`date_relaxed`/`reclassified` | 363 |
+| `pipeline_extracted_in_validated_window` | effective_date ≥ 2025-01-01 in a cross-checked state (AZ/GA/MT/NV/NM/OR/UT/WA), not individually matched | 301 |
+| `pipeline_extracted` | CO (no cross-check), ID non-anchor, and all eff-2024 extension rows | 950 |
 
 - **`source`**: `original` (pre-extension 468) / `extension` (2024 back-extension). **`validation_tier`** (legacy app-compat): `field_validated`+`ambest_cross_checked` → `ambest_validated`; the two pipeline tiers → `pipeline_only`. Use `external_validation` for the full gradient and `source` for provenance.
 - **source × external_validation:** original → field 2 / cross_checked **179** / in-window 207 / pipeline 149; extension → cross_checked **6** / in-window 13 / pipeline 580. (NM, added 2026-06-08, is a fresh single-pass collection: its 69 eff≥2025 rows carry the mechanical `source=original` label — 51 cross_checked + 18 in-window — and its 62 eff-2024 rows `source=extension`/pipeline.) Of the **original pre-NM 468**, 130 still carry external corroboration; the 51 new cross_checked are all New Mexico.
@@ -28,7 +28,7 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 |---|--:|--:|--:|--:|--:|
 | AZ | 0 | 29 | 48 | 102 | 179 |
 | CO | 0 | 0 | 0 | 191 | 191 |
-| GA | 0 | 114 | 34 | 120 | 268 |
+| GA | 0 | 178 | 81 | 221 | 480 |
 | ID | 2 | 0 | 0 | 110 | 112 |
 | MT | 0 | 19 | 6 | 32 | 57 |
 | NM | 0 | 51 | 18 | 62 | 131 |
@@ -37,7 +37,7 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 | UT | 0 | 18 | 66 | 58 | 142 |
 | WA | 0 | 0 | 38 | 46 | 84 |
 
-**`match_strength`** (ambest_cross_checked): AZ 25 direct / 4 date_relaxed; OR 29 direct; MT 18 direct / 1 date_relaxed; NV 28 direct / 7 date_relaxed / 4 reclassified; **NM 44 direct / 0 date_relaxed / 7 reclassified — strong (zero date-relaxed; the 7 reclassified are GEICO/Progressive RV filings AM Best buckets under PPA)**; **GA 90 direct / 18 date_relaxed / 6 reclassified**; **UT 0 direct / 17 date_relaxed / 1 reclassified — flagged mostly-date-relaxed (soft corroboration)**. Overall 234 direct / 47 date_relaxed / 18 reclassified.
+**`match_strength`** (ambest_cross_checked): AZ 25 direct / 4 date_relaxed; OR 29 direct; MT 18 direct / 1 date_relaxed; NV 28 direct / 7 date_relaxed / 4 reclassified; **NM 44 direct / 0 date_relaxed / 7 reclassified — strong (zero date-relaxed; the 7 reclassified are GEICO/Progressive RV filings AM Best buckets under PPA)**; **GA 141 direct / 31 date_relaxed / 6 reclassified (13-brand)**; **UT 0 direct / 17 date_relaxed / 1 reclassified — flagged mostly-date-relaxed (soft corroboration)**. Overall 285 direct / 60 date_relaxed / 18 reclassified.
 
 **WA limitation:** WA was cross-checked (documented 12/14 PPA) but **no reusable per-row artifact was built** (decision 2026-06-08), so WA's matched rows are **not** marked `ambest_cross_checked` — its in-window rows sit in `pipeline_extracted_in_validated_window`. WA's corroboration is documented-only, not per-row re-derivable. New states (per `CROSS_CHECK_STANDARD.md`) always build the artifact.
 
@@ -55,8 +55,8 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 | WY    |    0 |
 | NV    |  109 |
 | NM    |  131 |
-| GA    |  268 |
-| **Σ** | **1,404** |
+| GA    |  480 |
+| **Σ** | **1,616** |
 
 *(Per-brand breakdown table below predates the back-extension and reflects the original 468; the canonical per-state/per-tier counts are in [Validation tiering](#validation-tiering-four-tier-2026-06-08).)*
 
@@ -78,6 +78,8 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 State Farm row counts include filings made under the **MGA Insurance Company, Inc.** subsidiary brand (a State Farm-owned filer that submits under its own name on SERFF). MGA Insurance was added as a separate SERFF search keyword in the Item #3a resolution (2026-05-15) and is classified back into State Farm via `GROUP_KW["State Farm"]`.
 
 ## Scope: Major customer-facing personal lines brands
+
+> **Governing principle (2026-06-10, user-confirmed):** the operative inclusion test is **"what brand does the customer believe they bought?"** — IN if the customer experiences the policy as the parent brand (whatever the underwriting entity or its heritage), OUT if they believe they bought a different brand, even one the parent owns. Sub-brand activity belongs to that brand, never folded into the parent. Full statement, the 13-brand roster (8 original + USAA, Farmers, Nationwide, American Family, Country Financial), per-carrier entity lists and SERFF name traps: **`SCOPE.md`**. The sections below describe the original 8-brand scope; the 5-carrier expansion was validated on GA before any new-state use.
 
 This dataset tracks **8 brands** that operate as distinct customer-facing insurers in their target markets:
 
@@ -423,7 +425,8 @@ NV AM Best report contains both PPA and HO Multi-Peril filings.
 | MT | 16/17 (94.1%) | 3/3 (100%) |
 | NV | 28/33 (84.8%) | 5/8 (62.5%) |
 | NM | 36/37 (97.3%) | 15/17 (88.2%) |
-| GA | 93/103 (90.3%) | 30/32 (93.8%) |
+| GA (8-brand) | 93/103 (90.3%) | 30/32 (93.8%) |
+| GA (13-brand) | 129/139 (92.8%) | 66/70 (94.3%) |
 | WA | 12/14 (86%) | — |
 
 ## New Mexico expansion (added 2026-06-08)
@@ -495,6 +498,52 @@ Three effective-date-range PDFs tile the window `[2024-01-01, 2026-06-08]` with 
 4. **1 HO Safeco of Oregon (eff 07/27/25, 18.5%):** event captured — we hold the same date's filed 9.9% (LBPM-134521388) plus a withdrawn 19.9% (LBPM-134467944); AM Best's 18.5% is again a disposition-stage figure.
 
 Per-row artifacts: `output/corroboration/ga_ppa_corroboration.csv`, `ga_ho_corroboration.csv` (+ `*_missing.csv`).
+
+## 13-brand expansion — validated on GA (2026-06-10)
+
+Five carriers added under the SCOPE.md operative test ("what brand does the
+customer believe they bought?"): **USAA, Farmers, Nationwide, American Family,
+Country Financial**. Validation method: re-run GA (the freshest committed
+state and the only one where all 5 appear in both AM Best and SERFF) with all
+13 brands against its known 268-row 8-brand baseline, demanding the baseline
+stay byte-identical so every new row is attributable.
+
+- **Guardrail: CLEAN.** All 268 baseline rows cell-identical through the full
+  pipeline (verified on base columns post-build AND all 21 columns post-tiers).
+  Zero keyword bleed. NM/UT/ID regression with the expanded exclusion lists:
+  0 diffs; anchor SFMA-134676753 14/14.
+- **+212 rows** (GA 268 → 480): Farmers 76 (57 PPA / 19 HO), Nationwide 44
+  (36/8), Country Financial 41 (33/8), USAA 40 (24/16), American Family 11
+  (6/5). Modest by design — honest exclusions (no CONNECT/Homesite/Foremost/
+  Bristol West/Allied/Noblr inflation).
+- **Cross-check improved:** PPA 93/103 (90.3%) → **129/139 (92.8%)**, HO
+  30/32 (93.8%) → **66/70 (94.3%)**. The new carriers added 36 PPA + 38 HO
+  in-scope AM Best entries and missed only 2 (both Farmers Insurance Exchange
+  HO at 0.0% impact — the blank-public-table pattern). Every PPA miss is one
+  of the 10 already-classified 8-brand misses.
+- **Munich Re / American Modern = KNOWN COLLISION CLUSTER.** "American Family
+  Home Insurance Company" (NAIC 23450) was pre-excluded after web/NAIC
+  verification; the sibling "American Modern *" entities then rode a kept
+  filing's rate table into 3 unclassified rows and were caught by the Phase 3
+  guardrail differ. Both pattern families are excluded
+  (`american family home`, `american modern`). If a third sibling surfaces in
+  IL/OH/VA, it's the same cluster — exclude it.
+- **Search-phase reality under the WAF:** 10 keywords took 4 rounds with
+  cooldowns (silent-zero false failures + a pagination stall at exactly 100
+  rows + one workbook clobbered by a 0-row retry — retries now write to
+  `--out-suffix` files and `merge_ga_newcarriers.py` unions all generations,
+  dated copies winning). Final universe: 872 → 1,542 filings, 540 targets.
+- **Structural download miss (new):** NWPP-134378106 (Nationwide) — row not
+  found through batch + fresh-per-target across two passes; joins GA's TRVD-G
+  ledger of structural misses (the two TRVD-G HO misses from the 8-brand run
+  recovered during this re-run and emitted 0 rows). Persistent count: 1.
+- **Known caveats:** 53 new-carrier rows ship blank `filing_date` (mostly
+  Country — WAF-challenged date fetches; backfillable via
+  `backfill_submission_dates.py` sidecar; no tiering/cross-check impact).
+  The AM Best parser's blank-subsidiary-name artifact silently drops some
+  entries from cross-check denominators (USAA PPA: all 3 in-window entries
+  blank-named → unmeasured); fix scheduled before IL/OH/VA — measurement
+  only, deliverable rows unaffected.
 
 ## Phase 2 backlog (consolidated)
 
