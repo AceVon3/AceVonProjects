@@ -16,19 +16,19 @@ GA,PPA,ALSE-134475035,Allstate Northbrook Indemnity Company,07/07/2025,9.900%,23
 GA,PPA,ALSE-134475529,Allstate Indemnity Company,07/07/2025,20.200%,564,Allstate Indemnity Company,07/07/25,20.2,564,True,True,True,True,direct
 GA,PPA,ALSE-134475551,Allstate Indemnity Company,07/07/2025,14.900%,564,Allstate Indemnity Company,07/07/25,14.9,564,True,True,True,True,direct
 GA,PPA,ALSE-134493977,Allstate Property and Casualty Insurance Company,06/09/2025,0.000%,0,Allstate Property and Casualty Insurance Company,06/09/25,0.0,0,True,True,True,True,direct
-GA,PPA,ALSE-134546946,Allstate North American Insurance Company,07/22/2025,0.000%,70620,,,,,,,,,none
+GA,PPA,ALSE-134546946,Allstate North American Insurance Company,07/22/2025,0.000%,70620,Allstate North American Insurance Company,07/22/25,0.0,70620,True,True,True,True,direct
 GA,PPA,ALSE-134645688,Allstate Insurance Company,10/20/2025,0.000%,0,Allstate Insurance Company,10/20/25,0.0,0,True,True,True,True,direct
 GA,PPA,ALSE-134645688,Allstate Fire and Casualty Insurance Company,10/20/2025,0.000%,0,Allstate Fire and Casualty Insurance Company,10/20/25,0.0,0,True,True,True,True,direct
 GA,PPA,ALSE-134645688,Allstate Indemnity Company,10/20/2025,0.000%,0,Allstate Indemnity Company,10/20/25,0.0,0,True,True,True,True,direct
 GA,PPA,ALSE-134645688,Allstate Northbrook Indemnity Company,10/20/2025,0.000%,0,Allstate Northbrook Indemnity Company,10/20/25,0.0,0,True,True,True,True,direct
-GA,PPA,ALSE-134647745,Allstate North American Insurance Company,10/21/2025,0.000%,96961,,,,,,,,,none
+GA,PPA,ALSE-134647745,Allstate North American Insurance Company,10/21/2025,0.000%,96961,Allstate North American Insurance Company,10/21/25,0.0,96961,True,True,True,True,direct
 GA,PPA,ALSE-134677014,Allstate Property and Casualty Insurance Company,12/01/2025,4.500%,235266,Allstate Property and Casualty Insurance Company,12/01/25,4.5,235266,True,True,True,True,direct
 GA,PPA,ALSE-134681805,Allstate Property and Casualty Insurance Company,11/24/2025,3.900%,14628,Allstate Property and Casualty Insurance Company,11/24/25,3.9,14628,True,True,True,True,direct
 GA,PPA,ALSE-134746590,Allstate Northbrook Indemnity Company,01/12/2026,11.800%,1367,Allstate Northbrook Indemnity Company,01/12/26,11.8,1367,True,True,True,True,direct
 GA,PPA,ALSE-134747805,Allstate Northbrook Indemnity Company,01/12/2026,11.300%,1367,Allstate Northbrook Indemnity Company,01/12/26,11.3,1367,True,True,True,True,direct
 GA,PPA,ALSE-134749100,Allstate Indemnity Company,01/12/2026,4.000%,502,Allstate Indemnity Company,01/12/26,4.0,502,True,True,True,True,direct
 GA,PPA,ALSE-134749181,Allstate Indemnity Company,01/12/2026,7.000%,502,Allstate Indemnity Company,01/12/26,7.0,502,True,True,True,True,direct
-GA,PPA,ALSE-134827619,Allstate North American Insurance Company,03/01/2026,-5.000%,89629,,,,,,,,,none
+GA,PPA,ALSE-134827619,Allstate North American Insurance Company,03/01/2026,-5.000%,89629,Allstate North American Insurance Company,03/01/26,-5.0,89629,True,True,True,True,direct
 GA,PPA,ALSE-133920285,Encompass Insurance Company of America,03/29/2024,12.500%,309,,,,,,,,,none
 GA,PPA,ALSE-133920285,Encompass Indemnity Company,03/29/2024,12.500%,1084,,,,,,,,,none
 GA,PPA,ALSE-133920285,Encompass Home and Auto Insurance Company,03/29/2024,12.500%,6710,,,,,,,,,none
@@ -224,18 +224,18 @@ GA,PPA,USAA-134047459,Garrison Property and Casualty Insurance Company,05/25/202
 GA,PPA,USAA-134047459,United Services Automobile Association,05/25/2024,0.000%,0,,,,,,,,,none
 GA,PPA,USAA-134047459,USAA Casualty Insurance Company,05/25/2024,0.000%,0,,,,,,,,,none
 GA,PPA,USAA-134047459,USAA General Indemnity Company,05/25/2024,0.000%,0,,,,,,,,,none
-GA,PPA,USAA-134387937,Garrison Property and Casualty Insurance Company,08/01/2025,0.000%,0,,,,,,,,,none
-GA,PPA,USAA-134387937,United Services Automobile Association,08/01/2025,0.000%,0,,,,,,,,,none
-GA,PPA,USAA-134387937,USAA Casualty Insurance Company,08/01/2025,0.000%,0,,,,,,,,,none
-GA,PPA,USAA-134387937,USAA General Indemnity Company,08/01/2025,0.000%,0,,,,,,,,,none
-GA,PPA,USAA-134740517,United Services Automobile Association,04/03/2026,0.000%,0,,,,,,,,,none
-GA,PPA,USAA-134740517,USAA Casualty Insurance Company,04/03/2026,0.000%,0,,,,,,,,,none
-GA,PPA,USAA-134740517,USAA General Indemnity Company,04/03/2026,0.000%,0,,,,,,,,,none
-GA,PPA,USAA-134740517,Garrison Property and Casualty Insurance Company,04/03/2026,0.000%,0,,,,,,,,,none
-GA,PPA,USAA-134208290,United Services Automobile Association,05/17/2025,0.000%,104426,,,,,,,,,none
-GA,PPA,USAA-134208290,USAA Casualty Insurance Company,05/17/2025,0.000%,107273,,,,,,,,,none
-GA,PPA,USAA-134208290,USAA General Indemnity Company,05/17/2025,0.000%,75337,,,,,,,,,none
-GA,PPA,USAA-134208290,Garrison Property and Casualty Insurance Company,05/17/2025,0.000%,46089,,,,,,,,,none
+GA,PPA,USAA-134387937,Garrison Property and Casualty Insurance Company,08/01/2025,0.000%,0,Garrison Property and Casualty Insurance Company,08/01/25,0.0,0,True,True,True,True,direct
+GA,PPA,USAA-134387937,United Services Automobile Association,08/01/2025,0.000%,0,United Services Automobile Association,08/01/25,0.0,0,True,True,True,True,direct
+GA,PPA,USAA-134387937,USAA Casualty Insurance Company,08/01/2025,0.000%,0,USAA Casualty Insurance Company,08/01/25,0.0,0,True,True,True,True,direct
+GA,PPA,USAA-134387937,USAA General Indemnity Company,08/01/2025,0.000%,0,USAA General Indemnity Company,08/01/25,0.0,0,True,True,True,True,direct
+GA,PPA,USAA-134740517,United Services Automobile Association,04/03/2026,0.000%,0,United Services Automobile Association,04/03/26,0.0,0,True,True,True,True,direct
+GA,PPA,USAA-134740517,USAA Casualty Insurance Company,04/03/2026,0.000%,0,USAA Casualty Insurance Company,04/03/26,0.0,0,True,True,True,True,direct
+GA,PPA,USAA-134740517,USAA General Indemnity Company,04/03/2026,0.000%,0,USAA General Indemnity Company,04/03/26,0.0,0,True,True,True,True,direct
+GA,PPA,USAA-134740517,Garrison Property and Casualty Insurance Company,04/03/2026,0.000%,0,Garrison Property and Casualty Insurance Company,04/03/26,0.0,0,True,True,True,True,direct
+GA,PPA,USAA-134208290,United Services Automobile Association,05/17/2025,0.000%,104426,United Services Automobile Association,05/17/25,0.0,104426,True,True,True,True,direct
+GA,PPA,USAA-134208290,USAA Casualty Insurance Company,05/17/2025,0.000%,107273,USAA Casualty Insurance Company,05/17/25,0.0,107273,True,True,True,True,direct
+GA,PPA,USAA-134208290,USAA General Indemnity Company,05/17/2025,0.000%,75337,USAA General Indemnity Company,05/17/25,0.0,75337,True,True,True,True,direct
+GA,PPA,USAA-134208290,Garrison Property and Casualty Insurance Company,05/17/2025,0.000%,46089,Garrison Property and Casualty Insurance Company,05/17/25,0.0,46089,True,True,True,True,direct
 GA,PPA,FAIG-134019038,Farmers Group Property and Casualty Insurance Company,05/06/2024,12.600%,55,,,,,,,,,none
 GA,PPA,FAIG-134018930,Farmers Group Property and Casualty Insurance Company,05/06/2024,12.900%,6323,,,,,,,,,none
 GA,PPA,FAIG-134716067,Farmers Group Property and Casualty Insurance Company,02/02/2026,5.000%,5185,Farmers Group Property and Casualty Insurance Company,01/24/26,5.0,5185,True,True,False,True,date_relaxed
@@ -293,11 +293,11 @@ GA,PPA,FARM-134267457,Mid-Century Insurance Company,01/24/2025,12.100%,33354,,,,
 GA,PPA,FARM-134406637,Mid-Century Insurance Company,03/29/2025,0.000%,0,,,,,,,,,none
 GA,PPA,FARM-134320366,Mid-Century Insurance Company,04/04/2025,0.000%,33354,,,,,,,,,none
 GA,PPA,FARM-134220408,Mid-Century Insurance Company,10/12/2024,0.000%,0,,,,,,,,,none
-GA,PPA,NWPP-134428376,Nationwide Insurance Company of America,09/19/2025,0.000%,4852,,,,,,,,,none
-GA,PPA,NWPP-134428376,Nationwide General Insurance Company,09/19/2025,0.000%,9548,,,,,,,,,none
-GA,PPA,NWPP-134428376,Nationwide Mutual Insurance Company,09/19/2025,-8.000%,1826,,,,,,,,,none
-GA,PPA,NWPP-134428376,Nationwide Property and Casualty Insurance Company,09/19/2025,-7.800%,3047,,,,,,,,,none
-GA,PPA,NWPP-134428376,Nationwide Affinity Insurance Company of America,09/19/2025,1.500%,3426,,,,,,,,,none
+GA,PPA,NWPP-134428376,Nationwide Insurance Company of America,09/19/2025,0.000%,4852,Nationwide Insurance Company of America,09/19/25,0.0,4852,True,True,True,True,direct
+GA,PPA,NWPP-134428376,Nationwide General Insurance Company,09/19/2025,0.000%,9548,Nationwide General Insurance Company,09/19/25,0.0,9548,True,True,True,True,direct
+GA,PPA,NWPP-134428376,Nationwide Mutual Insurance Company,09/19/2025,-8.000%,1826,Nationwide Mutual Insurance Company,09/19/25,-8.0,1826,True,True,True,True,direct
+GA,PPA,NWPP-134428376,Nationwide Property and Casualty Insurance Company,09/19/2025,-7.800%,3047,Nationwide Property and Casualty Insurance Company,09/19/25,-7.8,3047,True,True,True,True,direct
+GA,PPA,NWPP-134428376,Nationwide Affinity Insurance Company of America,09/19/2025,1.500%,3426,Nationwide Affinity Insurance Company of America,09/19/25,1.5,3426,True,True,True,True,direct
 GA,PPA,NWPP-134064379,Nationwide Insurance Company of America,08/25/2024,14.500%,6156,,,,,,,,,none
 GA,PPA,NWPP-134064379,Nationwide General Insurance Company,08/25/2024,10.000%,14694,,,,,,,,,none
 GA,PPA,NWPP-134064379,Nationwide Mutual Insurance Company,08/25/2024,5.000%,2367,,,,,,,,,none

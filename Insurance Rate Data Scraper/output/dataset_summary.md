@@ -8,7 +8,7 @@ Rate-filing rows for personal-lines insurance across **Idaho, Washington, Colora
 
 > **Dataset status (2026-06-10): 1,616 rows, eleven states, THIRTEEN brands.** Effective-date window `[2024-01-01, 2026-04-17]`; SERFF submission window `2023-07-01 → 2026-04-17`. The 13-brand expansion (USAA, Farmers, Nationwide, American Family, Country Financial — `SCOPE.md`) was validated on Georgia against its committed 268-row 8-brand baseline: all 268 rows byte-identical after the re-run (zero keyword bleed), +212 new-carrier rows, GA cross-check improved to PPA 92.8% / HO 94.3%. Georgia itself (added 2026-06-10) is the first eastern state; collection rode out the SERFF AWS-WAF bot-challenge throttle via the B1 search-universe pipeline + batched downloads (see "Georgia expansion").
 >
-> **Honest one-liner:** of 1,616 rows — **2 field-validated** (the `SFMA-134676753` anchor, all-field match), **363 AM Best cross-checked** (285 direct / 78 date-relaxed+reclassified), **301 extracted in a validated window but not individually matched**, **950 pipeline-extracted** (CO, ID non-anchor, all eff-2024). This is a SERFF-sourced, pipeline-extracted collection — corroborated against AM Best only where `external_validation` marks it, honest where not. Full detail + audit: **`TIER_RELABEL.md`**, `output/tier_relabel_audit.csv`, `output/corroboration/`.
+> **Honest one-liner:** of 1,616 rows — **2 field-validated** (the `SFMA-134676753` anchor, all-field match), **388 AM Best cross-checked** (310 direct / 78 date-relaxed+reclassified), **276 extracted in a validated window but not individually matched**, **950 pipeline-extracted** (CO, ID non-anchor, all eff-2024). *(GA counts reflect the 2026-06-11 AM Best blank-indicated parser fix — 25 additional direct matches recovered; NM/AZ re-measurement with the fixed parser pending.)* This is a SERFF-sourced, pipeline-extracted collection — corroborated against AM Best only where `external_validation` marks it, honest where not. Full detail + audit: **`TIER_RELABEL.md`**, `output/tier_relabel_audit.csv`, `output/corroboration/`.
 
 ### Validation tiering (four-tier, 2026-06-08)
 
@@ -17,8 +17,8 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 | `external_validation` | meaning | count |
 |---|---|--:|
 | `field_validated` | documented all-field per-row AM Best Disposition Page Data match (the `SFMA-134676753` anchor, value unchanged) | 2 |
-| `ambest_cross_checked` | matched an AM Best entry on subsidiary + impact (+ eff_date or policyholders); `match_strength` records `direct`/`date_relaxed`/`reclassified` | 363 |
-| `pipeline_extracted_in_validated_window` | effective_date ≥ 2025-01-01 in a cross-checked state (AZ/GA/MT/NV/NM/OR/UT/WA), not individually matched | 301 |
+| `ambest_cross_checked` | matched an AM Best entry on subsidiary + impact (+ eff_date or policyholders); `match_strength` records `direct`/`date_relaxed`/`reclassified` | 388 |
+| `pipeline_extracted_in_validated_window` | effective_date ≥ 2025-01-01 in a cross-checked state (AZ/GA/MT/NV/NM/OR/UT/WA), not individually matched | 276 |
 | `pipeline_extracted` | CO (no cross-check), ID non-anchor, and all eff-2024 extension rows | 950 |
 
 - **`source`**: `original` (pre-extension 468) / `extension` (2024 back-extension). **`validation_tier`** (legacy app-compat): `field_validated`+`ambest_cross_checked` → `ambest_validated`; the two pipeline tiers → `pipeline_only`. Use `external_validation` for the full gradient and `source` for provenance.
@@ -28,7 +28,7 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 |---|--:|--:|--:|--:|--:|
 | AZ | 0 | 29 | 48 | 102 | 179 |
 | CO | 0 | 0 | 0 | 191 | 191 |
-| GA | 0 | 178 | 81 | 221 | 480 |
+| GA | 0 | 203 | 56 | 221 | 480 |
 | ID | 2 | 0 | 0 | 110 | 112 |
 | MT | 0 | 19 | 6 | 32 | 57 |
 | NM | 0 | 51 | 18 | 62 | 131 |
@@ -37,7 +37,7 @@ Two earlier passes corrected an original overstatement (all 468 labeled `ambest_
 | UT | 0 | 18 | 66 | 58 | 142 |
 | WA | 0 | 0 | 38 | 46 | 84 |
 
-**`match_strength`** (ambest_cross_checked): AZ 25 direct / 4 date_relaxed; OR 29 direct; MT 18 direct / 1 date_relaxed; NV 28 direct / 7 date_relaxed / 4 reclassified; **NM 44 direct / 0 date_relaxed / 7 reclassified — strong (zero date-relaxed; the 7 reclassified are GEICO/Progressive RV filings AM Best buckets under PPA)**; **GA 141 direct / 31 date_relaxed / 6 reclassified (13-brand)**; **UT 0 direct / 17 date_relaxed / 1 reclassified — flagged mostly-date-relaxed (soft corroboration)**. Overall 285 direct / 60 date_relaxed / 18 reclassified.
+**`match_strength`** (ambest_cross_checked): AZ 25 direct / 4 date_relaxed; OR 29 direct; MT 18 direct / 1 date_relaxed; NV 28 direct / 7 date_relaxed / 4 reclassified; **NM 44 direct / 0 date_relaxed / 7 reclassified — strong (zero date-relaxed; the 7 reclassified are GEICO/Progressive RV filings AM Best buckets under PPA)**; **GA 166 direct / 31 date_relaxed / 6 reclassified (13-brand, post-parser-fix)**; **UT 0 direct / 17 date_relaxed / 1 reclassified — flagged mostly-date-relaxed (soft corroboration)**. Overall 310 direct / 60 date_relaxed / 18 reclassified.
 
 **WA limitation:** WA was cross-checked (documented 12/14 PPA) but **no reusable per-row artifact was built** (decision 2026-06-08), so WA's matched rows are **not** marked `ambest_cross_checked` — its in-window rows sit in `pipeline_extracted_in_validated_window`. WA's corroboration is documented-only, not per-row re-derivable. New states (per `CROSS_CHECK_STANDARD.md`) always build the artifact.
 
@@ -427,6 +427,7 @@ NV AM Best report contains both PPA and HO Multi-Peril filings.
 | NM | 36/37 (97.3%) | 15/17 (88.2%) |
 | GA (8-brand) | 93/103 (90.3%) | 30/32 (93.8%) |
 | GA (13-brand) | 129/139 (92.8%) | 66/70 (94.3%) |
+| GA (13-brand, parser-fixed) | 149/160 (93.1%) | 72/76 (94.7%) |
 | WA | 12/14 (86%) | — |
 
 ## New Mexico expansion (added 2026-06-08)
@@ -544,6 +545,33 @@ stay byte-identical so every new row is attributable.
   entries from cross-check denominators (USAA PPA: all 3 in-window entries
   blank-named → unmeasured); fix scheduled before IL/OH/VA — measurement
   only, deliverable rows unaffected.
+
+## AM Best parser fix — blank-indicated cells (2026-06-11)
+
+The report parsers' per-subsidiary row regex required a numeric "Overall %
+Indicated Change"; rows where the filer left it blank (a bare `%`) never
+matched, and blocks whose rows ALL failed degraded to one blank-subsidiary
+meta row — silently dropping those entries from cross-check DENOMINATORS.
+(Initial hypothesis was wrapped names; raw-block inspection disproved it —
+names were intact, the bare `%` was the killer. A wrap-tolerant line-join
+guard was added anyway: `tools/ambest_subline.py`, measured inert on this
+corpus.)
+
+Fix: indicated optional in `SUB_LINE_RE` (GA/NM/AZ parsers). Recovered named
+rows: AZ +496, NM +2,749, GA +5,670. **USAA PPA — previously unmeasurable
+(all in-window entries blank-named) — is now corroborated: 12 direct PPA
+matches + 4 HO.** GA re-check: denominators 139→160 PPA / 70→76 HO, rates
+UP to 93.1% / 94.7%; integrity gates: **0 lost matches, 25 gained (each
+individually verified: same-named entity, same filing, impact agreement,
+all direct)**; 1 new honest miss (Travelers PC eff 04/12/26 0.0% — the
+blank-public-table family). GA tiers re-applied: exactly 25 rows upgraded
+in-window → cross_checked, **0 rate-cell changes** (verified against the
+committed file). Measurement-only by construction.
+
+**PENDING (first task next session):** NM/AZ (+ MT/NV/UT/WA where artifacts
+exist) re-measurement with the fixed parser — their committed tiers were
+computed with the broken parser and are under-counted relative to GA. Fully
+OFFLINE (re-parse texts on disk + re-run compares). Same gates as GA.
 
 ## Phase 2 backlog (consolidated)
 

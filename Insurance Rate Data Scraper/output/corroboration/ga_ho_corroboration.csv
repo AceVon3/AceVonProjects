@@ -43,7 +43,7 @@ GA,HO,SFMA-134275619,State Farm Fire and Casualty Company,03/01/2025,0.000%,2371
 GA,HO,TRVD-133778191,Travelers Personal Insurance Company,02/18/2024,14.500%,158258,Travelers Personal Insurance Company,05/01/25,14.5,158258,True,True,False,True,date_relaxed
 GA,HO,TRVD-133894014,The Travelers Home and Marine Insurance Company,05/11/2024,7.100%,45525,,,,,,,,,none
 GA,HO,TRVD-133894014,Travelers Commercial Insurance Company,05/11/2024,7.200%,4755,,,,,,,,,none
-GA,HO,TRVD-G134201841,Travelers Personal Insurance Company,07/13/2025,0.000%,155331,,,,,,,,,none
+GA,HO,TRVD-G134201841,Travelers Personal Insurance Company,07/13/2025,0.000%,155331,Travelers Personal Insurance Company,07/13/25,0.0,155331,True,True,True,True,direct
 GA,HO,TRVD-G134332321,Travelers Personal Insurance Company,02/21/2025,14.900%,155331,Travelers Personal Insurance Company,04/18/25,14.9,155331,True,True,False,True,date_relaxed
 GA,HO,USAA-133877250,United Services Automobile Association,08/02/2024,9.900%,84170,,,,,,,,,none
 GA,HO,USAA-133877250,USAA Casualty Insurance Company,08/02/2024,9.900%,60381,,,,,,,,,none
@@ -53,10 +53,10 @@ GA,HO,USAA-134073334,United Services Automobile Association,09/14/2024,9.400%,16
 GA,HO,USAA-134073334,USAA Casualty Insurance Company,09/14/2024,9.100%,24781,,,,,,,,,none
 GA,HO,USAA-134073334,USAA General Indemnity Company,09/14/2024,9.400%,19545,,,,,,,,,none
 GA,HO,USAA-134073334,Garrison Property and Casualty Insurance Company,09/14/2024,9.400%,17982,,,,,,,,,none
-GA,HO,USAA-134673885,Garrison Property and Casualty Insurance Company,11/14/2025,0.000%,0,,,,,,,,,none
-GA,HO,USAA-134673885,United Services Automobile Association,11/14/2025,0.000%,0,,,,,,,,,none
-GA,HO,USAA-134673885,USAA Casualty Insurance Company,11/14/2025,0.000%,0,,,,,,,,,none
-GA,HO,USAA-134673885,USAA General Indemnity Company,11/14/2025,0.000%,0,,,,,,,,,none
+GA,HO,USAA-134673885,Garrison Property and Casualty Insurance Company,11/14/2025,0.000%,0,Garrison Property and Casualty Insurance Company,11/14/25,0.0,0,True,True,True,True,direct
+GA,HO,USAA-134673885,United Services Automobile Association,11/14/2025,0.000%,0,United Services Automobile Association,11/14/25,0.0,0,True,True,True,True,direct
+GA,HO,USAA-134673885,USAA Casualty Insurance Company,11/14/2025,0.000%,0,USAA Casualty Insurance Company,11/14/25,0.0,0,True,True,True,True,direct
+GA,HO,USAA-134673885,USAA General Indemnity Company,11/14/2025,0.000%,0,USAA General Indemnity Company,11/14/25,0.0,0,True,True,True,True,direct
 GA,HO,USAA-134413811,United Services Automobile Association,05/17/2025,7.100%,85907,United Services Automobile Association,05/17/25,7.1,85907,True,True,True,True,direct
 GA,HO,USAA-134413811,USAA Casualty Insurance Company,05/17/2025,4.700%,64006,USAA Casualty Insurance Company,05/17/25,4.7,64006,True,True,True,True,direct
 GA,HO,USAA-134413811,USAA General Indemnity Company,05/17/2025,5.800%,46675,USAA General Indemnity Company,05/17/25,5.8,46675,True,True,True,True,direct
