@@ -1,0 +1,873 @@
+[run_search] diagnostics armed -> output/diag_va_sweep
+[run_search] submission window 07/01/2023 -> 04/17/2026; out=C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / State Farm  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 41 filings ...
+      10/41 ...
+      20/41 ...
+      30/41 ...
+      40/41 ...
+  -> 41 rows
+    [checkpoint] saved 41 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / GEICO  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 44 filings ...
+      [warn] GECC-133864375: could not open detail
+      [warn] GECC-133911375: could not open detail
+      [warn] GECC-133933280: could not open detail
+      [warn] GECC-134035085: could not open detail
+      [warn] GECC-133942227: could not open detail
+      [warn] GECC-134250240: could not open detail
+      [warn] GECC-133962511: could not open detail
+      [warn] GECC-133996782: could not open detail
+      [warn] GECC-134546201: could not open detail
+      [warn] GECC-134884231: could not open detail
+      20/44 ...
+      30/44 ...
+      40/44 ...
+  -> 44 rows
+    [checkpoint] saved 85 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Progressive  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 47 filings ...
+      10/47 ...
+      [warn] PRGS-133953370: could not open detail
+      [warn] PRGS-133745852: could not open detail
+      [warn] PRGS-134301874: could not open detail
+      [warn] PRGS-134596378: could not open detail
+      [warn] PRGS-133896800: could not open detail
+      [warn] PRGS-134056135: could not open detail
+      [warn] PRGS-133898027: could not open detail
+      [warn] PRGS-134174121: could not open detail
+      [warn] PRGS-134318494: could not open detail
+      [warn] PRGS-134463959: could not open detail
+      30/47 ...
+      40/47 ...
+  -> 47 rows
+    [checkpoint] saved 132 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Allstate  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 192 filings ...
+      [warn] ALSE-133892601: could not open detail
+      [warn] ALSE-134744598: could not open detail
+      [warn] ALSE-133821365: could not open detail
+      [warn] ALSE-134147500: could not open detail
+      [warn] ALSE-134070640: could not open detail
+      [warn] ALSE-134250647: could not open detail
+      [warn] ALSE-134632364: could not open detail
+      [warn] ALSE-134225092: could not open detail
+      [warn] ALSE-134673377: could not open detail
+      [warn] ALSE-133908967: could not open detail
+      [warn] ALSE-134106220: could not open detail
+      [warn] ALSE-133736059: could not open detail
+      [warn] ALSE-133817901: could not open detail
+      [warn] ALSE-133896744: could not open detail
+      [warn] ALSE-134047309: could not open detail
+      [warn] ALSE-134024469: could not open detail
+      [warn] ALSE-134307833: could not open detail
+      [warn] ALSE-134129897: could not open detail
+      [warn] ALSE-134208989: could not open detail
+      [warn] ALSE-134037202: could not open detail
+      [warn] ALSE-134033039: could not open detail
+      [warn] ALSE-134046055: could not open detail
+      [warn] ALSE-134746787: could not open detail
+      [warn] ALSE-134332385: could not open detail
+      [warn] ALSE-134307496: could not open detail
+      [warn] ALSE-133897224: could not open detail
+      [warn] ALSE-133892596: could not open detail
+      [warn] ALSE-134673439: could not open detail
+      [warn] ALSE-134252382: could not open detail
+      [warn] ALSE-134226853: could not open detail
+      [warn] ALSE-133821748: could not open detail
+      [warn] ALSE-134153408: could not open detail
+      [warn] ALSE-134015828: could not open detail
+      [warn] ALSE-134211363: could not open detail
+      [warn] ALSE-134311917: could not open detail
+      [warn] ALSE-134066969: could not open detail
+      [warn] ALSE-133892006: could not open detail
+      [warn] ALSE-133821598: could not open detail
+      [warn] ALSE-134250893: could not open detail
+      [warn] ALSE-134067030: could not open detail
+      [warn] ALSE-134224379: could not open detail
+      [warn] ALSE-134224701: could not open detail
+      [warn] ALSE-133890501: could not open detail
+      [warn] ALSE-134699857: could not open detail
+      [warn] ALSE-134250591: could not open detail
+      [warn] ALSE-134225840: could not open detail
+      [warn] ALSE-134054715: could not open detail
+      [warn] ALSE-134560994: could not open detail
+      [warn] ALSE-134716138: could not open detail
+      [warn] ALSE-133820929: could not open detail
+      [warn] ALSE-134054360: could not open detail
+      [warn] ALSE-134012713: could not open detail
+      [warn] ALSE-133933527: could not open detail
+      [warn] ALSE-133939486: could not open detail
+      [warn] ALSE-133939465: could not open detail
+      [warn] ALSE-133939488: could not open detail
+      [warn] ALSE-133939468: could not open detail
+      [warn] ALSE-133939487: could not open detail
+      [warn] ALSE-133939467: could not open detail
+      [warn] ALSE-133939489: could not open detail
+      [warn] ALSE-133968526: could not open detail
+      [warn] ALSE-133924985: could not open detail
+      [warn] ALSE-133939490: could not open detail
+      [warn] ALSE-133810790: could not open detail
+      [warn] ALSE-133921903: could not open detail
+      [warn] ALSE-133828990: could not open detail
+      [warn] ALSE-133885542: could not open detail
+      [warn] ALSE-133921819: could not open detail
+      [warn] ALSE-133740453: could not open detail
+      [warn] ALSE-133905649: could not open detail
+      [warn] ALSE-134046173: could not open detail
+      [warn] ALSE-134311063: could not open detail
+      [warn] ALSE-133897577: could not open detail
+      [warn] ALSE-133949476: could not open detail
+      [warn] ALSE-134331946: could not open detail
+      [warn] ALSE-134752066: could not open detail
+      [warn] ALSE-134033041: could not open detail
+      [warn] ALSE-134049798: could not open detail
+      [warn] ALSE-134207730: could not open detail
+      [warn] ALSE-134131409: could not open detail
+      [warn] ALSE-134040604: could not open detail
+      [warn] ALSE-133897336: could not open detail
+      [warn] ALSE-134307804: could not open detail
+      [warn] ALSE-134026104: could not open detail
+      [warn] ALSE-134049912: could not open detail
+      [warn] ALSE-133892084: could not open detail
+      [warn] ALSE-134250545: could not open detail
+      [warn] ALSE-134027974: could not open detail
+      [warn] ALSE-134674249: could not open detail
+      [warn] ALSE-134060717: could not open detail
+      [warn] ALSE-133820827: could not open detail
+      [warn] ALSE-134226322: could not open detail
+      [warn] ALSE-134545340: could not open detail
+      [warn] ALSE-133905654: could not open detail
+      [warn] ALSE-133968427: could not open detail
+      [warn] ALSE-134532192: could not open detail
+      [warn] ALSE-134528924: could not open detail
+      [warn] ALSE-134760708: could not open detail
+      [warn] ALSE-134841863: could not open detail
+      [warn] ALSE-134226449: could not open detail
+      [warn] ALSE-134528275: could not open detail
+      [warn] ALSE-134674217: could not open detail
+      [warn] ALSE-134239799: could not open detail
+      [warn] ALSE-133768883: could not open detail
+      [warn] ALSE-134571388: could not open detail
+      [warn] ALSE-134901616: could not open detail
+      [warn] ALSE-133722499: could not open detail
+      [warn] ALSE-134381721: could not open detail
+      110/192 ...
+      [warn] ALSE-134602473: could not open detail
+      [warn] ALSE-134733831: could not open detail
+      [warn] ALSE-134574394: could not open detail
+      120/192 ...
+      [warn] ALSE-134132170: could not open detail
+      [warn] ALSE-134033019: could not open detail
+      [warn] ALSE-134048010: could not open detail
+      [warn] ALSE-133890519: could not open detail
+      [warn] ALSE-134144148: could not open detail
+      [warn] ALSE-134224495: could not open detail
+      130/192 ...
+      [warn] ALSE-134913842: could not open detail
+      [warn] ALSE-134065527: could not open detail
+      [warn] ALSE-134348618: could not open detail
+      [warn] ALSE-133890588: could not open detail
+      [warn] ALSE-134743340: could not open detail
+      140/192 ...
+      [warn] ALSE-134439235: could not open detail
+      [warn] ALSE-134226511: could not open detail
+      [warn] ALSE-134250602: could not open detail
+      [warn] ALSE-134056312: could not open detail
+      [warn] ALSE-134632321: could not open detail
+      150/192 ...
+      [warn] ALSE-134595998: could not open detail
+      [warn] ALSE-134117974: could not open detail
+      [warn] ALSE-133821247: could not open detail
+      [warn] ALSE-134674124: could not open detail
+      [warn] ALSE-134147380: could not open detail
+      [warn] ALSE-133890569: could not open detail
+      [warn] ALSE-134307911: could not open detail
+      160/192 ...
+      [warn] ALSE-134482692: could not open detail
+      [warn] ALSE-134096243: could not open detail
+      [warn] ALSE-134209866: could not open detail
+      [warn] ALSE-134914653: could not open detail
+      170/192 ...
+      [warn] ALSE-133868990: could not open detail
+      [warn] ALSE-134536079: could not open detail
+      [warn] ALSE-134317884: could not open detail
+      [warn] ALSE-134228038: could not open detail
+      [warn] ALSE-133792147: could not open detail
+      [warn] ALSE-134574820: could not open detail
+      180/192 ...
+      [warn] ALSE-134536094: could not open detail
+      [warn] ALSE-134915373: could not open detail
+      [warn] ALSE-134574267: could not open detail
+      [warn] ALSE-134915603: could not open detail
+      [warn] ALSE-134258571: could not open detail
+      190/192 ...
+      [warn] ALSE-134226917: could not open detail
+  -> 192 rows
+    [checkpoint] saved 324 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Travelers  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 267 filings ...
+      [warn] TRVD-134720404: could not open detail
+      [warn] TRVD-134758327: could not open detail
+      [warn] TRVD-134894702: could not open detail
+      [warn] TRVD-133884655: could not open detail
+      [warn] TRVD-133871783: could not open detail
+      [warn] TRVD-134763812: could not open detail
+      [warn] TRVD-133854604: could not open detail
+      [warn] TRVD-133772413: could not open detail
+      [warn] TRVD-134545461: could not open detail
+      10/267 ...
+      20/267 ...
+      30/267 ...
+      40/267 ...
+      [warn] TRVD-134158145: could not open detail
+      [warn] TRVD-134450924: could not open detail
+      [warn] TRVD-134224358: could not open detail
+      [warn] TRVD-G134048539: could not open detail
+      [warn] TRVD-G134637005: could not open detail
+      [warn] TRVD-G134739312: could not open detail
+      [warn] TRVD-133912478: could not open detail
+      [warn] TRVD-134491452: could not open detail
+      60/267 ...
+      70/267 ...
+      80/267 ...
+      90/267 ...
+      [warn] TRVD-133839037: could not open detail
+      [warn] TRVD-G134320030: could not open detail
+      100/267 ...
+      [warn] TRVD-134340467: could not open detail
+      [warn] TRVD-G134595390: could not open detail
+      [warn] TRVD-G134691677: could not open detail
+      [warn] TRVD-G134786940: could not open detail
+      [warn] TRVD-G134784188: could not open detail
+      [warn] TRVD-G134142327: could not open detail
+      [warn] TRVD-G134534619: could not open detail
+      [warn] TRVD-G134670184: could not open detail
+      [warn] TRVD-G134287010: could not open detail
+      [warn] TRVD-G134287332: could not open detail
+      [warn] TRVD-133757107: could not open detail
+      [warn] TRVD-G134199519: could not open detail
+      [warn] TRVD-133881344: could not open detail
+      [warn] TRVD-G134298823: could not open detail
+      [warn] TRVD-G134704716: could not open detail
+      [warn] TRVD-G134704718: could not open detail
+      [warn] TRVD-G134395794: could not open detail
+      [warn] TRVD-134782779: could not open detail
+      [warn] TRVD-134129886: could not open detail
+      [warn] TRVD-134658410: could not open detail
+      [warn] TRVD-134243318: could not open detail
+      [warn] TRVD-133991593: could not open detail
+      [warn] TRVD-133888776: could not open detail
+      [warn] TRVD-134339942: could not open detail
+      [warn] TRVD-134736892: could not open detail
+      [warn] TRVD-G134647778: could not open detail
+      [warn] TRVD-134083002: could not open detail
+      [warn] TRVD-G134526332: could not open detail
+      [warn] TRVD-G134881586: could not open detail
+      [warn] TRVD-G134762626: could not open detail
+      [warn] TRVD-134013597: could not open detail
+      [warn] TRVD-134162578: could not open detail
+      [warn] TRVD-G134428164: could not open detail
+      [warn] TRVD-G134247792: could not open detail
+      [warn] TRVD-133762607: could not open detail
+      [warn] TRVD-133839887: could not open detail
+      [warn] TRVD-G134471394: could not open detail
+      [warn] TRVD-G134180979: could not open detail
+      [warn] TRVD-G134581015: could not open detail
+      [warn] TRVD-G134337488: could not open detail
+      [warn] TRVD-G134317885: could not open detail
+      [warn] TRVD-G134829082: could not open detail
+      [warn] TRVD-G134205828: could not open detail
+      [warn] TRVD-G134594472: could not open detail
+      [warn] TRVD-G134676836: could not open detail
+      [warn] TRVD-G134551214: could not open detail
+      [warn] TRVD-G134677269: could not open detail
+      [warn] TRVD-G134337516: could not open detail
+      [warn] TRVD-G134205954: could not open detail
+      [warn] TRVD-G134830246: could not open detail
+      [warn] TRVD-G134471798: could not open detail
+      [warn] TRVD-G134188829: could not open detail
+      [warn] TRVD-G134551277: could not open detail
+      [warn] TRVD-G134318532: could not open detail
+      [warn] TRVD-133772262: could not open detail
+      [warn] TRVD-133835707: could not open detail
+      [warn] TRVD-133971305: could not open detail
+      [warn] TRVD-133881184: could not open detail
+      [warn] TRVD-134008086: could not open detail
+      [warn] TRVD-133971110: could not open detail
+      [warn] TRVD-134131834: could not open detail
+      [warn] TRVD-133994502: could not open detail
+      [warn] TRVD-133874655: could not open detail
+      [warn] TRVD-134009201: could not open detail
+      [warn] TRVD-133904628: could not open detail
+      [warn] TRVD-133971622: could not open detail
+      [warn] TRVD-133971572: could not open detail
+      [warn] TRVD-G134647781: could not open detail
+      [warn] TRVD-133987269: could not open detail
+      [warn] TRVD-G134688810: could not open detail
+      [warn] TRVD-133839800: could not open detail
+      [warn] TRVD-134083001: could not open detail
+      [warn] TRVD-G134526285: could not open detail
+      [warn] TRVD-G134847942: could not open detail
+      [warn] TRVD-G134790839: could not open detail
+      [warn] TRVD-G134881614: could not open detail
+      [warn] TRVD-G134615485: could not open detail
+      [warn] TRVD-G134722907: could not open detail
+      [warn] TRVD-G134632911: could not open detail
+      [warn] TRVD-G134396160: could not open detail
+      [warn] TRVD-G134268919: could not open detail
+      [warn] TRVD-G134869672: could not open detail
+      [warn] TRVD-G134274063: could not open detail
+      [warn] TRVD-G134762616: could not open detail
+      [warn] TRVD-G134217333: could not open detail
+      [warn] TRVD-133705342: could not open detail
+      [warn] TRVD-134013553: could not open detail
+      [warn] TRVD-G134633504: could not open detail
+      [warn] TRVD-G134409103: could not open detail
+      [warn] TRVD-G134617397: could not open detail
+      [warn] TRVD-134162495: could not open detail
+      [warn] TRVD-133762608: could not open detail
+      [warn] TRVD-G134247790: could not open detail
+      [warn] TRVD-G134864387: could not open detail
+      [warn] TRVD-134325814: could not open detail
+      [warn] TRVD-134820470: could not open detail
+      [warn] TRVD-134718662: could not open detail
+      [warn] TRVD-134159135: could not open detail
+      [warn] TRVD-133847288: could not open detail
+      [warn] TRVD-133733095: could not open detail
+      [warn] TRVD-134224161: could not open detail
+      [warn] TRVD-134592334: could not open detail
+      [warn] TRVD-134881138: could not open detail
+      [warn] TRVD-134865086: could not open detail
+      [warn] TRVD-133759673: could not open detail
+      [warn] TRVD-134370487: could not open detail
+      [warn] TRVD-134064729: could not open detail
+      [warn] TRVD-G134673038: could not open detail
+      [warn] TRVD-G134896211: could not open detail
+      [warn] TRVD-134105989: could not open detail
+      [warn] TRVD-134191713: could not open detail
+      [warn] TRVD-134324650: could not open detail
+      [warn] TRVD-134509726: could not open detail
+      [warn] TRVD-134074907: could not open detail
+      [warn] TRVD-134687971: could not open detail
+      [warn] TRVD-134570004: could not open detail
+      [warn] TRVD-134071035: could not open detail
+      [warn] TRVD-134650326: could not open detail
+      [warn] TRVD-134852576: could not open detail
+      [warn] TRVD-134054666: could not open detail
+      [warn] TRVD-134848165: could not open detail
+      [warn] TRVD-134063340: could not open detail
+      [warn] TRVD-134604139: could not open detail
+      [warn] TRVD-133796215: could not open detail
+      [warn] TRVD-134074885: could not open detail
+      [warn] TRVD-133828733: could not open detail
+      [warn] TRVD-134162660: could not open detail
+      [warn] TRVD-133839989: could not open detail
+      [warn] TRVD-133762575: could not open detail
+      [warn] TRVD-G134526381: could not open detail
+      [warn] TRVD-G134427929: could not open detail
+  -> 267 rows
+    [checkpoint] saved 591 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Liberty Mutual  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 100 filings ...
+      [warn] LWCM-134435361: could not open detail
+      [warn] LWCM-134234700: could not open detail
+      [warn] LWCM-134587626: could not open detail
+      [warn] LBPM-133826721: could not open detail
+      [warn] LWCM-133915059: could not open detail
+      [warn] LBPM-133906122: could not open detail
+      [warn] LBPM-133884432: could not open detail
+      [warn] LBPM-133830108: could not open detail
+      [warn] LBPM-134214375: could not open detail
+      [warn] LBPM-133835568: could not open detail
+      [warn] LBRC-133865841: could not open detail
+      [warn] LBRC-133827013: could not open detail
+      [warn] LBRC-133865151: could not open detail
+      [warn] LWCM-134070386: could not open detail
+      [warn] LWCM-134127979: could not open detail
+      [warn] LBPM-133884559: could not open detail
+      [warn] LBRC-133769460: could not open detail
+      [warn] LWCM-134450977: could not open detail
+      [warn] LWCM-134011263: could not open detail
+      [warn] LWCM-134262766: could not open detail
+      [warn] LWCM-134883743: could not open detail
+      [warn] LINU-134656649: could not open detail
+      [warn] LBPM-133906617: could not open detail
+      [warn] LBPM-133859712: could not open detail
+      [warn] LBPM-134202500: could not open detail
+      [warn] LBPM-134691239: could not open detail
+      [warn] LBPM-134009983: could not open detail
+      [warn] LBPM-134167914: could not open detail
+      [warn] LBPM-133809668: could not open detail
+      [warn] LBPM-134214338: could not open detail
+      [warn] LINU-134761093: could not open detail
+      [warn] LINU-134611952: could not open detail
+      [warn] MRTN-134060492: could not open detail
+      [warn] MRTN-134060546: could not open detail
+      [warn] LINU-134886318: could not open detail
+      [warn] LINU-134520958: could not open detail
+      [warn] LBPM-134338311: could not open detail
+      [warn] LBPM-134893343: could not open detail
+      [warn] LBPM-134395045: could not open detail
+      [warn] LBPM-134793725: could not open detail
+      [warn] LBPM-134214370: could not open detail
+      [warn] LBPM-134168499: could not open detail
+      [warn] LBPM-134036139: could not open detail
+      [warn] LBPM-133764753: could not open detail
+      [warn] LBPM-134617196: could not open detail
+      [warn] LBPM-134893945: could not open detail
+      [warn] LBPM-134593138: could not open detail
+      [warn] LBPM-134008391: could not open detail
+      [warn] LBPM-134750903: could not open detail
+      [warn] LBPM-134488013: could not open detail
+      [warn] LBPM-133877047: could not open detail
+      [warn] LBPM-133951499: could not open detail
+      [warn] LBPM-133764878: could not open detail
+      [warn] LBPM-133813746: could not open detail
+      [warn] LWCM-134266368: could not open detail
+      [warn] LWCM-134721043: could not open detail
+      [warn] LBRC-133868491: could not open detail
+      [warn] LWCM-134327100: could not open detail
+      [warn] LWCM-134568512: could not open detail
+      [warn] LBRC-133931169: could not open detail
+      [warn] LWCM-134155920: could not open detail
+      [warn] LWCM-134387843: could not open detail
+      [warn] LWCM-134874779: could not open detail
+      [warn] LWCM-134559130: could not open detail
+      [warn] LWCM-134579125: could not open detail
+      [warn] LWCM-134266358: could not open detail
+      [warn] LWCM-134155984: could not open detail
+      [warn] LWCM-134776664: could not open detail
+      [warn] LWCM-134043755: could not open detail
+      [warn] LBRC-133833963: could not open detail
+      [warn] LWCM-134121714: could not open detail
+      [warn] LBRC-133846263: could not open detail
+      [warn] LWCM-134203633: could not open detail
+      [warn] LWCM-134787874: could not open detail
+      [warn] LWCM-134229299: could not open detail
+      [warn] LWCM-134048203: could not open detail
+      [warn] LWCM-134196091: could not open detail
+      [warn] LWCM-134426767: could not open detail
+      [warn] LWCM-134704314: could not open detail
+      [warn] LBRC-133786684: could not open detail
+      [warn] LWCM-134509795: could not open detail
+      [warn] LWCM-134586602: could not open detail
+      [warn] LWCM-134277627: could not open detail
+      [warn] LWCM-134890150: could not open detail
+      [warn] LBPM-134699788: could not open detail
+      [warn] LBPM-133735603: could not open detail
+      [warn] LBPM-134380882: could not open detail
+      [warn] LBPM-133809520: could not open detail
+      [warn] LBPM-134491790: could not open detail
+      [warn] LBPM-134600862: could not open detail
+      [warn] LBPM-134252201: could not open detail
+      [warn] LBPM-134904228: could not open detail
+      [warn] LBPM-134800614: could not open detail
+      [warn] LBPM-133830925: could not open detail
+      [warn] LWCM-134467907: could not open detail
+      [warn] LBRC-133768507: could not open detail
+      [warn] LWCM-134448337: could not open detail
+      [warn] LWCM-134576868: could not open detail
+      [warn] LWCM-134868273: could not open detail
+      [warn] LBPM-134247984: could not open detail
+  -> 100 rows
+    [checkpoint] saved 691 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Safeco  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 19 filings ...
+      [warn] LBPM-134687272: could not open detail
+      [warn] LBPM-134347467: could not open detail
+      [warn] LBPM-133845477: could not open detail
+      [warn] LBPM-134228792: could not open detail
+      [warn] LWCM-134779132: could not open detail
+      [warn] LBPM-133803919: could not open detail
+      [warn] LBRC-133851057: could not open detail
+      10/19 ...
+  -> 19 rows
+    [checkpoint] saved 710 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Encompass  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 35 filings ...
+      10/35 ...
+      [warn] GMMX-134568658: could not open detail
+      [warn] GMMX-134492213: could not open detail
+      20/35 ...
+      30/35 ...
+  -> 35 rows
+    [checkpoint] saved 745 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / MGA Insurance  [07/01/2023 -> 04/17/2026] ...
+  ! VA/MGA Insurance failed: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+  -> 0 rows
+    [checkpoint] saved 745 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / USAA  [07/01/2023 -> 04/17/2026] ...
+  ! VA/USAA failed: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+  -> 0 rows
+    [checkpoint] saved 745 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / United Services  [07/01/2023 -> 04/17/2026] ...
+  ! VA/United Services failed: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+  -> 0 rows
+    [checkpoint] saved 745 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Garrison  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 22 filings ...
+      10/22 ...
+      20/22 ...
+  -> 22 rows
+    [checkpoint] saved 767 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Farmers  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 59 filings ...
+      [warn] FAIG-133815360: could not open detail
+      [warn] FARM-134469868: could not open detail
+      10/59 ...
+      20/59 ...
+      [warn] FARM-134534768: could not open detail
+      [warn] FARM-134115173: could not open detail
+      [warn] FARM-134534749: could not open detail
+      [warn] FARM-133744745: could not open detail
+      [warn] FARM-134469938: could not open detail
+      [warn] FARM-133947802: could not open detail
+      [warn] FARM-134586228: could not open detail
+      [warn] FARM-134134190: could not open detail
+      [warn] FARM-134470020: could not open detail
+      [warn] FARM-134045992: could not open detail
+      [warn] FARM-134394962: could not open detail
+      [warn] FARM-134021585: could not open detail
+      [warn] FARM-134790185: could not open detail
+      [warn] VAPC-134090877: could not open detail
+      [warn] FAIG-134707361: could not open detail
+      [warn] FAIG-134596095: could not open detail
+      [warn] VAPC-134768658: could not open detail
+      [warn] FAIG-133876568: could not open detail
+      [warn] FAIG-134177241: could not open detail
+      [warn] FAIG-134194105: could not open detail
+      [warn] FAIG-134707319: could not open detail
+      [warn] FAIG-134596094: could not open detail
+      [warn] FAIG-134596112: could not open detail
+      [warn] FAIG-134707292: could not open detail
+      [warn] FAIG-134299803: could not open detail
+      [warn] VAPC-134769564: could not open detail
+      [warn] FAIG-134391614: could not open detail
+      [warn] FAIG-134775575: could not open detail
+      [warn] FAIG-133984698: could not open detail
+      [warn] FAIG-133942168: could not open detail
+      [warn] FAIG-134707306: could not open detail
+      [warn] FAIG-134596093: could not open detail
+      [warn] FAIG-134146843: could not open detail
+      [warn] FAIG-133815452: could not open detail
+      [warn] FARM-134785273: could not open detail
+  -> 59 rows
+    [checkpoint] saved 826 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Mid-Century  [07/01/2023 -> 04/17/2026] ...
+  ! VA/Mid-Century failed: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+  -> 0 rows
+    [checkpoint] saved 826 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Fire Insurance Exchange  [07/01/2023 -> 04/17/2026] ...
+  ! VA/Fire Insurance Exchange failed: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+  -> 0 rows
+    [checkpoint] saved 826 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Truck Insurance Exchange  [07/01/2023 -> 04/17/2026] ...
+  ! VA/Truck Insurance Exchange failed: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+  -> 0 rows
+    [checkpoint] saved 826 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Nationwide  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 169 filings ...
+      [warn] NWPP-134195068: could not open detail
+      [warn] NWPP-G134715842: could not open detail
+      [warn] NWPP-134381327: could not open detail
+      [warn] NWPP-133865698: could not open detail
+      [warn] NWPP-134137062: could not open detail
+      [warn] NWPP-133836509: could not open detail
+      [warn] NWPP-134486077: could not open detail
+      [warn] NWPP-134584156: could not open detail
+      [warn] NWPP-134347375: could not open detail
+      [warn] NWPP-134035252: could not open detail
+      [warn] NWPP-G134883017: could not open detail
+      [warn] NWPP-G134746690: could not open detail
+      [warn] NWPP-G134746501: could not open detail
+      [warn] NWPP-134144223: could not open detail
+      [warn] NWPP-133818068: could not open detail
+      [warn] NWPP-133785538: could not open detail
+      [warn] NWPP-134131902: could not open detail
+      [warn] NWPP-134571594: could not open detail
+      [warn] NWPP-134571615: could not open detail
+      [warn] NWPP-134103407: could not open detail
+      [warn] NWPP-134094638: could not open detail
+      [warn] NWPP-134143521: could not open detail
+      [warn] NWPP-133762834: could not open detail
+      [warn] NWPP-134572586: could not open detail
+      [warn] NWPP-134572507: could not open detail
+      [warn] NWPP-134651169: could not open detail
+      [warn] NWPP-134514495: could not open detail
+      [warn] NWPP-134514587: could not open detail
+      [warn] NWPP-134650812: could not open detail
+      [warn] NWPP-133811748: could not open detail
+      [warn] NWPP-133771257: could not open detail
+      [warn] NWPP-134602557: could not open detail
+      [warn] NWPP-134102467: could not open detail
+      [warn] NWPP-134132912: could not open detail
+      [warn] NWPP-134167418: could not open detail
+      [warn] NWPP-134594462: could not open detail
+      [warn] NWPP-134083886: could not open detail
+      [warn] NWPP-134364666: could not open detail
+      [warn] NWPP-134499912: could not open detail
+      [warn] NWPP-134610360: could not open detail
+      [warn] NWPP-134123006: could not open detail
+      [warn] NWPP-134087133: could not open detail
+      [warn] NWPP-134563137: could not open detail
+      [warn] NWPP-G134906568: could not open detail
+      [warn] NWPP-133818790: could not open detail
+      [warn] NWPP-G134740907: could not open detail
+      [warn] NWPP-134509675: could not open detail
+      [warn] NWPP-133824374: could not open detail
+      [warn] NWPP-134508993: could not open detail
+      [warn] NWPP-133875205: could not open detail
+      [warn] NWPP-134168064: could not open detail
+      [warn] NWPP-133795846: could not open detail
+      [warn] NWPP-134391309: could not open detail
+      [warn] NWPP-134397968: could not open detail
+      [warn] NWPP-133762017: could not open detail
+      [warn] NWPP-134498871: could not open detail
+      [warn] NWPP-134142089: could not open detail
+      [warn] NWPP-134001255: could not open detail
+      [warn] NWPP-134042952: could not open detail
+      [warn] NWPP-134558137: could not open detail
+      [warn] NWPP-G134716557: could not open detail
+      [warn] NWPP-134179459: could not open detail
+      [warn] NWPP-134115326: could not open detail
+      [warn] NWPP-134483470: could not open detail
+      [warn] NWPP-134354464: could not open detail
+      [warn] NWPP-134883398: could not open detail
+      [warn] NWPP-133852305: could not open detail
+      [warn] NWPP-134232959: could not open detail
+      [warn] NWPP-134148218: could not open detail
+      [warn] NWPP-G134848862: could not open detail
+      [warn] NWPP-134640522: could not open detail
+      [warn] NWPP-134697692: could not open detail
+      [warn] NWPP-133978896: could not open detail
+      [warn] NWPP-133956342: could not open detail
+      [warn] NWPP-G134864888: could not open detail
+      [warn] NWPP-134396657: could not open detail
+      [warn] NWPP-G134788982: could not open detail
+      [warn] NWPP-G134810002: could not open detail
+      [warn] NWPP-134194437: could not open detail
+      [warn] NWPP-G134702852: could not open detail
+      [warn] NWPP-134702606: could not open detail
+      [warn] NWPP-133992164: could not open detail
+      [warn] NWPP-G134882747: could not open detail
+      [warn] NWPP-G134745899: could not open detail
+      [warn] NWPP-134260601: could not open detail
+      [warn] NWPP-134561680: could not open detail
+      [warn] NWPP-133911260: could not open detail
+      [warn] NWPP-134613818: could not open detail
+      [warn] NWPP-133818247: could not open detail
+      [warn] NWPP-134403723: could not open detail
+      [warn] NWPP-134536724: could not open detail
+      [warn] NWPP-134702647: could not open detail
+      [warn] NWPP-133891271: could not open detail
+      [warn] NWPP-134528312: could not open detail
+      [warn] NWPP-134373207: could not open detail
+      [warn] NWPP-133847432: could not open detail
+      [warn] NWPP-133762085: could not open detail
+      [warn] NWPP-134296103: could not open detail
+      [warn] NWPP-134289466: could not open detail
+      [warn] NWPP-134589105: could not open detail
+      [warn] NWPP-134470105: could not open detail
+      [warn] NWPP-133738757: could not open detail
+      [warn] NWPP-134632977: could not open detail
+      [warn] NWPP-134368836: could not open detail
+      [warn] NWPP-133740689: could not open detail
+      [warn] NWPP-134632451: could not open detail
+      [warn] NWPP-134788756: could not open detail
+      [warn] NWPP-134347323: could not open detail
+      [warn] NWPP-134619484: could not open detail
+      [warn] NWPP-134040477: could not open detail
+      [warn] NWPP-133924250: could not open detail
+      [warn] NWPP-134568324: could not open detail
+      [warn] NWPP-134330768: could not open detail
+      [warn] NWPP-134167400: could not open detail
+      [warn] NWPP-134170725: could not open detail
+      [warn] NWPP-134083912: could not open detail
+      [warn] NWPP-134329067: could not open detail
+      [warn] NWPP-G134885333: could not open detail
+      [warn] NWPP-134057471: could not open detail
+      [warn] NWPP-134521186: could not open detail
+      [warn] NWPP-134494587: could not open detail
+      [warn] NWPP-G134770955: could not open detail
+      [warn] NWPP-133739099: could not open detail
+      [warn] NWPP-134414229: could not open detail
+      [warn] NWPP-G134848438: could not open detail
+      [warn] NWPP-G134800704: could not open detail
+      [warn] NWPP-134502434: could not open detail
+      [warn] NWPP-134348402: could not open detail
+      [warn] NWPP-134558596: could not open detail
+      [warn] NWPP-134499787: could not open detail
+      [warn] NWPP-133818759: could not open detail
+      [warn] NWPP-134703981: could not open detail
+      [warn] NWLC-134215234: could not open detail
+      [warn] NWPP-134115454: could not open detail
+      [warn] NWPP-G134710037: could not open detail
+      [warn] NWPP-134115536: could not open detail
+      [warn] NWPP-133921391: could not open detail
+      [warn] NWLC-134132474: could not open detail
+      [warn] NWPP-133980017: could not open detail
+  -> 169 rows
+    [checkpoint] saved 995 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / American Family  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 57 filings ...
+      10/57 ...
+      20/57 ...
+      30/57 ...
+      40/57 ...
+      [warn] AMLX-134608043: could not open detail
+      [warn] AMLX-134759237: could not open detail
+      [warn] AMLX-134222904: could not open detail
+      [warn] AMLX-134244045: could not open detail
+      [warn] AMLX-134125099: could not open detail
+      [warn] AMLX-134882923: could not open detail
+      [warn] AMLX-134240647: could not open detail
+      [warn] AMLX-134343199: could not open detail
+      [warn] AMLX-134579789: could not open detail
+      [warn] AMMH-134266873: could not open detail
+      [warn] AMMH-134266572: could not open detail
+      [warn] AMMH-134357695: could not open detail
+      [warn] AMMH-134913724: could not open detail
+      [warn] AMMH-134266924: could not open detail
+      [warn] AMMH-134266790: could not open detail
+  -> 57 rows
+    [checkpoint] saved 1052 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+[search] VA / Country  [07/01/2023 -> 04/17/2026] ...
+  ! VA/Country failed: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+  -> 0 rows
+    [checkpoint] saved 1052 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+
+=== Summary ===
+Total filings: 1052
+  VA / Allstate: 192
+  VA / American Family: 57
+  VA / Encompass: 35
+  VA / Farmers: 59
+  VA / GEICO: 44
+  VA / Garrison: 22
+  VA / Liberty Mutual: 100
+  VA / Nationwide: 169
+  VA / Progressive: 47
+  VA / Safeco: 19
+  VA / State Farm: 41
+  VA / Travelers: 267
+Wrote: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_all_companies_search.xlsx
+=== RETRY: MGA Insurance ===
+[run_search] diagnostics armed -> output/diag_va_sweep
+[run_search] submission window 07/01/2023 -> 04/17/2026; out=C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_mga_insurance_search_retry2.xlsx
+[search] VA / MGA Insurance  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 9 filings ...
+  -> 9 rows
+    [checkpoint] saved 9 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_mga_insurance_search_retry2.xlsx
+
+=== Summary ===
+Total filings: 9
+  VA / MGA Insurance: 9
+Wrote: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_mga_insurance_search_retry2.xlsx
+=== RETRY: USAA ===
+[run_search] diagnostics armed -> output/diag_va_sweep
+[run_search] submission window 07/01/2023 -> 04/17/2026; out=C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_usaa_search_retry2.xlsx
+[search] VA / USAA  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 15 filings ...
+      10/15 ...
+  -> 15 rows
+    [checkpoint] saved 15 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_usaa_search_retry2.xlsx
+
+=== Summary ===
+Total filings: 15
+  VA / USAA: 15
+Wrote: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_usaa_search_retry2.xlsx
+=== RETRY: United Services ===
+[run_search] diagnostics armed -> output/diag_va_sweep
+[run_search] submission window 07/01/2023 -> 04/17/2026; out=C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_united_services_search_retry2.xlsx
+[search] VA / United Services  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 18 filings ...
+      10/18 ...
+  -> 18 rows
+    [checkpoint] saved 18 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_united_services_search_retry2.xlsx
+
+=== Summary ===
+Total filings: 18
+  VA / United Services: 18
+Wrote: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_united_services_search_retry2.xlsx
+=== RETRY: Mid-Century ===
+[run_search] diagnostics armed -> output/diag_va_sweep
+[run_search] submission window 07/01/2023 -> 04/17/2026; out=C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_mid_century_search_retry2.xlsx
+[search] VA / Mid-Century  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 44 filings ...
+      10/44 ...
+      20/44 ...
+      30/44 ...
+      40/44 ...
+  -> 44 rows
+    [checkpoint] saved 44 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_mid_century_search_retry2.xlsx
+
+=== Summary ===
+Total filings: 44
+  VA / Mid-Century: 44
+Wrote: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_mid_century_search_retry2.xlsx
+=== RETRY: Fire Insurance Exchange ===
+[run_search] diagnostics armed -> output/diag_va_sweep
+[run_search] submission window 07/01/2023 -> 04/17/2026; out=C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_fire_insurance_exchange_search_retry2.xlsx
+[search] VA / Fire Insurance Exchange  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 21 filings ...
+      10/21 ...
+      20/21 ...
+  -> 21 rows
+    [checkpoint] saved 21 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_fire_insurance_exchange_search_retry2.xlsx
+
+=== Summary ===
+Total filings: 21
+  VA / Fire Insurance Exchange: 21
+Wrote: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_fire_insurance_exchange_search_retry2.xlsx
+=== RETRY: Truck Insurance Exchange ===
+[run_search] diagnostics armed -> output/diag_va_sweep
+[run_search] submission window 07/01/2023 -> 04/17/2026; out=C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_truck_insurance_exchange_search_retry2.xlsx
+[search] VA / Truck Insurance Exchange  [07/01/2023 -> 04/17/2026] ...
+    fetching submission dates for 50 filings ...
+      10/50 ...
+      20/50 ...
+      30/50 ...
+      40/50 ...
+      [warn] FARM-134021585: could not open detail
+      [warn] FARM-134790185: could not open detail
+      [warn] FARM-134785273: could not open detail
+  -> 50 rows
+    [checkpoint] saved 50 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_truck_insurance_exchange_search_retry2.xlsx
+
+=== Summary ===
+Total filings: 50
+  VA / Truck Insurance Exchange: 50
+Wrote: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_truck_insurance_exchange_search_retry2.xlsx
+=== RETRY: Country ===
+[run_search] diagnostics armed -> output/diag_va_sweep
+[run_search] submission window 07/01/2023 -> 04/17/2026; out=C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_country_search_retry2.xlsx
+[search] VA / Country  [07/01/2023 -> 04/17/2026] ...
+  -> 0 rows
+    [checkpoint] saved 0 filings -> C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_country_search_retry2.xlsx
+
+=== Summary ===
+Total filings: 0
+Wrote: C:\Users\ryanc\OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper\output\va_country_search_retry2.xlsx
+=== ALL RETRIES DONE ===

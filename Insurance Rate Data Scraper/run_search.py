@@ -41,7 +41,15 @@ def main() -> int:
     ap.add_argument("--out-suffix", default="",
                     help="Suffix appended to the output filename stem (e.g. _backfill2024) "
                          "so an incremental slice does not overwrite an existing workbook")
+    ap.add_argument("--diag", default="",
+                    help="Arm src.search.DIAG_DIR at this path: one search_ledger.csv row "
+                         "per Begin-Search + snapshot dir on failure (WAF watch)")
     args = ap.parse_args()
+
+    if args.diag:
+        import src.search as search_mod
+        search_mod.DIAG_DIR = Path(args.diag)
+        print(f"[run_search] diagnostics armed -> {args.diag}", flush=True)
 
     if args.all:
         pairs = [(s, c) for s in STATES for c in TARGET_COMPANIES]

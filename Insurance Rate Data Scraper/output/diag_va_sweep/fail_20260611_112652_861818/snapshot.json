@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-06-11T11:26:52.861",
+  "state": "VA",
+  "term": "Truck Insurance Exchange",
+  "outcome": "begin_search_link_timeout",
+  "duration_s": 30.8,
+  "exception": "TimeoutError('Locator.click: Timeout 30000ms exceeded.\\nCall log:\\n  - waiting for get_by_role(\"link\", name=re.compile(r\"begin\\\\s*search\", re.IGNORECASE)).first\\n')",
+  "document_responses": [
+    {
+      "ts": "2026-06-11T11:26:22.342",
+      "url": "https://filingaccess.serff.com/sfa/home/VA",
+      "status": 405,
+      "retry_after": null,
+      "headers": {
+        "access-control-allow-methods": "OPTIONS,GET,POST",
+        "access-control-allow-origin": "*",
+        "access-control-expose-headers": "x-amzn-waf-action",
+        "access-control-max-age": "86400",
+        "cache-control": "no-store, max-age=0",
+        "content-length": "2139",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 11 Jun 2026 15:26:21 GMT",
+        "server": "awselb/2.0",
+        "x-amzn-waf-action": "captcha"
+      }
+    }
+  ],
+  "page_url": "https://filingaccess.serff.com/sfa/home/VA",
+  "page_title": "Human Verification",
+  "body_text_head": "Let's confirm you are human\n\nComplete the security check before continuing. This step verifies that you are not a bot, which helps to protect your account and prevent spam.\n\nBegin\n\u0627\u0644\u0639\u0631\u0628\u064a\u0629\n\u010ce\u0161tina\nDansk\nDeutsch\nEnglish\nEspa\u00f1ol\nFran\u00e7ais\nBahasa Indonesia\nItaliano\n\u65e5\u672c\u8a9e\n\ud55c\uad6d\uc5b4\nNederlands\nPolski\nPortugu\u00eas\nSvenska\n\u0e44\u0e17\u0e22\nT\u00fcrk\u00e7e\n\u4e2d\u6587"
+}

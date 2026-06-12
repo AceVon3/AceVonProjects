@@ -1,0 +1,191 @@
+=== VA final-rates pipeline ===
+  search universe: va_all_companies_search.xlsx -> +1103 filings
+  submission_date: 0 from legacy enriched workbook, 0 from backfill sidecar, 276 blank
+  blank submission_date targets (run backfill_submission_dates.py VA): ['ALSE-133722499', 'ALSE-133768883', 'ALSE-133792147', 'ALSE-133820827', 'ALSE-133820929', 'ALSE-133821247', 'ALSE-133821365', 'ALSE-133821598', 'ALSE-133821748', 'ALSE-133868990', 'ALSE-133890501', 'ALSE-133890519', 'ALSE-133890569', 'ALSE-133890588', 'ALSE-133892006', 'ALSE-133892084', 'ALSE-133892596', 'ALSE-133892601', 'ALSE-133933527', 'ALSE-134015828', 'ALSE-134024469', 'ALSE-134026104', 'ALSE-134027974', 'ALSE-134033019', 'ALSE-134033039', 'ALSE-134033041', 'ALSE-134037202', 'ALSE-134040604', 'ALSE-134046055', 'ALSE-134046173', 'ALSE-134047309', 'ALSE-134048010', 'ALSE-134049798', 'ALSE-134049912', 'ALSE-134054715', 'ALSE-134056312', 'ALSE-134060717', 'ALSE-134065527', 'ALSE-134066969', 'ALSE-134067030', 'ALSE-134070640', 'ALSE-134096243', 'ALSE-134117974', 'ALSE-134129897', 'ALSE-134131409', 'ALSE-134132170', 'ALSE-134144148', 'ALSE-134147380', 'ALSE-134147500', 'ALSE-134153408', 'ALSE-134207730', 'ALSE-134208989', 'ALSE-134209866', 'ALSE-134211363', 'ALSE-134224379', 'ALSE-134224495', 'ALSE-134224701', 'ALSE-134225092', 'ALSE-134225840', 'ALSE-134226322', 'ALSE-134226449', 'ALSE-134226511', 'ALSE-134226853', 'ALSE-134226917', 'ALSE-134228038', 'ALSE-134239799', 'ALSE-134250545', 'ALSE-134250591', 'ALSE-134250602', 'ALSE-134250647', 'ALSE-134250893', 'ALSE-134252382', 'ALSE-134258571', 'ALSE-134307833', 'ALSE-134307911', 'ALSE-134311063', 'ALSE-134311917', 'ALSE-134317884', 'ALSE-134331946', 'ALSE-134332385', 'ALSE-134348618', 'ALSE-134381721', 'ALSE-134439235', 'ALSE-134482692', 'ALSE-134528275', 'ALSE-134528924', 'ALSE-134532192', 'ALSE-134536079', 'ALSE-134545340', 'ALSE-134560994', 'ALSE-134571388', 'ALSE-134574267', 'ALSE-134574820', 'ALSE-134595998', 'ALSE-134602473', 'ALSE-134632321', 'ALSE-134632364', 'ALSE-134673377', 'ALSE-134673439', 'ALSE-134674124', 'ALSE-134674217', 'ALSE-134674249', 'ALSE-134699857', 'ALSE-134716138', 'ALSE-134733831', 'ALSE-134743340', 'ALSE-134744598', 'ALSE-134746787', 'ALSE-134752066', 'ALSE-134760708', 'ALSE-134841863', 'ALSE-134901616', 'ALSE-134913842', 'ALSE-134914653', 'AMMH-134266790', 'AMMH-134266873', 'AMMH-134357695', 'GMMX-134492213', 'GMMX-134568658', 'FAIG-133815360', 'FAIG-133815452', 'FAIG-133942168', 'FAIG-133984698', 'FAIG-134146843', 'FAIG-134177241', 'FAIG-134299803', 'FAIG-134391614', 'FAIG-134596093', 'FAIG-134596112', 'FAIG-134707292', 'FAIG-134707306', 'FAIG-134775575', 'FARM-134045992', 'GECC-133942227', 'GECC-134250240', 'LBPM-133735603', 'LBPM-133764753', 'LBPM-133764878', 'LBPM-133809520', 'LBPM-133809668', 'LBPM-133813746', 'LBPM-133830108', 'LBPM-133830925', 'LBPM-133835568', 'LBPM-133859712', 'LBPM-133877047', 'LBPM-133906122', 'LBPM-133906617', 'LBPM-133951499', 'LBPM-134008391', 'LBPM-134009983', 'LBPM-134036139', 'LBPM-134167914', 'LBPM-134168499', 'LBPM-134202500', 'LBPM-134214338', 'LBPM-134214370', 'LBPM-134214375', 'LBPM-134247984', 'LBPM-134252201', 'LBPM-134338311', 'LBPM-134380882', 'LBPM-134395045', 'LBPM-134488013', 'LBPM-134491790', 'LBPM-134593138', 'LBPM-134600862', 'LBPM-134617196', 'LBPM-134691239', 'LBPM-134699788', 'LBPM-134750903', 'LBPM-134793725', 'LBPM-134800614', 'LBPM-134893343', 'LBPM-134893945', 'LBPM-134904228', 'NWPP-133762017', 'NWPP-133852305', 'NWPP-133921391', 'NWPP-133978896', 'NWPP-134001255', 'NWPP-134042952', 'NWPP-134115326', 'NWPP-134115454', 'NWPP-134115536', 'NWPP-134142089', 'NWPP-134148218', 'NWPP-134179459', 'NWPP-134232959', 'NWPP-134348402', 'NWPP-134354464', 'NWPP-134391309', 'NWPP-134397968', 'NWPP-134483470', 'NWPP-134498871', 'NWPP-134502434', 'NWPP-134558137', 'NWPP-134558596', 'NWPP-134610360', 'NWPP-134640522', 'NWPP-134697692', 'NWPP-134883398', 'NWPP-G134710037', 'NWPP-G134800704', 'NWPP-G134848862', 'PRGS-133745852', 'PRGS-133896800', 'PRGS-133898027', 'PRGS-133953370', 'PRGS-134056135', 'PRGS-134174121', 'PRGS-134301874', 'PRGS-134318494', 'PRGS-134463959', 'PRGS-134596378', 'TRVD-133705342', 'TRVD-133762575', 'TRVD-133762607', 'TRVD-133762608', 'TRVD-133772262', 'TRVD-133835707', 'TRVD-133839800', 'TRVD-133839887', 'TRVD-133839989', 'TRVD-133881184', 'TRVD-133971110', 'TRVD-133971305', 'TRVD-133987269', 'TRVD-133994502', 'TRVD-134008086', 'TRVD-134013553', 'TRVD-134013597', 'TRVD-134083001', 'TRVD-134083002', 'TRVD-134131834', 'TRVD-134162495', 'TRVD-134162578', 'TRVD-134162660', 'TRVD-G134180979', 'TRVD-G134205828', 'TRVD-G134217333', 'TRVD-G134247790', 'TRVD-G134247792', 'TRVD-G134268919', 'TRVD-G134274063', 'TRVD-G134317885', 'TRVD-G134337488', 'TRVD-G134396160', 'TRVD-G134409103', 'TRVD-G134427929', 'TRVD-G134428164', 'TRVD-G134471394', 'TRVD-G134526285', 'TRVD-G134526332', 'TRVD-G134526381', 'TRVD-G134551214', 'TRVD-G134581015', 'TRVD-G134594472', 'TRVD-G134615485', 'TRVD-G134617397', 'TRVD-G134632911', 'TRVD-G134633504', 'TRVD-G134647778', 'TRVD-G134647781', 'TRVD-G134676836', 'TRVD-G134688810', 'TRVD-G134722907', 'TRVD-G134762616', 'TRVD-G134762626', 'TRVD-G134790839', 'TRVD-G134829082', 'TRVD-G134847942', 'TRVD-G134864387', 'TRVD-G134869672', 'TRVD-G134881586', 'TRVD-G134881614']
+loaded 498 target-TOI target-carrier filings
+[Allstate] searches=['allstate', 'encompass'], downloading 184/184
+  [Allstate] BATCH search='allstate', 184 filing(s) in chunks of 8
+    [batch 1/8] ALSE-133722499: ok
+    [batch 2/8] ALSE-133762339: ok
+    [batch 3/8] ALSE-133768883: ok
+    [batch 4/8] ALSE-133792147: ok
+    [batch 5/8] ALSE-133793457: ok
+    [batch 6/8] ALSE-133820827: ok
+    [batch 7/8] ALSE-133820929: ok
+    [batch 8/8] ALSE-133821247: ok
+    [batch 1/8] ALSE-133821365: ok
+    [batch 2/8] ALSE-133821598: ok
+    [batch 3/8] ALSE-133821748: ok
+    [batch 4/8] ALSE-133821772: ok
+    [batch 5/8] ALSE-133858352: ok
+    [batch 6/8] ALSE-133868990: ok
+    [batch 7/8] ALSE-133890501: ok
+    [batch 8/8] ALSE-133890519: ok
+    [batch 1/8] ALSE-133890569: ok
+    [batch 2/8] ALSE-133890588: ok
+    [batch 3/8] ALSE-133892006: ok
+    [batch 4/8] ALSE-133892084: ok
+    [batch 5/8] ALSE-133892596: ok
+    [batch 6/8] ALSE-133892601: ok
+    [batch 7/8] ALSE-133933527: ok
+    [batch 8/8] ALSE-134001018: ok
+    [batch 1/8] ALSE-134003102: ok
+    [batch 2/8] ALSE-134008387: ok
+    [batch 3/8] ALSE-134014720: ok
+    [batch 4/8] ALSE-134015828: ok
+    [batch 5/8] ALSE-134017960: ok
+    [batch 6/8] ALSE-134024469: ok
+    [batch 7/8] ALSE-134026104: ok
+    [batch 8/8] ALSE-134027974: ok
+    [batch 1/8] ALSE-134033004: ok
+    [batch 2/8] ALSE-134033019: ok
+    [batch 3/8] ALSE-134033039: ok
+    [batch 4/8] ALSE-134033041: ok
+    [batch 5/8] ALSE-134037202: ok
+    [batch 6/8] ALSE-134040604: ok
+    [batch 7/8] ALSE-134046055: ok
+    [batch 8/8] ALSE-134046173: ok
+    [batch 1/8] ALSE-134047309: ok
+    [batch 2/8] ALSE-134048010: ok
+    [batch 3/8] ALSE-134049798: ok
+    [batch 4/8] ALSE-134049912: ok
+    [batch 5/8] ALSE-134054715: miss
+    [batch 6/8] ALSE-134056312: miss
+    [batch] 2 consecutive misses — ending session early (2 unattempted -> retried later)
+    [retry 1/3] submit_search 'allstate': Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+    [batch 1/8] ALSE-134060717: ok
+    [batch 2/8] ALSE-134065527: ok
+    [batch 3/8] ALSE-134066969: ok
+    [batch 4/8] ALSE-134067030: ok
+    [batch 5/8] ALSE-134070640: ok
+    [batch 6/8] ALSE-134076211: ok
+    [batch 7/8] ALSE-134096243: ok
+    [batch 8/8] ALSE-134117974: ok
+    [batch 1/8] ALSE-134129897: ok
+    [batch 2/8] ALSE-134131409: ok
+    [batch 3/8] ALSE-134132170: ok
+    [batch 4/8] ALSE-134143479: ok
+    [batch 5/8] ALSE-134144148: ok
+    [batch 6/8] ALSE-134147380: ok
+    [batch 7/8] ALSE-134147500: ok
+    [batch 8/8] ALSE-134153408: ok
+    [batch 1/8] ALSE-134207730: ok
+    [batch 2/8] ALSE-134208989: ok
+    [batch 3/8] ALSE-134209093: ok
+    [batch 4/8] ALSE-134209866: ok
+    [batch 5/8] ALSE-134211363: ok
+    [batch 6/8] ALSE-134220406: ok
+    [batch 7/8] ALSE-134224379: ok
+    [batch 8/8] ALSE-134224495: ok
+    [batch 1/8] ALSE-134224701: ok
+    [batch 2/8] ALSE-134225021: ok
+    [batch 3/8] ALSE-134225092: ok
+    [batch 4/8] ALSE-134225840: ok
+    [batch 5/8] ALSE-134226322: ok
+    [batch 6/8] ALSE-134226449: ok
+    [batch 7/8] ALSE-134226511: ok
+    [batch 8/8] ALSE-134226853: ok
+    [batch 1/8] ALSE-134226884: ok
+    [batch 2/8] ALSE-134226917: ok
+    [batch 3/8] ALSE-134228038: ok
+    [batch 4/8] ALSE-134239799: ok
+    [batch 5/8] ALSE-134250545: ok
+    [batch 6/8] ALSE-134250591: ok
+    [batch 7/8] ALSE-134250602: ok
+    [batch 8/8] ALSE-134250647: ok
+    [batch 1/8] ALSE-134250893: ok
+    [batch 2/8] ALSE-134252253: ok
+    [batch 3/8] ALSE-134252382: miss
+    [batch 4/8] ALSE-134252467: miss
+    [batch] 2 consecutive misses — ending session early (4 unattempted -> retried later)
+    [retry 1/3] submit_search 'allstate': Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+    [retry 2/3] submit_search 'allstate': Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+    [retry 3/3] submit_search 'allstate': Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+    [batch 1/8] ALSE-134332917: ok
+    [batch 2/8] ALSE-134348618: ok
+    [batch 3/8] ALSE-134373226: ok
+    [batch 4/8] ALSE-134375670: ok
+    [batch 5/8] ALSE-134381721: ok
+    [batch 6/8] ALSE-134439235: ok
+    [batch 7/8] ALSE-134482692: ok
+    [batch 8/8] ALSE-134490575: ok
+    [batch 1/8] ALSE-134491171: ok
+    [batch 2/8] ALSE-134528275: ok
+    [batch 3/8] ALSE-134528924: ok
+    [batch 4/8] ALSE-134532192: ok
+    [batch 5/8] ALSE-134533947: ok
+    [batch 6/8] ALSE-134536079: ok
+    [batch 7/8] ALSE-134545340: ok
+    [batch 8/8] ALSE-134560994: ok
+    [batch 1/8] ALSE-134571388: ok
+    [batch 2/8] ALSE-134574267: ok
+    [batch 3/8] ALSE-134574820: ok
+    [batch 4/8] ALSE-134595998: ok
+    [batch 5/8] ALSE-134602473: ok
+    [batch 6/8] ALSE-134632321: ok
+    [batch 7/8] ALSE-134632364: ok
+    [batch 8/8] ALSE-134651043: ok
+    [batch 1/8] ALSE-134673377: ok
+    [batch 2/8] ALSE-134673439: ok
+    [batch 3/8] ALSE-134674124: ok
+    [batch 4/8] ALSE-134674217: ok
+    [batch 5/8] ALSE-134674249: ok
+    [batch 6/8] ALSE-134674321: ok
+    [batch 7/8] ALSE-134699857: ok
+    [batch 8/8] ALSE-134716138: ok
+    [batch 1/8] ALSE-134728018: ok
+    [batch 2/8] ALSE-134733831: ok
+    [batch 3/8] ALSE-134743340: ok
+    [batch 4/8] ALSE-134744598: ok
+    [batch 5/8] ALSE-134746787: ok
+    [batch 6/8] ALSE-134750995: ok
+    [batch 7/8] ALSE-134752066: ok
+    [batch 8/8] ALSE-134760708: ok
+    [batch 1/8] ALSE-134803401: ok
+    [batch 2/8] ALSE-134841863: ok
+    [batch 3/8] ALSE-134901616: ok
+    [batch 4/8] ALSE-134911646: ok
+    [batch 5/8] ALSE-134913842: ok
+    [batch 6/8] ALSE-134914356: ok
+    [batch 7/8] ALSE-134914653: ok
+    [batch 8/8] ALSE-133781934: miss
+    [batch 1/8] ALSE-133885597: miss
+    [batch 2/8] ALSE-133961235: miss
+    [batch] 2 consecutive misses — ending session early (6 unattempted -> retried later)
+    [batch 1/8] ALSE-134798484: miss
+    [batch 2/8] GMMX-133840721: miss
+    [batch] 2 consecutive misses — ending session early (6 unattempted -> retried later)
+    [batch 1/8] GMMX-134102351: miss
+    [batch 2/8] GMMX-134294373: miss
+    [batch] 2 consecutive misses — ending session early (6 unattempted -> retried later)
+    [batch 1/8] GMMX-134552358: miss
+    [batch 2/8] GMMX-134568658: miss
+    [batch] 2 consecutive misses — ending session early (6 unattempted -> retried later)
+  [Allstate] BATCH search='encompass', 51 filing(s) in chunks of 8
+    [batch 1/8] ALSE-134054715: miss
+    [batch 2/8] ALSE-134056312: miss
+    [batch] 2 consecutive misses — ending session early (6 unattempted -> retried later)
+    [batch 1/8] ALSE-134293398: miss
+    [batch 2/8] ALSE-134293967: miss
+    [batch] 2 consecutive misses — ending session early (6 unattempted -> retried later)
+    [batch 1/8] ALSE-134331946: miss
+    [batch 2/8] ALSE-134332385: miss
+    [batch] 2 consecutive misses — ending session early (6 unattempted -> retried later)
+    [retry 1/3] submit_search 'encompass': Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("link", name=re.compile(r"begin\s*search", re.IGNORECASE)).first
+
+    [batch 1/8] ALSE-134291651: ok
+    [batch 2/8] ALSE-134291768: ok

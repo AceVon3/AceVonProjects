@@ -32,7 +32,7 @@ CROSS_CHECKED_STATES = {"AZ", "MT", "NV", "OR", "UT", "WA", "NM", "GA"}
 RANK = {"direct": 3, "date_relaxed": 2, "reclassified": 1}
 VT = {"field_validated": "ambest_validated", "ambest_cross_checked": "ambest_validated",
       "pipeline_extracted_in_validated_window": "pipeline_only", "pipeline_extracted": "pipeline_only"}
-ALL = ["wy", "mt", "wa", "or", "nv", "id", "ut", "az", "co", "nm", "ga"]
+ALL = ["wy", "mt", "wa", "or", "nv", "id", "ut", "az", "co", "nm", "ga", "va"]
 
 
 def load_matched() -> dict:
