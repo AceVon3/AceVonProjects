@@ -9,25 +9,24 @@ must stay untouched while OH runs. Resume VA only via `run_final_rates.py VA`
 (cache-skips the 165, no re-download of parked progress). OH gets its own
 universe/targets/PDF dir under `output/pdfs/OH/` and its own resume tracking.
 
-## 🛑 REST-TEST TOOLING ARMED (2026-06-15) — NO SERFF until the rest ends
+## 🛑 QUIET PERIOD ACTIVE until **2026-06-21 16:06** — NO SERFF until then
 
-Quiet-period guard is built and wired into every SERFF entry point
-(`run_final_rates`, `run_search`, `backfill_submission_dates`,
-`validate_batch_download`, `cold_capacity_read`). To START the decisive rest:
+Armed 2026-06-15 for **6 days** (WAF penalty recovery + cold-capacity decision
+test). The guard is wired into all five SERFF entry points (`run_final_rates`,
+`run_search`, `backfill_submission_dates`, `validate_batch_download`,
+`cold_capacity_read`) — all verified to REFUSE with exit 3 + banner, no SERFF.
+State file: `quiet_period.json`. Status: `python src/quiet_period.py status`.
+Override only if intentional: `SERFF_QUIET_OVERRIDE=1` or
+`python src/quiet_period.py clear`.
 
-```
-python src/quiet_period.py start --days <N> --reason "decisive cold-read rest"
-```
-
-While the window is active, those entry points REFUSE to run (exit 3) so an
-accidental "let me try" can't reset the WAF penalty clock. Override only if
-intentional: `SERFF_QUIET_OVERRIDE=1` or `python src/quiet_period.py clear`.
-Check status: `python src/quiet_period.py status`.
-
-**When the rest ends, run the decisive measurement (measurement only, no collection):**
+### ⚠️ FIRST ACTION WHEN THE REST ENDS (2026-06-21): the COLD-CAPACITY READ — BEFORE any collection
 ```
 python cold_capacity_read.py --state VA --n 20 --sustained 2
 ```
+**This measurement IS the decision point. Do NOT collect first** — running
+`run_final_rates`/`run_search` before the read would consume the recovered WAF
+budget and CONTAMINATE the cold-capacity number, destroying the whole point of
+the 6-day rest. Read first, then act on the DECISION TREE below.
 
 ### DECISION TREE (act on the measured cold-capacity number)
 
