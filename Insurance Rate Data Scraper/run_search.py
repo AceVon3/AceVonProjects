@@ -44,6 +44,10 @@ def main() -> int:
     ap.add_argument("--diag", default="",
                     help="Arm src.search.DIAG_DIR at this path: one search_ledger.csv row "
                          "per Begin-Search + snapshot dir on failure (WAF watch)")
+    ap.add_argument("--no-dates", action="store_true",
+                    help="Skip per-row submission_date detail fetches (Begin-Search only). "
+                         "Minimizes WAF exposure — dates are ship-safe blank (GA/VA precedent) "
+                         "and backfillable later via backfill_submission_dates.py")
     args = ap.parse_args()
 
     if args.diag:
@@ -69,7 +73,8 @@ def main() -> int:
         print(f"    [checkpoint] saved {len(so_far)} filings -> {out}", flush=True)
 
     filings = search_all(pairs, checkpoint_cb=_checkpoint,
-                         date_from=args.date_from, date_to=args.date_to)
+                         date_from=args.date_from, date_to=args.date_to,
+                         fetch_submission_dates=not args.no_dates)
     write_excel(filings, out)
 
     print(f"\n=== Summary ===")

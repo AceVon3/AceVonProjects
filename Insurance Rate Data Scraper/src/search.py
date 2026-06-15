@@ -524,6 +524,7 @@ def search_all(
     checkpoint_cb=None,
     date_from: str = DATE_FROM,
     date_to: str = DATE_TO,
+    fetch_submission_dates: bool = True,
 ) -> list[Filing]:
     """Run search_company for each (state, company) pair with polite delays.
 
@@ -542,7 +543,8 @@ def search_all(
             for state, company in state_company_pairs:
                 print(f"[search] {state} / {company}  [{date_from} -> {date_to}] ...", flush=True)
                 try:
-                    results = search_company(browser, state, company, date_from=date_from, date_to=date_to)
+                    results = search_company(browser, state, company, date_from=date_from, date_to=date_to,
+                                             fetch_submission_dates=fetch_submission_dates)
                 except Exception as e:
                     print(f"  ! {state}/{company} failed: {e}", flush=True)
                     results = []
