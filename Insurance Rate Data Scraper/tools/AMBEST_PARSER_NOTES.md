@@ -47,16 +47,11 @@ existing harness (`confirm_blast_radius.py`) + base-column zero-diff + anchor.
   is the report's filing/disposition date, not the effective date (e.g. State
   Farm `SFMA-134298166`: our eff 01/01/2025 vs parsed AM Best eff 11/26/24 →
   out of window, won't match). Own investigation.
-- **GA/HO Safeco value discrepancy** (⚠️ possible DELIVERABLE concern, not a
-  label issue): AM Best records impact **9.9%** where our scrape has **19.6%**
-  on a filing BOTH have (Safeco Insurance Company of Indiana, eff 07/27/25,
-  ph 20,226). Because the policyholders + date + entity all agree but the rate
-  impact differs ~2x, this could be a SCRAPED-SIDE capture error (SERFF filing-
-  summary PDF parser reading the wrong % — e.g. indicated vs impact, or a
-  multi-entity/program mismatch) rather than an AM Best curation difference.
-  Needs its own investigation: is the 19.6% our mis-capture, AM Best's
-  disposed-vs-filed value, or a multi-entity row mismatch? If scraped-side, it
-  affects a rate cell in the deliverable. Do NOT fold into the parser fix.
+- **GA/HO Safeco "value discrepancy" — RESOLVED 2026-06-15: FALSE ALARM** (see
+  BACKLOG.md B3). Not one filing with two values — TWO filings the cross-check
+  conflated: `LBPM-134466356` (+19.6%, WITHDRAWN) and `LBPM-134520474` (+9.9%,
+  acknowledged-as-amended, a `direct` AM Best match). Both captured correctly
+  from the SERFF PDFs; column assignment correct. Zero deliverable impact.
 - **4 NV/HO Allstate genuine absences** (Allstate Insurance 27.8%, P&C 10.5%,
   Indemnity 36.2%, eff 12/01/2025): policyholder counts absent from NV raw text
   — real AM Best gap or NV/HO coverage problem. Correctly NOT recovered here.

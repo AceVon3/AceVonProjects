@@ -27,15 +27,25 @@ filing/disposition date instead of the effective date (State Farm
 matches. Fix `parse_ambest_ut.py` `HDR_RE` date-group assignment; re-compare UT.
 Label-only impact (would upgrade ~2-3 UT rows to ambest_cross_checked).
 
-### B3 — GA/HO Safeco value discrepancy (⚠️ possible deliverable concern)
-AM Best impact **9.9%** vs our scrape **19.6%** on a filing both have (Safeco
-Insurance Company of Indiana, eff 07/27/25, ph 20,226). Same entity/date/
-policyholders, ~2x different rate impact. Could be a SCRAPED-SIDE capture error
-(SERFF filing-summary PDF parser: indicated-vs-impact, or multi-entity/program
-mismatch) — which would be a **rate-cell / deliverable** issue, not just a
-label. Investigate: our mis-capture vs AM Best disposed-vs-filed vs multi-entity
-mismatch. Highest-value of the three to look at because it could touch a
-deliverable value. See `tools/AMBEST_PARSER_NOTES.md`.
+### B3 — GA/HO Safeco "value discrepancy" — RESOLVED 2026-06-15: FALSE ALARM, no deliverable error
+Investigated against the cached SERFF PDFs. The 9.9% and 19.6% are **two
+DIFFERENT filings** for the same Safeco-of-Indiana HO rate program (same 9/7/25
+renewal, same 20,226 policyholders), which the reverse cross-check conflated on
+(entity, eff, ph):
+- `LBPM-134466356` — **+19.6% impact, WITHDRAWN** (SERFF Status Closed-Withdrawn;
+  PDF: "+19.6% overall rate impact"; withdrawn 04/23/25, "a filing will be
+  submitted at a later date"). Our capture correct. No AM Best entry (AM Best
+  doesn't list withdrawn filings) -> correctly `none`.
+- `LBPM-134520474` — **+9.9% impact, ACKNOWLEDGED-as-amended** (amended down from
+  18.3%; PDF: "+9.9% overall rate impact"). Our capture correct, and it is a
+  **`direct` match to AM Best's 9.9%** in ga_ho_corroboration.
+Case **(d)** multi-filing mismatch (withdraw-then-refile pair), with a
+disposition-status flavor. NOT case (a)/(b): column assignment is correct
+(indicated 23.3 vs impact 19.6/9.9), and the SERFF parser even took the amended
+9.9% over the original 18.3%. **Blast radius: zero deliverable rate cells.** The
+only footnote is that the reverse-cross-check harness can pair a withdrawn
+filing with its refiled successor — a harness-interpretation nuance, not a data
+bug. No fix needed.
 
 ### B4 — NV Progressive (2 rows) — RESOLVED as genuine absence
 `PRGS-134206539` (eff 01/09/2026, −0.094%/−0.034%) is genuinely absent from AM
