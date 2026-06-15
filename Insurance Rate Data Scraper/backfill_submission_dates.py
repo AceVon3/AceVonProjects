@@ -129,6 +129,9 @@ def main() -> int:
     validate = "--validate" in flags
     force = "--force" in flags
 
+    from src.quiet_period import guard
+    guard("backfill_submission_dates")  # refuse during a declared SERFF rest window
+
     print(f"=== {state} submission-date mini-pass ===", flush=True)
     _targets, rep = rf.load_targets_search(state)
     blank = rep["search_blank"]  # (tracking, filing_id, group) — search-phase failures

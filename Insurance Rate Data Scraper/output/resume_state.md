@@ -9,6 +9,43 @@ must stay untouched while OH runs. Resume VA only via `run_final_rates.py VA`
 (cache-skips the 165, no re-download of parked progress). OH gets its own
 universe/targets/PDF dir under `output/pdfs/OH/` and its own resume tracking.
 
+## 🛑 REST-TEST TOOLING ARMED (2026-06-15) — NO SERFF until the rest ends
+
+Quiet-period guard is built and wired into every SERFF entry point
+(`run_final_rates`, `run_search`, `backfill_submission_dates`,
+`validate_batch_download`, `cold_capacity_read`). To START the decisive rest:
+
+```
+python src/quiet_period.py start --days <N> --reason "decisive cold-read rest"
+```
+
+While the window is active, those entry points REFUSE to run (exit 3) so an
+accidental "let me try" can't reset the WAF penalty clock. Override only if
+intentional: `SERFF_QUIET_OVERRIDE=1` or `python src/quiet_period.py clear`.
+Check status: `python src/quiet_period.py status`.
+
+**When the rest ends, run the decisive measurement (measurement only, no collection):**
+```
+python cold_capacity_read.py --state VA --n 20 --sustained 2
+```
+
+### DECISION TREE (act on the measured cold-capacity number)
+
+- **Cold read climbs toward high tens (» 17)** → penalty decays fully on a long
+  rest; expansion is viable. Resume VA (`run_final_rates.py VA`, cache-skips
+  165) then OH — both draw the same IP-keyed pool, so do them back-to-back
+  within the restored budget, harvest-early.
+- **Cold read plateaus at ~14–17** → ratchet confirmed; eastern states are a
+  measured multi-cycle grind. Decide scope: finish VA/OH slowly across many
+  rests, OR pivot to building on the existing 11-state dataset (1,616 rows) and
+  treat VA/OH as best-effort.
+- Either way the number is now MEASURED (VA overnight 8 / VA 72h 17 / OH 14 are
+  the existing points), replacing the unverified "85" prose.
+
+Efficiency wins for the resume burst are built + offline-tested (see
+`PIPELINE_EFFICIENCY.md`): re-batched recovery (⚠️ VALIDATE-IN-VIVO on the
+first rested batch), harvest-early stop, `--no-dates` default for sweeps.
+
 ## Session summary (2026-06-15) — VA 72hr-rest download resume
 
 - **VA downloads advanced 135 → 165/498 cached (+29, 33%)**, then STOPPED

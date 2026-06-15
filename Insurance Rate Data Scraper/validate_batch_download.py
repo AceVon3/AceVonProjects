@@ -172,6 +172,9 @@ def main() -> int:
         print("\n--plan: no SERFF traffic. Run without --plan after the rest period (user approval).")
         return 0
 
+    from src.quiet_period import guard
+    guard("validate_batch_download")  # refuse during a declared SERFF rest window (live path only)
+
     # TRIPLE DUTY: (1) batch validation, (2) capacity probe, (3) failure-
     # signature capture. DIAG_DIR makes every fresh search write a timestamped
     # ledger row (output/serff_diagnostics/search_ledger.csv) and, on failure,

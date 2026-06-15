@@ -56,6 +56,15 @@ budget — capacity is global, so OH's load and VA's resume draw on the same poo
 4. Parse + AM Best cross-check (`compare_oh_ambest.py`, needs OH AM Best report
    staged, PPA + HO) per CROSS_CHECK_STANDARD.md.
 
+## Rest-test tooling + decision tree (shared with VA)
+
+OH and VA share the IP-keyed WAF pool. The quiet-period guard, the decisive
+`cold_capacity_read.py` measurement, and the cold-read DECISION TREE live in
+`output/resume_state.md` (VA note) + `PIPELINE_EFFICIENCY.md`. Run the cold read
+once when the declared rest ends; it decides whether to resume collection
+(VA then OH) or pivot scope. Resume-burst efficiency wins (re-batched recovery
+⚠️ VALIDATE-IN-VIVO, harvest-early, `--no-dates` default) are built + tested.
+
 ## Standing notes
 
 - Exclusions live (`EXCLUDED_SUBSIDIARY_PATTERNS`): american-family-home +

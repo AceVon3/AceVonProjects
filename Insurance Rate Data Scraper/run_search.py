@@ -47,8 +47,16 @@ def main() -> int:
     ap.add_argument("--no-dates", action="store_true",
                     help="Skip per-row submission_date detail fetches (Begin-Search only). "
                          "Minimizes WAF exposure — dates are ship-safe blank (GA/VA precedent) "
-                         "and backfillable later via backfill_submission_dates.py")
+                         "and backfillable later via backfill_submission_dates.py. NOTE: this is "
+                         "already the DEFAULT for universe sweeps (--all / --all-companies).")
+    ap.add_argument("--with-dates", action="store_true",
+                    help="Force per-row submission_date fetches even on a universe sweep "
+                         "(overrides the sweep default). Heavy WAF exposure (~1 detail fetch "
+                         "per result row); use only when dates are essential up front.")
     args = ap.parse_args()
+
+    from src.quiet_period import guard
+    guard("run_search")  # refuse during a declared SERFF rest window
 
     if args.diag:
         import src.search as search_mod
@@ -66,7 +74,23 @@ def main() -> int:
         out_name = f"{_slug(args.state)}_{_slug(args.company)}_search{args.out_suffix}.xlsx"
 
     out = Path(OUTPUT_DIR) / out_name
+
+    # Date-fetch policy: universe sweeps default to NO dates (the expensive,
+    # WAF-heavy per-row detail fetches yield a ship-safe-blank field — GA/VA
+    # precedent; backfillable later). Single-carrier runs (targeted backfill)
+    # keep dates by default. Either default is overridable with the explicit
+    # flags. --with-dates wins over --no-dates if both are passed.
+    is_sweep = bool(args.all or args.all_companies)
+    if args.with_dates:
+        fetch_dates = True
+    elif args.no_dates:
+        fetch_dates = False
+    else:
+        fetch_dates = not is_sweep  # sweep -> no dates; single carrier -> dates
     print(f"[run_search] submission window {args.date_from} -> {args.date_to}; out={out}", flush=True)
+    print(f"[run_search] mode={'sweep' if is_sweep else 'single'}; "
+          f"submission_date fetch={'ON' if fetch_dates else 'OFF (Begin-Search only, dates blank)'}",
+          flush=True)
 
     def _checkpoint(so_far):
         write_excel(so_far, out)
@@ -74,7 +98,7 @@ def main() -> int:
 
     filings = search_all(pairs, checkpoint_cb=_checkpoint,
                          date_from=args.date_from, date_to=args.date_to,
-                         fetch_submission_dates=not args.no_dates)
+                         fetch_submission_dates=fetch_dates)
     write_excel(filings, out)
 
     print(f"\n=== Summary ===")

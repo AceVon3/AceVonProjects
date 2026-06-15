@@ -163,6 +163,7 @@ def _relabel(provenance_tier: str, tracking: str) -> tuple[str, str, str, str]:
         return "extension", "pipeline_extracted_in_validated_window", "", "pipeline_only"
     return "extension", "pipeline_extracted", "", "pipeline_only"  # eff<2025 / blank
 import src.search as _serff_search
+from src.quiet_period import guard as _quiet_guard
 from src.detail import download_system_summary_pdf
 from src.search import (
     _back_to_results,
@@ -647,6 +648,109 @@ DOWNLOAD_BATCH_SIZE = 8  # tune against JSF degradation; 1 = legacy fresh-per-ta
 # convergence), so aborting early costs nothing but a fresh search.
 BATCH_ABORT_CONSECUTIVE_MISSES = 2
 
+# Re-batched recovery (Q2): batch misses are mostly JSF-degradation misses (the
+# row WAS findable; the reused session was contaminated), not genuine
+# not-founds. Before paying the per-target fresh-search price (1 walling
+# Begin-Search per straggler), re-pool the misses into NEW fresh-context batches
+# and retry at batch rate (batch_size:1). Only what survives the recovery rounds
+# drops to the per-target fallback. Each recovery round re-pools ALL current
+# misses across the group's search terms, so a miss from chunk 1 can ride a
+# fresh batch with a miss from chunk 9. A round that recovers nothing means the
+# rest are true not-founds / a hard wall -> stop recovering (don't loop).
+# VALIDATE-IN-VIVO: on the first rested burst, run ONE batch and confirm the
+# recovery pass actually lands degradation-misses at batch rate before trusting
+# it on a full run. Set to 0 for legacy behavior (straight to per-target).
+REBATCH_RECOVERY_ROUNDS = 1
+
+# Harvest-early (1b): the first few batches of a rested session deliver full
+# batch_size:1; yield then decays as the JSF session ages and the WAF penalty
+# deepens, collapsing toward the per-target 1:1 regime. Bank the high-leverage
+# early batches and STOP before grinding the wall. Download-SCHEDULING only —
+# the deliverable is re-derived from whatever PDFs are cached on disk, so
+# stopping early never changes a parsed row (convergence re-runs collect the
+# rest next burst). A fully-cached state downloads nothing -> guard never fires.
+HARVEST_EARLY = True
+HARVEST_EARLY_MIN_BATCHES = 3        # warm-up: never stop before this many batches
+HARVEST_EARLY_WINDOW = 3             # judge collapse on a rolling window of recent batches
+HARVEST_EARLY_COLLAPSE_RATIO = 0.34  # stop if recent landed/attempted < this (~collapsed toward 1:1)
+
+
+class _HarvestEarlyGuard:
+    """Run-level (not per-group) yield watchdog. Fed (landed, attempted) per
+    batch; once past the warm-up it trips when recent yield collapses toward the
+    per-target 1:1 regime, so the caller can stop before grinding the wall.
+    Pure / no I/O -> unit-testable in isolation."""
+
+    def __init__(self, *, enabled: bool = HARVEST_EARLY,
+                 min_batches: int = HARVEST_EARLY_MIN_BATCHES,
+                 window: int = HARVEST_EARLY_WINDOW,
+                 collapse_ratio: float = HARVEST_EARLY_COLLAPSE_RATIO):
+        self.enabled = enabled
+        self.min_batches = min_batches
+        self.window = window
+        self.collapse_ratio = collapse_ratio
+        self._batches: list[tuple[int, int]] = []  # (landed, attempted) per batch
+        self._stopped = False
+
+    def record(self, landed: int, attempted: int) -> None:
+        if attempted > 0:
+            self._batches.append((landed, attempted))
+
+    def should_stop(self) -> bool:
+        if not self.enabled or self._stopped:
+            return self._stopped
+        if len(self._batches) < self.min_batches:
+            return False
+        window = self._batches[-self.window:]
+        landed = sum(l for l, _a in window)
+        attempted = sum(a for _l, a in window)
+        if attempted and landed / attempted < self.collapse_ratio:
+            self._stopped = True
+        return self._stopped
+
+
+def _batched_with_recovery(search_terms, remaining, *, batch_size, run_batch_fn,
+                           recovery_rounds: int = REBATCH_RECOVERY_ROUNDS,
+                           on_batch=None, should_stop=None, log=print):
+    """Primary batched pass + up to `recovery_rounds` re-batched passes over the
+    misses, returning (still_remaining, stopped_early). `run_batch_fn(term, chunk)
+    -> list[miss]` runs ONE fresh-context batched session (real impl drives
+    Playwright; tests inject a mock). `on_batch(landed, attempted)` feeds the
+    harvest guard; `should_stop()` ends collection early, banking progress and
+    skipping the per-target fallback. Pure orchestration otherwise — the I/O is
+    entirely behind the injected callables, so this is unit-testable offline.
+
+    Stable-filing_id keying and the per-batch degradation guard live inside
+    run_batch_fn (real _run_batch) and are untouched — this only schedules which
+    targets get re-batched vs dropped to per-target."""
+    remaining = list(remaining)
+    rounds = 1 + max(0, recovery_rounds)
+    for round_idx in range(rounds):
+        if not remaining:
+            break
+        before = len(remaining)
+        label = "BATCH" if round_idx == 0 else f"RECOVERY-{round_idx}"
+        for term in search_terms:
+            if not remaining:
+                break
+            log(f"[{label}] search={term!r}, {len(remaining)} filing(s) in chunks of {batch_size}")
+            still: list = []
+            for i in range(0, len(remaining), batch_size):
+                chunk = remaining[i:i + batch_size]
+                misses = run_batch_fn(term, chunk)
+                if on_batch is not None:
+                    on_batch(len(chunk) - len(misses), len(chunk))
+                still.extend(misses)
+                if should_stop is not None and should_stop():
+                    still.extend(remaining[i + batch_size:])  # unattempted in this term
+                    return still, True
+            remaining = still
+        after = len(remaining)
+        if round_idx > 0 and after >= before:
+            log(f"[RECOVERY-{round_idx}] no progress ({after} remain) -> stop recovery")
+            break
+    return remaining, False
+
 
 def download_all_pdfs(state: str, targets: list[Target], *,
                       batch_size: int = DOWNLOAD_BATCH_SIZE) -> dict[str, str]:
@@ -660,6 +764,7 @@ def download_all_pdfs(state: str, targets: list[Target], *,
     for t in targets:
         by_group.setdefault(t.group, []).append(t)
     statuses: dict[str, str] = {}
+    harvest = _HarvestEarlyGuard()  # run-level yield watchdog (1b); inert when fully cached
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=HEADLESS)
         ctx = browser.new_context(user_agent=USER_AGENT, accept_downloads=True)
@@ -727,29 +832,39 @@ def download_all_pdfs(state: str, targets: list[Target], *,
                     uncached.append(t)
             if not uncached:
                 print(f"[{grp}] all {len(items)} cached", flush=True); continue
+            if harvest.should_stop():
+                print(f"[{grp}] harvest-early already tripped — deferring {len(uncached)} "
+                      f"uncached to next burst (no grind)", flush=True)
+                continue
             search_terms = GROUP_SEARCH[grp]
             print(f"[{grp}] searches={search_terms!r}, downloading {len(uncached)}/{len(items)}", flush=True)
             remaining = list(uncached)
 
-            # --- primary path: batched sessions per search term ---
+            # --- primary batched pass + re-batched recovery (Q2) ---
+            # Recovery re-pools batch misses into fresh batches (batch_size:1)
+            # before the per-target fallback, because most misses are
+            # JSF-degradation (row findable, session contaminated) not true
+            # not-founds. Stable-filing_id keying + the per-batch degradation
+            # guard live in _run_batch and are untouched.
+            stopped_early = False
             if batch_size > 1:
-                for search_term in search_terms:
-                    if not remaining:
-                        break
-                    print(f"  [{grp}] BATCH search={search_term!r}, "
-                          f"{len(remaining)} filing(s) in chunks of {batch_size}", flush=True)
-                    still_remaining: list[Target] = []
-                    for i in range(0, len(remaining), batch_size):
-                        still_remaining.extend(_run_batch(search_term, remaining[i:i + batch_size]))
-                    remaining = still_remaining
+                remaining, stopped_early = _batched_with_recovery(
+                    search_terms, remaining, batch_size=batch_size,
+                    run_batch_fn=_run_batch, on_batch=harvest.record,
+                    should_stop=harvest.should_stop,
+                    log=lambda m, g=grp: print(f"  [{g}] {m}", flush=True),
+                )
+            if stopped_early:
+                print(f"  [{grp}] harvest-early stop — banked {len(uncached) - len(remaining)} landed, "
+                      f"{len(remaining)} deferred to next burst (skipping per-target grind)", flush=True)
+                continue  # do NOT enter the per-target fallback for the deferred misses
 
             # --- fallback: proven fresh context + fresh search PER target ---
-            # Reusing one context across many navigate->download->go_back
-            # cycles degrades the JSF results page so later-page rows become
-            # unfindable — batch-loop state contamination, observed as 9/9 OR
-            # Travelers misses that ALL recovered under fresh contexts.
-            # download_system_summary_pdf paginates to the row by its stable
-            # data-rk via _click_row_to_detail. Only batch misses reach here.
+            # Only TRUE not-founds (survived recovery) should reach here now.
+            # Reusing one context across many navigate->download->go_back cycles
+            # degrades the JSF results page (the 9/9 OR Travelers signature);
+            # fresh-per-target is the proven recovery for those. Harvest guard
+            # still watches so a collapse here also stops the run cleanly.
             for search_term in search_terms:
                 if not remaining:
                     break
@@ -769,13 +884,23 @@ def download_all_pdfs(state: str, targets: list[Target], *,
                         pdf = None
                     if pdf:
                         statuses[t.filing_id] = "ok"
+                        harvest.record(1, 1)
                         print(f"    [{idx}/{len(remaining)}] {t.tracking}: ok", flush=True)
                     else:
                         still_remaining.append(t)
+                        harvest.record(0, 1)
+                    if harvest.should_stop():
+                        still_remaining.extend(t2 for t2 in remaining[idx:])
+                        print(f"  [{grp}] harvest-early stop in fallback — "
+                              f"{len(still_remaining)} deferred to next burst", flush=True)
+                        break
                 remaining = still_remaining
-            for t in remaining:
-                statuses[t.filing_id] = "fail:row_not_found"
-                print(f"  {t.tracking}: not found in any of {search_terms!r}", flush=True)
+                if harvest.should_stop():
+                    break
+            if not harvest.should_stop():
+                for t in remaining:
+                    statuses[t.filing_id] = "fail:row_not_found"
+                    print(f"  {t.tracking}: not found in any of {search_terms!r}", flush=True)
         browser.close()
     return statuses
 
@@ -977,6 +1102,7 @@ def verify_anchor(rows: list[dict]) -> tuple[int, list[str]]:
 
 def main():
     state = (sys.argv[1] if len(sys.argv) > 1 else "ID").upper()
+    _quiet_guard("run_final_rates")  # refuse during a declared SERFF rest window
     t0 = time.time()
     print(f"=== {state} final-rates pipeline ===")
     targets = load_targets(state)
