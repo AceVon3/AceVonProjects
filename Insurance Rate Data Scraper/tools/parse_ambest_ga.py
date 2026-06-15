@@ -45,8 +45,8 @@ SUB_LINE_RE = re.compile(
     r"(?:\$?(?P<prem_chg>[­\-]?[\d,]+)\s+)?"
     r"(?P<pol>[\d,]+)\s+"
     r"\$?(?P<prem_pgm>[\d,]+)\s+"
-    r"(?P<max>[­\-]?\d+\.\d+)%\s+"
-    r"(?P<min>[­\-]?\d+\.\d+)%"
+    r"(?P<max>[­\-]?\d+\.\d+)?%\s+"  # number OPTIONAL: bare `%` = blank max (2026-06-15 fix)
+    r"(?P<min>[­\-]?\d+\.\d+)?%"     # number OPTIONAL: bare `%` = blank min (2026-06-15 fix)
 )
 
 
@@ -105,14 +105,16 @@ def extract_subsidiary_rates(block: str) -> list[dict]:
             "written_premium_change": int(_clean_num(prem_chg_raw)) if prem_chg_raw else None,
             "policyholders_affected": int(_clean_num(m.group("pol"))),
             "written_premium_for_program": int(_clean_num(m.group("prem_pgm"))),
-            "maximum_pct": float(_clean_num(m.group("max"))),
-            "minimum_pct": float(_clean_num(m.group("min"))),
+            "maximum_pct": float(_clean_num(m.group("max"))) if m.group("max") else None,
+            "minimum_pct": float(_clean_num(m.group("min"))) if m.group("min") else None,
         })
     return rows
 
 
 def parse_file(idx: int, path: Path, rows: list[dict]) -> int:
     text = path.read_text(encoding="utf-8").replace("\xa0", " ")
+    for _d in "­‐‑‒–—―−":  # non-ASCII minus/dash -> '-' (2026-06-15 hardening)
+        text = text.replace(_d, "-")
     blocks = split_filings(text)
     n0 = len(rows)
     skipped_no_meta = 0

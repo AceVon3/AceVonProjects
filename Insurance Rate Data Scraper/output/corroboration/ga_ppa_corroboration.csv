@@ -206,8 +206,8 @@ GA,PPA,SFMA-134293778,State Farm Fire and Casualty Company,09/04/2025,0.000%,715
 GA,PPA,SFMA-134293778,State Farm Mutual Automobile Insurance Company,09/04/2025,0.000%,1968077,State Farm Mutual Automobile Insurance Company,09/04/25,0.0,1968077,True,True,True,True,direct
 GA,PPA,SFMA-134306118,State Farm Fire and Casualty Company,08/25/2025,0.000%,71699,,,,,,,,,none
 GA,PPA,SFMA-134306118,State Farm Mutual Automobile Insurance Company,08/25/2025,0.000%,2070767,,,,,,,,,none
-GA,PPA,SFMA-134315020,State Farm Fire and Casualty Company,08/25/2025,0.000%,71699,State Farm Fire and Casualty Company,08/25/25,0.0,71699,True,True,True,True,direct
-GA,PPA,SFMA-134315020,State Farm Mutual Automobile Insurance Company,08/25/2025,0.000%,2070767,State Farm Mutual Automobile Insurance Company,08/25/25,0.0,2070767,True,True,True,True,direct
+GA,PPA,SFMA-134315020,State Farm Fire and Casualty Company,08/25/2025,0.000%,71699,State Farm Fire and Casualty Company,08/25/25,0.0,71583,True,True,True,False,direct
+GA,PPA,SFMA-134315020,State Farm Mutual Automobile Insurance Company,08/25/2025,0.000%,2070767,State Farm Mutual Automobile Insurance Company,08/25/25,0.0,2068581,True,True,True,False,direct
 GA,PPA,SFMA-134459996,State Farm Fire and Casualty Company,06/13/2025,-4.600%,57873,State Farm Fire and Casualty Company,06/06/25,-4.6,57873,True,True,False,True,date_relaxed
 GA,PPA,SFMA-134459996,State Farm Mutual Automobile Insurance Company,06/13/2025,-4.400%,2039249,State Farm Mutual Automobile Insurance Company,06/06/25,-4.4,2039249,True,True,False,True,date_relaxed
 GA,PPA,SFMA-134677514,State Farm Fire and Casualty Company,11/28/2025,-1.500%,54683,State Farm Fire and Casualty Company,12/21/25,-1.5,54683,True,True,False,True,date_relaxed
@@ -276,22 +276,22 @@ GA,PPA,FARM-133979606,Mid-Century Insurance Company,03/25/2024,0.000%,0,,,,,,,,,
 GA,PPA,FARM-134599856,Mid-Century Insurance Company,08/29/2025,0.000%,0,,,,,,,,,none
 GA,PPA,FARM-134808149,Mid-Century Insurance Company,03/16/2026,0.000%,0,,,,,,,,,none
 GA,PPA,FARM-134406005,Mid-Century Insurance Company,03/29/2025,0.000%,0,,,,,,,,,none
-GA,PPA,FARM-134265217,Mid-Century Insurance Company,01/24/2025,12.500%,13,,,,,,,,,none
+GA,PPA,FARM-134265217,Mid-Century Insurance Company,01/24/2025,12.500%,13,Mid-Century Insurance Company,01/24/25,12.5,13,True,True,True,True,direct
 GA,PPA,FARM-133847072,Mid-Century Insurance Company,02/18/2024,11.700%,18,,,,,,,,,none
-GA,PPA,FARM-134472408,Mid-Century Insurance Company,07/25/2025,12.500%,7,,,,,,,,,none
+GA,PPA,FARM-134472408,Mid-Century Insurance Company,07/25/2025,12.500%,7,Mid-Century Insurance Company,07/25/25,12.5,7,True,True,True,True,direct
 GA,PPA,FARM-134322016,Mid-Century Insurance Company,04/04/2025,0.000%,13,,,,,,,,,none
-GA,PPA,FARM-134267331,Mid-Century Insurance Company,01/24/2025,12.400%,4906,,,,,,,,,none
+GA,PPA,FARM-134267331,Mid-Century Insurance Company,01/24/2025,12.400%,4906,Mid-Century Insurance Company,01/24/25,12.4,4906,True,True,True,True,direct
 GA,PPA,FARM-133847076,Mid-Century Insurance Company,02/18/2024,12.500%,6594,,,,,,,,,none
 GA,PPA,FARM-134322400,Mid-Century Insurance Company,04/04/2025,0.000%,4906,,,,,,,,,none
-GA,PPA,FARM-134472421,Mid-Century Insurance Company,07/25/2025,8.800%,3312,,,,,,,,,none
+GA,PPA,FARM-134472421,Mid-Century Insurance Company,07/25/2025,8.800%,3312,Mid-Century Insurance Company,07/25/25,8.8,3312,True,True,True,True,direct
 GA,PPA,FARM-133843957,Mid-Century Insurance Company,05/11/2024,12.500%,42285,,,,,,,,,none
-GA,PPA,FARM-134808853,Mid-Century Insurance Company,03/16/2026,0.000%,0,,,,,,,,,none
+GA,PPA,FARM-134808853,Mid-Century Insurance Company,03/16/2026,0.000%,0,Mid-Century Insurance Company,03/16/26,0.0,0,True,True,True,True,direct
 GA,PPA,FARM-133979617,Mid-Century Insurance Company,03/25/2024,0.000%,0,,,,,,,,,none
-GA,PPA,FARM-134472372,Mid-Century Insurance Company,07/25/2025,8.700%,20883,,,,,,,,,none
-GA,PPA,FARM-134603069,Mid-Century Insurance Company,08/29/2025,0.000%,0,,,,,,,,,none
-GA,PPA,FARM-134267457,Mid-Century Insurance Company,01/24/2025,12.100%,33354,,,,,,,,,none
-GA,PPA,FARM-134406637,Mid-Century Insurance Company,03/29/2025,0.000%,0,,,,,,,,,none
-GA,PPA,FARM-134320366,Mid-Century Insurance Company,04/04/2025,0.000%,33354,,,,,,,,,none
+GA,PPA,FARM-134472372,Mid-Century Insurance Company,07/25/2025,8.700%,20883,Mid-Century Insurance Company,07/25/25,8.7,20883,True,True,True,True,direct
+GA,PPA,FARM-134603069,Mid-Century Insurance Company,08/29/2025,0.000%,0,Mid-Century Insurance Company,08/29/25,0.0,0,True,True,True,True,direct
+GA,PPA,FARM-134267457,Mid-Century Insurance Company,01/24/2025,12.100%,33354,Mid-Century Insurance Company,01/24/25,12.1,33354,True,True,True,True,direct
+GA,PPA,FARM-134406637,Mid-Century Insurance Company,03/29/2025,0.000%,0,Mid-Century Insurance Company,03/29/25,0.0,0,True,True,True,True,direct
+GA,PPA,FARM-134320366,Mid-Century Insurance Company,04/04/2025,0.000%,33354,Mid-Century Insurance Company,04/04/25,0.0,13,True,True,True,False,direct
 GA,PPA,FARM-134220408,Mid-Century Insurance Company,10/12/2024,0.000%,0,,,,,,,,,none
 GA,PPA,NWPP-134428376,Nationwide Insurance Company of America,09/19/2025,0.000%,4852,Nationwide Insurance Company of America,09/19/25,0.0,4852,True,True,True,True,direct
 GA,PPA,NWPP-134428376,Nationwide General Insurance Company,09/19/2025,0.000%,9548,Nationwide General Insurance Company,09/19/25,0.0,9548,True,True,True,True,direct
