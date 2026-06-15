@@ -1,4 +1,32 @@
-# Resume state — 2026-06-11 close-out (VA mid-collection checkpoint)
+# Resume state — 2026-06-15 close-out (VA mid-collection checkpoint)
+
+## ⚠️ STATE SEPARATION — VA is PARKED; OH is a SEPARATE effort
+
+VA is parked mid-collection at **165/498 cached**. OH is being started as its
+own state. **Do NOT let OH's session, downloads, or commits disturb VA's parked
+progress** — VA's cached PDFs, universe workbooks, ledger rows, and this note
+must stay untouched while OH runs. Resume VA only via `run_final_rates.py VA`
+(cache-skips the 165, no re-download of parked progress). OH gets its own
+universe/targets/PDF dir under `output/pdfs/OH/` and its own resume tracking.
+
+## Session summary (2026-06-15) — VA 72hr-rest download resume
+
+- **VA downloads advanced 135 → 165/498 cached (+29, 33%)**, then STOPPED
+  cleanly when the WAF wall returned in the fresh-search-per-target FALLBACK
+  pass (not the batched pass). Only the **Allstate group** was reached this
+  session; the other 12 carrier groups remain untouched. No grinding past the
+  wall (per the don't-deepen-the-penalty rule).
+- **WAF capacity reading (72hr rest): 17 clean cold searches before the first
+  405**, vs 8 after the overnight rest — multi-day rest roughly doubled cold
+  capacity (decay-over-days model holds). Cold-window challenge rate 8% (vs
+  GA 20%). Analysis concluded: VA is NOT intrinsically harder per request —
+  GA→VA capacity decline is accumulated penalty + recent load + VA's larger
+  volume. Walls are anti-correlated with request velocity (bursts succeed,
+  idle precedes walls) — the velocity/batching-caused-walls hypothesis was
+  tested against the ledger and REFUTED; slowing bursts is NOT the fix.
+- Parse phase NOT reached → still no `va_final_rates.xlsx` (deliberate).
+  AMMH-* American Modern exclusion still pending parse-time confirmation
+  (those filings sit in the American Family group, never reached this session).
 
 ## Session summary (2026-06-11, two efforts)
 
@@ -25,9 +53,13 @@
   (+MGA 9 folds in), GEICO 22, American Family 15, USAA 13. Safeco/Encompass
   search hits produced 0 in-scope targets (verify at parse — likely
   Form/out-of-TOI).
-- **Downloads: 135/498 filing-summary PDFs cached** (`output/pdfs/VA/`),
-  ~363 remaining ≈ 46 batches of 8. 19 misses (17 distinct) when the run was
-  stopped — all retryable, cache skips the 135.
+- **Downloads: 165/498 filing-summary PDFs cached** (`output/pdfs/VA/`),
+  **~333 remaining ≈ 42 batches of 8**. Updated 2026-06-15 (+29; Allstate
+  group only — ALSE + GMMX prefixes). Cache skips the 165 on resume; the other
+  12 carrier groups (Travelers, Liberty Mutual, Farmers, Nationwide,
+  Progressive, State Farm, GEICO, American Family, USAA, + folds) are entirely
+  un-downloaded. Resume picks up from the Allstate stragglers, then proceeds
+  through those groups.
 - **276 in-scope targets ship blank submission_date** (620/1,052 sweep date
   fetches were WAF-challenged). Ship-safe per the GA precedent (tiering does
   not key on dates); backfillable via `backfill_submission_dates.py VA` in
@@ -66,10 +98,13 @@ AmFam-adjacent name = same cluster, exclude on sight, don't re-research).
 
 ## RESUME SEQUENCE (in order)
 
-1. **Rest SERFF multi-day** (not overnight — proven insufficient 2026-06-11).
-2. `python run_final_rates.py VA` — skips the 135 cached PDFs, fetches ~363
-   + convergence passes for the 17 distinct misses. Watch the ledger; stop
-   cleanly if 15-miss-class walls return.
+1. **Rest SERFF multi-day** (not overnight — proven insufficient 2026-06-11;
+   72hr gave 17 cold searches on 2026-06-15). If OH has run in between, rest
+   accounts for OH's load too — capacity is shared across all SERFF activity.
+2. `python run_final_rates.py VA` — **skips the 165 cached PDFs**, fetches the
+   ~333 remaining + convergence. Picks up from the Allstate stragglers, then
+   the other 12 carrier groups. Watch the ledger; stop cleanly if walls return
+   and sustain (do not grind into the fallback pass — that deepens penalty).
 3. Parse phase runs in the same command → `va_final_rates.xlsx`.
    **VA disposition vocabulary surfaces HERE** (first prior-approval state —
    expect new terms; classify via fall-through per CROSS_CHECK_STANDARD).
@@ -77,9 +112,10 @@ AmFam-adjacent name = same cluster, exclude on sight, don't re-research).
    Progressive pattern: events captured, values differ by disposition stage —
    classify, don't chase).
 4. `compare_va_ambest.py` — **HOLD: requires the VA AM Best report staged,
-   BOTH PPA + HO** (user stages it; not on disk as of this checkpoint).
-   Build per CROSS_CHECK_STANDARD.md (artifact from day one, fixed-parser
-   denominators).
+   BOTH PPA + HO** (user stages it; **STILL NOT on disk as of 2026-06-15** —
+   verified no VA AM Best report among the staged AM Best files). Cross-check
+   blocked until staged. Build per CROSS_CHECK_STANDARD.md (artifact from day
+   one, fixed-parser denominators).
 5. `apply_validation_tiers.py VA` → `build_all_states.py` (anchor 14/14
    gate) → report.
 6. Optional, budget-permitting: `backfill_submission_dates.py VA` bursts.
