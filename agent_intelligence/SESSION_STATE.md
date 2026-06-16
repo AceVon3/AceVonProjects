@@ -88,10 +88,14 @@ recon of the source before any build change, then re-keyed.
 
 ### states.ts / coverage
 
-- **GA + NM `data_coverage:true`** with AM Best–sourced `validated` flags:
-  GA `{auto:true,home:true}` (PPA 92.8% / HO 94.3%), NM `{auto:true,home:true}`
-  (PPA 97.3% / HO 88.2%) — sourced from the scraper's ambest-compare logs, not
-  guessed. `constants.ts` `COVERED_STATES` → 10. Methodology text updated
+- **GA + NM `data_coverage:true`.** Their `validated` flags' VALUES come from the
+  AM Best cross-check logs — GA `{auto:true,home:true}` (PPA 92.8% / HO 94.3%),
+  NM `{auto:true,home:true}` (PPA 97.3% / HO 88.2%) — but the ROWS themselves are
+  fully scraped SERFF data (480 GA / 131 NM raw rows, all with scraped
+  `source_pdf`, sub-types + withdrawn dispositions present). `validated` is a
+  state/line CROSS-CHECK flag, NOT a "this data is AM Best-sourced" marker — no
+  app row is AM Best data; the four-tier `external_validation` gradient isn't even
+  imported. `constants.ts` `COVERED_STATES` → 10. Methodology text updated
   (2024–2026; 13 brands; "{50-n} states not covered"; newer/thinner-coverage note).
 
 New lib: `src/lib/coverage.ts` (pure coverage-gap note), `getBrandStateCoverage`
