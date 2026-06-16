@@ -193,6 +193,10 @@ def load_and_normalize(xlsx_path: Path) -> pd.DataFrame:
 
     df["brand"] = df["company_name"].map(derive_brand)
 
+    # Step 1 (source tag, 2026-06-16): every row from this SERFF import is
+    # scraped data. The AM Best interim path (Step 2) sets 'ambest_sourced'.
+    df["source"] = "serff_scraped"
+
     # Fail loudly on unmatched company_name (the single point where scope
     # drift will appear during a monthly refresh).
     unmatched = df[df["brand"].isna()]
@@ -248,7 +252,11 @@ def create_schema(con: sqlite3.Connection) -> None:
             -- still appear in My Carriers with a 'date unknown' treatment.
             effective_date TEXT,
             filing_date TEXT,
-            source_pdf TEXT
+            source_pdf TEXT,
+            -- Provenance tag (Step 1, 2026-06-16). 'serff_scraped' for rows from
+            -- the SERFF scrape (this import); 'ambest_sourced' for the interim AM
+            -- Best path (Step 2). CHECK makes an unknown value fail loud at INSERT.
+            source TEXT NOT NULL CHECK (source IN ('serff_scraped', 'ambest_sourced'))
         );
 
         CREATE TABLE filings (
@@ -276,6 +284,9 @@ def create_schema(con: sqlite3.Connection) -> None:
             -- the app cleans the NAIC code prefix for display. Nullable only
             -- for the (currently non-existent) all-null-sub_type group.
             sub_type TEXT,
+            -- Provenance tag (Step 1, 2026-06-16); single-valued per rollup group
+            -- (the rollup FAILS LOUD on a mixed-source group — Step 3 guard).
+            source TEXT NOT NULL CHECK (source IN ('serff_scraped', 'ambest_sourced')),
             UNIQUE (serff_tracking_number, line_of_business)
         );
 
@@ -310,6 +321,7 @@ def insert_raw(con: sqlite3.Connection, df: pd.DataFrame) -> None:
             _opt(r["disposition_status"]),
             r["effective_date"], r["filing_date"],
             _opt(r["source_pdf"]),
+            r["source"],
         ))
     con.executemany("""
         INSERT INTO filings_raw (
@@ -318,8 +330,8 @@ def insert_raw(con: sqlite3.Connection, df: pd.DataFrame) -> None:
             maximum_percent_change, minimum_percent_change,
             written_premium_change, policyholders_affected,
             written_premium_for_program, rate_activity, serff_tracking_number,
-            disposition_status, effective_date, filing_date, source_pdf
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            disposition_status, effective_date, filing_date, source_pdf, source
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """, rows)
 
 
@@ -329,7 +341,7 @@ def rollup(con: sqlite3.Connection) -> tuple[int, int, list[str]]:
         SELECT serff_tracking_number, line_of_business, state, brand,
                company_name, overall_rate_impact, written_premium_for_program,
                policyholders_affected, rate_activity, effective_date, filing_date,
-               disposition_status, sub_type_of_insurance
+               disposition_status, sub_type_of_insurance, source
         FROM filings_raw
     """)
     groups: dict[tuple[str, str], list[dict]] = {}
@@ -340,7 +352,7 @@ def rollup(con: sqlite3.Connection) -> tuple[int, int, list[str]]:
             "company_name": row[4], "impact": row[5], "premium": row[6],
             "policyholders": row[7], "rate_activity": row[8],
             "effective_date": row[9], "filing_date": row[10],
-            "disposition_status": row[11], "sub_type": row[12],
+            "disposition_status": row[11], "sub_type": row[12], "source": row[13],
         })
 
     inserts = []
@@ -354,6 +366,15 @@ def rollup(con: sqlite3.Connection) -> tuple[int, int, list[str]]:
             sys.exit(f"FATAL: serff={serff} lob={lob} spans states {sorted(states)}")
         if len(brands) > 1:
             sys.exit(f"FATAL: serff={serff} lob={lob} spans brands {sorted(brands)}")
+
+        # Mixed-source guard (Step 3): a rollup group must be all-scraped or
+        # all-AM-Best. Naturally safe (scraped/AM-Best states are disjoint), but
+        # this fails loud on any accidental blend and protects the eventual
+        # state-by-state replacement (delete ambest rows -> import scrape).
+        sources = {e["source"] for e in entries}
+        if len(sources) > 1:
+            sys.exit(f"FATAL: serff={serff} lob={lob} MIXES sources {sorted(sources)}")
+        source = next(iter(sources))
 
         # Sub-type: recon-confirmed single-valued per (serff, line). Assert it
         # and FAIL LOUDLY on a mixed group (same fail-loud pattern as brands).
@@ -422,7 +443,7 @@ def rollup(con: sqlite3.Connection) -> tuple[int, int, list[str]]:
             serff, rep["state"], rep["brand"], lob, weighted_impact,
             rep["rate_activity"], rep["effective_date"], rep["filing_date"],
             n, total_policyholders, total_premium, min_imp, max_imp,
-            entity_names, rep["disposition_status"], sub_type,
+            entity_names, rep["disposition_status"], sub_type, source,
         ))
 
     con.executemany("""
@@ -431,8 +452,8 @@ def rollup(con: sqlite3.Connection) -> tuple[int, int, list[str]]:
             overall_rate_impact, rate_activity, effective_date, filing_date,
             entity_count, total_policyholders, total_written_premium,
             min_entity_impact, max_entity_impact, entity_names, disposition_status,
-            sub_type
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            sub_type, source
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """, inserts)
 
     return len(inserts), multi_count, warnings
@@ -565,6 +586,21 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (10) max active impact: expected "
           f"+93.70% SFMA-134315091 State Farm WA, got +{impact:.2f}% {serff} {brand} {state}")
+
+    # (11)/(12) source tags — Step 1: every row scraped, none AM Best yet.
+    raw_scraped = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
+    raw_ambest = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced'").fetchone()[0]
+    ok = raw_scraped == 1616 and raw_ambest == 0
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: expected "
+          f"1616 serff_scraped / 0 ambest_sourced, got {raw_scraped} / {raw_ambest}")
+
+    f_scraped = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
+    f_ambest = con.execute("SELECT COUNT(*) FROM filings WHERE source='ambest_sourced'").fetchone()[0]
+    ok = f_scraped == 998 and f_ambest == 0
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: expected "
+          f"998 serff_scraped / 0 ambest_sourced, got {f_scraped} / {f_ambest}")
 
     print(f"  [INFO]  multi-entity rollups: {multi_count} of {rolled_count} "
           f"({100*multi_count/rolled_count:.1f}%)  -- baseline 351 / 998 (~35.2%)")
