@@ -12,9 +12,9 @@
 // input read back, or a pointer at a section to review.
 
 import {
-  BRIEFING_SECTIONS,
   isBriefingReady,
   orderedBriefingStates,
+  sectionsForState,
   stateName,
 } from "./briefing";
 import type { AgentProfile, PayType } from "./profile";
@@ -33,16 +33,17 @@ export function payTypeLabel(pt: PayType): string {
   }
 }
 
-// Employee work/live states the briefing does NOT cover today (only WA is
-// briefing-ready). These are the states whose own rules the WA briefing can't
-// speak to — the basis of the out-of-state remote flag. Sorted for stable copy.
+// Employee work/live states the briefing does NOT cover today (the briefing is
+// ready for WA, ID, and UT). These are the states whose own rules the briefing
+// can't speak to — the basis of the out-of-state remote flag. Sorted for stable
+// copy.
 export function outOfCoverageEmployeeStates(employeeStates: string[]): string[] {
   return employeeStates.filter(s => !isBriefingReady(s)).sort();
 }
 
 // Name(s) of the briefing coverage the agent actually has, for the flag copy
 // ("…which this briefing (currently Washington) does not cover"). Falls back to
-// "Washington" — the only built briefing — when the agent has no covered
+// "Washington" — the first built briefing — when the agent has no covered
 // employee state of their own.
 export function briefingCoverageLabel(employeeStates: string[]): string {
   const covered = employeeStates.filter(isBriefingReady).map(stateName);
@@ -80,7 +81,10 @@ export function briefingSectionAnchorId(
 ): string | null {
   const primary = primaryBriefingState(employeeStates, homeState);
   if (!primary) return null;
-  if (!BRIEFING_SECTIONS.some(s => s.key === sectionKey)) return null;
+  // Tie the link to the PRIMARY state's actual sections: only link if that
+  // state renders a section with this key (e.g. ID has no "pfml" section, so
+  // the size → PFML pointer won't link for an ID-primary agent).
+  if (!sectionsForState(primary).some(s => s.key === sectionKey)) return null;
   return `briefing-${primary}-${sectionKey}`;
 }
 

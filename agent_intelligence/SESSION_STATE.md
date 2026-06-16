@@ -1,11 +1,59 @@
-# Session checkpoint — 2026-06-02  ·  v1 + Features 7–9 COMPLETE & DEPLOYED
+# Session checkpoint — 2026-06-16  ·  v1 + Features 7–9 live; compliance now MULTI-STATE
 
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- Monorepo HEAD: `b3a94ac feat(compliance): office summary + accordion briefing`.
+- Monorepo HEAD: `f577daf feat(compliance): multi-state briefing — add ID + UT`
+  (+ a `docs(state)` checkpoint recording the deploy hash).
+- **Deployed (agent-intel/master): see the multi-state iteration below.**
+  All suites green (7 verify + 13 e2e), prod build 12/12.
+
+## Latest iteration — Compliance briefing goes MULTI-STATE: +ID +UT (2026-06-16)
+
+The compliance office briefing expanded beyond WA to **Idaho and Utah** via a
+**per-state section model** — and in doing so PROVED the multi-state template
+the remaining 5 covered states (AZ, CO, MT, NV, OR) will reuse.
+
+- **Per-state section model** (`briefing.ts`): each built state declares its own
+  ordered section list. `WA_SECTIONS` is the original 6 (incl. PFML + WA Cares),
+  **unchanged** so WA renders exactly as before. `FEDERAL_DEFAULT_SECTIONS` (ID,
+  UT) is 5 — wage, salary, leave, at-will, business tax — **no WA Cares**.
+  `SECTIONS_BY_STATE` maps state→list; `sectionsForState()` /
+  `salaryWarningForState()` / `isBriefingReady()` all key off it. A new state
+  with its own structure (CO's salary threshold + FAMLI, OR regional wages) gets
+  its own list — that's the whole extension point.
+- **Honesty bar preserved on the new states.** ID/UT salary sections defer to the
+  **federal FLSA** (no invented threshold figure); **UT at-will is intentionally
+  left COMING-SOON** (no clean official Utah .gov source — grounding it weakly was
+  rejected, per the WA bar); business tax framed as **income-on-net-profit**, not
+  a B&O-style "your rate." UT business-tax guidance scopes the **$100 minimum to
+  C-corps only** so it can't read as a universal obligation. Per-state salary
+  warning names **L&I** (WA) vs the **U.S. DOL** (federal-default states).
+- **Verified content.** The generated ID/UT summaries in `complianceData.ts` were
+  produced under per-state generator guidance (`GUIDANCE_BY_STATE` in
+  `generate_compliance.ts`) and checked; the UT business_tax entry in the tree is
+  the corrected **entity-distinct** version (C-corp franchise + $100 min vs the
+  4.5% individual flat rate on pass-through/sole-prop owners), not an early draft.
+- **Coming-soon sections no longer assert size applicability.** The generic
+  "Applies regardless of company size." note now renders **only on grounded
+  sections** — a coming-soon section hadn't grounded that claim. (UT at-will, AZ
+  blocks no longer show it.)
+- **Not-yet-built states** (AZ/CO/MT/NV/OR + any non-covered employee state) still
+  render the whole-state coming-soon block, surfaced not dropped — multi-state mix
+  WA+ID+AZ confirmed: WA first (primary), ID its own block, AZ coming-soon.
+
+Tests: new `verify_briefing_language.ts` runs the determination-language
+blocklist over **WA+ID+UT** grounded content (guards that ID/UT meet WA's honesty
+bar, not just WA); `verify_office_summary.ts` expectations updated for ID now
+being briefing-ready (was the stale "only WA" world — no logic regression); new
+`e2e_compliance` cases (ID-only, UT-only coming-soon at-will + no size note,
+WA+ID+AZ mix). All green: tsc · 7 verify · e2e_compliance + e2e_nav · build 12/12.
+
+## Earlier checkpoint — 2026-06-02 (office summary + accordion)
+
+- Monorepo `b3a94ac feat(compliance): office summary + accordion briefing`.
 - **Deployed (agent-intel/master): `71d448c`** — in sync with the monorepo
-  subtree at this checkpoint. All suites green (6 verify + 13 e2e).
+  subtree at that checkpoint. All suites green (6 verify + 13 e2e).
 
 ## Latest iteration — Compliance office summary + accordion (2026-06-02, deployed)
 

@@ -92,21 +92,31 @@ check("size pointer states their employee_count and the 50-employee line",
   })());
 
 console.log("\nOut-of-state remote flag — the honesty safeguard:");
-check("fires: remote workers + uncovered employee states (CO, ID)",
+// BASE employee states are WA, CO, ID. WA and ID are now briefing-ready
+// (ID was added in the multi-state expansion), so CO is the only one the
+// briefing can't speak to — the flag still fires on it.
+check("fires: remote workers + an uncovered employee state (CO)",
   shouldFlagOutOfStateRemote(BASE) === true);
-check("lists the uncovered states (CO, ID), sorted",
-  JSON.stringify(outOfCoverageEmployeeStates(BASE.employee_states)) === JSON.stringify(["CO", "ID"]),
+check("lists only the still-uncovered state (CO); ID now has its own briefing",
+  JSON.stringify(outOfCoverageEmployeeStates(BASE.employee_states)) === JSON.stringify(["CO"]),
   { got: outOfCoverageEmployeeStates(BASE.employee_states) });
+check("multiple uncovered states are returned sorted (CO, MT, NV)",
+  JSON.stringify(outOfCoverageEmployeeStates(["NV", "CO", "MT"])) === JSON.stringify(["CO", "MT", "NV"]),
+  { got: outOfCoverageEmployeeStates(["NV", "CO", "MT"]) });
 check("does NOT fire when no remote workers (remote_count 0)",
   shouldFlagOutOfStateRemote({ ...BASE, remote_count: 0 }) === false);
 check("does NOT fire when all employee states are covered (WA only)",
   shouldFlagOutOfStateRemote({ ...BASE, employee_states: ["WA"] }) === false);
 check("WA is covered, so WA alone yields no out-of-coverage states",
   outOfCoverageEmployeeStates(["WA"]).length === 0);
+check("ID is now covered, so ID alone yields no out-of-coverage states",
+  outOfCoverageEmployeeStates(["ID"]).length === 0);
 check("coverage label names WA when WA is an employee state",
   briefingCoverageLabel(["WA", "CO"]) === "Washington");
-check("coverage label falls back to Washington when no covered employee state",
-  briefingCoverageLabel(["CO", "ID"]) === "Washington");
+check("coverage label names a covered non-WA state (ID) when WA isn't present",
+  briefingCoverageLabel(["CO", "ID"]) === "Idaho");
+check("coverage label falls back to Washington when no employee state is covered",
+  briefingCoverageLabel(["CO", "MT"]) === "Washington");
 
 console.log("\nPay-type labels:");
 check("hourly -> 'Hourly'", payTypeLabel("hourly") === "Hourly");

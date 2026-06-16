@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  BRIEFING_SECTIONS,
   BriefingSectionDef,
-  SALARY_WARNING,
   deriveAnnualFromWeekly,
   isBriefingReady,
   orderedBriefingStates,
+  salaryWarningForState,
   sectionSummary,
+  sectionsForState,
   stateName,
 } from "@/lib/briefing";
 
@@ -43,7 +43,13 @@ function sourceLabel(url: string): string {
 // misclassification warning. The annual is computed from the weekly figure in
 // the grounded summary (× 52), so it ties exactly and never prints a yearly
 // number that doesn't reconcile to the weekly.
-function SalaryWarningBox({ summary }: { summary: string | null }): React.JSX.Element {
+function SalaryWarningBox({
+  summary,
+  warning,
+}: {
+  summary: string | null;
+  warning: string;
+}): React.JSX.Element {
   const d = deriveAnnualFromWeekly(summary);
   return (
     <div
@@ -63,7 +69,7 @@ function SalaryWarningBox({ summary }: { summary: string | null }): React.JSX.El
       )}
       <div>
         <span className="font-medium">⚠ </span>
-        {SALARY_WARNING}
+        {warning}
       </div>
     </div>
   );
@@ -77,12 +83,14 @@ function BriefingAccordionItem({
   state,
   sec,
   employeeCount,
+  salaryWarning,
   isOpen,
   onToggle,
 }: {
   state: string;
   sec: BriefingSectionDef;
   employeeCount: number;
+  salaryWarning: string;
   isOpen: boolean;
   onToggle: (id: string) => void;
 }): React.JSX.Element {
@@ -156,9 +164,14 @@ function BriefingAccordionItem({
 
         {/* Salary box: the misclassification-risk figure gets a stronger
             figure-specific warning + the derived annual, instead of a generic
-            size-gate. PFML keeps its size-gate; others apply regardless. */}
+            size-gate. PFML keeps its size-gate; others apply regardless —
+            except sections that opt out (hideSizeNote), e.g. the federal-default
+            leave section whose summary already explains the FMLA size gate. The
+            generic "applies regardless of size" note shows ONLY on grounded
+            sections: a coming-soon section has no content, so it must not carry
+            a size-applicability claim it hasn't actually grounded. */}
         {sec.salaryRisk ? (
-          <SalaryWarningBox summary={grounded ? s!.summary : null} />
+          <SalaryWarningBox summary={grounded ? s!.summary : null} warning={salaryWarning} />
         ) : sec.sizeGate ? (
           <div
             data-testid="size-gate"
@@ -166,9 +179,9 @@ function BriefingAccordionItem({
           >
             {sec.sizeGate.framing(employeeCount)}
           </div>
-        ) : (
+        ) : grounded && !sec.hideSizeNote ? (
           <div className="mt-1.5 text-11 text-ink-3">Applies regardless of company size.</div>
-        )}
+        ) : null}
 
         {grounded && (
           <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-11 text-ink-3">
@@ -204,6 +217,9 @@ function ReadyBriefing({
   expanded: Record<string, boolean>;
   onToggle: (id: string) => void;
 }): React.JSX.Element {
+  // Only the sections that apply to THIS state, in its declared order.
+  const sections = sectionsForState(state);
+  const salaryWarning = salaryWarningForState(state);
   return (
     <section
       data-testid="briefing-state"
@@ -218,12 +234,13 @@ function ReadyBriefing({
       </div>
 
       <div className="divide-y divide-line">
-        {BRIEFING_SECTIONS.map(sec => (
+        {sections.map(sec => (
           <BriefingAccordionItem
             key={sec.key}
             state={state}
             sec={sec}
             employeeCount={employeeCount}
+            salaryWarning={salaryWarning}
             isOpen={!!expanded[`briefing-${state}-${sec.key}`]}
             onToggle={onToggle}
           />

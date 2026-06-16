@@ -129,14 +129,105 @@ export const RESOURCE_URLS: Record<
   },
 
   // ============================================================
+  // IDAHO — federal-default state (multi-state expansion, pair 1).
+  // Maps ONLY the office-briefing topics that apply. ID follows federal on
+  // minimum wage, overtime, and the exempt-salary threshold; has NO state
+  // leave program; is at-will; taxes business INCOME (not gross receipts).
+  // Federal figures (exempt salary, FMLA) are sourced from federal .gov pages
+  // because the state defers to federal — see generate_compliance guidance.
+  // ============================================================
+  ID: {
+    // Wage & Hour — Idaho DOL labor-laws FAQ: states Idaho's minimum wage
+    // ($7.25, tracking federal) and that overtime follows the federal FLSA
+    // (1.5x over 40). Same page also establishes at-will (below).
+    wage_hour: [
+      "https://www.labor.idaho.gov/businesses/labor-laws/labor-laws-faq/",
+    ],
+    // Salary/exempt threshold — Idaho has NO state threshold; the white-collar
+    // exemption follows the FEDERAL FLSA salary level. Federal sources: US DOL
+    // overtime hub + the eCFR regulation (29 CFR 541.600) that states the
+    // weekly figure. (Fetchability of federal pages is a known risk.)
+    salary_threshold: [
+      "https://www.dol.gov/agencies/whd/overtime",
+      "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
+    ],
+    // Leave — Idaho has NO state paid family/medical or paid sick leave program;
+    // federal FMLA may apply to larger employers. Idaho DOL FAQ (no state leave
+    // program shown) + US DOL FMLA (federal coverage figures).
+    leave: [
+      "https://www.labor.idaho.gov/businesses/labor-laws/labor-laws-faq/",
+      "https://www.dol.gov/agencies/whd/fmla",
+    ],
+    // At-will — the Idaho DOL FAQ explicitly states Idaho is "work at will" AND
+    // its exceptions (no discriminatory/retaliatory termination or public-policy
+    // violation). Authoritative enough to ground (meets the WA at-will bar).
+    at_will: [
+      "https://www.labor.idaho.gov/businesses/labor-laws/labor-laws-faq/",
+    ],
+    // Business tax — Idaho taxes business INCOME (net profit), not gross
+    // receipts. State Tax Commission business-income guide + pass-through
+    // entities. Framed as income-on-net-profit / pass-through (not a B&O-style
+    // "your rate") — see generate_compliance federal-default guidance.
+    business_tax: [
+      "https://tax.idaho.gov/taxes/income-tax/business-income/online-guide/",
+      "https://tax.idaho.gov/taxes/income-tax/business-income/guides-for-certain-businesses/pass-through-entities/",
+    ],
+  },
+
+  // ============================================================
+  // UTAH — federal-default state (multi-state expansion, pair 1).
+  // Same profile as Idaho. NOTE: at_will is intentionally UNMAPPED — Utah's
+  // at-will doctrine is common-law with no clean official .gov statement, so
+  // (per the WA bar) that section defers to coming-soon rather than grounding
+  // weakly.
+  // ============================================================
+  UT: {
+    // Wage & Hour — TWO sources, by necessity:
+    //  1. Utah Labor Commission (UALD) Wage Claim page — supplies the minimum
+    //     wage ($7.25), training wage, and tipped figures in static HTML. (The
+    //     page ALSO states "The State of Utah has no overtime law," but that
+    //     text is in a JS-rendered FAQ accordion the generator's raw fetch does
+    //     NOT receive — so it cannot ground the overtime half from this page.)
+    //  2. US DOL Fact Sheet #23 (FLSA overtime) — supplies the overtime rule
+    //     (1.5x over 40) in static HTML. Utah is a federal-default state with no
+    //     state overtime law, so federal FLSA governs overtime; dol.gov is
+    //     generator-fetchable (the FMLA figures in `leave` came from dol.gov).
+    wage_hour: [
+      "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/wage-claim/",
+      "https://www.dol.gov/agencies/whd/fact-sheets/23-flsa-overtime-pay",
+    ],
+    // Salary/exempt threshold — federal (Utah has no state threshold). Same
+    // federal sources as Idaho.
+    salary_threshold: [
+      "https://www.dol.gov/agencies/whd/overtime",
+      "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
+    ],
+    // Leave — Utah requires no state paid sick / family-medical leave program;
+    // federal FMLA may apply. UALD division page + US DOL FMLA.
+    leave: [
+      "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/",
+      "https://www.dol.gov/agencies/whd/fmla",
+    ],
+    // At-will — intentionally omitted (no authoritative Utah .gov source;
+    // defers to coming-soon, per the WA bar).
+
+    // Business tax — Utah taxes business INCOME (net profit), not gross
+    // receipts. State Tax Commission C-corp page + the flat income-tax rate
+    // page. Framed as income-on-net-profit / pass-through (not a B&O-style
+    // "your rate") — see generate_compliance federal-default guidance.
+    business_tax: [
+      "https://tax.utah.gov/business/corporate-income-tax/c-corp-tax/",
+      "https://incometax.utah.gov/paying/tax-rates",
+    ],
+  },
+
+  // ============================================================
   // STUBS — to be populated & verified state-by-state.
   // Empty objects render every topic as "Source coming soon".
   // ============================================================
   AZ: {},
   CO: {},
-  ID: {},
   MT: {},
   NV: {},
   OR: {},
-  UT: {},
 };

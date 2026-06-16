@@ -123,7 +123,14 @@ const TOPIC_LABELS: Record<ResourceKey, string> = {
 // REVERSAL (2026-06-01): the briefing now SHOWS concrete figures (with
 // disclaimers in the UI). So include the source-stated numbers — still
 // grounded only in the fetched pages, never invented.
-const EXTRA_GUIDANCE: Partial<Record<ResourceKey, string>> = {
+//
+// MULTI-STATE (2026-06): guidance is now per-STATE as well as per-topic, since
+// states differ structurally (WA sets its own salary threshold and has PFML/WA
+// Cares; ID/UT follow federal and have no state leave program). WA keeps its
+// exact guidance below; federal-default states (ID, UT) use FEDERAL_DEFAULT_*.
+// Selected via getExtraGuidance(state, topic). New states must add their own
+// profile here before being mapped in resourceUrls.ts.
+const WA_EXTRA_GUIDANCE: Partial<Record<ResourceKey, string>> = {
   // Minimum wage & overtime — the dollar wage and the overtime multiple.
   wage_hour:
     "INCLUDE the current Washington minimum wage dollar amount and the overtime pay multiple (e.g. 1.5x over 40 hours) exactly as the source states them. Quote the source's figures verbatim.",
@@ -148,6 +155,58 @@ const EXTRA_GUIDANCE: Partial<Record<ResourceKey, string>> = {
   at_will:
     "CRITICAL FOR THIS TOPIC: The summary MUST convey BOTH halves of the rule. (1) Washington is an at-will employment state — an employer generally may end employment at any time, without cause and without advance notice. (2) BUT it must ALSO state the key exceptions present in the source: an employer may NOT terminate for an unlawful or protected reason — such as discrimination against a protected class, retaliation for exercising a protected right or filing a complaint, or for using protected leave. Never present at-will without its exceptions; an exceptions-light summary is unacceptable.",
 };
+
+// Federal-default states (ID, UT): follow federal minimum wage, overtime, and
+// the FLSA exempt-salary threshold; have NO state paid-leave program; tax
+// business INCOME (net profit), not gross receipts. The guidance frames these
+// honestly without inventing figures — the absolute grounding rules still
+// apply, so a figure prints only if a fetched source states it.
+const FEDERAL_DEFAULT_GUIDANCE: Partial<Record<ResourceKey, string>> = {
+  // Minimum wage & overtime — the summary MUST cover BOTH halves. The wage
+  // half alone is not enough; the overtime half (incl. a "no state OT law →
+  // federal FLSA" statement when the source says so) is required.
+  wage_hour:
+    "The summary MUST cover BOTH (1) minimum wage and (2) overtime — do not omit the overtime half. (1) MINIMUM WAGE: INCLUDE the minimum wage dollar amount the source states; if the source says the state follows the federal minimum wage, state that plainly with the figure (for example, 'follows the federal minimum wage, $7.25 per hour'). (2) OVERTIME: INCLUDE the overtime rule the source states. If the source says the state has NO state overtime law and that overtime is governed by the federal Fair Labor Standards Act, state that plainly — that the state has no separate overtime law and overtime follows the federal FLSA at one-and-one-half times the regular rate for hours worked over 40 in a workweek. Quote the source's figures verbatim; do not add any number not in the source.",
+  // Salary/exempt threshold — federal-follower framing, dated + hedged, NO
+  // confident permanent number, NO annual (the UI frames that).
+  salary_threshold:
+    "This state has NO state-specific overtime-exempt salary threshold; the white-collar (executive/administrative/professional) exemption follows the FEDERAL FLSA salary level. State plainly that the state follows the federal threshold. INCLUDE the federal weekly salary figure ONLY if a source states it (for example '$684 per week'), and present it as the federal figure as of the source — NOT as a settled permanent number — noting the federal level has changed and been subject to legal challenge, so the current figure should be confirmed with the U.S. Department of Labor. Do NOT state an annual figure. If no source states a current federal weekly figure, omit the number entirely and say the state follows the federal threshold, which should be confirmed with the U.S. Department of Labor — never supply a number from prior knowledge.",
+  // Leave — there is NO state program; surface federal FMLA from the FMLA
+  // source. Don't manufacture a state program.
+  leave:
+    "This state has NO state-specific paid family/medical leave program and NO state paid-sick-leave mandate. State that plainly. Then, using ONLY the federal FMLA source, summarize the federal FMLA coverage it states — the covered-employer employee-count threshold and the weeks of unpaid, job-protected leave — and frame FMLA clearly as a FEDERAL law that may apply to larger employers. Do NOT invent a state leave program, and do NOT state any figure that is not in the sources.",
+  // At-will — same two-halves requirement as WA, generalized to this state.
+  // If the source doesn't actually establish at-will + exceptions, refuse
+  // (the UI then shows coming-soon — that is the intended, honest fallback).
+  at_will:
+    "CRITICAL FOR THIS TOPIC: The summary MUST convey BOTH halves of the rule, and BOTH must be supported by the source. (1) This state is an at-will employment state — an employer generally may end employment at any time, without cause and without advance notice. (2) AND the key exceptions the source states: an employer may NOT terminate for an unlawful or protected reason — such as discrimination, retaliation for exercising a protected right, or a violation of public policy. Never present at-will without its exceptions. If the source pages do NOT actually establish that this state is at-will and state its exceptions, do not produce a summary (return the cannot-summarize response).",
+  // Business tax — income on NET PROFIT, pass-through framing, NOT a single
+  // gross-receipts-style 'your rate'.
+  business_tax:
+    "The audience is an insurance agency. This state taxes business INCOME (net profit), NOT gross receipts — there is no B&O-style single rate on commission revenue. Explain plainly that an agency pays state income tax on its net profit, and that agencies organized as pass-through entities (LLC / S-corporation / partnership) generally have that income flow through to the owner's personal return rather than paying a single business tax rate. You MAY note that the state has a corporate income tax (and its rate) for context if the source states it, but make clear that is not necessarily the agency's effective rate, and the agency should confirm its situation with a tax professional. Do NOT present a single actionable 'your rate' figure. Every number must come verbatim from the source.",
+};
+
+// Per-state guidance profiles. WA is bespoke; ID/UT share the federal-default
+// profile. States not listed get no extra guidance (and currently have no
+// mapped URLs). A new state with its own structure (e.g. CO's own salary
+// threshold, OR's regional wages) needs its own profile added here.
+// Utah business tax needs a sharper distinction than the generic federal-
+// default framing: the $100 minimum privilege tax is a CORPORATE (C-corp)
+// franchise-tax minimum, NOT a general obligation — it must never read as
+// something a sole-proprietor / pass-through owner owes. This overrides the
+// shared business_tax guidance for UT only (Idaho keeps the generic one).
+const UT_BUSINESS_TAX_GUIDANCE =
+  "The audience is an insurance agency. Utah taxes business INCOME (net profit), NOT gross receipts — there is no B&O-style single rate on commission revenue. You MUST clearly DISTINGUISH two separate taxes, because which one applies depends entirely on the agency's entity structure: (a) INDIVIDUAL income tax — a flat rate (use the exact percentage the source states) that applies to the OWNERS of pass-through entities and sole proprietorships (LLCs, S corporations, partnerships, sole props), whose business income flows through to their personal return; (b) CORPORATE franchise/income tax — applies specifically to C CORPORATIONS, at the corporate rate the source states, and carries a minimum privilege (franchise) tax of the dollar amount the source states (e.g. $100). CRITICAL: do NOT present that minimum privilege tax as a general, universal, or per-business obligation — it applies ONLY to C corporations, NOT to sole proprietors or pass-through owners. Make explicit that which tax applies depends on the agency's entity structure, and that this is exactly why the agency should confirm its situation with a qualified tax professional. Every number must come verbatim from the source.";
+
+const GUIDANCE_BY_STATE: Partial<Record<StateCode, Partial<Record<ResourceKey, string>>>> = {
+  WA: WA_EXTRA_GUIDANCE,
+  ID: FEDERAL_DEFAULT_GUIDANCE,
+  UT: { ...FEDERAL_DEFAULT_GUIDANCE, business_tax: UT_BUSINESS_TAX_GUIDANCE },
+};
+
+function getExtraGuidance(state: StateCode, topic: ResourceKey): string | undefined {
+  return GUIDANCE_BY_STATE[state]?.[topic];
+}
 
 function stripHtml(html: string): string {
   return html
@@ -247,7 +306,7 @@ async function generateOne(
   const sourceBlocks = sources
     .map(s => `<<<URL: ${s.url}\n${s.text}\n>>>`)
     .join("\n\n");
-  const extra = EXTRA_GUIDANCE[topic];
+  const extra = getExtraGuidance(state, topic);
   const userText =
     `${sourceBlocks}\n\n` +
     `STATE: ${STATE_NAMES[state]}\n` +

@@ -27,13 +27,22 @@ export type BriefingSectionDef = {
   // 2026, so "where you sit vs 50" has no size-dependent answer this year):
   // a misclassification warning + a derived annual figure.
   salaryRisk?: boolean;
+  // Suppress the generic "Applies regardless of company size." footer. Used by
+  // the federal-default leave section, whose summary already explains the FMLA
+  // 50-employee coverage gate — so "regardless of size" would contradict it.
+  hideSizeNote?: boolean;
 };
 
 // The strong inline warning for the salary box — UI product copy (not from a
 // source). This is the misclassification-risk figure an employer acts on
 // directly, so it carries its own warning, stronger than the blanket band.
+// WA names L&I (it sets WA's own threshold); federal-default states name the
+// U.S. DOL (they follow the federal FLSA level).
 export const SALARY_WARNING =
   "This salary determines overtime-exempt status. A figure that's out of date can cause an employee to be misclassified and owed back overtime — confirm the current threshold and multiplier with L&I before classifying anyone as exempt or setting a salary by it.";
+
+export const FEDERAL_SALARY_WARNING =
+  "This salary determines overtime-exempt status under the federal FLSA. A figure that's out of date can cause an employee to be misclassified and owed back overtime — confirm the current federal threshold with the U.S. Department of Labor before classifying anyone as exempt or setting a salary by it.";
 
 // Parse the weekly dollar figure from the (grounded) salary summary and derive
 // the ANNUAL as weekly × 52 — a derived convenience that ties to the weekly by
@@ -61,18 +70,20 @@ function emp(n: number): string {
   return `${n} ${n === 1 ? "employee" : "employees"}`;
 }
 
-export const BRIEFING_SECTIONS: BriefingSectionDef[] = [
-  {
-    key: "wage",
-    label: "Minimum wage & overtime",
-    topic: "wage_hour",
-  },
-  {
-    key: "salary",
-    label: "Salary & exempt thresholds",
-    topic: "salary_threshold",
-    salaryRisk: true,
-  },
+// --- Per-state section model -----------------------------------------------
+//
+// Each built state declares the sections that APPLY to it, in display order.
+// A section that applies but isn't grounded yet renders coming-soon (e.g. UT
+// at-will); a section that doesn't apply is simply absent (e.g. WA Cares for
+// non-WA states). Within a section, grounded → full content, ungrounded →
+// coming-soon. States with NO section list (the not-yet-built ones) render the
+// whole-state coming-soon block.
+
+// Washington — the original full set (PFML + WA Cares, B&O, L&I framing).
+// UNCHANGED from the single-state version, so WA renders exactly as before.
+const WA_SECTIONS: BriefingSectionDef[] = [
+  { key: "wage", label: "Minimum wage & overtime", topic: "wage_hour" },
+  { key: "salary", label: "Salary & exempt thresholds", topic: "salary_threshold", salaryRisk: true },
   {
     key: "pfml",
     label: "Paid family & medical leave (PFML)",
@@ -83,22 +94,42 @@ export const BRIEFING_SECTIONS: BriefingSectionDef[] = [
         `The employer share of PFML premiums applies at 50+ employees; under 50, only the employee share is withheld. You have ${emp(n)} — ${sit(n, 50)} the 50-employee line. Counting rules vary — verify your obligation.`,
     },
   },
-  {
-    key: "wacares",
-    label: "WA Cares (long-term care)",
-    topic: "wa_cares",
-  },
-  {
-    key: "atwill",
-    label: "At-will termination",
-    topic: "at_will",
-  },
-  {
-    key: "btax",
-    label: "Business tax basics (B&O)",
-    topic: "business_tax",
-  },
+  { key: "wacares", label: "WA Cares (long-term care)", topic: "wa_cares" },
+  { key: "atwill", label: "At-will termination", topic: "at_will" },
+  { key: "btax", label: "Business tax basics (B&O)", topic: "business_tax" },
 ];
+
+// Federal-default states (ID, UT): follow federal on wage/overtime and the
+// exempt-salary threshold; NO state leave program (leave section explains the
+// federal FMLA gate, so it hides the generic size note); NO WA Cares analog;
+// business tax is income-based (no "(B&O)"). Shared keys (wage/salary/atwill/
+// btax) match WA so the office-summary relevance links resolve the same way.
+const FEDERAL_DEFAULT_SECTIONS: BriefingSectionDef[] = [
+  { key: "wage", label: "Minimum wage & overtime", topic: "wage_hour" },
+  { key: "salary", label: "Salary & exempt thresholds", topic: "salary_threshold", salaryRisk: true },
+  { key: "leave", label: "Leave laws", topic: "leave", hideSizeNote: true },
+  { key: "atwill", label: "At-will termination", topic: "at_will" },
+  { key: "btax", label: "Business tax basics", topic: "business_tax" },
+];
+
+// Built states → their section list. A new state with its own structure (e.g.
+// CO's own salary threshold + FAMLI, OR's regional wages) gets its own list.
+const SECTIONS_BY_STATE: Record<string, BriefingSectionDef[]> = {
+  WA: WA_SECTIONS,
+  ID: FEDERAL_DEFAULT_SECTIONS,
+  UT: FEDERAL_DEFAULT_SECTIONS,
+};
+
+// The sections that apply to a state — empty for not-yet-built states.
+export function sectionsForState(state: string): BriefingSectionDef[] {
+  return SECTIONS_BY_STATE[state] ?? [];
+}
+
+// Which salary-misclassification warning a state's salary section carries.
+// WA names L&I; federal-default states name the U.S. DOL.
+export function salaryWarningForState(state: string): string {
+  return state === "WA" ? SALARY_WARNING : FEDERAL_SALARY_WARNING;
+}
 
 const SUMMARY_INDEX = new Map<string, ComplianceSummary>(
   COMPLIANCE_SUMMARIES.map(s => [`${s.state}/${s.topic}`, s] as const),
@@ -111,11 +142,13 @@ export function sectionSummary(
   return SUMMARY_INDEX.get(`${state}/${topic}`);
 }
 
-// A state is "briefing-ready" if at least one of its briefing sections has a
-// grounded (non-null) summary. Today only WA qualifies; every other employee
-// state (covered-but-unmapped or non-covered) renders the coming-soon block.
+// A state is "briefing-ready" if it is a built state (has a section list) AND
+// at least one of its sections has a grounded (non-null) summary. WA, ID, and
+// UT qualify; every other employee state (covered-but-unmapped or non-covered)
+// renders the whole-state coming-soon block.
 export function isBriefingReady(state: string): boolean {
-  return BRIEFING_SECTIONS.some(sec => {
+  const secs = sectionsForState(state);
+  return secs.length > 0 && secs.some(sec => {
     const s = SUMMARY_INDEX.get(`${state}/${sec.topic}`);
     return !!(s && s.title && s.summary);
   });

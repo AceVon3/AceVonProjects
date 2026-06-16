@@ -504,6 +504,67 @@ async function main(): Promise<void> {
   check("CA block names the state and says coming soon",
     /California/i.test(caText) && /coming soon/i.test(caText), { sample: caText.slice(0, 100) });
 
+  // -- Multi-state expansion: ID, UT, and a mixed profile ------------------
+  // Helper: the section keys rendered for a given state block, in order.
+  const sectionKeysFor = async (st: string): Promise<string[]> =>
+    page.locator(`[data-testid="briefing-state"][data-state="${st}"] [data-testid="briefing-section"]`)
+      .evaluateAll(els => els.map(e => e.getAttribute("data-section") ?? ""));
+
+  console.log("\nID-only profile — full federal-default set, NO WA Cares");
+  await setProfileAndOpen(page, { ...PROFILE, home_state: "ID", licensed_states: ["ID"], employee_states: ["ID"] });
+  const idBlock = page.locator('[data-testid="briefing-state"][data-state="ID"]');
+  check("ID briefing renders (ready)", (await idBlock.getAttribute("data-ready")) === "true");
+  const idKeys = await sectionKeysFor("ID");
+  check("ID sections = wage/salary/leave/atwill/btax (5, no wacares)",
+    JSON.stringify(idKeys) === JSON.stringify(["wage", "salary", "leave", "atwill", "btax"]), { idKeys });
+  check("ID has NO WA Cares section",
+    (await idBlock.locator('[data-testid="briefing-section"][data-section="wacares"]').count()) === 0);
+  check("ID at-will is GROUNDED (not coming-soon)",
+    (await idBlock.locator('[data-testid="briefing-section"][data-section="atwill"]').getAttribute("data-grounded")) === "true");
+  check("ID leave section is grounded",
+    (await idBlock.locator('[data-testid="briefing-section"][data-section="leave"]').getAttribute("data-grounded")) === "true");
+  // ID business-tax label drops the WA-specific "(B&O)".
+  const idBtaxLabel = (await idBlock.locator('[data-testid="briefing-section"][data-section="btax"] [data-testid="briefing-section-toggle"]').textContent()) ?? "";
+  check("ID business-tax label is generic (no '(B&O)')",
+    /Business tax/i.test(idBtaxLabel) && !/B&O/.test(idBtaxLabel), { idBtaxLabel });
+
+  console.log("\nUT-only profile — at-will renders COMING-SOON, no WA Cares");
+  await setProfileAndOpen(page, { ...PROFILE, home_state: "UT", licensed_states: ["UT"], employee_states: ["UT"] });
+  const utBlock = page.locator('[data-testid="briefing-state"][data-state="UT"]');
+  check("UT briefing renders (ready)", (await utBlock.getAttribute("data-ready")) === "true");
+  const utKeys = await sectionKeysFor("UT");
+  check("UT sections = wage/salary/leave/atwill/btax (5, no wacares)",
+    JSON.stringify(utKeys) === JSON.stringify(["wage", "salary", "leave", "atwill", "btax"]), { utKeys });
+  check("UT at-will is present but COMING-SOON (not grounded — we didn't map it)",
+    (await utBlock.locator('[data-testid="briefing-section"][data-section="atwill"]').getAttribute("data-grounded")) === "false");
+  // Expand UT at-will and confirm it shows the coming-soon copy, not content.
+  await utBlock.locator('[data-testid="briefing-section"][data-section="atwill"] [data-testid="briefing-section-toggle"]').click();
+  await page.waitForTimeout(120);
+  const utAtwillContent = (await utBlock.locator('[data-testid="briefing-section"][data-section="atwill"] [data-testid="briefing-section-content"]').textContent()) ?? "";
+  check("UT at-will expanded shows 'coming soon'", /coming soon/i.test(utAtwillContent), { utAtwillContent });
+  // A coming-soon section must NOT carry the generic size-applicability note —
+  // it hasn't grounded that claim. (Suppressed on ungrounded sections.)
+  check("UT at-will (coming-soon) shows NO 'applies regardless of company size' note",
+    !/applies regardless of company size/i.test(utAtwillContent), { utAtwillContent });
+  check("UT has NO WA Cares section",
+    (await utBlock.locator('[data-testid="briefing-section"][data-section="wacares"]').count()) === 0);
+
+  console.log("\nMulti-state mix — WA + ID + AZ (built + built + not-yet-built)");
+  await setProfileAndOpen(page, { ...PROFILE, home_state: "WA", licensed_states: ["WA"], employee_states: ["WA", "ID", "AZ"] });
+  const mixOrder = await page.$$eval('[data-testid="briefing-state"]', els =>
+    els.map(e => ({ state: e.getAttribute("data-state"), ready: e.getAttribute("data-ready") })));
+  check("primary (home WA) renders first", mixOrder[0]?.state === "WA", { order: mixOrder.map(s => s.state) });
+  check("WA renders its own briefing (ready)", mixOrder.find(s => s.state === "WA")?.ready === "true");
+  check("ID renders its own briefing (ready)", mixOrder.find(s => s.state === "ID")?.ready === "true");
+  check("AZ (not-yet-built) renders coming-soon", mixOrder.find(s => s.state === "AZ")?.ready === "false");
+  check("WA keeps its 6-section set (incl. WA Cares)",
+    (await sectionKeysFor("WA")).length === 6
+      && (await page.locator('[data-testid="briefing-state"][data-state="WA"] [data-testid="briefing-section"][data-section="wacares"]').count()) === 1);
+  check("ID shows its 5-section set in the same multi-state page",
+    (await sectionKeysFor("ID")).length === 5);
+  const azText = (await page.locator('[data-testid="briefing-state"][data-state="AZ"]').textContent()) ?? "";
+  check("AZ block says coming soon", /coming soon/i.test(azText));
+
   await browser.close();
 
   console.log("\n" + "=".repeat(72));
