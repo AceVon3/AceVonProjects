@@ -3,10 +3,10 @@
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- Monorepo HEAD: `f577daf feat(compliance): multi-state briefing — add ID + UT`
-  (+ a `docs(state)` checkpoint recording the deploy hash).
-- **Deployed (agent-intel/master): see the multi-state iteration below.**
-  All suites green (7 verify + 13 e2e), prod build 12/12.
+- Monorepo: `a5c11a2 feat(compliance): multi-state briefing — add ID + UT`
+  (+ this `docs(state)` checkpoint).
+- **Deployed (agent-intel/master): `50ef430`.** All suites green
+  (7 verify + 13 e2e), prod build 12/12.
 
 ## Latest iteration — Compliance briefing goes MULTI-STATE: +ID +UT (2026-06-16)
 
@@ -48,6 +48,7 @@ bar, not just WA); `verify_office_summary.ts` expectations updated for ID now
 being briefing-ready (was the stale "only WA" world — no logic regression); new
 `e2e_compliance` cases (ID-only, UT-only coming-soon at-will + no size note,
 WA+ID+AZ mix). All green: tsc · 7 verify · e2e_compliance + e2e_nav · build 12/12.
+Monorepo `a5c11a2` → deploy `50ef430`.
 
 ## Earlier checkpoint — 2026-06-02 (office summary + accordion)
 
