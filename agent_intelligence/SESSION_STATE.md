@@ -3,9 +3,10 @@
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- Monorepo: this `feat` commit + `docs(state)` checkpoint (hashes below).
-- **Deployed (agent-intel/master): see the data-expansion iteration below.**
-  All suites green (7 verify + 13 e2e), prod build 12/12.
+- Monorepo: `cd86a5c feat(data): GA+NM expansion, 13 brands, coverage-aware +
+  rate-neutral suppression` (+ this `docs(state)` checkpoint).
+- **Deployed (agent-intel/master): `d3470cb`.** All suites green
+  (7 verify + 13 e2e), prod build 12/12.
 
 ## Latest iteration — GA+NM data expansion + 13 brands + rate-neutral suppression (2026-06-16)
 
@@ -95,7 +96,7 @@ recon of the source before any build change, then re-keyed.
 
 New lib: `src/lib/coverage.ts` (pure coverage-gap note), `getBrandStateCoverage`
 + `getMyCarriersNeutralHiddenCount` in `filings.ts`. `/api/filings` returns
-`coverage` + `neutralHidden`.
+`coverage` + `neutralHidden`. Monorepo `cd86a5c` → deploy `d3470cb`.
 
 ## Earlier iteration — Compliance briefing goes MULTI-STATE: +ID +UT (2026-06-16)
 
