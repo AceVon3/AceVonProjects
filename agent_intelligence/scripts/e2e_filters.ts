@@ -11,12 +11,12 @@
 //
 // Expected numbers for Independent in AZ+NV (asOf 2026-05-27):
 //
-//   /prospect    default      = 14    AZ-only = 4    HO-only = 6
-//                window 90d   = 3     window 30d = 0
+//   /prospect    default      = 13    AZ-only = 3    HO-only = 5
+//                window 90d   = 2     window 30d = 0
 //                sort impact  → GEICO +50.9% first
-//   /defend      default      = 10    window 90d = 2  window 30d = 0
-//   /my-carriers SF+Travelers default = 12  (SF=8, Travelers=4)
-//                Carrier filter → SF only = 8 rows
+//   /defend      default      = 9     window 90d = 2  window 30d = 0
+//   /my-carriers SF+Travelers default = 10  (SF=6, Travelers=4; 1 SF 0%-neutral suppressed)
+//                Carrier filter → SF only = 7 rows
 //                window 90d = 1   window 30d = 0
 //
 // Usage: E2E_BASE=http://localhost:3100 npx tsx scripts/e2e_filters.ts
@@ -153,13 +153,13 @@ async function main(): Promise<void> {
   console.log("\n/prospect — Independent AZ+NV");
   await setProfile(page, INDEPENDENT_AZ_NV);
   await gotoTable(page, "/prospect");
-  check("default → 14 rows", (await rowCount(page)) === 14);
-  check("default header count = 14",
-    (await page.locator('[data-testid="header-count"]').textContent())?.trim() === "14");
+  check("default → 13 rows", (await rowCount(page)) === 13);
+  check("default header count = 13",
+    (await page.locator('[data-testid="header-count"]').textContent())?.trim() === "13");
 
   console.log("\n  Narrow states → AZ only");
   await setOnlyStates(page, "AZ");
-  check("AZ-only → 4 rows", (await rowCount(page)) === 4);
+  check("AZ-only → 3 rows", (await rowCount(page)) === 3);
   // Confirm every visible row's state cell = AZ.
   const stateCells = await page.$$eval("table tbody tr td:nth-child(2)", tds =>
     tds.map(t => t.textContent?.trim() ?? ""));
@@ -169,11 +169,11 @@ async function main(): Promise<void> {
 
   console.log("\n  Restore states → AZ + NV");
   await setOnlyStates(page, "AZ", "NV");
-  check("restored → 14 rows", (await rowCount(page)) === 14);
+  check("restored → 13 rows", (await rowCount(page)) === 13);
 
   console.log("\n  Narrow lines → Homeowners only");
   await setOnlyLines(page, "Homeowners");
-  check("HO-only → 6 rows", (await rowCount(page)) === 6);
+  check("HO-only → 5 rows", (await rowCount(page)) === 5);
   const lineCells = await page.$$eval("table tbody tr td:nth-child(3)", tds =>
     tds.map(t => t.textContent?.trim() ?? ""));
   check("every visible row is Homeowners",
@@ -181,7 +181,7 @@ async function main(): Promise<void> {
 
   console.log("\n  Restore lines → both");
   await setOnlyLines(page, "Personal Auto", "Homeowners");
-  check("restored → 14 rows", (await rowCount(page)) === 14);
+  check("restored → 13 rows", (await rowCount(page)) === 13);
 
   console.log("\n  Window 30d (anchored to asOf 2026-05-27)");
   await setWindow(page, "30d");
@@ -191,12 +191,12 @@ async function main(): Promise<void> {
   console.log("\n  Window 90d");
   await setWindow(page, "90d");
   n = await rowCount(page);
-  check("90d → 3 rows", n === 3, { n });
+  check("90d → 2 rows", n === 2, { n });
 
   console.log("\n  Window 12m");
   await setWindow(page, "12m");
   n = await rowCount(page);
-  check("12m → 14 rows", n === 14, { n });
+  check("12m → 13 rows", n === 13, { n });
 
   console.log("\n  Sort → rate impact (largest)");
   await setSort(page, "impact_desc");
@@ -214,7 +214,7 @@ async function main(): Promise<void> {
   await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
   await page.goto(`${BASE}/prospect`, { waitUntil: "networkidle" });
   await page.waitForSelector('[data-testid="filter-bar"]', { timeout: 5000 });
-  check("after nav-away-and-back → 14 rows (default)", (await rowCount(page)) === 14);
+  check("after nav-away-and-back → 13 rows (default)", (await rowCount(page)) === 13);
   const sortChipLabel = await page.locator('[data-testid="chip-sort"]').textContent();
   check("sort chip back to 'Effective (newest)'",
     !!sortChipLabel && /Effective \(newest\)/.test(sortChipLabel), { sortChipLabel });
@@ -225,7 +225,7 @@ async function main(): Promise<void> {
   // -- /defend, Independent AZ+NV ------------------------------------------
   console.log("\n/defend — Independent AZ+NV");
   await gotoTable(page, "/defend");
-  check("default → 10 rows", (await rowCount(page)) === 10);
+  check("default → 9 rows", (await rowCount(page)) === 9);
 
   await setWindow(page, "90d");
   let dn = await rowCount(page);
@@ -238,11 +238,11 @@ async function main(): Promise<void> {
   // -- /my-carriers, Independent SF+Travelers AZ+NV ------------------------
   console.log("\n/my-carriers — Independent SF+Travelers AZ+NV");
   await gotoTable(page, "/my-carriers");
-  check("default → 12 rows", (await rowCount(page)) === 12);
+  check("default → 10 rows", (await rowCount(page)) === 10);
 
   console.log("\n  Carrier filter → State Farm only");
   await setOnlyCarriers(page, "State Farm");
-  check("SF-only → 8 rows", (await rowCount(page)) === 8);
+  check("SF-only → 6 rows", (await rowCount(page)) === 6);
   const brandCells = await page.$$eval("table tbody tr td:first-child", tds =>
     tds.map(t => t.textContent?.trim() ?? ""));
   check("every row's carrier is State Farm",
@@ -250,7 +250,7 @@ async function main(): Promise<void> {
     { brandCells });
 
   await setOnlyCarriers(page, "State Farm", "Travelers");
-  check("restored carriers → 12 rows", (await rowCount(page)) === 12);
+  check("restored carriers → 10 rows", (await rowCount(page)) === 10);
 
   await setWindow(page, "90d");
   let mn = await rowCount(page);

@@ -6,14 +6,14 @@
 //   - Sections present: Scope, Thresholds, Excluded brands, AM Best
 //     cross-check, Known limitations.
 //   - Scope section names all 8 brands, all 8 covered states, Personal
-//     Auto + Homeowners, 2025-2026.
+//     Auto + Homeowners, 2024-2026.
 //   - Thresholds section states +5% (Prospect) and -2% (Defend) verbatim.
 //   - All 7 excluded brands are listed with a "why" line each.
-//   - Validation table has 8 rows (one per covered state) and the cell
+//   - Validation table has 10 rows (one per covered state) and the cell
 //     values match STATES.validated exactly. Spot-checks: AZ auto=✓
 //     home=✓, MT auto=✓ home=✓, WA auto=✓ home=—, CO auto=— home=—.
 //   - Known limitations section covers SERFF visibility gaps, CO
-//     unvalidated, 42 states not covered, no-future-filings note.
+//     unvalidated, 40 states not covered, no-future-filings note.
 //   - Last-updated date is read from data/last_updated.txt and matches
 //     2026-05-27 (the xlsx mtime that step-3 anchored the window to).
 //
@@ -117,7 +117,7 @@ async function main(): Promise<void> {
   }
   check("scope mentions 'Personal Auto'", scopeText.includes("Personal Auto"));
   check("scope mentions 'Homeowners'", scopeText.includes("Homeowners"));
-  check("scope mentions effective-date range 2025-2026", /2025.{0,3}2026/.test(scopeText));
+  check("scope mentions effective-date range 2024-2026", /2024.{0,3}2026/.test(scopeText));
 
   // -- (5) thresholds verbatim ----------------------------------------------
   console.log("\n(5) thresholds section states +5% and -2% verbatim");
@@ -156,7 +156,7 @@ async function main(): Promise<void> {
   // -- (7) AM Best validation table matches STATES.validated ---------------
   console.log("\n(7) validation table matches STATES.validated exactly");
   const rowCount = await page.locator('[data-testid="validation-row"]').count();
-  check(`validation table has 8 rows (got ${rowCount})`, rowCount === 8);
+  check(`validation table has 10 rows (got ${rowCount})`, rowCount === 10);
   for (const [code, expected] of Object.entries(EXPECTED_VALIDATION)) {
     const row = page.locator(`[data-testid="validation-row"][data-state="${code}"]`);
     const autoCell = (await row.locator('[data-testid="cell-auto"]').textContent())?.trim();
@@ -175,8 +175,8 @@ async function main(): Promise<void> {
     /10.{0,3}12/.test(limitsText));
   check("limitations call out Colorado as unvalidated",
     /Colorado/.test(limitsText) && /validat/i.test(limitsText));
-  check("limitations mention '42 states not yet covered'",
-    /42 states not yet covered/i.test(limitsText));
+  check("limitations mention '40 states not yet covered'",
+    /40 states not yet covered/i.test(limitsText));
   check("limitations include the no-future-dated-filings note",
     /no future-dated filings/i.test(limitsText) || /no future filings/i.test(limitsText));
 

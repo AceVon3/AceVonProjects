@@ -14,6 +14,7 @@
 import { premiumWeightedAvg } from "./aggregate";
 import { ACTIVE_RATE_ACTIVITIES, Brand, BRANDS, DEFAULT_WINDOW, WINDOW_MODIFIERS, WindowKey } from "./constants";
 import { getDataAsOf, getDb } from "./db";
+import { getBrandStateCoverage } from "./filings";
 import type { AgentProfile, Filing } from "./filings";
 
 export type Line = "Personal Auto" | "Homeowners";
@@ -107,6 +108,18 @@ export function getPositioning(
   const agentCarriers = BRANDS.filter(b => agentSet.has(b));
   const competitorBrands = BRANDS.filter(b => !agentSet.has(b));
 
+  // Coverage-aware competitor set: a brand only counts as a competitor (and so
+  // can be "insufficient data") in a STATE where we actually collect it. Without
+  // this, the 5 GA-only brands added with the expansion would register as
+  // "insufficient" in every non-GA cell — phantom competitors that misread as
+  // missing data rather than out-of-scope-here. Same coverage model the empty
+  // states use. A brand with filings in the cell is covered by construction, so
+  // this never drops a real comparison — it only prunes absent-AND-uncollected
+  // competitors from the insufficient tally.
+  const coverage = getBrandStateCoverage();
+  const competitorsInState = (state: string): Brand[] =>
+    competitorBrands.filter(c => (coverage[c] ?? []).includes(state));
+
   const rows = fetchCellFilings(states, opts);
 
   // Group filings → byCell[line][state][brand] = Filing[]
@@ -146,12 +159,13 @@ export function getPositioning(
 
       const anchors: AnchorBlock[] = [];
       let cellComparable = 0, cellHigh = 0;
+      const cellCompetitors = competitorsInState(state);
 
       for (const owner of ownersPresent) {
         const agentStat = stat(owner, brandFilings(owner));
         const comparisons: Comparison[] = [];
         const insuff: Brand[] = [];
-        for (const c of competitorBrands) {
+        for (const c of cellCompetitors) {
           const cf = brandFilings(c);
           if (cf.length === 0) { insuff.push(c); continue; }
           const competitor = stat(c, cf);

@@ -1,14 +1,103 @@
-# Session checkpoint — 2026-06-16  ·  v1 + Features 7–9 live; compliance now MULTI-STATE
+# Session checkpoint — 2026-06-16  ·  GA+NM data expansion, 13 brands, neutral suppression
 
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- Monorepo: `a5c11a2 feat(compliance): multi-state briefing — add ID + UT`
-  (+ this `docs(state)` checkpoint).
-- **Deployed (agent-intel/master): `50ef430`.** All suites green
-  (7 verify + 13 e2e), prod build 12/12.
+- Monorepo: this `feat` commit + `docs(state)` checkpoint (hashes below).
+- **Deployed (agent-intel/master): see the data-expansion iteration below.**
+  All suites green (7 verify + 13 e2e), prod build 12/12.
 
-## Latest iteration — Compliance briefing goes MULTI-STATE: +ID +UT (2026-06-16)
+## Latest iteration — GA+NM data expansion + 13 brands + rate-neutral suppression (2026-06-16)
+
+Big data + scope expansion of the rate-filing product (NOT the compliance
+briefing — that's the prior iteration, still intact). The source xlsx was
+re-collected with Georgia + New Mexico added and the effective-date floor pushed
+back a year. Everything below was reconciled against an independent read-only
+recon of the source before any build change, then re-keyed.
+
+### 🔒 New verification baseline (REPLACES 468/314)
+
+- **1,616 raw → 998 rolled → 293 active-window** (12mo from data as-of
+  **2026-06-11**; `rate_change`/`rate_change_pending`; eff ≥ 2025-06-11).
+- **13 brands, 10 states** (was 8/8). Date range **2024–2026**.
+- Anchor **+93.70% `SFMA-134315091`** (State Farm WA Homeowners) UNCHANGED.
+- multi-entity rollups 351/998 (35.2%). 0 unmatched company_names.
+- Prospect/Defend re-key (active window): Independent AZ+NV **13/9**, all-8
+  **48/38**, all-10 **81/51**; Captive SF AZ+NV **12/7**, all-8 **40/28**;
+  Captive Allstate AZ+NV **9/6**. GA-only Independent 27/7; NM-only 6/6.
+- My Carriers (POST rate-neutral suppression, see below): SF+TRV AZ+NV **10**,
+  SF+TRV+PRG AZ+CO+NV **26**, Allstate+Liberty+Safeco all-8 **78**, captive SF
+  AZ+NV **6**.
+- `import_filings.py` `verify()` is re-keyed to all of the above (raw/rolled/
+  active/13-brand/10-state/anchor; GECC-134661852 rollup spot-check + 11 distinct
+  sub_types still hold unchanged).
+
+### ⚠️ Intentional-but-odd states — DO NOT "fix" these as bugs
+
+1. **The 5 new carriers are GA-ONLY on data, on purpose.** Farmers, COUNTRY
+   Financial, American Family, Nationwide, USAA were adopted with full brand
+   plumbing (in `BRANDS`, so pickers/positioning/validation all flow from it),
+   but the source only has their filings in Georgia so far. **Backfilling the
+   existing 8 states with these 5 carriers is the next data task.** A WA agent
+   authorizing Farmers seeing no WA Farmers data is EXPECTED, not a gap to fix.
+
+2. **GA + NM render compliance as COMING-SOON even though they have rate data.**
+   `data_coverage:true` governs rate-data selectability ONLY; the compliance
+   briefing gate is `sectionsForState()` (WA/ID/UT only). Rate-data coverage ≠
+   compliance coverage — this is the designed separation, not a missing wire.
+
+3. **Rate-neutral (0.0%) filings are hidden from My Carriers + Overview only.**
+   Many GA State Farm PPA filings are declared rate-NEUTRAL refiles (SERFF "Rate
+   Change Type: Neutral" — verified against PDF `SFMA-134315020`: indicated
+   15.3%/3.0% but implemented 0.0%). They're suppressed on the unfiltered
+   own-carrier surfaces (`getMyCarriersFilings` adds `overall_rate_impact != 0`).
+   Prospect/Defend exclude 0% via thresholds already; **Positioning and the
+   coverage map are deliberately NOT filtered.** A "N rate-neutral filings (0.0%)
+   hidden" note explains the count gap; the Overview footnote says "No recent
+   **rate-moving** filings…". A carrier whose filings are ALL neutral shows the
+   normal no-data empty state (NOT coverage-gap — it IS covered).
+
+4. **Positioning is COVERAGE-AWARE.** A brand counts as a competitor in a cell
+   only where we actually collect its data (`getBrandStateCoverage`). Without
+   this the 5 GA-only brands registered as phantom "insufficient" competitors in
+   every non-GA cell (insufficient jumped 29→79). Fixed → captive SF all-8 totals
+   10/6/41/**23**/**18**/**25**; independent SF/TRV/PRG comparable **64**, higher
+   **30** (independently reconciled, not rubber-stamped).
+
+5. **Coverage-gap empty state is data-driven + self-healing.** A selectable brand
+   with zero rows in the agent's state(s) shows "covers {states}, {state} coming"
+   instead of silent emptiness; the note clears automatically once backfill lands
+   a row (it reads `SELECT DISTINCT brand,state FROM filings`, which counts ALL
+   rows incl. 0.0% — that's why neutral-only ≠ coverage-gap).
+
+### Brand derivation (`derive_brand`) additions
+
+- **Safeco affiliates** folded into Safeco by full legal name (consumer-facing
+  Safeco companies Liberty owns post-2008): `general insurance company of
+  america`, `first national insurance company of america`, `american states`.
+  This was also REQUIRED to get WA importing again (2 WA 2024 rows broke it).
+- **5 new carrier families:** USAA (`usaa`/`united services`/`garrison`),
+  Farmers (`farmers`/`fire insurance exchange`/`mid-century`/`truck insurance
+  exchange`), Nationwide, American Family (guards the Munich Re `american family
+  home` NAIC-23450 collision), COUNTRY Financial.
+- **Two collision guards (load-bearing — a wrong attribution silently corrupts
+  Prospect/Defend):** Safeco rule matches the FULL "general insurance company of
+  america" so "Nationwide General Insurance Company" → Nationwide; USAA is
+  checked before any generic match so "USAA General Indemnity" → USAA.
+
+### states.ts / coverage
+
+- **GA + NM `data_coverage:true`** with AM Best–sourced `validated` flags:
+  GA `{auto:true,home:true}` (PPA 92.8% / HO 94.3%), NM `{auto:true,home:true}`
+  (PPA 97.3% / HO 88.2%) — sourced from the scraper's ambest-compare logs, not
+  guessed. `constants.ts` `COVERED_STATES` → 10. Methodology text updated
+  (2024–2026; 13 brands; "{50-n} states not covered"; newer/thinner-coverage note).
+
+New lib: `src/lib/coverage.ts` (pure coverage-gap note), `getBrandStateCoverage`
++ `getMyCarriersNeutralHiddenCount` in `filings.ts`. `/api/filings` returns
+`coverage` + `neutralHidden`.
+
+## Earlier iteration — Compliance briefing goes MULTI-STATE: +ID +UT (2026-06-16)
 
 The compliance office briefing expanded beyond WA to **Idaho and Utah** via a
 **per-state section model** — and in doing so PROVED the multi-state template

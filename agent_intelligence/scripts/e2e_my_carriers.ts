@@ -110,16 +110,16 @@ async function main(): Promise<void> {
   // -- Cases A / B / C: row counts ------------------------------------------
   console.log("\nCase A: Independent, SF + Travelers, AZ + NV");
   await setProfileAndOpen(page, CASE_A, "/my-carriers");
-  check("12 rows on screen", (await rowCountAfterLoad(page)) === 12);
+  check("10 rows on screen", (await rowCountAfterLoad(page)) === 10);
 
   console.log("\nCase B: Independent, SF + Travelers + Progressive, AZ+CO+NV");
   await setProfileAndOpen(page, CASE_B, "/my-carriers");
-  check("32 rows on screen", (await rowCountAfterLoad(page)) === 32);
+  check("26 rows on screen", (await rowCountAfterLoad(page)) === 26);
 
   console.log("\nCase C: Independent, Allstate + Liberty Mutual + Safeco, all 8 states");
   await setProfileAndOpen(page, CASE_C, "/my-carriers");
   const cRows = await rowCountAfterLoad(page);
-  check("110 rows on screen", cRows === 110);
+  check("78 rows on screen", cRows === 78);
 
   // First column header should be "Carrier" for my-carriers regardless of
   // agent_type — spec line 854.
@@ -177,7 +177,7 @@ async function main(): Promise<void> {
   check("captive stays on /my-carriers (not redirected)",
     new URL(page.url()).pathname === "/my-carriers", { url: page.url() });
   const capRows = await page.$$eval("table tbody tr", rs => rs.length);
-  check("captive State Farm AZ+NV → 8 rows (their carrier only)", capRows === 8, { capRows });
+  check("captive State Farm AZ+NV → 6 rows (their carrier only)", capRows === 6, { capRows });
   const capBrands = await page.$$eval("table tbody tr td:first-child", tds =>
     Array.from(new Set(tds.map(t => t.textContent?.trim() ?? ""))));
   check("every row is State Farm (no other brand leaks in)",
@@ -191,6 +191,24 @@ async function main(): Promise<void> {
   check("nav shows 'My Carrier' (singular), not 'My Carriers'",
     navLabels.includes("My Carrier") && !navLabels.includes("My Carriers"), { navLabels });
 
+  // -- (F2) GA State Farm: rate-neutral suppression + hidden note -----------
+  // GA State Farm has 11 active own-carrier filings, 8 of them rate-neutral
+  // (0.0%). My Carriers shows only the 3 rate-MOVING ones, and a note accounts
+  // for the 8 hidden so the count gap isn't a mystery.
+  console.log("\n(F2) captive State Farm in GA → 3 rate-moving rows, 8 neutral hidden");
+  const CAPTIVE_SF_GA: Profile = { ...CAPTIVE_SF, licensed_states: ["GA"] };
+  await setProfileAndOpen(page, CAPTIVE_SF_GA, "/my-carriers");
+  await page.waitForSelector("table tbody tr, [data-testid=empty-state]", { timeout: 5000 }).catch(() => {});
+  const gaRows = await page.$$eval("table tbody tr", rs => rs.length);
+  check("GA State Farm → 3 rows (rate-moving only; 0% suppressed)", gaRows === 3, { gaRows });
+  const gaImpacts = await page.$$eval("table tbody tr", rs =>
+    rs.map(r => r.textContent ?? ""));
+  check("no 0.0% row is visible", !gaImpacts.some(t => /\b0\.0%/.test(t)), { sample: gaImpacts[0]?.slice(0, 60) });
+  const gaNote = page.locator('[data-testid="neutral-hidden-note"]');
+  check("rate-neutral hidden note present", (await gaNote.count()) === 1);
+  check("note reports 8 hidden", /\b8 rate-neutral/i.test((await gaNote.textContent()) ?? ""),
+    { note: (await gaNote.textContent())?.trim() });
+
   // -- (G) API allows captive + my-carriers ---------------------------------
   console.log("\n(G) API allows captive + my-carriers (returns the carrier's filings)");
   const apiResp = await page.evaluate(async (base) => {
@@ -201,9 +219,9 @@ async function main(): Promise<void> {
     return { status: r.status, body: await r.json() };
   }, BASE);
   check("API returns HTTP 200", apiResp.status === 200, { status: apiResp.status });
-  check("API returns 8 State Farm filings",
+  check("API returns 6 State Farm filings",
     Array.isArray(apiResp.body?.filings)
-      && apiResp.body.filings.length === 8
+      && apiResp.body.filings.length === 6
       && apiResp.body.filings.every((f: { brand: string }) => f.brand === "State Farm"),
     { count: apiResp.body?.filings?.length });
 

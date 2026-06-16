@@ -8,12 +8,13 @@ import FilterBar from "@/components/FilterBar";
 import PageSkeleton from "@/components/PageSkeleton";
 import ScopeStrip from "@/components/ScopeStrip";
 import type { Filing } from "@/lib/filings";
+import { Coverage, coverageGapNote } from "@/lib/coverage";
 import { FilterState, applyFilters, defaultFilters } from "@/lib/filters";
 import { AgentProfile, loadProfile } from "@/lib/profile";
 
 type Phase = "loading" | "ready" | "error";
 
-type ApiResponse = { asOf: string; filings: Filing[] };
+type ApiResponse = { asOf: string; filings: Filing[]; coverage: Coverage };
 
 export default function DefendPage(): React.JSX.Element {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function DefendPage(): React.JSX.Element {
   const [filters, setFilters] = useState<FilterState | null>(null);
   const [asOf, setAsOf] = useState<string>("");
   const [filings, setFilings] = useState<Filing[]>([]);
+  const [coverage, setCoverage] = useState<Coverage>({});
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -55,6 +57,7 @@ export default function DefendPage(): React.JSX.Element {
       .then(data => {
         setAsOf(data.asOf);
         setFilings(data.filings);
+        setCoverage(data.coverage ?? {});
         setPhase("ready");
       })
       .catch(e => {
@@ -66,6 +69,11 @@ export default function DefendPage(): React.JSX.Element {
   const ownedBrands = useMemo(
     () => new Set(profile?.authorized_brands ?? []),
     [profile],
+  );
+
+  const coverageGap = useMemo(
+    () => (profile ? coverageGapNote(profile.authorized_brands, profile.licensed_states, coverage) : null),
+    [profile, coverage],
   );
 
   const visibleFilings = useMemo(
@@ -167,6 +175,7 @@ export default function DefendPage(): React.JSX.Element {
           sort={filters.sort}
           onSortChange={s => setFilters(f => (f ? { ...f, sort: s } : f))}
           filteredToEmpty={visibleFilings.length === 0 && filings.length > 0}
+          coverageGap={coverageGap}
         />
       </div>
     </main>

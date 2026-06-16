@@ -1,10 +1,19 @@
 // Verifies the Rate Positioning classifier against the recon answer key.
 // Node-only (no browser), like verify_queries.ts.
 //
+// Re-baselined for the 2026-06 expansion (data as-of 2026-06-11; 13 brands /
+// 10 states). The 8-state cell structure is unchanged (10 anchored / 6
+// unanchored / 41 comparable); the as-of shift moved one comparison from
+// higher-confidence to thin (24→23 / 17→18). "insufficient" dropped (29→25)
+// because the classifier is now COVERAGE-AWARE: the 5 GA-only brands are no
+// longer counted as absent competitors in the 8 non-GA states (they aren't
+// collected there). Every total below was independently reconciled against a
+// separate count-only recompute over the active rolled filings (they agreed).
+//
 //   Captive State Farm, all 8 states:
-//     10 anchored / 6 unanchored cells; 41 comparable (24 high, 17 thin); 29 insufficient
+//     10 anchored / 6 unanchored cells; 41 comparable (23 high, 18 thin); 25 insufficient
 //   Independent {State Farm, Travelers, Progressive}, all 8 states:
-//     69 comparable, 34 higher-confidence
+//     64 comparable, 30 higher-confidence
 //
 // Usage:  npx tsx scripts/verify_positioning.ts
 
@@ -42,14 +51,14 @@ const c = getPositioning(captive).totals;
 check("anchored cells", c.anchoredCellCount, 10);
 check("unanchored cells", c.unanchoredCellCount, 6);
 check("comparable comparisons", c.comparable, 41);
-check("  higher-confidence (>=2 each)", c.higherConfidence, 24);
-check("  thin", c.thin, 17);
-check("insufficient (competitor absent)", c.insufficient, 29);
+check("  higher-confidence (>=2 each)", c.higherConfidence, 23);
+check("  thin", c.thin, 18);
+check("insufficient (covered competitor absent)", c.insufficient, 25);
 
 console.log("\nIndependent {State Farm, Travelers, Progressive}, all 8 states:");
 const i = getPositioning(independent).totals;
-check("comparable comparisons", i.comparable, 69);
-check("  higher-confidence (>=2 each)", i.higherConfidence, 34);
+check("comparable comparisons", i.comparable, 64);
+check("  higher-confidence (>=2 each)", i.higherConfidence, 30);
 
 console.log("\n" + "=".repeat(72));
 if (failures === 0) {

@@ -1,10 +1,10 @@
 // Verifies the Sub-type rollup against the recon answer key (Feature 8).
 // Node-only. Active set = active activities, 12-month, non-null effective.
 //
-//   180/180 active rolled filings single-valued (non-null sub_type),
+//   293/293 active rolled filings single-valued (non-null sub_type) (2026-06-11 baseline),
 //   11 distinct sub-types with these exact rolled counts:
-//     PA: PPA 71, Combinations 24, Motorcycle 11, RV 7, Other 3
-//     HO: Owner-Occupied 25, Combinations 17, Condo 10, Other 7, Tenant 3, Mobile 2
+//     PA: PPA 121, Combinations 43, Motorcycle 11, RV 8, Other 3
+//     HO: Owner-Occupied 30, Combinations 49, Condo 10, Other 7, Tenant 5, Mobile 6
 //
 // Usage: npx tsx scripts/verify_subtype.ts
 
@@ -18,17 +18,17 @@ function check(label: string, actual: unknown, expected: unknown) {
 }
 
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 71,
-  "19.0000 Personal Auto Combinations": 24,
+  "19.0001 Private Passenger Auto (PPA)": 121,
+  "19.0000 Personal Auto Combinations": 43,
   "19.0002 Motorcycle": 11,
-  "19.0003 Recreational Vehicle (RV)": 7,
+  "19.0003 Recreational Vehicle (RV)": 8,
   "19.0004 Other": 3,
-  "04.0003 Owner Occupied Homeowners": 25,
-  "04.0000 Homeowners Sub-TOI Combinations": 17,
+  "04.0003 Owner Occupied Homeowners": 30,
+  "04.0000 Homeowners Sub-TOI Combinations": 49,
   "04.0001 Condominium Homeowners": 10,
   "04.0005 Other Homeowners": 7,
-  "04.0004 Tenant Homeowners": 3,
-  "04.0002 Mobile Homeowners": 2,
+  "04.0004 Tenant Homeowners": 5,
+  "04.0002 Mobile Homeowners": 6,
 };
 
 console.log("=".repeat(72));
@@ -45,7 +45,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 180", rows.length, 180);
+check("active rolled filings = 293", rows.length, 293);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 

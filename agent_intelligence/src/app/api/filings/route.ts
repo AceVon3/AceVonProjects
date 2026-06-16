@@ -6,8 +6,10 @@ import {
   CaptiveProfile,
   IndependentProfile,
   QueryOpts,
+  getBrandStateCoverage,
   getDefendFilings,
   getMyCarriersFilings,
+  getMyCarriersNeutralHiddenCount,
   getProspectFilings,
 } from "@/lib/filings";
 
@@ -70,9 +72,23 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         } as IndependentProfile);
 
   let filings;
+  // Rate-neutral (0%) own-carrier filings are suppressed from My Carriers;
+  // report how many so the page can explain the gap. Only meaningful for
+  // my-carriers (Prospect/Defend exclude 0% by threshold already).
+  let neutralHidden = 0;
   if (mode === "prospect") filings = getProspectFilings(profile, opts);
   else if (mode === "defend") filings = getDefendFilings(profile, opts);
-  else filings = getMyCarriersFilings(profile, opts);
+  else {
+    filings = getMyCarriersFilings(profile, opts);
+    neutralHidden = getMyCarriersNeutralHiddenCount(profile, opts);
+  }
 
-  return NextResponse.json({ asOf: getDataAsOf(), filings });
+  // Coverage map for the agent's authorized brands only (keeps the payload
+  // tight). Drives the empty-state "not collected here yet" vs "no recent
+  // moves" distinction without a second request.
+  const fullCoverage = getBrandStateCoverage();
+  const coverage: Record<string, string[]> = {};
+  for (const b of authorized) coverage[b] = fullCoverage[b] ?? [];
+
+  return NextResponse.json({ asOf: getDataAsOf(), filings, coverage, neutralHidden });
 }

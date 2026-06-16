@@ -1,6 +1,6 @@
 // Node-level verification of the Overview helpers against real filings.db
 // data. Confirms that for the captive State Farm AZ+NV profile:
-//   - Prospect/Defend counts = 13/8 (matching /prospect and /defend)
+//   - Prospect/Defend counts = 12/7 (matching /prospect and /defend)
 //   - Most Urgent (Tier 2 = largest |impact| in 12-month window) picks
 //     GECC-134661852 GEICO +50.9% NV with an "In effect Nw" pill
 //   - Recent Changes feed top row matches the spec's verification order
@@ -46,8 +46,8 @@ console.log(`asOf (data freshness) = ${asOf}\n`);
 console.log("Captive State Farm, AZ + NV:");
 const prospect = getProspectFilings(CAPTIVE_SF);
 const defend = getDefendFilings(CAPTIVE_SF);
-check("prospect count = 13", prospect.length === 13, { actual: prospect.length });
-check("defend count = 8", defend.length === 8, { actual: defend.length });
+check("prospect count = 12", prospect.length === 12, { actual: prospect.length });
+check("defend count = 7", defend.length === 7, { actual: defend.length });
 
 const mu = computeMostUrgent(prospect, defend, asOf);
 if (!mu) {
@@ -94,7 +94,7 @@ const myc = getMyCarriersFilings(CAPTIVE_SF);
 const mycIds = new Set(myc.map(f => f.id));
 const { rows, noFilingStates } = computeCarrierActivity(myc, CAPTIVE_SF.licensed_states);
 
-check("My Carriers source = 8 filings (matches /my-carriers)", myc.length === 8, { actual: myc.length });
+check("My Carriers source = 6 filings (matches /my-carriers; 0% rate-neutral suppressed)", myc.length === 6, { actual: myc.length });
 
 // Reconciliation: every shown row is a real My Carriers filing (same source).
 check("every shown row is one of the My Carriers filings (reconciles)",

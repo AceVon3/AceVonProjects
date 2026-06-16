@@ -2,9 +2,9 @@
 //
 // Captive State Farm, all 8 states (the recon answer key):
 //   10 anchored cells (cards), 10 anchor rows, 41 comparison rows
-//   (24 higher-confidence with a spread, 17 thin without), 6 unanchored items.
+//   (23 higher-confidence with a spread, 18 thin without), 6 unanchored items.
 // Independent {SF, Travelers, Progressive}, all 8:
-//   69 comparison rows, 34 higher-confidence.
+//   64 comparison rows, 30 higher-confidence.
 // Plus: the persistent rate-change framing band is present; spread appears
 // only on higher-confidence rows; a row expands to its underlying filings.
 //
@@ -61,9 +61,9 @@ async function main(): Promise<void> {
 
   const t = await tierCounts(page);
   check("41 comparison rows", t.total === 41, { total: t.total });
-  check("24 higher-confidence rows", t.high === 24, { high: t.high });
-  check("17 thin rows", t.thin === 17, { thin: t.thin });
-  check("spread shown on exactly the 24 high rows (none on thin)", t.spread === 24, { spread: t.spread });
+  check("23 higher-confidence rows", t.high === 23, { high: t.high });
+  check("18 thin rows", t.thin === 18, { thin: t.thin });
+  check("spread shown on exactly the 23 high rows (none on thin)", t.spread === 23, { spread: t.spread });
 
   const unanchored = await page.locator('[data-testid="unanchored-item"]').count();
   check("6 unanchored (line·state) items", unanchored === 6, { unanchored });
@@ -89,9 +89,9 @@ async function main(): Promise<void> {
   console.log("\nIndependent {State Farm, Travelers, Progressive}, all 8 states");
   await open(page, INDEP);
   const ti = await tierCounts(page);
-  check("69 comparison rows", ti.total === 69, { total: ti.total });
-  check("34 higher-confidence rows", ti.high === 34, { high: ti.high });
-  check("spread shown on exactly the 34 high rows", ti.spread === 34, { spread: ti.spread });
+  check("64 comparison rows", ti.total === 64, { total: ti.total });
+  check("30 higher-confidence rows", ti.high === 30, { high: ti.high });
+  check("spread shown on exactly the 30 high rows", ti.spread === 30, { spread: ti.spread });
 
   await browser.close();
   console.log("\n" + "=".repeat(72));

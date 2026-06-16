@@ -52,7 +52,7 @@ LOB_CLEAN = {
 
 
 def derive_brand(name) -> str | None:
-    """Map a company_name to one of the 8 covered brands. First match wins."""
+    """Map a company_name to one of the 13 covered brands. First match wins."""
     if name is None or not isinstance(name, str):
         return None
     n = name.lower()
@@ -68,10 +68,41 @@ def derive_brand(name) -> str | None:
         return "Travelers"
     if n.startswith("progressive") or "artisan and truckers" in n:
         return "Progressive"
-    if n.startswith("safeco"):
+    # Safeco — incl. consumer-facing Safeco companies whose legal names carry
+    # neither "safeco" nor "liberty" (Liberty Mutual owns the parent post-2008,
+    # but these are sold under the Safeco brand). Full-phrase match on
+    # "...of america" so it can't swallow "Nationwide General Insurance Company".
+    if (n.startswith("safeco")
+            or "general insurance company of america" in n
+            or "first national insurance company of america" in n
+            or "american states" in n):
         return "Safeco"
     if "liberty" in n:
         return "Liberty Mutual"
+    # --- 5 new carriers (13-brand expansion) ---
+    # USAA checked before any generic match so "USAA General Indemnity" (carries
+    # "general") goes to USAA. Includes its non-"usaa"-named entities.
+    if "usaa" in n or "united services" in n or "garrison" in n:
+        return "USAA"
+    # Farmers: the "farmers*" entities PLUS the historical Farmers exchanges that
+    # carry no "farmers" in the name (Fire Insurance Exchange + Mid-Century are
+    # Farmers underwriting affiliates; Truck Insurance Exchange the commercial one).
+    if ("farmers" in n
+            or "fire insurance exchange" in n
+            or "truck insurance exchange" in n
+            or "mid-century" in n):
+        return "Farmers"
+    if "nationwide" in n:
+        return "Nationwide"
+    # American Family — guard the Munich Re name collision (American Family Home
+    # Insurance, NAIC 23450, is American Modern/Munich Re, NOT AmFam).
+    if "american family" in n and "american family home" not in n:
+        return "American Family"
+    # COUNTRY Financial — the consumer-facing brand label.
+    if ("country mutual" in n
+            or "country preferred" in n
+            or "country casualty" in n):
+        return "COUNTRY Financial"
     return None
 
 
@@ -415,9 +446,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     failed = False
 
     raw = con.execute("SELECT COUNT(*) FROM filings_raw").fetchone()[0]
-    ok = raw == 468
+    ok = raw == 1616
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (1) filings_raw rows: expected 468, got {raw}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (1) filings_raw rows: expected 1616, got {raw}")
 
     null_brand = con.execute("SELECT COUNT(*) FROM filings_raw WHERE brand IS NULL").fetchone()[0]
     ok = null_brand == 0
@@ -425,9 +456,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (2) unmatched company_name: expected 0, got {null_brand}")
 
     rolled = con.execute("SELECT COUNT(*) FROM filings").fetchone()[0]
-    ok = rolled == 314
+    ok = rolled == 998
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (3) filings (rolled) rows: expected 314, got {rolled}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (3) filings (rolled) rows: expected 998, got {rolled}")
 
     # (4) GECC-134661852 Personal Auto spot-check
     raw_n = con.execute(
@@ -495,8 +526,48 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (6c) distinct sub_type in filings: expected 11, got {distinct_sub}")
 
+    # (7) brand & (8) state coverage after the 2026-06 expansion.
+    n_brands = con.execute("SELECT COUNT(DISTINCT brand) FROM filings").fetchone()[0]
+    ok = n_brands == 13
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (7) distinct brands: expected 13, got {n_brands}")
+
+    n_states = con.execute("SELECT COUNT(DISTINCT state) FROM filings").fetchone()[0]
+    ok = n_states == 10
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (8) distinct states: expected 10, got {n_states}")
+
+    # (9) active window (12mo from data as-of; rate_change/_pending) + anchor.
+    # Anchors to data/last_updated.txt (xlsx mtime), exactly as the web app does.
+    as_of = LAST_UPDATED_PATH.read_text(encoding="utf-8").strip()
+    active = con.execute(
+        """SELECT COUNT(*) FROM filings
+           WHERE rate_activity IN ('rate_change', 'rate_change_pending')
+             AND effective_date >= date(?, '-12 months')""",
+        (as_of,),
+    ).fetchone()[0]
+    ok = active == 293
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (9) active-window filings (as of {as_of}): "
+          f"expected 293, got {active}")
+
+    anchor = con.execute(
+        """SELECT serff_tracking_number, brand, state, overall_rate_impact
+           FROM filings
+           WHERE rate_activity IN ('rate_change', 'rate_change_pending')
+             AND effective_date >= date(?, '-12 months')
+           ORDER BY overall_rate_impact DESC LIMIT 1""",
+        (as_of,),
+    ).fetchone()
+    serff, brand, state, impact = anchor
+    ok = (serff == "SFMA-134315091" and abs(impact - 93.70) < 0.05
+          and brand == "State Farm" and state == "WA")
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (10) max active impact: expected "
+          f"+93.70% SFMA-134315091 State Farm WA, got +{impact:.2f}% {serff} {brand} {state}")
+
     print(f"  [INFO]  multi-entity rollups: {multi_count} of {rolled_count} "
-          f"({100*multi_count/rolled_count:.1f}%)  -- spec says ~99 / 314 (~31.5%)")
+          f"({100*multi_count/rolled_count:.1f}%)  -- baseline 351 / 998 (~35.2%)")
     print("=" * 72)
     if failed:
         sys.exit("ONE OR MORE VERIFICATION CHECKS FAILED")

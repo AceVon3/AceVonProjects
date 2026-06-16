@@ -106,7 +106,7 @@ export default function MethodologyPage(): React.JSX.Element {
             <li className={liCls}>
               <strong>{coveredStates.length} states currently covered:</strong>{" "}
               {coveredStates.map(s => s.code).join(", ")}. All 50 are listed in
-              setup so the picker reflects the full national map; only the 8
+              setup so the picker reflects the full national map; only the
               covered states are selectable. Coverage expands by flipping
               one flag per state — no other code changes.
             </li>
@@ -114,7 +114,15 @@ export default function MethodologyPage(): React.JSX.Element {
               <strong>Lines of business:</strong> Personal Auto and Homeowners.
             </li>
             <li className={liCls}>
-              <strong>Effective-date range:</strong> 2025–2026.
+              <strong>Effective-date range:</strong> 2024–2026.
+            </li>
+            <li className={liCls}>
+              <strong>Newer, thinner coverage:</strong> Georgia and New Mexico
+              were added most recently, and five brands (Farmers, COUNTRY
+              Financial, American Family, Nationwide, USAA) currently have filing
+              data in Georgia only — existing-state backfill is ongoing. Where we
+              don&rsquo;t yet collect a brand in your state, the tables say so
+              explicitly rather than implying the carrier made no moves.
             </li>
             <li className={liCls}>
               <strong>Source:</strong> SERFF rate filings (the public state
@@ -247,8 +255,9 @@ export default function MethodologyPage(): React.JSX.Element {
           <h2 className={h2Cls}>Excluded brands</h2>
           <p className={pCls}>
             These names appear in SERFF filings but are NOT counted as one of the
-            eight customer-facing brands. Each one would either double-count an
-            existing brand or doesn’t represent a consumer-facing product.
+            {" "}{BRANDS.length} customer-facing brands. Each one would either
+            double-count an existing brand or doesn’t represent a consumer-facing
+            product.
           </p>
           <ul className="m-0 pl-[18px]" data-testid="excluded-list">
             {EXCLUDED_BRANDS.map(b => (
@@ -340,10 +349,10 @@ export default function MethodologyPage(): React.JSX.Element {
               until the validation column above flips to ✓.
             </li>
             <li className={liCls}>
-              <strong>42 states not yet covered.</strong> Only the 8 listed
-              above currently have filing data. Selecting other states in setup
-              is intentionally blocked rather than silently returning empty
-              results.
+              <strong>{50 - coveredStates.length} states not yet covered.</strong>{" "}
+              Only the {coveredStates.length} listed above currently have filing
+              data. Selecting other states in setup is intentionally blocked
+              rather than silently returning empty results.
             </li>
             <li className={liCls}>
               <strong>No future-dated filings in the current snapshot.</strong>{" "}

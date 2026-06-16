@@ -36,6 +36,12 @@ type Props = {
   // narrowed too much" instead of "there's no data" — completely
   // different action for the agent (widen filters vs. just wait).
   filteredToEmpty?: boolean;
+  // Honest coverage-gap message (from coverageGapNote) when one or more of the
+  // agent's authorized brands has no filing data in any of their states yet
+  // (e.g. a WA agent authorizing Farmers, which is GA-only). Shown INSTEAD of
+  // the "no recent moves" copy on an unfiltered-empty result, so the empty
+  // state never reads like a bug. Null when every brand has coverage.
+  coverageGap?: string | null;
 };
 
 // Map BadgeColor → Tailwind class pair (fill + text). All values come from
@@ -91,6 +97,7 @@ export default function FilingsTable({
   sort,
   onSortChange,
   filteredToEmpty,
+  coverageGap,
 }: Props): React.JSX.Element {
   const firstHeader = firstColumnHeader(mode, agentType);
   // Defend gets one extra trailing column: static contextual guidance.
@@ -119,11 +126,21 @@ export default function FilingsTable({
   }
 
   if (filings.length === 0) {
-    const copy = filteredToEmpty ? FILTERED_EMPTY_COPY : emptyStateCopy(mode);
+    // Precedence: a narrowed filter (widen it) > a brand we don't collect here
+    // yet (coverage gap, honest "coming") > genuinely nothing crossed the
+    // threshold ("no recent moves"). The coverage gap only applies to an
+    // UNFILTERED-empty result, so it reflects the agent's whole scope.
+    const showCoverage = !filteredToEmpty && !!coverageGap;
+    const variant = filteredToEmpty ? "filtered" : showCoverage ? "coverage-gap" : "no-data";
+    const copy = filteredToEmpty
+      ? FILTERED_EMPTY_COPY
+      : showCoverage
+        ? coverageGap!
+        : emptyStateCopy(mode);
     return (
       <div
         data-testid="empty-state"
-        data-variant={filteredToEmpty ? "filtered" : "no-data"}
+        data-variant={variant}
         className="text-13 px-4 py-6 text-center text-ink-3 border border-hairline border-line rounded-lg"
       >
         {copy}

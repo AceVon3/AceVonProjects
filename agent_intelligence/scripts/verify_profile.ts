@@ -79,7 +79,7 @@ group("validateProfile: rejects each missing/invalid field", () => {
     ["employee_count not integer",                          { ...VALID_INDEPENDENT, employee_count: 3.5 },    "employee_count"],
     ["missing agent_type",                                  { ...VALID_INDEPENDENT, agent_type: undefined as any }, "agent_type"],
     ["no authorized_brands",                                { ...VALID_INDEPENDENT, authorized_brands: [] },  "authorized_brands"],
-    ["unknown carrier",                                     { ...VALID_INDEPENDENT, authorized_brands: ["Nationwide" as any] }, "authorized_brands"],
+    ["unknown carrier",                                     { ...VALID_INDEPENDENT, authorized_brands: ["__not_a_real_brand__" as any] }, "authorized_brands"],
     ["captive with 2 brands",                               { ...VALID_INDEPENDENT, agent_type: "captive", authorized_brands: ["State Farm", "GEICO"] }, "authorized_brands"],
     ["no licensed_states",                                  { ...VALID_INDEPENDENT, licensed_states: [] },    "licensed_states"],
     ["licensed_states contains non-data_coverage (tamper)", { ...VALID_INDEPENDENT, licensed_states: ["WA", "CA"] }, "licensed_states"],

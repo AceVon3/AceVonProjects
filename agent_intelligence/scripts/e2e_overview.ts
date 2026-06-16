@@ -1,9 +1,9 @@
 // End-to-end check of the Overview (/) against a running dev server.
 //
 // Captive State Farm, AZ + NV:
-//   - Prospect card count = 13 (matches /prospect)
-//   - Defend card count   = 8  (matches /defend)
-//   - Most Urgent card    = GEICO +50.9% in NV, pill "In effect 9w",
+//   - Prospect card count = 12 (matches /prospect)
+//   - Defend card count   = 7  (matches /defend)
+//   - Most Urgent card    = GEICO +50.9% in NV, pill "In effect 11w",
 //                           card uses the urgent (red-border) style and
 //                           links to /prospect (since impact > 0)
 //   - Compliance card     = "{n} states tracked" where n = employee_states
@@ -100,22 +100,22 @@ async function main(): Promise<void> {
 
   // -- Counts ---------------------------------------------------------------
   const prospectCount = (await page.locator('[data-testid="ov-prospect-count"]').textContent())?.trim();
-  check("Prospect card count = 13", prospectCount === "13", { prospectCount });
+  check("Prospect card count = 12", prospectCount === "12", { prospectCount });
 
   const defendCount = (await page.locator('[data-testid="ov-defend-count"]').textContent())?.trim();
-  check("Defend card count = 8", defendCount === "8", { defendCount });
+  check("Defend card count = 7", defendCount === "7", { defendCount });
 
   // Cross-check against /prospect and /defend table row counts so the
   // "counts reconcile" contract is exercised end-to-end.
   await page.goto(`${BASE}/prospect`, { waitUntil: "networkidle" });
   await page.waitForSelector("table tbody tr", { timeout: 5000 });
   const prospectRows = await page.$$eval("table tbody tr", rs => rs.length);
-  check("/prospect renders the same 13 rows", prospectRows === 13, { prospectRows });
+  check("/prospect renders the same 12 rows", prospectRows === 12, { prospectRows });
 
   await page.goto(`${BASE}/defend`, { waitUntil: "networkidle" });
   await page.waitForSelector("table tbody tr", { timeout: 5000 });
   const defendRows = await page.$$eval("table tbody tr", rs => rs.length);
-  check("/defend renders the same 8 rows", defendRows === 8, { defendRows });
+  check("/defend renders the same 7 rows", defendRows === 7, { defendRows });
 
   // Back to Overview for the rest.
   await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
@@ -130,7 +130,7 @@ async function main(): Promise<void> {
     !!muBody && muBody.includes("GEICO") && muBody.includes("NV") && /\+50\.9%/.test(muBody),
     { muBody });
   const pillText = (await muCard.locator('[data-testid="ov-most-urgent-pill"]').textContent())?.trim();
-  check("Most Urgent pill = 'In effect 9w'", pillText === "In effect 9w", { pillText });
+  check("Most Urgent pill = 'In effect 11w'", pillText === "In effect 11w", { pillText });
   const muTier = await muCard.getAttribute("data-tier");
   check("Most Urgent reports tier 2 (collapsed fallback)", muTier === "2", { muTier });
   const muHref = await muCard.getAttribute("href");
@@ -200,18 +200,18 @@ async function main(): Promise<void> {
   const note = caP.locator('[data-testid="carrier-activity-nofilings"]');
   check("no-filings note present", (await note.count()) === 1);
   const noteText = (await note.textContent())?.trim() ?? "";
-  check("no-filings note lists exactly ID, UT, WA",
-    /No recent filings from your carrier in:\s*ID,\s*UT,\s*WA/i.test(noteText), { noteText });
+  check("no-filings note lists exactly ID, MT, UT, WA",
+    /No recent rate-moving filings from your carrier in:\s*ID,\s*MT,\s*UT,\s*WA/i.test(noteText), { noteText });
   // Coverage floor: each of the 5 filed states appears in at least one row.
   const shownStates = new Set(
     await caP.locator('[data-testid="carrier-activity-state"]').allTextContents(),
   );
-  for (const st of ["AZ", "CO", "MT", "NV", "OR"]) {
+  for (const st of ["AZ", "CO", "NV", "OR"]) {
     check(`filed state ${st} is represented (coverage floor)`, shownStates.has(st),
       { st, shown: Array.from(shownStates).sort() });
   }
-  check("no-filings states (ID/UT/WA) are NOT shown as rows",
-    !["ID", "UT", "WA"].some(s => shownStates.has(s)),
+  check("no-filings states (ID/MT/UT/WA) are NOT shown as rows",
+    !["ID", "MT", "UT", "WA"].some(s => shownStates.has(s)),
     { shown: Array.from(shownStates).sort() });
 
   // -- Empty case (captive Encompass AZ — carrier filed nothing) ------------

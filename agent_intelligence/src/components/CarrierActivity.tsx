@@ -115,7 +115,7 @@ export default function CarrierActivity({
           data-testid="carrier-activity-nofilings"
           className="text-11 text-ink-3 px-4 py-2.5 border-t border-hairline border-line bg-surface-2/40"
         >
-          No recent filings from your {carrierWord} in: {noFilingStates.join(", ")}
+          No recent rate-moving filings from your {carrierWord} in: {noFilingStates.join(", ")}
         </div>
       )}
     </div>
