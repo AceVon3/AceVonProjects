@@ -1,10 +1,46 @@
-# Session checkpoint — 2026-06-16  ·  AM Best interim data for IL/OH/VA
+# Session checkpoint — 2026-06-17  ·  AM Best 10-state batch (23 states live)
 
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- **Deployed (agent-intel/master): `d21fe1d`.** Monorepo `cc39a32`. All suites
-  green (7 verify + 13 e2e), tsc clean, prod build 12/12.
+- **Deployed (agent-intel/master): `6a7fdd1`.** Monorepo `733ab68` · scraper
+  `8d17fef`. All gates green (16 import checks + verify_subtype + e2e_methodology),
+  tsc clean, prod build 12/12. Scraped baseline **byte-identical**
+  (`filings_raw 784f77e6`, `filings b6f83d78`).
+
+## Latest iteration — AM Best 10-state batch (2026-06-17)
+
+Added **1,055 AM Best filings** across **10 states** via the SAME `ambest_sourced`
+pipeline as IL/OH/VA (no new machinery). The app now covers **23 states**:
+
+- **998 scraped** (13-brand: AZ CO GA ID MT NM NV OR UT WA) — untouched.
+- **AM Best INTERIM (12, replaceable when scraped):** IL, OH, VA + IN, KY, IA,
+  AR, CT, KS, DE, AK, HI.
+- **AM Best PERMANENT (1, NOT replaceable):** **CA** — non-SERFF (CDI runs its
+  own system). New `AMBEST_PERMANENT_STATES=["CA"]` in both `import_filings.py`
+  and `constants.ts`; CA is **excluded from the replacement sweep** and the
+  methodology page describes it as "AM Best-sourced rather than scraped" (NOT
+  "awaiting scrape"). **NEVER run the replacement-delete for a permanent state.**
+- All AM Best states render **identically to scraped (no UI badge)**; distinct
+  only in backend (`source`, `AMB-` key stripped from UI+API, replacement path).
+
+Per-state rolled (PA/HO): IN 188, KY 139, IA 135, AR 132, CT 113, KS 103, DE 87,
+CA 65, AK 52, HI 41. **B2** clean: prior-approval CA/CT show `eff>disp` dominant
+(no column swap). **CA 0-Defend is real** — its active window is 0%→positive only
+(no approved decreases; Prop-103 regime), not a sign/classification artifact.
+
+**RE-PULL LIST (excluded from this batch — header-only exports, a PULL problem):**
+- **AL** (100% "Disposition Page Data N/A"), **FL** (100% N/A, and ALSO non-SERFF
+  like CA), **LA** (86.8% N/A — only a 14-filing sliver was usable).
+- These exports lack the disposition supplement → no rate-effect % (the core
+  product). Re-export from AM Best WITH disposition data, then inventory + load.
+- **Quality gate for any future AM Best batch:** check the `Disposition Page
+  Data N/A` rate before loading. Loadable states sat at 1.9–43.4% (normal);
+  ~100% = unusable header-only pull.
+
+Deploy this batch went agent_intelligence → agent-intel/master via a **git
+worktree** (root-layout worktree, copy changed files, `push HEAD:master`). The
+older `git subtree push` method below still works; same resulting tree.
 
 ## Latest iteration — AM Best interim data for IL/OH/VA (2026-06-16)
 
