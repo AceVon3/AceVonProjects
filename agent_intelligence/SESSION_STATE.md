@@ -1,12 +1,46 @@
-# Session checkpoint — 2026-06-17  ·  AM Best 10-state batch (23 states live)
+# Session checkpoint — 2026-06-17  ·  AM Best 22-state batch (45 states live)
 
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- **Deployed (agent-intel/master): `6a7fdd1`.** Monorepo `733ab68` · scraper
-  `8d17fef`. All gates green (16 import checks + verify_subtype + e2e_methodology),
-  tsc clean, prod build 12/12. Scraped baseline **byte-identical**
+- **Deployed (agent-intel/master): `3d887c1`.** Monorepo `4cc1c49` · scraper
+  `92660d2`. All gates green (16 import checks + verify_subtype + e2e_methodology
+  live), tsc clean, prod build green. Scraped baseline **byte-identical**
   (`filings_raw 784f77e6`, `filings b6f83d78`).
+
+## Latest iteration — AM Best 22-state batch (2026-06-17)
+
+Added **2,766 AM Best filings** across **22 states** via the SAME `ambest_sourced`
+pipeline (no new machinery). The app now covers **45 states**:
+
+- **998 scraped** (13-brand: AZ CO GA ID MT NM NV OR UT WA) — untouched.
+- **AM Best (35 states):** 32 INTERIM (replaceable when scraped) + 3 PERMANENT.
+  - 22-state batch interim (20): ME MD MA MI MN MS MO NE NH NJ ND OK PA RI SC SD
+    TN VT WV WI. Plus the prior 12 interim (IL OH VA AK AR CT DE HI IA IN KS KY).
+  - **PERMANENT (3): CA, NY, TX** — non-SERFF (CDI/DFS/TDI), never replaceable.
+    `AMBEST_PERMANENT_STATES=["CA","NY","TX"]`, excluded from the replacement
+    sweep, methodology says "AM Best-sourced rather than scraped". NY/TX
+    non-SERFF flagged from regulatory structure, not a SERFF probe (confirm if
+    scraping them is ever considered; not load-blocking). **Conservative-safe
+    tag: when unsure, prefer permanent** (mis-tag scrapeable→permanent = "revisit
+    manually"; mis-tag non-scrapeable→interim = replacement sweep deletes with no
+    replacement, the CA landmine).
+- All AM Best states render **identically to scraped (no UI badge)**.
+
+Per-state rolled topped by TX 249 (permanent), MO 215, MN 188, TN 181, MI 176.
+NJ + NY are **0-Defend, confirmed real** (active windows all 0%→positive, nothing
+mis-classified — DOBI/DFS prior-approval regimes). B2: prior-approval NY/NJ/MA
+show `eff>disp` dominant (correct); MD/TX `eff<disp` = normal file-and-use, not
+a swap.
+
+**DOCUMENTED GAPS (not covered, 5 states):**
+- **AL, FL, LA — re-pull list (FIXABLE).** Header-only exports (no disposition
+  data). Re-export from AM Best WITH the disposition supplement. (FL also non-SERFF.)
+- **NC — STRUCTURAL, NOT fixable via this source, NOT on the re-pull list.** NC
+  rates auto/home through the NC Rate Bureau (NCRB) collectively → AM Best has no
+  per-carrier data (68.1% Data-N/A → 26 thin filings). A re-pull will NOT help;
+  needs a different source (NCRB direct / another vendor) if ever wanted.
+- **WY — no rows** (listed, no filings).
 
 ## Latest iteration — AM Best 10-state batch (2026-06-17)
 
