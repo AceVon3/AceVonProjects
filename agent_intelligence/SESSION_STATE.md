@@ -1,12 +1,39 @@
-# Session checkpoint — 2026-06-17  ·  AM Best 22-state batch (45 states live)
+# Session checkpoint — 2026-06-17  ·  Own-carrier alerts (UI) on 45-state data
 
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- **Deployed (agent-intel/master): `3d887c1`.** Monorepo `4cc1c49` · scraper
-  `92660d2`. All gates green (16 import checks + verify_subtype + e2e_methodology
-  live), tsc clean, prod build green. Scraped baseline **byte-identical**
-  (`filings_raw 784f77e6`, `filings b6f83d78`).
+- **Deployed (agent-intel/master): `5b8d778`** (own-carrier alerts, UI-only).
+  Monorepo `15b4a67`. Scraper unchanged at `a41bde3`. tsc clean, prod build 12/12,
+  all 13 e2e + 5 verify green. Scraped baseline **byte-identical, untouched all
+  session** (`filings_raw 784f77e6`, `filings b6f83d78`).
+
+## Latest iteration — Own-carrier alerts: retention + opportunity (2026-06-17, UI-only)
+
+Surfaced the agent's OWN carrier rate moves as interpreted signals, **distinct
+from the competitor-only Prospect/Defend (unchanged)**:
+- **`src/lib/retention.ts` (new, shared single source):** `computeRetentionRisk`
+  (own-carrier increases **5% or more**) + `computeOpportunity` (own-carrier
+  decreases **2% or more**). Both: 6-month window (`RETENTION_WINDOW_MONTHS`, on
+  `effective_date`, anchored to data as-of — tighter than the 12-month
+  competitive window ON PURPOSE), newest-first. All surfaces call this one helper,
+  so band + dashboard **reconcile by construction**.
+- **My Carriers page:** band gained **Retention risk** (red) + **Opportunity**
+  (green) stats (respect filter chips); a red **Retention Risk section** lists
+  recent own-carrier increases. Plain-word wording ("5% or more, last 6 months") —
+  no math symbols. (5-stat band fits one row at desktop, reflows 3+2 narrow.)
+- **Dashboard:** **"Most Urgent" REMOVED** (`computeMostUrgent` dropped) → replaced
+  by a two-direction **"My Carrier" alert card** (retention + opportunity counts,
+  both → /my-carriers). **"Your Carrier Snapshot" table REMOVED** (`CarrierActivity.tsx`
+  deleted, `computeCarrierActivity` dropped). Recent Changes unchanged.
+- **Stale test fixed:** `e2e_setup` CA→WY — CA became covered/permanent in the
+  batch-13 load, so "California is non-covered" had been silently stale.
+
+**Two parked product questions (resolved/deferred):**
+- (a) own-carrier-increase-as-Defend was deliberately NOT folded into competitive
+  Defend — lenses kept distinct (resolved by the My Carrier card).
+- (b) Opportunity shipped as a band-stat only, **no full section** like Retention
+  has. Revisit if the asymmetry ever feels wrong (would word it "down 2% or more").
 
 ## Latest iteration — AM Best 22-state batch (2026-06-17)
 
