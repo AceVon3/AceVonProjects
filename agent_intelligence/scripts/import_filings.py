@@ -44,10 +44,26 @@ PROJECT_DIR = SCRIPT_DIR.parent
 # scrape — they are AM Best-sourced for good, not "interim awaiting scrape". The
 # replacement path (DELETE ... source='ambest_sourced') is state-scoped and must
 # never be run for a permanent state. See docs/AMBEST_INTERIM.md.
-AMBEST_PERMANENT_STATES = ["CA"]
+# PERMANENT (non-SERFF, never replaceable): CA (CDI), NY (DFS), TX (TDI) — each
+# runs its own filing system, not SERFF Public Access. Conservative-safe tag:
+# mis-tagging a scrapeable state permanent just means "revisit manually"; mis-
+# tagging a non-scrapeable state interim lets the replacement sweep delete it
+# with no replacement (the CA landmine). NY/TX non-SERFF status is from
+# regulatory structure, not a SERFF probe (not probed during the quiet period) —
+# confirm if scraping NY/TX is ever considered. NOT load-blocking.
+AMBEST_PERMANENT_STATES = ["CA", "NY", "TX"]
 AMBEST_STATES = ["IL", "OH", "VA",
                  # 10-state batch (2026-06-17). 9 interim + CA (permanent).
-                 "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY"]
+                 "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY",
+                 # 22-state batch (2026-06-17): 20 interim + NY/TX permanent.
+                 # NC EXCLUDED: 68.1% Data-N/A → only 26 thin filings, because
+                 # NC rates auto/home through the NC Rate Bureau (collective, no
+                 # per-carrier data in AM Best). STRUCTURAL, not a fixable pull —
+                 # a re-pull won't help; NC needs a different source (NCRB direct
+                 # or another vendor), so it is NOT on any re-pull list.
+                 "ME", "MD", "MA", "MI", "MN", "MS", "MO", "NE", "NH", "NJ",
+                 "NY", "ND", "OK", "PA", "RI", "SC", "SD", "TN", "TX", "VT",
+                 "WV", "WI"]
 AMBEST_CSV_DIR = PROJECT_DIR.parent / "Insurance Rate Data Scraper" / "tools"
 AMBEST_WINDOW = (date(2024, 1, 1), date(2026, 4, 17))  # match the scraped data span
 AMBEST_LINE = {"PPA": "Personal Auto", "HO": "Homeowners"}

@@ -47,6 +47,10 @@ export const COVERED_STATES = [
   // 10-state AM Best batch (2026-06-17). CA is PERMANENT (non-SERFF); the rest
   // are interim. See AMBEST_PERMANENT_STATES below.
   "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY",
+  // 22-state AM Best batch (2026-06-17): 20 interim + NY/TX permanent (non-SERFF).
+  // NC excluded (structural NCRB Rate-Bureau gap — not fixable via AM Best).
+  "ME", "MD", "MA", "MI", "MN", "MS", "MO", "NE", "NH", "NJ",
+  "NY", "ND", "OK", "PA", "RI", "SC", "SD", "TN", "TX", "VT", "WV", "WI",
 ] as const;
 
 export type CoveredState = (typeof COVERED_STATES)[number];
@@ -55,13 +59,17 @@ export type CoveredState = (typeof COVERED_STATES)[number];
 // scrape). Lets coverage-aware UI mark these honestly without re-deriving from
 // states.ts. Must stay in sync with AMBEST_STATES in scripts/import_filings.py.
 export const AMBEST_STATES = ["IL", "OH", "VA",
-  "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY"] as const;
+  "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY",
+  "ME", "MD", "MA", "MI", "MN", "MS", "MO", "NE", "NH", "NJ",
+  "NY", "ND", "OK", "PA", "RI", "SC", "SD", "TN", "TX", "VT", "WV", "WI"] as const;
 
 // The subset of AMBEST_STATES that are PERMANENT, not interim: they are not on
-// SERFF Public Access (the state runs its own non-SERFF system, e.g. CA/CDI), so
-// they can never be replaced by a normal scrape. They must NOT be presented as
-// "interim / awaiting scrape" and must NEVER be swept by the replacement path.
-export const AMBEST_PERMANENT_STATES = ["CA"] as const;
+// SERFF Public Access (the state runs its own non-SERFF system — CA/CDI, NY/DFS,
+// TX/TDI), so they can never be replaced by a normal scrape. They must NOT be
+// presented as "interim / awaiting scrape" and must NEVER be swept by the
+// replacement path. (NY/TX non-SERFF status is from regulatory structure, not a
+// SERFF probe — confirm if scraping them is ever considered.)
+export const AMBEST_PERMANENT_STATES = ["CA", "NY", "TX"] as const;
 
 // Window dropdown options → SQLite date('now', ...) modifier.
 export const WINDOW_MODIFIERS = {

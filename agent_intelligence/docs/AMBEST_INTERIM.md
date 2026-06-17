@@ -8,19 +8,33 @@ flavors, both loaded by the identical pipeline:
   cleanly **replaceable** when scraped. `AMBEST_STATES` minus `AMBEST_PERMANENT_STATES`.
 - **Permanent** — **not** on SERFF Public Access (the state runs its own non-SERFF
   system, e.g. CA / CDI). They can **never** be replaced by a normal scrape, so
-  they are AM Best-sourced for good. `AMBEST_PERMANENT_STATES` (currently `["CA"]`).
-  They must NOT be presented as "interim / awaiting scrape" and must NEVER be
-  swept by the replacement path below.
+  they are AM Best-sourced for good. `AMBEST_PERMANENT_STATES` (currently
+  `["CA", "NY", "TX"]`). They must NOT be presented as "interim / awaiting scrape"
+  and must NEVER be swept by the replacement path below.
 
-Coverage:
+Coverage (35 AM Best states):
 - IL, OH, VA — interim (built 2026-06-16).
 - AK, AR, CT, DE, HI, IA, IN, KS, KY — interim (10-state batch, 2026-06-17).
-- **CA — permanent** (non-SERFF; same batch).
+- ME, MD, MA, MI, MN, MS, MO, NE, NH, NJ, ND, OK, PA, RI, SC, SD, TN, VT, WV, WI
+  — interim (22-state batch, 2026-06-17).
+- **CA, NY, TX — permanent** (non-SERFF: CA/CDI, NY/DFS, TX/TDI). NY/TX flagged
+  from regulatory structure, not a SERFF probe — confirm if scraping them is ever
+  considered (not load-blocking).
 
-The other 9 in the 2026-06-17 batch are "interim" on the *assumption* they're
-SERFF-PA; that has **not** been portal-probed yet. AL/FL/LA were excluded from
-this batch — their AM Best exports came back without disposition data (header-only,
-no rate effects) and are pending a re-pull.
+Interim states are "interim" on the *assumption* they're SERFF-PA; that has
+**not** been portal-probed (quiet period). Conservative-safe tagging: when
+unsure, prefer permanent — mis-tagging a scrapeable state permanent only means
+"revisit manually"; mis-tagging a non-scrapeable state interim lets the
+replacement sweep delete it with no replacement (the CA landmine).
+
+**Excluded — do not re-attempt from this source:**
+- AL, FL, LA — header-only exports (no disposition data). A re-pull WITH the
+  disposition supplement is the fix. (FL is also non-SERFF.)
+- **NC — STRUCTURAL, not fixable here.** NC rates auto/home through the NC Rate
+  Bureau (NCRB) collectively, so AM Best has no per-carrier disposition data
+  (68.1% Data-N/A → only 26 thin filings). A re-pull will NOT help. NC is **not**
+  on any re-pull list; if it ever matters it needs a different source (NCRB
+  direct or another vendor), not this AM Best export.
 
 ## How it flows
 1. **Reports → text** — `Insurance Rate Data Scraper/Ambest Reports/*.pdf`
