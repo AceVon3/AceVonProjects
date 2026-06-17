@@ -3,17 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import CarrierActivity from "@/components/CarrierActivity";
 import OverviewCards from "@/components/OverviewCards";
 import PageSkeleton from "@/components/PageSkeleton";
 import RecentChanges from "@/components/RecentChanges";
 import type { Filing } from "@/lib/filings";
-import {
-  computeCarrierActivity,
-  computeMostUrgent,
-  computeRecentChanges,
-} from "@/lib/overview";
+import { computeRecentChanges } from "@/lib/overview";
 import { AgentProfile, loadProfile } from "@/lib/profile";
+import { computeOpportunity, computeRetentionRisk } from "@/lib/retention";
 
 type Phase = "loading" | "ready" | "error";
 
@@ -82,19 +78,21 @@ export default function OverviewPage(): React.JSX.Element {
       });
   }, [router]);
 
-  const mostUrgent = useMemo(() => {
-    if (!asOf) return null;
-    return computeMostUrgent(prospect, defend, asOf);
-  }, [prospect, defend, asOf]);
-
   const recentChanges = useMemo(() => {
     if (!asOf) return [];
     return computeRecentChanges(prospect, defend, asOf);
   }, [prospect, defend, asOf]);
 
-  const carrierActivity = useMemo(
-    () => computeCarrierActivity(myCarriers, profile?.licensed_states ?? []),
-    [myCarriers, profile],
+  // Own-carrier alerts for the "My Carrier" card — both directions over the SAME
+  // full my-carriers set, via the same shared helpers the /my-carriers tab uses,
+  // so the dashboard counts reconcile with that tab by construction.
+  const retentionRisk = useMemo(
+    () => computeRetentionRisk(myCarriers, asOf),
+    [myCarriers, asOf],
+  );
+  const opportunity = useMemo(
+    () => computeOpportunity(myCarriers, asOf),
+    [myCarriers, asOf],
   );
 
   const subtitle = useMemo(() => {
@@ -146,19 +144,11 @@ export default function OverviewPage(): React.JSX.Element {
         <OverviewCards
           prospectCount={prospect.length}
           defendCount={defend.length}
-          mostUrgent={mostUrgent}
+          retentionCount={retentionRisk.count}
+          opportunityCount={opportunity.count}
           employeeStatesCount={profile!.employee_states.length}
           todayLabel={todayShort()}
         />
-
-        <div className="mt-5">
-          <CarrierActivity
-            agentType={profile!.agent_type}
-            brands={profile!.authorized_brands}
-            rows={carrierActivity.rows}
-            noFilingStates={carrierActivity.noFilingStates}
-          />
-        </div>
 
         <RecentChanges rows={recentChanges} />
       </div>

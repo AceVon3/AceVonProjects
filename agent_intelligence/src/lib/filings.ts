@@ -189,7 +189,8 @@ export function getDefendFilings(
 // they're declared-neutral refiles/rule filings (SERFF "Rate Change Type:
 // Neutral") that move no rate, so they're noise on a "what is my book doing"
 // surface. This suppression is scoped to the unfiltered own-carrier surfaces
-// (this query feeds BOTH /my-carriers and the Overview carrier-activity card).
+// (this query feeds BOTH /my-carriers and the Overview "My Carrier" alert card's
+// retention/opportunity counts).
 // Prospect/Defend already exclude 0% via their +5%/-2% thresholds; Positioning
 // uses its own query (fetchCellFilings) and is intentionally NOT touched.
 // Only EXACTLY 0 is dropped — a +0.4% or +0.02% move is a real (if small) rate

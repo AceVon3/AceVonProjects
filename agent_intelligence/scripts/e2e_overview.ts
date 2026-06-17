@@ -3,9 +3,9 @@
 // Captive State Farm, AZ + NV:
 //   - Prospect card count = 12 (matches /prospect)
 //   - Defend card count   = 7  (matches /defend)
-//   - Most Urgent card    = GEICO +50.9% in NV, pill "In effect 11w",
-//                           card uses the urgent (red-border) style and
-//                           links to /prospect (since impact > 0)
+//   - My Carrier card     = two own-carrier counts (retention risk /
+//                           opportunity), both linking to /my-carriers; the
+//                           retention count reconciles with the /my-carriers band
 //   - Compliance card     = "{n} states tracked" where n = employee_states
 //                           length; "Last checked …" line present; no
 //                           wording that implies change-detection ("new
@@ -36,21 +36,6 @@ const CAPTIVE_ENCOMPASS_AZ = {
   agent_type: "captive",
   authorized_brands: ["Encompass"],
   licensed_states: ["AZ"],
-  full_name: "Test Captive",
-  zip_code: "99206",
-  home_state: "WA",
-  employee_count: 5,
-  employee_states: ["WA"],
-  created_at: "2026-05-28T00:00:00.000Z",
-};
-
-// A captive selling all 8 states whose carrier filed in only 5 of them —
-// exercises the per-state coverage floor AND the "No recent filings … in:
-// {states}" note (Progressive has no filings in ID, UT, WA).
-const CAPTIVE_PROGRESSIVE_8 = {
-  agent_type: "captive",
-  authorized_brands: ["Progressive"],
-  licensed_states: ["AZ", "CO", "ID", "MT", "NV", "OR", "UT", "WA"],
   full_name: "Test Captive",
   zip_code: "99206",
   home_state: "WA",
@@ -121,24 +106,31 @@ async function main(): Promise<void> {
   await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
   await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
 
-  // -- Most Urgent ----------------------------------------------------------
-  const muCard = page.locator('[data-testid="ov-card-most-urgent"]');
-  check("Most Urgent card is the non-empty variant",
-    (await muCard.count()) === 1);
-  const muBody = (await muCard.locator('[data-testid="ov-most-urgent-body"]').textContent())?.trim();
-  check("Most Urgent body shows 'GEICO' + impact + 'in NV'",
-    !!muBody && muBody.includes("GEICO") && muBody.includes("NV") && /\+50\.9%/.test(muBody),
-    { muBody });
-  const pillText = (await muCard.locator('[data-testid="ov-most-urgent-pill"]').textContent())?.trim();
-  check("Most Urgent pill = 'In effect 11w'", pillText === "In effect 11w", { pillText });
-  const muTier = await muCard.getAttribute("data-tier");
-  check("Most Urgent reports tier 2 (collapsed fallback)", muTier === "2", { muTier });
-  const muHref = await muCard.getAttribute("href");
-  check("Most Urgent links to /prospect (impact > 0)", muHref === "/prospect", { muHref });
+  // -- My Carrier alert card (own-carrier, two directions) ------------------
+  const mcCard = page.locator('[data-testid="ov-card-my-carrier"]');
+  check("My Carrier card present", (await mcCard.count()) === 1);
+  const retText = (await mcCard.locator('[data-testid="ov-retention-count"]').textContent())?.trim() ?? "";
+  const oppText = (await mcCard.locator('[data-testid="ov-opportunity-count"]').textContent())?.trim() ?? "";
+  check("retention count renders as a non-negative integer",
+    /^\d+$/.test(retText), { retText });
+  check("opportunity count renders as a non-negative integer (0 is fine/honest)",
+    /^\d+$/.test(oppText), { oppText });
+  check("card labels both directions", /retention risk alert/i.test(await mcCard.textContent() ?? "")
+    && /opportunity alert/i.test(await mcCard.textContent() ?? ""));
+  check("retention link → /my-carriers",
+    (await mcCard.locator('[data-testid="ov-retention-link"]').getAttribute("href")) === "/my-carriers");
+  check("opportunity link → /my-carriers",
+    (await mcCard.locator('[data-testid="ov-opportunity-link"]').getAttribute("href")) === "/my-carriers");
 
-  // The card uses the accented (2px red) border per spec.
-  const muBorder = await muCard.evaluate(el => window.getComputedStyle(el as HTMLElement).borderTopWidth);
-  check("Most Urgent card has 2px border (accented)", muBorder === "2px", { muBorder });
+  // Reconciliation: the dashboard retention count equals the /my-carriers band.
+  await page.goto(`${BASE}/my-carriers`, { waitUntil: "networkidle" });
+  await page.waitForSelector('[data-testid="header-count"]', { timeout: 5000 });
+  const bandRet = (await page.locator('[data-testid="retention-count"]').textContent())?.trim() ?? "";
+  check("dashboard retention count reconciles with /my-carriers band",
+    retText === "0" ? /None/i.test(bandRet) : bandRet.startsWith(retText),
+    { dashboard: retText, band: bandRet });
+  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+  await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
 
   // -- Compliance card ------------------------------------------------------
   const compCard = page.locator('[data-testid="ov-card-compliance"]');
@@ -163,73 +155,18 @@ async function main(): Promise<void> {
     !!firstFeed && /Travelers/.test(firstFeed) && /defend/.test(firstFeed),
     { firstFeed });
 
-  // -- "Your carrier's activity" recent-filings slice (captive SF AZ+NV) ----
-  // Floor = 2 (AZ + NV) + 3 extras (CARRIER_ACTIVITY_EXTRA) = 5 rows; both
-  // states have filings, so no "no-filings" note here.
-  const ca = page.locator('[data-testid="carrier-activity"]');
-  check("carrier-activity card present", (await ca.count()) === 1);
-  const caTitle = (await ca.locator("h3").textContent())?.trim() ?? "";
-  check("captive title names the carrier ('Your carrier (State Farm) — recent filings')",
-    /Your carrier \(State Farm\) — recent filings/i.test(caTitle), { caTitle });
-  const caItems = await ca.locator('[data-testid="carrier-activity-item"]').count();
-  check("carrier-activity shows 5 filing rows (floor 2 + 3 extras)",
-    caItems === 5, { caItems });
-  // Each row carries its own filing detail: line, signed change, dated year.
-  const firstRow = (await ca.locator('[data-testid="carrier-activity-item"]').first().textContent()) ?? "";
-  check("row shows a line of business", /Personal Auto|Homeowners/.test(firstRow), { firstRow });
-  check("row shows a signed rate change", /[+−]\d+\.\d%/.test(firstRow), { firstRow });
-  const firstEff = (await ca.locator('[data-testid="carrier-activity-eff"]').first().textContent())?.trim() ?? "";
-  check("row shows an effective date with year",
-    /^[A-Z][a-z]{2} \d{1,2}, 20\d{2}$/.test(firstEff), { firstEff });
-  // "See all" link to the full My Carrier table.
-  const seeAll = ca.locator('[data-testid="carrier-activity-seeall"]');
-  check("'See all' link present", (await seeAll.count()) === 1);
-  check("'See all' links to /my-carriers",
-    (await seeAll.getAttribute("href")) === "/my-carriers", { href: await seeAll.getAttribute("href") });
-  // Both AZ and NV filed → no no-filings note.
-  check("no 'no-filings' note when every licensed state has filings",
-    (await ca.locator('[data-testid="carrier-activity-nofilings"]').count()) === 0);
-
-  // -- Coverage floor + no-filings note (captive Progressive, all 8) --------
-  // Progressive filed in 5 of 8 states; ID/UT/WA must be noted, not dropped,
-  // and the 5 filed states must each still be represented by ≥1 row.
-  console.log("\nCoverage case: captive Progressive, all 8 states");
-  await setProfileAndOpen(page, CAPTIVE_PROGRESSIVE_8, "/");
-  await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
-  const caP = page.locator('[data-testid="carrier-activity"]');
-  const note = caP.locator('[data-testid="carrier-activity-nofilings"]');
-  check("no-filings note present", (await note.count()) === 1);
-  const noteText = (await note.textContent())?.trim() ?? "";
-  check("no-filings note lists exactly ID, MT, UT, WA",
-    /No recent rate-moving filings from your carrier in:\s*ID,\s*MT,\s*UT,\s*WA/i.test(noteText), { noteText });
-  // Coverage floor: each of the 5 filed states appears in at least one row.
-  const shownStates = new Set(
-    await caP.locator('[data-testid="carrier-activity-state"]').allTextContents(),
-  );
-  for (const st of ["AZ", "CO", "NV", "OR"]) {
-    check(`filed state ${st} is represented (coverage floor)`, shownStates.has(st),
-      { st, shown: Array.from(shownStates).sort() });
-  }
-  check("no-filings states (ID/MT/UT/WA) are NOT shown as rows",
-    !["ID", "MT", "UT", "WA"].some(s => shownStates.has(s)),
-    { shown: Array.from(shownStates).sort() });
-
-  // -- Empty case (captive Encompass AZ — carrier filed nothing) ------------
-  console.log("\nEmpty case: captive Encompass in AZ");
+  // -- Opportunity-is-often-0 case (own-carrier decreases are rare) ----------
+  // Captive Encompass in AZ has little/no own-carrier movement — confirms both
+  // counts still render as clean integers (a 0 is honest, not broken).
+  console.log("\nSparse case: captive Encompass in AZ (expect clean 0s)");
   await setProfileAndOpen(page, CAPTIVE_ENCOMPASS_AZ, "/");
   await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
-  const ca2 = page.locator('[data-testid="carrier-activity"]');
-  check("carrier-activity card still present (not omitted)", (await ca2.count()) === 1);
-  const empty = ca2.locator('[data-testid="carrier-activity-empty"]');
-  check("plain empty message shown (no empty element)", (await empty.count()) === 1);
-  check("empty message names the carrier ('No recent Encompass filings…')",
-    /No recent Encompass filings in your states/i.test((await empty.textContent()) ?? ""));
-  check("no activity item rows in the empty case",
-    (await ca2.locator('[data-testid="carrier-activity-item"]').count()) === 0);
-  // With zero rows the empty message covers it; the per-state no-filings note
-  // is suppressed (it complements a populated list, not the empty state).
-  check("no-filings note suppressed in the all-empty case",
-    (await ca2.locator('[data-testid="carrier-activity-nofilings"]').count()) === 0);
+  const mc2 = page.locator('[data-testid="ov-card-my-carrier"]');
+  check("My Carrier card present in sparse case", (await mc2.count()) === 1);
+  const ret2 = (await mc2.locator('[data-testid="ov-retention-count"]').textContent())?.trim() ?? "";
+  const opp2 = (await mc2.locator('[data-testid="ov-opportunity-count"]').textContent())?.trim() ?? "";
+  check("both counts are clean integers in the sparse case",
+    /^\d+$/.test(ret2) && /^\d+$/.test(opp2), { ret2, opp2 });
 
   await browser.close();
 

@@ -10,7 +10,9 @@ import ScopeStrip from "@/components/ScopeStrip";
 import type { Filing } from "@/lib/filings";
 import { Coverage, coverageGapNote } from "@/lib/coverage";
 import { FilterState, applyFilters, defaultFilters } from "@/lib/filters";
+import { formatEffectiveDate, formatRateImpact } from "@/lib/format";
 import { AgentProfile, loadProfile } from "@/lib/profile";
+import { RETENTION_THRESHOLD, RETENTION_WINDOW_MONTHS, computeOpportunity, computeRetentionRisk } from "@/lib/retention";
 
 type Phase = "loading" | "ready" | "error";
 
@@ -107,6 +109,23 @@ export default function MyCarriersPage(): React.JSX.Element {
       largest,
     };
   }, [visibleFilings, profile]);
+
+  // Retention-risk signal — the agent's OWN carrier(s) raising rates >= +5% in
+  // the FILTERED set (respects the chips, like the other band stats). Derived
+  // client-side from the already-fetched own-carrier filings via the shared
+  // computeRetentionRisk, so it reconciles with the dashboard's carrier card.
+  const retention = useMemo(
+    () => computeRetentionRisk(visibleFilings, asOf),
+    [visibleFilings, asOf],
+  );
+
+  // Opportunity signal — own-carrier DECREASES (down 2% or more) in the FILTERED
+  // set, same window/source as retention. Reconciles with the dashboard "My
+  // Carrier" card's opportunity count via the shared computeOpportunity.
+  const opportunity = useMemo(
+    () => computeOpportunity(visibleFilings, asOf),
+    [visibleFilings, asOf],
+  );
 
   if (phase === "loading" || !profile || !filters) {
     return <PageSkeleton variant="table" />;
@@ -206,7 +225,96 @@ export default function MyCarriersPage(): React.JSX.Element {
                 {headerCard.largest.brand} in {headerCard.largest.state}
               </div>
             </div>
+            <div className="w-px self-stretch bg-line-2 hidden sm:block" />
+            <div>
+              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
+                Retention risk
+              </div>
+              {retention.count > 0 ? (
+                <div className="text-14 text-ink" data-testid="retention-count">
+                  <span className="text-22 font-medium text-red-text align-baseline">
+                    {retention.count}
+                  </span>{" "}
+                  book{retention.count === 1 ? "" : "s"}
+                  {retention.largest && (
+                    <span className="block text-11 text-ink-3">
+                      largest {formatRateImpact(retention.largest.overall_rate_impact)}{" "}
+                      {retention.largest.brand} in {retention.largest.state}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="text-14 text-ink-3" data-testid="retention-count">None</div>
+              )}
+            </div>
+            <div className="w-px self-stretch bg-line-2 hidden sm:block" />
+            <div>
+              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
+                Opportunity
+              </div>
+              {opportunity.count > 0 ? (
+                <div className="text-14 text-ink" data-testid="opportunity-count">
+                  <span className="text-22 font-medium text-green-text align-baseline">
+                    {opportunity.count}
+                  </span>{" "}
+                  book{opportunity.count === 1 ? "" : "s"}
+                  {opportunity.largest && (
+                    <span className="block text-11 text-ink-3">
+                      largest {formatRateImpact(opportunity.largest.overall_rate_impact)}{" "}
+                      {opportunity.largest.brand} in {opportunity.largest.state}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="text-14 text-ink-3" data-testid="opportunity-count">None</div>
+              )}
+            </div>
           </div>
+        )}
+
+        {/* Retention Risk — interpreted signal: the agent's OWN carrier(s)
+            raising rates >= +5% in the filtered set. The My-Carrier analog of
+            Defend (own book vulnerable), kept separate from the competitive
+            Prospect/Defend pages. The full all-moves table stays below. */}
+        {retention.count > 0 && (
+          <section
+            data-testid="retention-section"
+            className="rounded-lg border border-hairline border-line overflow-hidden mb-4"
+          >
+            <div className="bg-red-fill border-b border-hairline border-line px-4 py-2.5">
+              <h2 className="text-12 font-medium m-0 text-ink">
+                Retention risk — your recent rate increases ({RETENTION_THRESHOLD}% or
+                more, last {RETENTION_WINDOW_MONTHS} months)
+              </h2>
+              <p className="text-11 m-0 mt-0.5 text-ink-2">
+                Your own {isCaptive ? "carrier" : "carriers"} raised rates here
+                recently — these books are the most likely to shop now. Newest first.
+              </p>
+            </div>
+            <ul className="m-0 list-none p-0">
+              {retention.filings.map((f, i) => (
+                <li
+                  key={f.id}
+                  data-testid="retention-item"
+                  className={`flex flex-wrap items-baseline gap-x-3 px-4 py-2 text-12 ${
+                    i === retention.filings.length - 1
+                      ? ""
+                      : "border-b border-hairline border-line"
+                  }`}
+                >
+                  <span className="font-medium text-red-text w-14 shrink-0">
+                    {formatRateImpact(f.overall_rate_impact)}
+                  </span>
+                  <span className="text-ink font-medium">{f.brand}</span>
+                  <span className="text-ink-2">{f.line_of_business}</span>
+                  <span className="text-ink-2">{f.state}</span>
+                  <span className="text-ink-3">
+                    eff {formatEffectiveDate(f.effective_date)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
 
         {/* Honest accounting for the rate-neutral suppression: explains why the

@@ -83,10 +83,12 @@ async function main(): Promise<void> {
   }
 
   // Tamper check: a non-data_coverage state in the LICENSED list should be
-  // disabled. Try California — should not become selectable.
-  const caBtn = licensedPanel.getByRole("checkbox", { name: /California/ }).first();
-  const caDisabled = await caBtn.isDisabled();
-  check("licensed list: California (non-covered) is disabled", caDisabled);
+  // disabled. Use Wyoming — genuinely non-covered (no filings). NOTE: California
+  // was the old example, but CA became a covered state (permanent AM Best) in the
+  // 2026-06-17 expansion, so it is now selectable — not a valid "non-covered" pick.
+  const wyBtn = licensedPanel.getByRole("checkbox", { name: /Wyoming/ }).first();
+  const wyDisabled = await wyBtn.isDisabled();
+  check("licensed list: Wyoming (non-covered) is disabled", wyDisabled);
 
   await page.getByRole("button", { name: "Save changes" }).click();
 
@@ -125,7 +127,7 @@ async function main(): Promise<void> {
   const overviewHeading = (await page.locator('[data-testid="page-title"]').textContent())?.trim();
   check("Overview heading present", overviewHeading === "Overview", { overviewHeading });
   const cardCount = await page.locator(
-    '[data-testid="ov-card-prospect"], [data-testid="ov-card-defend"], [data-testid="ov-card-most-urgent"], [data-testid="ov-card-most-urgent-empty"], [data-testid="ov-card-compliance"]',
+    '[data-testid="ov-card-prospect"], [data-testid="ov-card-defend"], [data-testid="ov-card-my-carrier"], [data-testid="ov-card-compliance"]',
   ).count();
   check("Overview renders all four cards", cardCount === 4, { cardCount });
 

@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 
-import { formatRateImpact } from "@/lib/format";
-import type { MostUrgent } from "@/lib/overview";
-
 type Props = {
   prospectCount: number;
   defendCount: number;
-  mostUrgent: MostUrgent | null;
+  // Own-carrier alerts (last 6 months) — see src/lib/retention.ts.
+  retentionCount: number;   // own-carrier INCREASES >= +5% (retention risk)
+  opportunityCount: number; // own-carrier DECREASES <= -2% (opportunity)
   employeeStatesCount: number;
   // Today's date for the Compliance card's "Last checked …". v1 has no
   // snapshot pipeline, so this is just the page-load date (spec line 633).
@@ -17,13 +16,12 @@ type Props = {
 
 const CARD =
   "border border-hairline border-line rounded-xl p-4 bg-surface";
-const CARD_URGENT =
-  "border-2 border-red-text rounded-xl p-4 bg-surface";
 
 export default function OverviewCards({
   prospectCount,
   defendCount,
-  mostUrgent,
+  retentionCount,
+  opportunityCount,
   employeeStatesCount,
   todayLabel,
 }: Props): React.JSX.Element {
@@ -64,48 +62,49 @@ export default function OverviewCards({
         </Link>
       </div>
 
-      {/* Most Urgent (or fallback) */}
-      {mostUrgent ? (
+      {/* My Carrier — two-direction own-carrier alert summary (last 6 months).
+          Retention risk = your carrier RAISED (>= +5%); Opportunity = your
+          carrier CUT (<= -2%). Both reconcile with the /my-carriers tab via the
+          shared retention.ts helpers. Replaces the old competitor-only "Most
+          urgent" card. */}
+      <div className={CARD} data-testid="ov-card-my-carrier">
+        <div className="flex items-start gap-2.5 mb-2.5">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-surface-2">
+            <i className="ti ti-arrows-left-right text-17 text-ink-2" />
+          </div>
+          <div className="text-13 text-ink-2 pt-0.5">My Carrier</div>
+        </div>
         <Link
-          href={mostUrgent.classification === "prospect" ? "/prospect" : "/defend"}
-          className={`${CARD_URGENT} no-underline block`}
-          data-testid="ov-card-most-urgent"
-          data-tier={mostUrgent.tier}
+          href="/my-carriers"
+          data-testid="ov-retention-link"
+          className="flex items-baseline gap-2 mb-1.5 no-underline group"
         >
-          <div className="flex items-start gap-2.5 mb-2.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-red-fill">
-              <i className="ti ti-alert-triangle text-17 text-red-text" />
-            </div>
-            <div className="text-13 text-ink-2 pt-0.5">Most urgent</div>
-          </div>
-          <div
-            className="text-15 font-medium mb-2 text-ink"
-            data-testid="ov-most-urgent-body"
-          >
-            {mostUrgent.filing.brand}{" "}
-            <span className="text-red-text">
-              {formatRateImpact(mostUrgent.filing.overall_rate_impact)}
-            </span>{" "}
-            in {mostUrgent.filing.state}
-          </div>
           <span
-            className="inline-block bg-red-fill text-red-text px-2 py-0.5 text-11 rounded-full leading-[1.4] font-medium"
-            data-testid="ov-most-urgent-pill"
+            className={`text-22 font-medium ${retentionCount > 0 ? "text-red-text" : "text-ink-3"}`}
+            data-testid="ov-retention-count"
           >
-            {mostUrgent.pillText}
+            {retentionCount}
+          </span>
+          <span className="text-12 text-ink-2 group-hover:underline">
+            retention risk alert{retentionCount === 1 ? "" : "s"}
           </span>
         </Link>
-      ) : (
-        <div className={CARD} data-testid="ov-card-most-urgent-empty">
-          <div className="flex items-start gap-2.5 mb-2.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-surface-2">
-              <i className="ti ti-alert-triangle text-17 text-ink-3" />
-            </div>
-            <div className="text-13 text-ink-2 pt-0.5">Most urgent</div>
-          </div>
-          <div className="text-13 text-ink-3">Nothing urgent right now.</div>
-        </div>
-      )}
+        <Link
+          href="/my-carriers"
+          data-testid="ov-opportunity-link"
+          className="flex items-baseline gap-2 no-underline group"
+        >
+          <span
+            className={`text-22 font-medium ${opportunityCount > 0 ? "text-green-text" : "text-ink-3"}`}
+            data-testid="ov-opportunity-count"
+          >
+            {opportunityCount}
+          </span>
+          <span className="text-12 text-ink-2 group-hover:underline">
+            opportunity alert{opportunityCount === 1 ? "" : "s"}
+          </span>
+        </Link>
+      </div>
 
       {/* Compliance — lightweight v1 (no change-detection claims) */}
       <div className={CARD} data-testid="ov-card-compliance">
