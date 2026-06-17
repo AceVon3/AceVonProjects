@@ -1,12 +1,31 @@
-# Session checkpoint — 2026-06-16  ·  GA+NM data expansion, 13 brands, neutral suppression
+# Session checkpoint — 2026-06-16  ·  AM Best interim data for IL/OH/VA
 
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- Monorepo: `cd86a5c feat(data): GA+NM expansion, 13 brands, coverage-aware +
-  rate-neutral suppression` (+ this `docs(state)` checkpoint).
-- **Deployed (agent-intel/master): `d3470cb`.** All suites green
-  (7 verify + 13 e2e), prod build 12/12.
+- **Deployed (agent-intel/master): `d21fe1d`.** Monorepo `cc39a32`. All suites
+  green (7 verify + 13 e2e), tsc clean, prod build 12/12.
+
+## Latest iteration — AM Best interim data for IL/OH/VA (2026-06-16)
+
+Added **596 AM Best interim filings** (IL 244, OH 158, VA 194) alongside the
+**998 scraped** (13-brand, 10 states). IL/OH/VA render **identically to scraped
+states — NO UI marker**. The distinction is **backend-only**:
+- `source` column (`'serff_scraped'` | `'ambest_sourced'`) on both tables.
+- Backend-only surrogate key `AMB-<ST>-<line>-md5(block_id|brand)` (block-stable,
+  idempotent, collision-proof) — **stripped from UI AND API payload** via
+  `toClientFiling` (relabeled "AM Best"; raw key never leaves the server).
+- `build_ambest_df()` in `import_filings.py`: dedup → window-filter → premium-
+  weighted rollup → fail-loud mixed-source guard. Source-aware `verify()` keeps
+  the scraped baseline **byte-identical** (1,616/998/293, +93.70% anchor).
+- Coverage: IL/OH/VA in `COVERED_STATES` + `AMBEST_STATES` + `states.ts
+  source:'ambest'`. Methodology validation table stays **10 cross-checked**;
+  interim shown separately (37 not covered).
+- **Design + replacement path: `docs/AMBEST_INTERIM.md`.** Replace when scraped:
+  `DELETE … WHERE source='ambest_sourced'` → import scrape → re-rollup.
+- Cross-cutting state (WAF/quiet period/scraper) lives in the scraper repo's
+  `output/resume_state.md`. SERFF quiet period active until **2026-06-21**;
+  the June-21 cold-capacity read decides whether to upgrade IL/OH/VA interim→real.
 
 ## Latest iteration — GA+NM data expansion + 13 brands + rate-neutral suppression (2026-06-16)
 

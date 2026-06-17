@@ -1,4 +1,64 @@
-# Resume state — 2026-06-15 close-out (VA mid-collection checkpoint)
+# Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
+
+## 🌍 CURRENT STATE OF THE WORLD (2026-06-16)
+
+**Landed & pushed (all HEAD == origin):**
+- agent-intel/master **`d21fe1d`** (Vercel auto-deploys) · insurancewebscraper/master
+  **`e9f7c78`** · monorepo **`cc39a32`**.
+- Gates green: 13 e2e + 7 verify, tsc clean, prod build 12 routes. Scraped
+  baseline **byte-identical** (`filings_raw c59633a4`, `filings 0c587e9b`).
+
+**1. APP STATUS — live with full coverage.**
+- **998 scraped filings** (13-brand roster, 10 states AZ/CO/GA/ID/MT/NM/NV/OR/UT/WA)
+  **+ 596 AM Best interim** (IL 244, OH 158, VA 194).
+- IL/OH/VA render **identically to scraped** (no UI badge). Distinct ONLY in
+  backend: `source='ambest_sourced'`, the `AMB-<ST>-<line>-<hash>` surrogate key
+  (backend-only — stripped from UI + API payload via `toClientFiling`), and the
+  clean replacement path. `docs/AMBEST_INTERIM.md` documents the design.
+- Methodology page: validation table stays **10 cross-checked states**; IL/OH/VA
+  shown separately as interim (not validated). "37 not covered" = 50−13.
+
+**2. PENDING DECISION POINT — June 21 cold-capacity read.**
+- FIRST action when the quiet window ends: clear/expire the guard, then run
+  `python cold_capacity_read.py` **BEFORE any collection** (collecting first
+  contaminates the measurement).
+- The number decides whether scraping IL/OH/VA properly + new-carrier backfill
+  is a one-cycle win or a multi-week grind. Decision tree below (» 17 → viable;
+  ~14–17 → ratchet, scope decision).
+- **Lower pressure now:** the app ALREADY has IL/OH/VA via interim AM Best data,
+  so scraping them is UPGRADING interim→real, not unblocking coverage.
+
+**3. PARKED SCRAPER STATE.** VA 165/498 PDFs; OH partial universe (14/19 carrier
+keywords). Both wait on the same WAF recovery, same shared IP budget.
+
+**4. REPLACEMENT PATH (ready).** When a state is scraped:
+`DELETE FROM filings_raw/filings WHERE state=X AND source='ambest_sourced'` →
+import the scrape as `serff_scraped` → re-rollup. Mixed-source guard + source
+tag = clean swap, no double-count. Idempotent keys.
+
+**5. BACKLOG (none urgent, all recorded in BACKLOG.md):**
+- New-carrier backfill into the 8 western states (needs WAF; gated on June 21).
+- B1: consolidate the 6 AM Best parsers into one blank-safe extractor (3rd
+  same-family bug justifies it).
+- B2: UT date-column mis-assignment (~2–3 rows).
+- Finish VA/OH scrapes properly (post-cold-read).
+- **ROOT-CAUSE THE TEMP-PURGE HAZARD** — struck ~6+ times (again this session:
+  119 files), caught every time by explicit-path staging, but one slipped sync
+  could do real damage. Fix the cause (likely OneDrive/Temp interaction), not
+  just neutralize each time.
+
+**6. KEY MEASURED FACTS (don't re-derive from prose):**
+- WAF = AWS rate-based CAPTCHA (HTTP 405, `x-amzn-waf-action`), IP-keyed shared
+  budget, decays over **days not hours**.
+- Only ledger-MEASURED cold capacities: GA 06-10 = **10**, VA overnight = **8**,
+  VA 72h = **17**, OH warm = **14**. The "**85**" is UNVERIFIED prose — the
+  June 21 cold read replaces it with a measured number.
+- Scraped dataset verified correct from multiple angles (forward + reverse
+  cross-check, 3 parser-fix passes, value spot-checks): rate values right,
+  corroboration honestly tiered. AM Best reverse-cross-check B3 (Safeco 9.9 vs
+  19.6) resolved = withdrawn-vs-amended filings, not an error.
+
+---
 
 ## ⚠️ STATE SEPARATION — VA is PARKED; OH is a SEPARATE effort
 
