@@ -17,11 +17,13 @@ import-level numbers from spec.md.
 from __future__ import annotations
 
 import argparse
+import csv
+import hashlib
 import json
 import os
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -29,6 +31,113 @@ import pandas as pd
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = SCRIPT_DIR.parent
+
+# --- AM Best interim path (Step 2) -------------------------------------------
+# States we have AM Best industry data for but have NOT scraped yet. Loaded as
+# source='ambest_sourced' so they render like normal rows but are backend-tagged
+# and cleanly replaceable when scraped (delete WHERE state=X AND source='ambest_
+# sourced', re-import the scrape). Reports parsed by the scraper's
+# tools/parse_ambest_generic.py into ambest_<state>_data.csv.
+AMBEST_STATES = ["IL", "OH", "VA"]
+AMBEST_CSV_DIR = PROJECT_DIR.parent / "Insurance Rate Data Scraper" / "tools"
+AMBEST_WINDOW = (date(2024, 1, 1), date(2026, 4, 17))  # match the scraped data span
+AMBEST_LINE = {"PPA": "Personal Auto", "HO": "Homeowners"}
+# Reuse the SAME brand mapping + Munich-Re exclusions the scraper cross-check uses.
+_AMBEST_EXCLUDE = ("american family home", "american modern", "homesite", "midvale",
+                   "main street america", "permanent general", "general automobile",
+                   "national general", "integon", "esurance", "noblr", "foremost",
+                   "bristol west", "coast national", "toggle insurance", "economy fire",
+                   "economy premier", "economy preferred", "amco insurance",
+                   "allied property", "depositors insurance", "titan indemnity",
+                   "victoria fire", "lm general", "standard fire", "american economy",
+                   "peerless")
+
+
+def _ambest_dt(s: str):
+    try:
+        return datetime.strptime(s.strip(), "%m/%d/%y").date()
+    except (ValueError, AttributeError):
+        return None
+
+
+def _ambest_num(s):
+    s = str(s or "").strip()
+    if s in ("", "None"):
+        return None
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+
+def _surrogate_key(state: str, line: str, block_id: str, brand: str) -> str:
+    """Backend-ONLY surrogate key, one per (block, brand). block_id is the
+    parser's content hash of the filing block (group + eff + disp + line + sorted
+    entity (subsidiary, impact, policyholders) fingerprint). Brand is folded in
+    because an AM Best carrier-GROUP block can span two of our brands (e.g.
+    Liberty Mutual Group lists Liberty + Safeco entities) — the app is one-brand-
+    per-filing, so those split into separate filings. Block-stable, idempotent,
+    collision-proof. Never shown to the user."""
+    h = hashlib.md5(f"{block_id}|{brand}".encode("utf-8")).hexdigest()[:10]
+    return f"AMB-{state}-{'PA' if line == 'PPA' else 'HO'}-{h}"
+
+
+def build_ambest_df() -> pd.DataFrame:
+    """Transform ambest_<state>_data.csv -> filings_raw-shaped rows tagged
+    source='ambest_sourced'. Group entities by the parser's block_id (the true
+    filing boundary), dedup page-break repetition, window-filter, in-scope
+    (brand-mapped subsidiary, Rate), assign a backend-only block surrogate key."""
+    out_rows: list[dict] = []
+    for state in AMBEST_STATES:
+        csv_path = AMBEST_CSV_DIR / f"ambest_{state.lower()}_data.csv"
+        if not csv_path.exists():
+            sys.exit(f"FATAL: AM Best CSV not found: {csv_path} (run parse_ambest_generic.py {state})")
+        seen: set = set()
+        blocks: dict[str, list[dict]] = {}
+        for r in csv.DictReader(open(csv_path, encoding="utf-8")):
+            if not r.get("subsidiary") or r.get("filing_action") != "Rate":
+                continue
+            line = r.get("major_line")
+            if line not in AMBEST_LINE:
+                continue
+            eff = _ambest_dt(r["effective_date"])
+            if eff is None or eff < AMBEST_WINDOW[0] or eff > AMBEST_WINDOW[1]:
+                continue
+            brand = derive_brand(r["subsidiary"])
+            if brand is None or any(p in r["subsidiary"].lower() for p in _AMBEST_EXCLUDE):
+                continue
+            # Dedup page-break repetition WITHIN a block (same entity repeats).
+            k = (r["block_id"], r["subsidiary"], r["impact_pct"], r["policyholders_affected"])
+            if k in seen:
+                continue
+            seen.add(k)
+            r["_brand"] = brand
+            blocks.setdefault((r["block_id"], brand), []).append(r)
+
+        for (block_id, brand_k), entities in blocks.items():
+            line = entities[0]["major_line"]
+            key = _surrogate_key(state, line, block_id, brand_k)
+            eff_iso = _ambest_dt(entities[0]["effective_date"]).isoformat()
+            for e in entities:
+                out_rows.append({
+                    "state": state, "brand": e["_brand"], "company_name": e["subsidiary"],
+                    "line_of_business": AMBEST_LINE[line], "sub_type_of_insurance": None,
+                    "overall_rate_impact": _ambest_num(e["impact_pct"]),
+                    "overall_indicated_change": _ambest_num(e["indicated_pct"]),
+                    "maximum_percent_change": _ambest_num(e["maximum_pct"]),
+                    "minimum_percent_change": _ambest_num(e["minimum_pct"]),
+                    "written_premium_change": _ambest_num(e["written_premium_change"]),
+                    "policyholders_affected": (int(float(e["policyholders_affected"]))
+                                               if e["policyholders_affected"] not in (None, "") else None),
+                    "written_premium_for_program": _ambest_num(e["written_premium_for_program"]),
+                    "rate_activity": "rate_change",        # AM Best lists only disposed/approved
+                    "serff_tracking_number": key,          # backend-only surrogate
+                    "disposition_status": "Approved",      # AM Best = disposed/approved
+                    "effective_date": eff_iso, "filing_date": None,
+                    "source_pdf": f"AM Best {state} interim report",
+                    "source": "ambest_sourced",
+                })
+    return pd.DataFrame(out_rows)
 
 DEFAULT_XLSX_CANDIDATES = [
     PROJECT_DIR / "output" / "all_states_final_rates.xlsx",
@@ -466,20 +575,22 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print("=" * 72)
     failed = False
 
-    raw = con.execute("SELECT COUNT(*) FROM filings_raw").fetchone()[0]
+    # Scraped invariants are SCOPED to source='serff_scraped' so AM Best rows
+    # never move the locked baseline (1,616/998/293, +93.70% anchor).
+    raw = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
     ok = raw == 1616
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (1) filings_raw rows: expected 1616, got {raw}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 1616, got {raw}")
 
     null_brand = con.execute("SELECT COUNT(*) FROM filings_raw WHERE brand IS NULL").fetchone()[0]
     ok = null_brand == 0
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (2) unmatched company_name: expected 0, got {null_brand}")
 
-    rolled = con.execute("SELECT COUNT(*) FROM filings").fetchone()[0]
+    rolled = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     ok = rolled == 998
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (3) filings (rolled) rows: expected 998, got {rolled}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 998, got {rolled}")
 
     # (4) GECC-134661852 Personal Auto spot-check
     raw_n = con.execute(
@@ -537,45 +648,49 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (6a) mixed sub_type groups: expected 0, got {mixed}")
 
-    null_sub = con.execute("SELECT COUNT(*) FROM filings WHERE sub_type IS NULL").fetchone()[0]
-    print(f"  [INFO] (6b) filings with NULL sub_type: {null_sub} (expected 0 today)")
+    null_sub_scraped = con.execute(
+        "SELECT COUNT(*) FROM filings WHERE sub_type IS NULL AND source='serff_scraped'").fetchone()[0]
+    ok = null_sub_scraped == 0
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (6b) scraped filings with NULL sub_type: expected 0, got {null_sub_scraped}")
 
     distinct_sub = con.execute(
-        "SELECT COUNT(DISTINCT sub_type) FROM filings WHERE sub_type IS NOT NULL"
+        "SELECT COUNT(DISTINCT sub_type) FROM filings WHERE sub_type IS NOT NULL AND source='serff_scraped'"
     ).fetchone()[0]
     ok = distinct_sub == 11
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (6c) distinct sub_type in filings: expected 11, got {distinct_sub}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (6c) scraped distinct sub_type: expected 11, got {distinct_sub}")
 
-    # (7) brand & (8) state coverage after the 2026-06 expansion.
-    n_brands = con.execute("SELECT COUNT(DISTINCT brand) FROM filings").fetchone()[0]
+    # (7) brand & (8) state coverage — SCOPED to scraped (the locked baseline).
+    n_brands = con.execute("SELECT COUNT(DISTINCT brand) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     ok = n_brands == 13
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (7) distinct brands: expected 13, got {n_brands}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (7) scraped distinct brands: expected 13, got {n_brands}")
 
-    n_states = con.execute("SELECT COUNT(DISTINCT state) FROM filings").fetchone()[0]
+    n_states = con.execute("SELECT COUNT(DISTINCT state) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     ok = n_states == 10
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (8) distinct states: expected 10, got {n_states}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 10, got {n_states}")
 
-    # (9) active window (12mo from data as-of; rate_change/_pending) + anchor.
-    # Anchors to data/last_updated.txt (xlsx mtime), exactly as the web app does.
+    # (9) active window + (10) anchor — SCOPED to scraped so AM Best can't move them.
     as_of = LAST_UPDATED_PATH.read_text(encoding="utf-8").strip()
     active = con.execute(
         """SELECT COUNT(*) FROM filings
-           WHERE rate_activity IN ('rate_change', 'rate_change_pending')
+           WHERE source='serff_scraped'
+             AND rate_activity IN ('rate_change', 'rate_change_pending')
              AND effective_date >= date(?, '-12 months')""",
         (as_of,),
     ).fetchone()[0]
     ok = active == 293
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (9) active-window filings (as of {as_of}): "
+    print(f"  [{'OK' if ok else 'FAIL'}] (9) scraped active-window filings (as of {as_of}): "
           f"expected 293, got {active}")
 
     anchor = con.execute(
         """SELECT serff_tracking_number, brand, state, overall_rate_impact
            FROM filings
-           WHERE rate_activity IN ('rate_change', 'rate_change_pending')
+           WHERE source='serff_scraped'
+             AND rate_activity IN ('rate_change', 'rate_change_pending')
              AND effective_date >= date(?, '-12 months')
            ORDER BY overall_rate_impact DESC LIMIT 1""",
         (as_of,),
@@ -584,25 +699,70 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     ok = (serff == "SFMA-134315091" and abs(impact - 93.70) < 0.05
           and brand == "State Farm" and state == "WA")
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (10) max active impact: expected "
+    print(f"  [{'OK' if ok else 'FAIL'}] (10) scraped max active impact: expected "
           f"+93.70% SFMA-134315091 State Farm WA, got +{impact:.2f}% {serff} {brand} {state}")
 
-    # (11)/(12) source tags — Step 1: every row scraped, none AM Best yet.
+    # (11)/(12) source tags — scraped baseline intact + AM Best present.
     raw_scraped = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
     raw_ambest = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced'").fetchone()[0]
-    ok = raw_scraped == 1616 and raw_ambest == 0
+    ok = raw_scraped == 1616 and raw_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: expected "
-          f"1616 serff_scraped / 0 ambest_sourced, got {raw_scraped} / {raw_ambest}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 1616 serff_scraped "
+          f"+ {raw_ambest} ambest_sourced (got {raw_scraped} / {raw_ambest})")
 
     f_scraped = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     f_ambest = con.execute("SELECT COUNT(*) FROM filings WHERE source='ambest_sourced'").fetchone()[0]
-    ok = f_scraped == 998 and f_ambest == 0
+    ok = f_scraped == 998 and f_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: expected "
-          f"998 serff_scraped / 0 ambest_sourced, got {f_scraped} / {f_ambest}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 998 serff_scraped "
+          f"+ {f_ambest} ambest_sourced (got {f_scraped} / {f_ambest})")
 
-    print(f"  [INFO]  multi-entity rollups: {multi_count} of {rolled_count} "
+    # ---- AM Best-specific checks (own invariants) ----
+    amb_states = sorted(r[0] for r in con.execute(
+        "SELECT DISTINCT state FROM filings WHERE source='ambest_sourced'"))
+    ok = amb_states == AMBEST_STATES
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (13) AM Best states: expected {AMBEST_STATES}, got {amb_states}")
+
+    bad_act = con.execute(
+        "SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced' AND rate_activity<>'rate_change'").fetchone()[0]
+    bad_sub = con.execute(
+        "SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced' AND sub_type_of_insurance IS NOT NULL").fetchone()[0]
+    bad_pdf = con.execute(
+        "SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced' AND source_pdf NOT LIKE 'AM Best%'").fetchone()[0]
+    bad_key = con.execute(
+        "SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced' AND serff_tracking_number NOT LIKE 'AMB-%'").fetchone()[0]
+    ok = bad_act == 0 and bad_sub == 0 and bad_pdf == 0 and bad_key == 0
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (14) AM Best row invariants: rate_activity!='rate_change' {bad_act}, "
+          f"non-null sub_type {bad_sub}, bad source_pdf {bad_pdf}, non-AMB key {bad_key} (all expect 0)")
+
+    # (15) AM Best surrogate keys collision-free: distinct (key,line) == rolled AM Best filings.
+    amb_keys = con.execute(
+        "SELECT COUNT(DISTINCT serff_tracking_number || '|' || line_of_business) FROM filings WHERE source='ambest_sourced'").fetchone()[0]
+    ok = amb_keys == f_ambest
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (15) AM Best surrogate keys unique per (key,line): "
+          f"{amb_keys} distinct == {f_ambest} rolled")
+
+    # (16) no mixed-source rollup groups in filings_raw (the rollup guard already
+    # fails loud; assert here too).
+    mixed_src = con.execute("""
+        SELECT COUNT(*) FROM (
+            SELECT serff_tracking_number, line_of_business FROM filings_raw
+            GROUP BY serff_tracking_number, line_of_business
+            HAVING COUNT(DISTINCT source) > 1)
+    """).fetchone()[0]
+    ok = mixed_src == 0
+    failed |= not ok
+    print(f"  [{'OK' if ok else 'FAIL'}] (16) mixed-source rollup groups: expected 0, got {mixed_src}")
+
+    print(f"  [INFO] AM Best rolled filings per state/line:")
+    for st, lob, cnt in con.execute(
+        "SELECT state, line_of_business, COUNT(*) FROM filings WHERE source='ambest_sourced' "
+        "GROUP BY state, line_of_business ORDER BY state, line_of_business"):
+        print(f"           {st} {lob}: {cnt}")
+    print(f"  [INFO]  scraped multi-entity rollups: {multi_count} of {rolled_count} "
           f"({100*multi_count/rolled_count:.1f}%)  -- baseline 351 / 998 (~35.2%)")
     print("=" * 72)
     if failed:
@@ -624,7 +784,12 @@ def main() -> int:
     print(f"Writing db:   {db_path}")
 
     df = load_and_normalize(xlsx_path)
-    print(f"Normalized {len(df)} rows from sheet '{SHEET}'")
+    print(f"Normalized {len(df)} scraped rows from sheet '{SHEET}'")
+    amb = build_ambest_df()
+    print(f"Built {len(amb)} AM Best interim rows for {AMBEST_STATES}")
+    # Scraped FIRST so their ids (and the rollup order) are unchanged — keeps the
+    # scraped baseline byte-identical; AM Best rows append after.
+    df = pd.concat([df, amb], ignore_index=True)
 
     if db_path.exists():
         db_path.unlink()

@@ -41,7 +41,11 @@ function FilingsAudit({ filings }: { filings: BrandStat["filings"] }): React.JSX
             <span>· {formatEffectiveDate(f.effective_date)}</span>
             <span>· {formatPolicyholders(f.total_policyholders)} ph</span>
             <span>· {fmtMoney(f.total_written_premium)} premium</span>
-            <span>· {f.serff_tracking_number}</span>
+            {/* AM Best rows have no SERFF tracking number and the surrogate key
+                is backend-only — omit the identifier entirely (no visual marker). */}
+            {f.source !== "ambest_sourced" && (
+              <span>· {f.serff_tracking_number}</span>
+            )}
             {f.rate_activity === "rate_change_pending" && (
               <span className="text-amber-text">· pending</span>
             )}

@@ -11,6 +11,7 @@ import {
   getMyCarriersFilings,
   getMyCarriersNeutralHiddenCount,
   getProspectFilings,
+  toClientFiling,
 } from "@/lib/filings";
 
 export const dynamic = "force-dynamic";
@@ -90,5 +91,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const coverage: Record<string, string[]> = {};
   for (const b of authorized) coverage[b] = fullCoverage[b] ?? [];
 
-  return NextResponse.json({ asOf: getDataAsOf(), filings, coverage, neutralHidden });
+  // Zero-trace: strip the backend-only AM Best surrogate key from the payload.
+  return NextResponse.json({
+    asOf: getDataAsOf(), filings: filings.map(toClientFiling), coverage, neutralHidden,
+  });
 }

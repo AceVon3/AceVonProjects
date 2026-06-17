@@ -8,6 +8,9 @@ export type StateRecord = {
   readonly name: string;
   readonly data_coverage: boolean;
   readonly validated?: { readonly auto: boolean; readonly home: boolean };
+  // Provenance of a covered state's data. Absent/"scraped" = SERFF scrape;
+  // "ambest" = interim AM Best industry data (not yet directly scraped).
+  readonly source?: "scraped" | "ambest";
 };
 
 export const STATES: readonly StateRecord[] = [
@@ -23,7 +26,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "GA", name: "Georgia",        data_coverage: true,  validated: { auto: true,  home: true  } },
   { code: "HI", name: "Hawaii",         data_coverage: false },
   { code: "ID", name: "Idaho",          data_coverage: true,  validated: { auto: true,  home: false } },
-  { code: "IL", name: "Illinois",       data_coverage: false },
+  { code: "IL", name: "Illinois",       data_coverage: true,  source: "ambest" },
   { code: "IN", name: "Indiana",        data_coverage: false },
   { code: "IA", name: "Iowa",           data_coverage: false },
   { code: "KS", name: "Kansas",         data_coverage: false },
@@ -45,7 +48,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "NY", name: "New York",       data_coverage: false },
   { code: "NC", name: "North Carolina", data_coverage: false },
   { code: "ND", name: "North Dakota",   data_coverage: false },
-  { code: "OH", name: "Ohio",           data_coverage: false },
+  { code: "OH", name: "Ohio",           data_coverage: true,  source: "ambest" },
   { code: "OK", name: "Oklahoma",       data_coverage: false },
   { code: "OR", name: "Oregon",         data_coverage: true,  validated: { auto: true,  home: false } },
   { code: "PA", name: "Pennsylvania",   data_coverage: false },
@@ -56,7 +59,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "TX", name: "Texas",          data_coverage: false },
   { code: "UT", name: "Utah",           data_coverage: true,  validated: { auto: true,  home: false } },
   { code: "VT", name: "Vermont",        data_coverage: false },
-  { code: "VA", name: "Virginia",       data_coverage: false },
+  { code: "VA", name: "Virginia",       data_coverage: true,  source: "ambest" },
   { code: "WA", name: "Washington",     data_coverage: true,  validated: { auto: true,  home: false } },
   { code: "WV", name: "West Virginia",  data_coverage: false },
   { code: "WI", name: "Wisconsin",      data_coverage: false },

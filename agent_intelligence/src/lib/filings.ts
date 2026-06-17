@@ -27,6 +27,7 @@ export interface Filing {
   entity_names: string; // JSON-encoded string[]
   disposition_status: string | null;
   sub_type: string | null; // raw NAIC sub_type string; app cleans for display
+  source: "serff_scraped" | "ambest_sourced"; // provenance; drives the UI badge
 }
 
 export type CaptiveProfile = {
@@ -54,6 +55,14 @@ export type QueryOpts = {
 
 // --- internal helpers -------------------------------------------------------
 
+// Client-safe view of a filing. AM Best rows carry a BACKEND-ONLY surrogate
+// key (AMB-…) used for rollup/dedup/replacement; it must never reach the client
+// — not in the rendered UI and not in the network/RSC payload ("zero-trace").
+// Apply at EVERY server→client boundary (API responses, server-page props).
+export function toClientFiling<T extends { source: string; serff_tracking_number: string }>(f: T): T {
+  return f.source === "ambest_sourced" ? { ...f, serff_tracking_number: "AM Best" } : f;
+}
+
 function placeholders(n: number): string {
   return Array.from({ length: n }, () => "?").join(", ");
 }
@@ -66,7 +75,7 @@ const SELECT_COLS = `
   overall_rate_impact, rate_activity, effective_date, filing_date,
   entity_count, total_policyholders, total_written_premium,
   min_entity_impact, max_entity_impact, entity_names, disposition_status,
-  sub_type
+  sub_type, source
 `;
 
 function windowModifier(opts?: QueryOpts): string {

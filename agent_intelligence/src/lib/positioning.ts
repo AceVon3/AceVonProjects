@@ -15,6 +15,7 @@ import { premiumWeightedAvg } from "./aggregate";
 import { ACTIVE_RATE_ACTIVITIES, Brand, BRANDS, DEFAULT_WINDOW, WINDOW_MODIFIERS, WindowKey } from "./constants";
 import { getDataAsOf, getDb } from "./db";
 import { getBrandStateCoverage } from "./filings";
+import { toClientFiling } from "./filings";
 import type { AgentProfile, Filing } from "./filings";
 
 export type Line = "Personal Auto" | "Homeowners";
@@ -87,7 +88,7 @@ function fetchCellFilings(states: string[], opts?: PositioningOpts): Filing[] {
            overall_rate_impact, rate_activity, effective_date, filing_date,
            entity_count, total_policyholders, total_written_premium,
            min_entity_impact, max_entity_impact, entity_names, disposition_status,
-           sub_type
+           sub_type, source
     FROM filings
     WHERE state IN (${placeholders(states.length)})
       AND rate_activity IN (${placeholders(activities.length)})
@@ -139,7 +140,8 @@ export function getPositioning(
 
   const stat = (brand: Brand, filings: Filing[]): BrandStat => {
     const { avg, weighted } = premiumWeightedAvg(filings);
-    return { brand, count: filings.length, avgChange: avg, weighted, filings };
+    // Strip the backend-only AM Best surrogate key before it reaches the card.
+    return { brand, count: filings.length, avgChange: avg, weighted, filings: filings.map(toClientFiling) };
   };
 
   const anchoredCells: PositioningCell[] = [];

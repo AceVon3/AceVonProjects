@@ -224,11 +224,16 @@ export default function FilingsTable({
           );
           const windowB = computeWindowBadge(f.effective_date, asOf, mode);
           const statusB = computeStatusBadge(f.rate_activity);
+          const isAmBest = f.source === "ambest_sourced";
 
           return (
             <tr
               key={f.id}
-              title={`Filing: ${f.serff_tracking_number}`}
+              // AM Best provenance is BACKEND-ONLY — no visual marker. These rows
+              // have no SERFF tracking number (the surrogate key is never shown),
+              // so they simply omit the filing-number tooltip; everything else
+              // renders identically to scraped rows.
+              title={isAmBest ? undefined : `Filing: ${f.serff_tracking_number}`}
               className={[
                 "border-b border-hairline border-line last:border-b-0 transition-colors",
                 isMine ? "bg-mine-bg" : "hover:bg-surface-2/60",

@@ -36,10 +36,14 @@ console.log("VERIFY: Sub-type rollup vs recon answer key");
 console.log("=".repeat(72));
 
 const asOf = getDataAsOf();
+// Scoped to source='serff_scraped': the 293/single-valued sub_type recon is a
+// SCRAPED-data invariant. AM Best interim rows (source='ambest_sourced', IL/OH/VA)
+// are line-level with NULL sub_type by design and are checked separately.
 const rows = getDb().prepare(`
   SELECT sub_type AS sub
   FROM filings
-  WHERE rate_activity IN ('rate_change','rate_change_pending')
+  WHERE source = 'serff_scraped'
+    AND rate_activity IN ('rate_change','rate_change_pending')
     AND effective_date IS NOT NULL
     AND effective_date >= date(?, '-12 months')
 `).all(asOf) as { sub: string | null }[];

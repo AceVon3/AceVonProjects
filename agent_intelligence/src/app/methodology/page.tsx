@@ -69,7 +69,12 @@ const codeCls =
 export default function MethodologyPage(): React.JSX.Element {
   const lastUpdated = readLastUpdated();
   const coveredStates = STATES.filter(s => s.data_coverage);
-  const validationRows = coveredStates.map(s => ({
+  // Directly-scraped, AM Best-cross-checked states vs. interim AM Best industry-
+  // data states (IL/OH/VA). The cross-check validation table is scraped-only —
+  // interim states are not cross-checked, so they must NOT appear as validated.
+  const scrapedStates = coveredStates.filter(s => s.source !== "ambest");
+  const ambestStates = coveredStates.filter(s => s.source === "ambest");
+  const validationRows = scrapedStates.map(s => ({
     code: s.code,
     name: s.name,
     auto: s.validated?.auto ?? false,
@@ -105,10 +110,12 @@ export default function MethodologyPage(): React.JSX.Element {
             </li>
             <li className={liCls}>
               <strong>{coveredStates.length} states currently covered:</strong>{" "}
-              {coveredStates.map(s => s.code).join(", ")}. All 50 are listed in
-              setup so the picker reflects the full national map; only the
-              covered states are selectable. Coverage expands by flipping
-              one flag per state — no other code changes.
+              {scrapedStates.map(s => s.code).join(", ")} from directly-scraped
+              SERFF filings, plus {ambestStates.map(s => s.code).join(", ")} from
+              interim AM Best industry data (not yet directly scraped). All 50 are
+              listed in setup so the picker reflects the full national map; only
+              the covered states are selectable. Coverage expands by flipping one
+              flag per state — no other code changes.
             </li>
             <li className={liCls}>
               <strong>Lines of business:</strong> Personal Auto and Homeowners.
@@ -279,8 +286,10 @@ export default function MethodologyPage(): React.JSX.Element {
           </p>
           <p className={pCls}>
             Currently validated on{" "}
-            <strong>{validatedSomewhere} of {coveredStates.length} covered states</strong>{" "}
-            for at least one line.
+            <strong>{validatedSomewhere} of {scrapedStates.length} cross-checked states</strong>{" "}
+            for at least one line. ({ambestStates.map(s => s.code).join(", ")} are
+            interim AM Best industry data and are not cross-checked, so they do
+            not appear in this table.)
           </p>
           <div className="border border-hairline border-line rounded-lg overflow-hidden mt-3">
             <table
@@ -351,8 +360,9 @@ export default function MethodologyPage(): React.JSX.Element {
             <li className={liCls}>
               <strong>{50 - coveredStates.length} states not yet covered.</strong>{" "}
               Only the {coveredStates.length} listed above currently have filing
-              data. Selecting other states in setup is intentionally blocked
-              rather than silently returning empty results.
+              data ({scrapedStates.length} directly scraped, {ambestStates.length}{" "}
+              interim AM Best). Selecting other states in setup is intentionally
+              blocked rather than silently returning empty results.
             </li>
             <li className={liCls}>
               <strong>No future-dated filings in the current snapshot.</strong>{" "}
