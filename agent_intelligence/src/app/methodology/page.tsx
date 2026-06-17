@@ -11,6 +11,7 @@ import path from "node:path";
 
 import {
   ACTIVE_RATE_ACTIVITIES,
+  AMBEST_PERMANENT_STATES,
   BRANDS,
   DEFEND_THRESHOLD,
   PROSPECT_THRESHOLD,
@@ -74,6 +75,12 @@ export default function MethodologyPage(): React.JSX.Element {
   // interim states are not cross-checked, so they must NOT appear as validated.
   const scrapedStates = coveredStates.filter(s => s.source !== "ambest");
   const ambestStates = coveredStates.filter(s => s.source === "ambest");
+  // AM Best states split into interim (replaceable once directly scraped) vs.
+  // permanent (not on SERFF Public Access — the state runs its own system, so
+  // they are AM Best-sourced for good and must not be called "not yet scraped").
+  const permanentSet = new Set<string>(AMBEST_PERMANENT_STATES);
+  const interimAmbestStates = ambestStates.filter(s => !permanentSet.has(s.code));
+  const permanentAmbestStates = ambestStates.filter(s => permanentSet.has(s.code));
   const validationRows = scrapedStates.map(s => ({
     code: s.code,
     name: s.name,
@@ -111,8 +118,15 @@ export default function MethodologyPage(): React.JSX.Element {
             <li className={liCls}>
               <strong>{coveredStates.length} states currently covered:</strong>{" "}
               {scrapedStates.map(s => s.code).join(", ")} from directly-scraped
-              SERFF filings, plus {ambestStates.map(s => s.code).join(", ")} from
-              interim AM Best industry data (not yet directly scraped). All 50 are
+              SERFF filings, plus {interimAmbestStates.map(s => s.code).join(", ")}{" "}
+              from interim AM Best industry data (not yet directly scraped)
+              {permanentAmbestStates.length > 0 && (
+                <>
+                  , and {permanentAmbestStates.map(s => s.code).join(", ")} from
+                  AM Best industry data permanently (these states are not on SERFF
+                  Public Access, so they are AM Best-sourced rather than scraped)
+                </>
+              )}. All 50 are
               listed in setup so the picker reflects the full national map; only
               the covered states are selectable. Coverage expands by flipping one
               flag per state — no other code changes.
@@ -288,7 +302,7 @@ export default function MethodologyPage(): React.JSX.Element {
             Currently validated on{" "}
             <strong>{validatedSomewhere} of {scrapedStates.length} cross-checked states</strong>{" "}
             for at least one line. ({ambestStates.map(s => s.code).join(", ")} are
-            interim AM Best industry data and are not cross-checked, so they do
+            AM Best industry data and are not cross-checked, so they do
             not appear in this table.)
           </p>
           <div className="border border-hairline border-line rounded-lg overflow-hidden mt-3">
@@ -360,8 +374,9 @@ export default function MethodologyPage(): React.JSX.Element {
             <li className={liCls}>
               <strong>{50 - coveredStates.length} states not yet covered.</strong>{" "}
               Only the {coveredStates.length} listed above currently have filing
-              data ({scrapedStates.length} directly scraped, {ambestStates.length}{" "}
-              interim AM Best). Selecting other states in setup is intentionally
+              data ({scrapedStates.length} directly scraped, {interimAmbestStates.length}{" "}
+              interim AM Best, {permanentAmbestStates.length} permanent AM Best).
+              Selecting other states in setup is intentionally
               blocked rather than silently returning empty results.
             </li>
             <li className={liCls}>

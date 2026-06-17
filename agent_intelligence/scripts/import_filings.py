@@ -38,7 +38,16 @@ PROJECT_DIR = SCRIPT_DIR.parent
 # and cleanly replaceable when scraped (delete WHERE state=X AND source='ambest_
 # sourced', re-import the scrape). Reports parsed by the scraper's
 # tools/parse_ambest_generic.py into ambest_<state>_data.csv.
-AMBEST_STATES = ["IL", "OH", "VA"]
+# AM Best industry-data states. All load as source='ambest_sourced' via the
+# same pipeline. PERMANENT ones are NOT SERFF Public Access (the state runs its
+# own non-SERFF system, e.g. CA/CDI), so they can never be replaced by a normal
+# scrape — they are AM Best-sourced for good, not "interim awaiting scrape". The
+# replacement path (DELETE ... source='ambest_sourced') is state-scoped and must
+# never be run for a permanent state. See docs/AMBEST_INTERIM.md.
+AMBEST_PERMANENT_STATES = ["CA"]
+AMBEST_STATES = ["IL", "OH", "VA",
+                 # 10-state batch (2026-06-17). 9 interim + CA (permanent).
+                 "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY"]
 AMBEST_CSV_DIR = PROJECT_DIR.parent / "Insurance Rate Data Scraper" / "tools"
 AMBEST_WINDOW = (date(2024, 1, 1), date(2026, 4, 17))  # match the scraped data span
 AMBEST_LINE = {"PPA": "Personal Auto", "HO": "Homeowners"}
@@ -720,9 +729,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # ---- AM Best-specific checks (own invariants) ----
     amb_states = sorted(r[0] for r in con.execute(
         "SELECT DISTINCT state FROM filings WHERE source='ambest_sourced'"))
-    ok = amb_states == AMBEST_STATES
+    ok = amb_states == sorted(AMBEST_STATES)
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (13) AM Best states: expected {AMBEST_STATES}, got {amb_states}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (13) AM Best states: expected {sorted(AMBEST_STATES)}, got {amb_states}")
 
     bad_act = con.execute(
         "SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced' AND rate_activity<>'rate_change'").fetchone()[0]

@@ -175,11 +175,12 @@ async function main(): Promise<void> {
     /10.{0,3}12/.test(limitsText));
   check("limitations call out Colorado as unvalidated",
     /Colorado/.test(limitsText) && /validat/i.test(limitsText));
-  // 37 not covered = 50 − 13 covered (10 directly scraped + IL/OH/VA interim
-  // AM Best, added 2026-06-16). The validation table stays 10 (cross-checked
-  // scraped states only — interim states are not validated).
-  check("limitations mention '37 states not yet covered'",
-    /37 states not yet covered/i.test(limitsText));
+  // 27 not covered = 50 − 23 covered (10 directly scraped + 13 AM Best:
+  // IL/OH/VA from 2026-06-16, plus the 2026-06-17 batch AK/AR/CA/CT/DE/HI/IA/
+  // IN/KS/KY — CA permanent, rest interim). The validation table stays 10
+  // (cross-checked scraped states only — AM Best states are not validated).
+  check("limitations mention '27 states not yet covered'",
+    /27 states not yet covered/i.test(limitsText));
   check("limitations include the no-future-dated-filings note",
     /no future-dated filings/i.test(limitsText) || /no future filings/i.test(limitsText));
 

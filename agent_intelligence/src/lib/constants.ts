@@ -41,16 +41,27 @@ export const ACTIVE_RATE_ACTIVITIES = [
 export const COVERED_STATES = [
   "AZ", "CO", "GA", "ID", "MT", "NM", "NV", "OR", "UT", "WA",
   // Interim AM Best industry-data states (2026-06-16). Selectable + queryable
-  // like scraped states; rows are source='ambest_sourced' (badge + states.ts
+  // like scraped states; rows are source='ambest_sourced' (states.ts
   // source:"ambest"). Replaced in place when directly scraped.
   "IL", "OH", "VA",
+  // 10-state AM Best batch (2026-06-17). CA is PERMANENT (non-SERFF); the rest
+  // are interim. See AMBEST_PERMANENT_STATES below.
+  "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY",
 ] as const;
 
 export type CoveredState = (typeof COVERED_STATES)[number];
 
-// The subset of COVERED_STATES whose data is interim AM Best (not scraped).
-// Lets coverage-aware UI mark these honestly without re-deriving from states.ts.
-export const AMBEST_STATES = ["IL", "OH", "VA"] as const;
+// The subset of COVERED_STATES whose data is AM Best industry data (not a SERFF
+// scrape). Lets coverage-aware UI mark these honestly without re-deriving from
+// states.ts. Must stay in sync with AMBEST_STATES in scripts/import_filings.py.
+export const AMBEST_STATES = ["IL", "OH", "VA",
+  "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY"] as const;
+
+// The subset of AMBEST_STATES that are PERMANENT, not interim: they are not on
+// SERFF Public Access (the state runs its own non-SERFF system, e.g. CA/CDI), so
+// they can never be replaced by a normal scrape. They must NOT be presented as
+// "interim / awaiting scrape" and must NEVER be swept by the replacement path.
+export const AMBEST_PERMANENT_STATES = ["CA"] as const;
 
 // Window dropdown options → SQLite date('now', ...) modifier.
 export const WINDOW_MODIFIERS = {

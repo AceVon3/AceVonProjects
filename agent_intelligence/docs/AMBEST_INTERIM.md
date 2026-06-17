@@ -1,8 +1,26 @@
-# AM Best interim data path (IL / OH / VA)
+# AM Best data path (interim + permanent)
 
-States we have AM Best **industry data** for but have **not** directly scraped
-yet. They render natively in the app but are backend-tagged `source='ambest_sourced'`
-and are cleanly replaceable when scraped. Built 2026-06-16.
+States we have AM Best **industry data** for. They render natively in the app,
+backend-tagged `source='ambest_sourced'` (no UI badge, zero-trace API). Two
+flavors, both loaded by the identical pipeline:
+
+- **Interim** — not yet directly scraped, but on SERFF Public Access, so they are
+  cleanly **replaceable** when scraped. `AMBEST_STATES` minus `AMBEST_PERMANENT_STATES`.
+- **Permanent** — **not** on SERFF Public Access (the state runs its own non-SERFF
+  system, e.g. CA / CDI). They can **never** be replaced by a normal scrape, so
+  they are AM Best-sourced for good. `AMBEST_PERMANENT_STATES` (currently `["CA"]`).
+  They must NOT be presented as "interim / awaiting scrape" and must NEVER be
+  swept by the replacement path below.
+
+Coverage:
+- IL, OH, VA — interim (built 2026-06-16).
+- AK, AR, CT, DE, HI, IA, IN, KS, KY — interim (10-state batch, 2026-06-17).
+- **CA — permanent** (non-SERFF; same batch).
+
+The other 9 in the 2026-06-17 batch are "interim" on the *assumption* they're
+SERFF-PA; that has **not** been portal-probed yet. AL/FL/LA were excluded from
+this batch — their AM Best exports came back without disposition data (header-only,
+no rate effects) and are pending a re-pull.
 
 ## How it flows
 1. **Reports → text** — `Insurance Rate Data Scraper/Ambest Reports/*.pdf`
@@ -35,15 +53,23 @@ and are cleanly replaceable when scraped. Built 2026-06-16.
   `AMB-`, unique per (key, line) — checks 13–16.
 
 ## UI
-- Row badge **"AM Best"** (FilingsTable) + `states.ts source:"ambest"` +
-  `constants.AMBEST_STATES`. Raw `AMB-` key never rendered.
+- **No row badge / no visual marker** — AM Best provenance is BACKEND-ONLY
+  (FilingsTable + PositioningCard guard it; the API strips the `AMB-` surrogate
+  key from the payload — zero-trace). `states.ts source:"ambest"` +
+  `constants.AMBEST_STATES` drive coverage only.
+- Methodology page is the one public surface that names the AM Best states,
+  split into interim vs. permanent (CA) — it does not misrepresent CA as
+  "awaiting scrape".
 
-## Replacement (when a state is directly scraped)
+## Replacement (when an INTERIM state is directly scraped)
+**Only for interim states. NEVER run this for a state in `AMBEST_PERMANENT_STATES`
+(CA) — it isn't getting scraped, so sweeping it would just delete real data.**
 ```sql
 DELETE FROM filings_raw WHERE state='<ST>' AND source='ambest_sourced';
 DELETE FROM filings     WHERE state='<ST>' AND source='ambest_sourced';
 ```
-…then drop `<ST>` from `AMBEST_STATES`, scrape into `all_states_final_rates.xlsx`,
-and re-run `import_filings.py` (the scrape imports as `serff_scraped`). The
-mixed-source guard + the `source` tag make it a clean swap with no double-count.
-Idempotent: re-running the import always regenerates identical AM Best keys.
+…then drop `<ST>` from `AMBEST_STATES` (in both `import_filings.py` and
+`constants.ts`), scrape into `all_states_final_rates.xlsx`, and re-run
+`import_filings.py` (the scrape imports as `serff_scraped`). The mixed-source
+guard + the `source` tag make it a clean swap with no double-count. Idempotent:
+re-running the import always regenerates identical AM Best keys.
