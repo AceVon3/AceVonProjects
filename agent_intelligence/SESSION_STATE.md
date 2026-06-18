@@ -1,12 +1,70 @@
-# Session checkpoint — 2026-06-17  ·  Own-carrier alerts (UI) on 45-state data
+# Session checkpoint — 2026-06-18  ·  UI polish pass (tables + dashboard) on 45-state data
 
 The build is finished and live. We are in **iterate-and-deploy mode, not
 building**.
 
-- **Deployed (agent-intel/master): `5b8d778`** (own-carrier alerts, UI-only).
-  Monorepo `15b4a67`. Scraper unchanged at `a41bde3`. tsc clean, prod build 12/12,
-  all 13 e2e + 5 verify green. Scraped baseline **byte-identical, untouched all
-  session** (`filings_raw 784f77e6`, `filings b6f83d78`).
+- **Deployed (agent-intel/master): `95534d5`** (UI polish pass, UI-only).
+  Monorepo `755a357` (local; `origin/master` `fc11c86`, ~96 commits behind — see
+  the drift note below, left as the norm). tsc clean, prod build 12/12, all 13 e2e
+  + 8 verify green. Scraped baseline **byte-identical, untouched all session**
+  (`filings_raw 784f77e6`, `filings b6f83d78`; `md5(filings.db)=82e423fd…`).
+
+## Latest iteration — UI polish pass: tables + dashboard (2026-06-18, UI-only)
+
+A presentation-only restyle of the Prospect/Defend tables and the Overview
+dashboard. **No data, query, filtering, or routing changes** — same rows, same
+counts, purely how they read. Shipped `95534d5` after localhost review of all
+three surfaces.
+
+- **COLOR SYSTEM — agent-perspective (the organizing idea).** Everything is colored
+  by what a move MEANS FOR THE AGENT, not by raw rate direction: **Prospect = green**
+  (competitor raised → your opportunity), **Defend = red** (competitor cut → your
+  risk). Applied consistently to the category pills, the impact %, AND the dashboard
+  card "View all" links across all three surfaces, so a row never clashes (pill and
+  number always agree). My Carriers keeps its own-carrier mapping (own increase =
+  retention-risk red, own decrease = opportunity green) — already agent-perspective.
+  Uses real design tokens (`green-fill/text`, `red-fill/text`, `ink-3`), no hardcoded hex.
+- **Tables (shared `FilingsTable`, all three modes).** State folded into the carrier
+  cell ("Allstate · ID"); **sub-type + its info bubble moved to a muted secondary
+  line** (`SubtypeCell` now inline) — State and Sub-type columns dropped, which frees
+  the room Policyholders was losing. Compact **status dot + muted label** (no pill;
+  Approved=green, Pending=amber). Impact + Policyholders **right-aligned**; impact
+  colored by category. Lighter header (`ink-3`), tightened summary band, Prospect
+  "Largest move" now green. The repeated **"Customers may already be shopping"**
+  per-row callout was removed (the page header states it once) → defend in-effect
+  badge is now the factual **"In effect N weeks"** (`computeWindowBadge`); Approved
+  status color changed blue→green in `computeStatusBadge`.
+- **Dashboard.** Four cards are flex-columns with **bottom-aligned "View all" links**
+  (Defend red / Prospect green / Compliance neutral); My Carrier's two counts are
+  smaller than the big Prospect/Defend numbers (retention red / opportunity green).
+  **Recent Changes rebuilt as a fixed-layout `<table>`** (was a flex list that
+  clustered at the edges): leading category-colored impact, `carrier · line · state`
+  with the **effective date anchored as a muted line beneath it** (a standalone date
+  column read as orphaned — reverted to date-under-carrier), a right-aligned
+  **Policyholders column** (count over a muted label, graceful **"—" when missing** so
+  AM Best rows stay consistent), category pill, quiet right-aligned time badge. Whole
+  row still navigates (`role="link"` + keyboard). The Defend/Prospect tables were
+  left as-is — their date is already anchored in the Effective column (date stacked
+  above the window badge), so no floating-date problem there.
+- **Tests.** e2e updated for the new column layout (`row-brand`/`row-state` testids,
+  shifted `nth-child` indices, defend in-effect text, capitalized "Defend" pill in
+  the feed). **`verify_profile.ts` CA→WY stale-test fix** — its tamper case asserted
+  "CA is non-covered", but **CA became a permanent covered state** in the 45-state
+  expansion. ⚠️ **This is the 2nd place this exact stale "CA non-covered" assertion
+  surfaced** (the first was `e2e_setup`, fixed earlier). **Pattern flag:** if a 3rd
+  appears, sweep all tests for hardcoded "CA"/non-covered-state assumptions at once —
+  the covered-state set grew and any test still treating CA (or NY/TX) as non-covered
+  is now stale.
+- **Deploy hygiene — monorepo-origin drift (recorded, left as the norm).** The
+  monorepo `origin/master` sits at `fc11c86`, **~96 commits behind** local `master`
+  (`755a357`). This is pre-existing: the deploy path is **agent-intel/master** (now
+  `95534d5`, Vercel auto-builds), and the monorepo origin has not been kept in
+  per-session sync. **Not synced this session** — left as the established norm. Push
+  the monorepo to its origin only if we decide to start treating it as a live mirror.
+- **Build/dev gotcha (learned this session):** running `npm run build` while
+  `npm run dev` is live clobbers the dev server's `.next` chunks → `MODULE_NOT_FOUND`
+  500s on every route. Fix: stop dev → build → `rm -rf .next` → restart dev. Don't
+  run a prod build against a running dev server.
 
 ## Latest iteration — Own-carrier alerts: retention + opportunity (2026-06-17, UI-only)
 
