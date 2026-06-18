@@ -125,13 +125,15 @@ async function main(): Promise<void> {
   // agent_type — spec line 854.
   const firstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Carrier'", firstHeader === "Carrier", { firstHeader });
-  const col4Header = (await page.locator("table thead th").nth(3).textContent())?.trim();
-  check("column 4 header = 'Sub-type'", col4Header === "Sub-type", { col4Header });
+  // State + Sub-type were folded into the carrier cell: Carrier · Line ·
+  // Impact · Effective · Status · Policyholders.
+  const col3Header = (await page.locator("table thead th").nth(2).textContent())?.trim();
+  check("column 3 header = 'Impact'", col3Header === "Impact", { col3Header });
 
   // (D) Surveillance behavior: at least one row's Impact cell shows a value
   // strictly between Defend's -2% and Prospect's +5% thresholds. Impact is
-  // column 5 after the Sub-type column was added. (handle U+2212 minus.)
-  const impactTexts = await page.$$eval("table tbody tr td:nth-child(5)", tds =>
+  // now column 3. (handle U+2212 minus.)
+  const impactTexts = await page.$$eval("table tbody tr td:nth-child(3)", tds =>
     tds.map(t => t.textContent?.trim() ?? ""),
   );
   function parseImpact(s: string): number | null {
@@ -151,8 +153,8 @@ async function main(): Promise<void> {
     { count: zeroImpact.length });
 
   // (E) Every Effective-column window badge is neutral (gray, or amber for
-  // Pending). Effective is column 6 after the Sub-type column was added.
-  const badges = await page.$$eval("table tbody tr td:nth-child(6) span", spans =>
+  // Pending). Effective is now column 4.
+  const badges = await page.$$eval("table tbody tr td:nth-child(4) span", spans =>
     spans.map(s => ({
       text: s.textContent?.trim() ?? "",
       bg: window.getComputedStyle(s as HTMLElement).backgroundColor,
@@ -178,7 +180,7 @@ async function main(): Promise<void> {
     new URL(page.url()).pathname === "/my-carriers", { url: page.url() });
   const capRows = await page.$$eval("table tbody tr", rs => rs.length);
   check("captive State Farm AZ+NV → 6 rows (their carrier only)", capRows === 6, { capRows });
-  const capBrands = await page.$$eval("table tbody tr td:first-child", tds =>
+  const capBrands = await page.$$eval('table tbody tr [data-testid="row-brand"]', tds =>
     Array.from(new Set(tds.map(t => t.textContent?.trim() ?? ""))));
   check("every row is State Farm (no other brand leaks in)",
     capBrands.length === 1 && capBrands[0] === "State Farm", { capBrands });

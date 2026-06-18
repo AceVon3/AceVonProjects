@@ -160,8 +160,9 @@ async function main(): Promise<void> {
   console.log("\n  Narrow states → AZ only");
   await setOnlyStates(page, "AZ");
   check("AZ-only → 3 rows", (await rowCount(page)) === 3);
-  // Confirm every visible row's state cell = AZ.
-  const stateCells = await page.$$eval("table tbody tr td:nth-child(2)", tds =>
+  // Confirm every visible row's state = AZ. State now lives in the carrier
+  // cell, tagged data-testid="row-state".
+  const stateCells = await page.$$eval('table tbody tr [data-testid="row-state"]', tds =>
     tds.map(t => t.textContent?.trim() ?? ""));
   check("every visible row is in AZ",
     stateCells.length > 0 && stateCells.every(s => s === "AZ"),
@@ -174,7 +175,8 @@ async function main(): Promise<void> {
   console.log("\n  Narrow lines → Homeowners only");
   await setOnlyLines(page, "Homeowners");
   check("HO-only → 5 rows", (await rowCount(page)) === 5);
-  const lineCells = await page.$$eval("table tbody tr td:nth-child(3)", tds =>
+  // Line is now column 2.
+  const lineCells = await page.$$eval("table tbody tr td:nth-child(2)", tds =>
     tds.map(t => t.textContent?.trim() ?? ""));
   check("every visible row is Homeowners",
     lineCells.length > 0 && lineCells.every(s => s === "Homeowners"));
@@ -200,11 +202,11 @@ async function main(): Promise<void> {
 
   console.log("\n  Sort → rate impact (largest)");
   await setSort(page, "impact_desc");
-  const firstBrand = await page.locator("table tbody tr td:first-child").first().textContent();
-  // Impact is column 5 after the Sub-type column was added.
-  const firstImpact = await page.locator("table tbody tr td:nth-child(5)").first().textContent();
+  const firstBrand = await page.locator('table tbody tr [data-testid="row-brand"]').first().textContent();
+  // Impact is now column 3.
+  const firstImpact = await page.locator("table tbody tr td:nth-child(3)").first().textContent();
   check("first row brand = GEICO",
-    firstBrand?.replace(/Mine$/, "").trim() === "GEICO", { firstBrand });
+    firstBrand?.trim() === "GEICO", { firstBrand });
   check("first row impact = +50.9%",
     !!firstImpact && /\+50\.9%/.test(firstImpact), { firstImpact });
 
@@ -243,7 +245,7 @@ async function main(): Promise<void> {
   console.log("\n  Carrier filter → State Farm only");
   await setOnlyCarriers(page, "State Farm");
   check("SF-only → 6 rows", (await rowCount(page)) === 6);
-  const brandCells = await page.$$eval("table tbody tr td:first-child", tds =>
+  const brandCells = await page.$$eval('table tbody tr [data-testid="row-brand"]', tds =>
     tds.map(t => t.textContent?.trim() ?? ""));
   check("every row's carrier is State Farm",
     brandCells.length > 0 && brandCells.every(b => b === "State Farm"),

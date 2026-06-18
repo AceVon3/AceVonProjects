@@ -14,8 +14,10 @@ type Props = {
   todayLabel: string;
 };
 
+// Cards are flex columns so every "View all →" link can be pushed to the
+// bottom (mt-auto) and line up across the row regardless of body height.
 const CARD =
-  "border border-hairline border-line rounded-xl p-4 bg-surface";
+  "flex flex-col border border-hairline border-line rounded-xl p-4 bg-surface";
 
 export default function OverviewCards({
   prospectCount,
@@ -41,7 +43,8 @@ export default function OverviewCards({
         <div className="text-26 font-medium mb-2 text-ink" data-testid="ov-prospect-count">
           {prospectCount}
         </div>
-        <Link href="/prospect" className="text-12 text-blue-text font-medium no-underline">
+        {/* Prospect = your opportunity → green link */}
+        <Link href="/prospect" className="mt-auto text-12 text-green-text font-medium no-underline">
           View all →
         </Link>
       </div>
@@ -57,7 +60,8 @@ export default function OverviewCards({
         <div className="text-26 font-medium mb-2 text-ink" data-testid="ov-defend-count">
           {defendCount}
         </div>
-        <Link href="/defend" className="text-12 text-blue-text font-medium no-underline">
+        {/* Defend = your risk → red link */}
+        <Link href="/defend" className="mt-auto text-12 text-red-text font-medium no-underline">
           View all →
         </Link>
       </div>
@@ -80,7 +84,7 @@ export default function OverviewCards({
           className="flex items-baseline gap-2 mb-1.5 no-underline group"
         >
           <span
-            className={`text-22 font-medium ${retentionCount > 0 ? "text-red-text" : "text-ink-3"}`}
+            className={`text-18 font-medium ${retentionCount > 0 ? "text-red-text" : "text-ink-3"}`}
             data-testid="ov-retention-count"
           >
             {retentionCount}
@@ -95,7 +99,7 @@ export default function OverviewCards({
           className="flex items-baseline gap-2 no-underline group"
         >
           <span
-            className={`text-22 font-medium ${opportunityCount > 0 ? "text-green-text" : "text-ink-3"}`}
+            className={`text-18 font-medium ${opportunityCount > 0 ? "text-green-text" : "text-ink-3"}`}
             data-testid="ov-opportunity-count"
           >
             {opportunityCount}
@@ -123,7 +127,9 @@ export default function OverviewCards({
         <div className="text-11 text-ink-3 mb-2">
           Last checked {todayLabel}
         </div>
-        <Link href="/compliance" className="text-12 text-blue-text font-medium no-underline">
+        {/* Compliance is neutral (not an opportunity/risk signal) → keep the
+            existing neutral link color. */}
+        <Link href="/compliance" className="mt-auto text-12 text-blue-text font-medium no-underline">
           View resources →
         </Link>
       </div>

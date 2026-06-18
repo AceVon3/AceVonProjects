@@ -63,12 +63,16 @@ function windowBadgeClass(color: BadgeColor): string {
   return `${BADGE_CLASS[color]} inline-block px-2 py-1 text-11 rounded-md font-medium leading-[1.35] whitespace-normal`;
 }
 
-// Status pill variant: same family colors, but with a small leading status
-// dot (bg-current draws the dot in the pill's own text color, so it always
-// stays in-family).
-function statusBadgeClass(color: BadgeColor): string {
-  return `${BADGE_CLASS[color]} inline-flex items-center gap-1.5 px-2 py-0.5 text-11 rounded-full font-medium leading-[1.4]`;
-}
+// Compact status: a small colored dot + a muted label (no filled pill). The
+// dot color carries the status family (green = approved/in force, amber =
+// pending review), so it stays informative if a non-approved status appears.
+const STATUS_DOT: Record<BadgeColor, string> = {
+  green: "bg-green-text",
+  amber: "bg-amber-text",
+  blue:  "bg-blue-text",
+  red:   "bg-red-text",
+  gray:  "bg-gray-text",
+};
 
 // Static, Defend-only contextual framing for the Action column. This is
 // guidance text, NOT a data value — it carries no number and is identical
@@ -155,44 +159,41 @@ export default function FilingsTable({
     // punch line is visible without scrolling.
     <div className="overflow-x-auto rounded-lg border border-hairline border-line">
       <table
-        className={`w-full ${showActionCol ? "min-w-[1240px]" : "min-w-[1100px]"} text-13`}
+        className={`w-full ${showActionCol ? "min-w-[1040px]" : "min-w-[900px]"} text-13`}
         style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
       >
       {showActionCol ? (
+        // Defend: Carrier · Line · Impact · Effective · Status · Policyholders · Action
         <colgroup>
+          <col style={{ width: "25%" }} />
+          <col style={{ width: "13%" }} />
+          <col style={{ width: "10%" }} />
+          <col style={{ width: "20%" }} />
+          <col style={{ width: "10%" }} />
           <col style={{ width: "12%" }} />
-          <col style={{ width: "5%" }} />
-          <col style={{ width: "11%" }} />
-          <col style={{ width: "15%" }} />
-          <col style={{ width: "10%" }} />
-          <col style={{ width: "17%" }} />
-          <col style={{ width: "10%" }} />
-          <col style={{ width: "10%" }} />
           <col style={{ width: "10%" }} />
         </colgroup>
       ) : (
+        // Prospect / My Carriers: Carrier · Line · Impact · Effective · Status · Policyholders
         <colgroup>
+          <col style={{ width: "28%" }} />
           <col style={{ width: "14%" }} />
-          <col style={{ width: "6%" }} />
-          <col style={{ width: "12%" }} />
-          <col style={{ width: "16%" }} />
           <col style={{ width: "11%" }} />
-          <col style={{ width: "19%" }} />
-          <col style={{ width: "11%" }} />
-          <col style={{ width: "11%" }} />
+          <col style={{ width: "23%" }} />
+          <col style={{ width: "10%" }} />
+          <col style={{ width: "14%" }} />
         </colgroup>
       )}
       <thead>
         <tr className="bg-surface-2 border-b border-hairline border-line-2 text-left">
           <Th>{firstHeader}</Th>
-          <Th>State</Th>
           <Th>Line</Th>
-          <Th>Sub-type</Th>
           <Th
             sortId="impact"
             active={sortCol === "impact"}
             dir={sortDir}
             onSort={sortHandler("impact")}
+            align="right"
           >
             Impact
           </Th>
@@ -218,7 +219,16 @@ export default function FilingsTable({
             mode !== "my-carriers"
             && agentType === "independent"
             && ownedBrands.has(f.brand);
-          const impactC = rateImpactColor(f.overall_rate_impact, mode);
+          // Impact is colored by CATEGORY (agent perspective), not raw rate
+          // direction: Prospect (competitor raised → your opening) reads green,
+          // Defend (competitor cut → your risk) reads red — so a row never
+          // clashes (uniform meaning across pill + number). My Carriers keeps
+          // its own-carrier mapping (increase = retention risk red, decrease =
+          // opportunity green) via rateImpactColor.
+          const impactC: "red" | "green" | "black" =
+            mode === "prospect" ? "green"
+            : mode === "defend" ? "red"
+            : rateImpactColor(f.overall_rate_impact, mode);
           const showDot = shouldShowEntitySpreadDot(
             f.entity_count, f.min_entity_impact, f.max_entity_impact,
           );
@@ -239,21 +249,30 @@ export default function FilingsTable({
                 isMine ? "bg-mine-bg" : "hover:bg-surface-2/60",
               ].join(" ")}
             >
+              {/* Carrier cell: carrier · state on the lead line; the sub-type
+                  (with its info bubble) sits on a muted secondary line below.
+                  Folding state in here frees the horizontal room the
+                  Policyholders column used to lose. */}
               <Td>
-                <span>{f.brand}</span>
-                {isMine && (
-                  <span
-                    data-testid="mine-pill"
-                    className="inline-block bg-blue-fill text-blue-text text-10 px-1.5 py-px rounded-full ml-1 align-[1px] font-medium"
-                  >
-                    Mine
-                  </span>
-                )}
+                <div className="flex items-center flex-wrap gap-x-1.5">
+                  <span data-testid="row-brand" className="font-medium text-ink">{f.brand}</span>
+                  <span className="text-ink-3" aria-hidden>·</span>
+                  <span data-testid="row-state" className="text-ink-2">{f.state}</span>
+                  {isMine && (
+                    <span
+                      data-testid="mine-pill"
+                      className="inline-block bg-blue-fill text-blue-text text-10 px-1.5 py-px rounded-full align-[1px] font-medium"
+                    >
+                      Mine
+                    </span>
+                  )}
+                </div>
+                <div className="text-12 text-ink-2 mt-0.5">
+                  <SubtypeCell raw={f.sub_type} />
+                </div>
               </Td>
-              <Td>{f.state}</Td>
               <Td>{f.line_of_business}</Td>
-              <Td><SubtypeCell raw={f.sub_type} /></Td>
-              <Td>
+              <Td align="right">
                 <span className={impactClass(impactC)}>
                   {formatRateImpact(f.overall_rate_impact)}
                 </span>
@@ -280,8 +299,11 @@ export default function FilingsTable({
                 </span>
               </Td>
               <Td>
-                <span className={statusBadgeClass(statusB.color)}>
-                  <span className="w-[5px] h-[5px] rounded-full bg-current opacity-70" aria-hidden />
+                <span className="inline-flex items-center gap-1.5 text-12 text-ink-2">
+                  <span
+                    className={`w-[6px] h-[6px] rounded-full shrink-0 ${STATUS_DOT[statusB.color]}`}
+                    aria-hidden
+                  />
                   {statusB.text}
                 </span>
               </Td>
@@ -328,7 +350,9 @@ function Th({
   sortId?: string;
 }) {
   const padAlign = `py-2.5 px-3 ${align === "right" ? "text-right" : "text-left"}`;
-  const colorCls = active ? "text-ink" : "text-ink-2";
+  // Lighter header (ink-3) so the data rows lead; the active sort column
+  // darkens to ink for a clear affordance.
+  const colorCls = active ? "text-ink" : "text-ink-3";
   // Three-state sort affordance:
   //   active sort column → solid directional caret (▲ asc / ▼ desc)
   //   sortable, inactive → muted up/down double-arrow (⇅) "clickable" hint

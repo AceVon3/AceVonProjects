@@ -45,11 +45,12 @@ export default function SubtypeCell({ raw }: { raw: string | null }): React.JSX.
   }
 
   return (
-    // The label takes the remaining width (flex-1) so the info `i` is pinned
-    // to the cell's right edge, top-aligned with the first line — a consistent
-    // position whether the label is one line or wraps to two.
-    <span className="flex items-start gap-1">
-      <span className="flex-1 min-w-0">{label}</span>
+    // The `i` follows the label inline (it now lives on the sub-type secondary
+    // line inside the carrier cell, not its own column), so it reads as part of
+    // the label rather than pinned to a column edge. items-start keeps the dot
+    // aligned to the first line when the label wraps.
+    <span className="inline-flex items-start gap-1 align-top">
+      <span className="min-w-0">{label}</span>
       {explanation && (
         <button
           ref={btnRef}

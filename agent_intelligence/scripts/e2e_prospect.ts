@@ -64,8 +64,8 @@ async function setProfileAndOpen(page: Page, profile: unknown): Promise<void> {
 }
 
 async function rowBrands(page: Page): Promise<string[]> {
-  return page.$$eval("table tbody tr td:first-child", cells =>
-    cells.map(c => c.textContent?.replace(/Mine$/, "").trim() ?? ""),
+  return page.$$eval('table tbody tr [data-testid="row-brand"]', cells =>
+    cells.map(c => c.textContent?.trim() ?? ""),
   );
 }
 
@@ -87,8 +87,10 @@ async function main(): Promise<void> {
 
   const firstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Competitor'", firstHeader === "Competitor", { firstHeader });
-  const col4Header = (await page.locator("table thead th").nth(3).textContent())?.trim();
-  check("column 4 header = 'Sub-type'", col4Header === "Sub-type", { col4Header });
+  // State + Sub-type now live inside the carrier cell, so the columns are
+  // Competitor · Line · Impact · Effective · Status · Policyholders.
+  const col3Header = (await page.locator("table thead th").nth(2).textContent())?.trim();
+  check("column 3 header = 'Impact'", col3Header === "Impact", { col3Header });
 
   const brands = await rowBrands(page);
   check("no row contains 'State Farm' in the Carrier cell",
@@ -118,8 +120,8 @@ async function main(): Promise<void> {
   }
 
   // Policyholders cells: each is either "—" or matches the abbreviation
-  // regex. Policyholders is column 8 after the Sub-type column was added.
-  const polCells = await page.$$eval("table tbody tr td:nth-child(8)", tds =>
+  // regex. Policyholders is now column 6.
+  const polCells = await page.$$eval("table tbody tr td:nth-child(6)", tds =>
     tds.map(t => t.textContent?.trim() ?? ""),
   );
   const polRe = /^(—|\d{1,3}(\.\d)?[kM]?)$/;
@@ -149,7 +151,9 @@ async function main(): Promise<void> {
     (await page.locator('[data-testid="subtype-popover"]').count()) === 0);
 
   // Find a catch-all (Combinations/Other) sub-type and confirm the framing.
-  const labels = await page.$$eval("table tbody tr td:nth-child(4)", tds =>
+  // The sub-type label now lives in the carrier cell (first column), so read
+  // it there — brand/state text never contains "Combinations"/"Other".
+  const labels = await page.$$eval("table tbody tr td:first-child", tds =>
     tds.map((t, i) => ({ i, text: t.textContent?.trim() ?? "" })));
   const caIdx = labels.findIndex(l => /Combinations|Other/.test(l.text));
   if (caIdx >= 0) {
@@ -177,7 +181,7 @@ async function main(): Promise<void> {
   // Mine pill: every State Farm/Travelers row must have one, no other row.
   const rowsWithPill = await page.$$eval("table tbody tr", rs =>
     rs.map(r => ({
-      brand: r.querySelector("td:first-child")?.textContent?.replace(/Mine$/, "").trim() ?? "",
+      brand: r.querySelector('[data-testid="row-brand"]')?.textContent?.trim() ?? "",
       hasMine: !!r.querySelector('[data-testid="mine-pill"]'),
       // Use computed style — the warm tint comes from a Tailwind class
       // (bg-mine-bg) after the token consolidation, not inline style.

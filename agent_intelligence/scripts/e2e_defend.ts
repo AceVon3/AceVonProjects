@@ -46,8 +46,10 @@ const INDEPENDENT_SF_TRV = {
   created_at: "2026-05-28T00:00:00.000Z",
 };
 
-// Defend-mode badge text (the only mode that uses these strings).
-const DEFEND_BADGE_RE = /(Risk window opens in \d+ weeks|Risk window open now|Customers may already be shopping|Pending review)/;
+// Defend-mode badge text (the only mode that uses these strings). The
+// already-in-effect rows now read "In effect N weeks" — the "your customers
+// may shop" framing lives once in the page header, not on every row.
+const DEFEND_BADGE_RE = /(Risk window opens in \d+ weeks|Risk window open now|In effect \d+ weeks|Pending review)/;
 // Defend badges only use red (#FCEBEB / #A32D2D) or amber (#FAEEDA / #633806).
 const DEFEND_BG_COLORS = ["rgb(252, 235, 235)", "rgb(250, 238, 218)"];
 
@@ -85,18 +87,22 @@ async function main(): Promise<void> {
 
   const firstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Threat'", firstHeader === "Threat", { firstHeader });
-  const col4Header = (await page.locator("table thead th").nth(3).textContent())?.trim();
-  check("column 4 header = 'Sub-type'", col4Header === "Sub-type", { col4Header });
+  // State + Sub-type were folded into the carrier cell, so the columns are now
+  // Threat · Line · Impact · Effective · Status · Policyholders · Action.
+  const col2Header = (await page.locator("table thead th").nth(1).textContent())?.trim();
+  check("column 2 header = 'Line'", col2Header === "Line", { col2Header });
+  const col3Header = (await page.locator("table thead th").nth(2).textContent())?.trim();
+  check("column 3 header = 'Impact'", col3Header === "Impact", { col3Header });
 
-  const brands = await page.$$eval("table tbody tr td:first-child", cells =>
+  const brands = await page.$$eval('table tbody tr [data-testid="row-brand"]', cells =>
     cells.map(c => c.textContent?.trim() ?? ""),
   );
-  check("no row contains 'State Farm' in the Threat cell",
+  check("no row's Threat carrier is 'State Farm'",
     brands.every(b => !b.includes("State Farm")), { brands });
 
   // Window badges (the 2nd <span> inside the Effective cell — first child is
-  // the date <div>). Effective is column 6 after the Sub-type column was added.
-  const badges = await page.$$eval("table tbody tr td:nth-child(6) span", spans =>
+  // the date <div>). Effective is now column 4.
+  const badges = await page.$$eval("table tbody tr td:nth-child(4) span", spans =>
     spans.map(s => ({
       text: s.textContent?.trim() ?? "",
       bg: window.getComputedStyle(s as HTMLElement).backgroundColor,
@@ -109,12 +115,11 @@ async function main(): Promise<void> {
     badges.every(b => DEFEND_BG_COLORS.includes(b.bg)),
     { offending: badges.filter(b => !DEFEND_BG_COLORS.includes(b.bg)) });
 
-  // The data is all in the past relative to asOf (2026-05-27), so the
-  // expected framing for all 8 rows is the orange/amber "Customers may
-  // already be shopping". Assert that's the case so we know the
+  // The data is all in the past relative to asOf, so the expected framing for
+  // every row is the amber "In effect N weeks". Assert that so we know the
   // future-vs-past branch is wired correctly.
-  const allPastFraming = badges.every(b => b.text === "Customers may already be shopping");
-  check("all 8 past-effective rows show 'Customers may already be shopping' (amber)",
+  const allPastFraming = badges.every(b => /^In effect \d+ weeks$/.test(b.text));
+  check("all past-effective rows show 'In effect N weeks' (amber)",
     allPastFraming, { uniqueTexts: Array.from(new Set(badges.map(b => b.text))) });
 
   // SERFF tooltips still present per spec.
@@ -140,7 +145,7 @@ async function main(): Promise<void> {
   // get the pill + warm tint, others do not.
   const rowMeta = await page.$$eval("table tbody tr", rs =>
     rs.map(r => ({
-      brand: r.querySelector("td:first-child")?.textContent?.replace(/Mine$/, "").trim() ?? "",
+      brand: r.querySelector('[data-testid="row-brand"]')?.textContent?.trim() ?? "",
       hasMine: !!r.querySelector('[data-testid="mine-pill"]'),
       // Use computed style — the warm tint comes from a Tailwind class
       // (bg-mine-bg) after the token consolidation, not inline style.

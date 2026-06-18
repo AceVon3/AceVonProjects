@@ -152,7 +152,7 @@ async function main(): Promise<void> {
   check("Recent Changes shows ≤ 8 rows", feedRows > 0 && feedRows <= 8, { feedRows });
   const firstFeed = await feed.locator('[data-testid="feed-row"]').first().textContent();
   check("Top feed row is Travelers (matches spec verification ordering)",
-    !!firstFeed && /Travelers/.test(firstFeed) && /defend/.test(firstFeed),
+    !!firstFeed && /Travelers/.test(firstFeed) && /Defend/i.test(firstFeed),
     { firstFeed });
 
   // -- Opportunity-is-often-0 case (own-carrier decreases are rare) ----------

@@ -82,7 +82,7 @@ group("validateProfile: rejects each missing/invalid field", () => {
     ["unknown carrier",                                     { ...VALID_INDEPENDENT, authorized_brands: ["__not_a_real_brand__" as any] }, "authorized_brands"],
     ["captive with 2 brands",                               { ...VALID_INDEPENDENT, agent_type: "captive", authorized_brands: ["State Farm", "GEICO"] }, "authorized_brands"],
     ["no licensed_states",                                  { ...VALID_INDEPENDENT, licensed_states: [] },    "licensed_states"],
-    ["licensed_states contains non-data_coverage (tamper)", { ...VALID_INDEPENDENT, licensed_states: ["WA", "CA"] }, "licensed_states"],
+    ["licensed_states contains non-data_coverage (tamper)", { ...VALID_INDEPENDENT, licensed_states: ["WA", "WY"] }, "licensed_states"],
     ["no employee_states",                                  { ...VALID_INDEPENDENT, employee_states: [] },    "employee_states"],
     ["missing pay_type",                                    { ...VALID_INDEPENDENT, pay_type: undefined as any }, "pay_type"],
     ["invalid pay_type",                                    { ...VALID_INDEPENDENT, pay_type: "weekly" as any }, "pay_type"],
@@ -157,7 +157,7 @@ group("saveProfile + loadProfile: round-trip via localStorage shim", () => {
 group("saveProfile: refuses to write invalid profiles (tamper guard)", () => {
   clearProfile();
   saveProfile(VALID_INDEPENDENT); // baseline
-  const bad: AgentProfile = { ...VALID_INDEPENDENT, licensed_states: ["CA"] };
+  const bad: AgentProfile = { ...VALID_INDEPENDENT, licensed_states: ["WY"] };
   const errs = saveProfile(bad);
   check("saveProfile(invalid licensed_states) -> errors", errs.length > 0);
   const persisted = loadProfile();

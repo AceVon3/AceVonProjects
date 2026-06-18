@@ -152,13 +152,13 @@ export default function ProspectPage(): React.JSX.Element {
         />
 
         {headerCard && (
-          <div className="rounded-lg mb-4 flex flex-wrap items-center gap-x-6 gap-y-3 bg-surface-2 px-4 py-3.5">
+          <div className="rounded-lg mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 bg-surface-2 px-4 py-2.5">
             <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
+              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-3">
                 Filings in your states
               </div>
               <div
-                className="text-22 font-medium text-ink"
+                className="text-18 font-medium text-ink"
                 data-testid="header-count"
               >
                 {headerCard.count}
@@ -166,11 +166,12 @@ export default function ProspectPage(): React.JSX.Element {
             </div>
             <div className="w-px self-stretch bg-line-2 hidden sm:block" />
             <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
+              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-3">
                 Largest move
               </div>
               <div className="text-14 text-ink">
-                <span className="font-medium text-red-text">
+                {/* Prospect = your opportunity → green (category color) */}
+                <span className="font-medium text-green-text">
                   {headerCard.largest.overall_rate_impact >= 0 ? "+" : "−"}
                   {Math.abs(headerCard.largest.overall_rate_impact).toFixed(1)}%
                 </span>{" "}

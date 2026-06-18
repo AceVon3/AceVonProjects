@@ -79,7 +79,10 @@ export function computeWindowBadge(
   if (mode === "defend") {
     if (days > 6 && weeks >= 1) return { color: "red", text: `Risk window opens in ${weeks} weeks` };
     if (days >= 0 && days <= 6) return { color: "red", text: "Risk window open now" };
-    return { color: "amber", text: "Customers may already be shopping" };
+    // Already in effect. The "your customers may shop" framing is stated once
+    // in the page header, so the per-row badge stays factual (how long ago the
+    // cut landed) rather than repeating the callout on every row.
+    return { color: "amber", text: `In effect ${absWeeks} weeks` };
   }
   // my-carriers — neutral throughout
   if (days > 6 && weeks >= 1) return { color: "gray", text: `In ${weeks} weeks` };
@@ -87,13 +90,15 @@ export function computeWindowBadge(
   return { color: "gray", text: `In effect ${absWeeks} weeks` };
 }
 
-// Status pill: derived from rate_activity. rate_change_pending → amber
-// "Pending"; everything else in the active window is "Approved".
+// Status badge: derived from rate_activity. rate_change_pending → amber
+// "Pending"; everything else in the active window is an approved filing.
+// The color also drives the compact status dot in the table, so it reads as
+// a status signal: green = approved (in force), amber = still pending review.
 export function computeStatusBadge(rateActivity: string): Badge {
   if (rateActivity === "rate_change_pending") {
     return { color: "amber", text: "Pending" };
   }
-  return { color: "blue", text: "Approved" };
+  return { color: "green", text: "Approved" };
 }
 
 // Color of the Rate Impact value, mode-specific. Spec rules:
