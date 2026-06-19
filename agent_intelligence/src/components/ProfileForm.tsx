@@ -16,26 +16,29 @@ import {
 } from "@/lib/profile";
 import { STATES } from "@/lib/states";
 
+// Each office is held as all-string fields for controlled inputs.
+type OfficeDraft = { label: string; street: string; city: string; state: string; zip: string };
+
 type FormState = {
   agent_type: AgentType | "";
   authorized_brands: Brand[];
   licensed_states: string[];
   full_name: string;
-  zip_code: string;
-  home_state: string;
+  offices: OfficeDraft[];     // >= 1; offices[0] is the primary (home state/ZIP)
   employee_count_str: string; // keep as string for input control
   employee_states: string[];
   pay_type: PayType | "";
   remote_count_str: string;   // keep as string for input control
 };
 
+const EMPTY_OFFICE: OfficeDraft = { label: "", street: "", city: "", state: "", zip: "" };
+
 const EMPTY: FormState = {
   agent_type: "",
   authorized_brands: [],
   licensed_states: [],
   full_name: "",
-  zip_code: "",
-  home_state: "",
+  offices: [{ ...EMPTY_OFFICE }],
   employee_count_str: "",
   employee_states: [],
   pay_type: "",
@@ -43,15 +46,24 @@ const EMPTY: FormState = {
 };
 
 function initialState(): FormState {
-  const existing = loadProfile();
+  const existing = loadProfile(); // loadProfile migrates legacy home_state/zip → offices[0]
   if (!existing) return EMPTY;
+  const offices =
+    existing.offices && existing.offices.length > 0
+      ? existing.offices.map(o => ({
+          label: o.label ?? "",
+          street: o.street ?? "",
+          city: o.city ?? "",
+          state: o.state ?? "",
+          zip: o.zip ?? "",
+        }))
+      : [{ ...EMPTY_OFFICE }];
   return {
     agent_type: existing.agent_type,
     authorized_brands: existing.authorized_brands,
     licensed_states: existing.licensed_states,
     full_name: existing.full_name,
-    zip_code: existing.zip_code,
-    home_state: existing.home_state,
+    offices,
     employee_count_str: String(existing.employee_count),
     employee_states: existing.employee_states,
     // Old profiles predate these fields — leave blank so they read as the
@@ -74,8 +86,13 @@ function toProfile(s: FormState): Partial<AgentProfile> {
     authorized_brands: s.authorized_brands,
     licensed_states: s.licensed_states,
     full_name: s.full_name,
-    zip_code: s.zip_code,
-    home_state: s.home_state,
+    offices: s.offices.map(o => ({
+      label: o.label.trim() || undefined,
+      street: o.street.trim(),
+      city: o.city.trim(),
+      state: o.state,
+      zip: o.zip,
+    })),
     employee_count: Number.isFinite(n) && s.employee_count_str !== "" ? n : undefined,
     employee_states: s.employee_states,
     pay_type: (s.pay_type || undefined) as PayType | undefined,
@@ -118,6 +135,27 @@ export default function ProfileForm(): React.JSX.Element {
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setState(prev => ({ ...prev, [key]: value }));
+  }
+
+  function updateOffice<K extends keyof OfficeDraft>(i: number, key: K, value: OfficeDraft[K]) {
+    setState(prev => ({
+      ...prev,
+      offices: prev.offices.map((o, idx) => (idx === i ? { ...o, [key]: value } : o)),
+    }));
+  }
+
+  function addOffice() {
+    setState(prev => ({ ...prev, offices: [...prev.offices, { ...EMPTY_OFFICE }] }));
+  }
+
+  // Can't drop below one office. Removing the primary promotes the next office
+  // to offices[0] (its state/ZIP becomes the home location).
+  function removeOffice(i: number) {
+    setState(prev =>
+      prev.offices.length <= 1
+        ? prev
+        : { ...prev, offices: prev.offices.filter((_, idx) => idx !== i) },
+    );
   }
 
   function setAgentType(t: AgentType) {
@@ -181,8 +219,7 @@ export default function ProfileForm(): React.JSX.Element {
       authorized_brands: draft.authorized_brands!,
       licensed_states: draft.licensed_states!,
       full_name: draft.full_name!.trim(),
-      zip_code: draft.zip_code!,
-      home_state: draft.home_state!,
+      offices: draft.offices!,
       employee_count: draft.employee_count!,
       employee_states: draft.employee_states!,
       pay_type: draft.pay_type!,
@@ -245,7 +282,9 @@ export default function ProfileForm(): React.JSX.Element {
           <span>Agency details</span>
         </div>
 
-        {/* Agency details: 4 fields in a 2-col grid */}
+        {/* Agency details: name + headcount in a 2-col grid. Office addresses
+            (incl. the primary office that supplies the home state/ZIP) are in
+            their own repeatable section below. */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
           {/* Full name */}
           <div>
@@ -261,45 +300,6 @@ export default function ProfileForm(): React.JSX.Element {
               aria-invalid={!!errors.full_name}
             />
             <FieldErr msg={errors.full_name} />
-          </div>
-
-          {/* ZIP code */}
-          <div>
-            <label className="block text-11 mb-1 text-ink-2">
-              ZIP code <ReqStar />
-            </label>
-            <input
-              type="text"
-              inputMode="numeric"
-              maxLength={5}
-              value={state.zip_code}
-              onChange={e => update("zip_code", e.target.value.replace(/\D/g, "").slice(0, 5))}
-              placeholder="99206"
-              className={INPUT_CLS}
-              aria-invalid={!!errors.zip_code}
-            />
-            <FieldErr msg={errors.zip_code} />
-          </div>
-
-          {/* Home state */}
-          <div>
-            <label className="block text-11 mb-1 text-ink-2">
-              Home state <ReqStar />
-            </label>
-            <select
-              value={state.home_state}
-              onChange={e => update("home_state", e.target.value)}
-              className={`${INPUT_CLS} bg-surface`}
-              aria-invalid={!!errors.home_state}
-            >
-              <option value="">Select…</option>
-              {STATES.map(s => (
-                <option key={s.code} value={s.code}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            <FieldErr msg={errors.home_state} />
           </div>
 
           {/* Employees */}
@@ -339,6 +339,123 @@ export default function ProfileForm(): React.JSX.Element {
             <FieldErr msg={errors.remote_count || liveRemoteError} />
           </div>
         </div>
+
+        {/* Office addresses — repeatable. The FIRST office is the primary; its
+            state + ZIP are the agency's home location (there's no separate home
+            state / ZIP field). At least one office is required. */}
+        <SecLabel>
+          Office addresses <ReqStar />
+        </SecLabel>
+        <p className="text-11 mb-2 text-ink-3">
+          Your first office is your primary location — its state and ZIP are used as
+          your agency&apos;s home state.
+        </p>
+        <div className="grid gap-3">
+          {state.offices.map((o, i) => (
+            <div
+              key={i}
+              data-testid={`office-${i}`}
+              className="rounded-lg border border-hairline border-line-2 bg-surface-2 p-3"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-11 uppercase tracking-wider04 text-ink-2">
+                  {i === 0 ? "Primary office" : `Office ${i + 1}`}
+                </span>
+                {state.offices.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeOffice(i)}
+                    data-testid={`office-remove-${i}`}
+                    aria-label={`Remove office ${i + 1}`}
+                    className="text-13 leading-none text-ink-3 hover:text-red-text cursor-pointer px-1"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {/* Label (optional) */}
+              <input
+                type="text"
+                value={o.label}
+                onChange={e => updateOffice(i, "label", e.target.value)}
+                placeholder="Label (optional, e.g. Main Office)"
+                className={`${INPUT_CLS} mb-2`}
+                aria-label={`Office ${i + 1} label`}
+              />
+
+              {/* Street */}
+              <input
+                type="text"
+                value={o.street}
+                onChange={e => updateOffice(i, "street", e.target.value)}
+                placeholder="Street address"
+                className={INPUT_CLS}
+                aria-label={`Office ${i + 1} street`}
+                aria-invalid={!!errors[`offices.${i}.street`]}
+              />
+              <FieldErr msg={errors[`offices.${i}.street`]} />
+
+              {/* City · State · ZIP */}
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2 mt-2">
+                <div>
+                  <input
+                    type="text"
+                    value={o.city}
+                    onChange={e => updateOffice(i, "city", e.target.value)}
+                    placeholder="City"
+                    className={INPUT_CLS}
+                    aria-label={`Office ${i + 1} city`}
+                    aria-invalid={!!errors[`offices.${i}.city`]}
+                  />
+                  <FieldErr msg={errors[`offices.${i}.city`]} />
+                </div>
+                <div>
+                  <select
+                    value={o.state}
+                    onChange={e => updateOffice(i, "state", e.target.value)}
+                    className={`${INPUT_CLS} bg-surface`}
+                    aria-label={`Office ${i + 1} state`}
+                    aria-invalid={!!errors[`offices.${i}.state`]}
+                  >
+                    <option value="">State…</option>
+                    {STATES.map(s => (
+                      <option key={s.code} value={s.code}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                  <FieldErr msg={errors[`offices.${i}.state`]} />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={5}
+                    value={o.zip}
+                    onChange={e => updateOffice(i, "zip", e.target.value.replace(/\D/g, "").slice(0, 5))}
+                    placeholder="ZIP"
+                    className={`${INPUT_CLS} sm:w-[88px]`}
+                    aria-label={`Office ${i + 1} ZIP`}
+                    aria-invalid={!!errors[`offices.${i}.zip`]}
+                  />
+                  <FieldErr msg={errors[`offices.${i}.zip`]} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={addOffice}
+          data-testid="office-add"
+          className="mt-2 mb-1 text-12 font-medium text-blue-text hover:underline cursor-pointer bg-transparent"
+        >
+          + Add another office
+        </button>
+        <FieldErr msg={errors.offices} />
+
+        <div className="my-4 border-t border-hairline border-line" />
 
         {/* Pay type — drives the Compliance office summary's relevance
             pointing (hourly → min wage/overtime; salary → exempt threshold). */}

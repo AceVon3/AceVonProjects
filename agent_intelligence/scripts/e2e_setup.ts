@@ -44,9 +44,25 @@ async function main(): Promise<void> {
   // -- (2) Fill form, save, route to / --------------------------------------
   console.log("\n(2) fill the form, click Save, expect routing to /");
   await page.fill('input[placeholder="Ryan Christy"]', "Ryan Christy");
-  await page.fill('input[placeholder="99206"]', "99206");
-  await page.selectOption("select", "WA"); // Home state
   await page.fill('input[placeholder="20"]', "20");
+
+  // Office addresses are repeatable: add a second office, confirm it appears,
+  // then remove it so we save a single primary office.
+  await page.locator('[data-testid="office-add"]').click();
+  check("‘+ Add another office’ appends a second office card",
+    (await page.locator('[data-testid="office-1"]').count()) === 1);
+  await page.locator('[data-testid="office-remove-1"]').click();
+  check("remove (×) drops the second office back to one",
+    (await page.locator('[data-testid="office-1"]').count()) === 0);
+  check("the single remaining office has no remove control (can't go below one)",
+    (await page.locator('[data-testid="office-remove-0"]').count()) === 0);
+
+  // Primary office — its state + ZIP become the agency home location.
+  await page.fill('input[aria-label="Office 1 label"]', "Main Office");
+  await page.fill('input[aria-label="Office 1 street"]', "123 Main St");
+  await page.fill('input[aria-label="Office 1 city"]', "Spokane");
+  await page.selectOption('select[aria-label="Office 1 state"]', "WA");
+  await page.fill('input[aria-label="Office 1 ZIP"]', "99206");
 
   // Pay type (new required field). Choose Both.
   await page.locator('[data-testid="pay-type-both"]').click();
@@ -105,8 +121,13 @@ async function main(): Promise<void> {
   check("  licensed_states = [WA, OR, ID]",              JSON.stringify(stored?.licensed_states) === '["WA","OR","ID"]');
   check("  employee_states = [WA, OR, AZ]",              JSON.stringify(stored?.employee_states) === '["WA","OR","AZ"]');
   check("  full_name = 'Ryan Christy'",                  stored?.full_name === "Ryan Christy");
-  check("  zip_code = '99206'",                          stored?.zip_code === "99206");
-  check("  home_state = 'WA'",                           stored?.home_state === "WA");
+  check("  offices has exactly one entry",               Array.isArray(stored?.offices) && stored.offices.length === 1);
+  check("  primary office label = 'Main Office'",        stored?.offices?.[0]?.label === "Main Office");
+  check("  primary office street populated",             !!stored?.offices?.[0]?.street);
+  check("  primary office city = 'Spokane'",             stored?.offices?.[0]?.city === "Spokane");
+  check("  primary office state = 'WA' (home state)",    stored?.offices?.[0]?.state === "WA");
+  check("  primary office zip = '99206' (home ZIP)",     stored?.offices?.[0]?.zip === "99206");
+  check("  no legacy home_state / zip_code fields",      stored?.home_state === undefined && stored?.zip_code === undefined);
   check("  employee_count = 20",                         stored?.employee_count === 20);
   check("  pay_type = 'both'",                            stored?.pay_type === "both");
   check("  remote_count = 4",                             stored?.remote_count === 4);

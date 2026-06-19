@@ -9,19 +9,35 @@ export type AgentType = "captive" | "independent";
 // summary points at (hourly → min wage/overtime; salary → exempt threshold).
 export type PayType = "hourly" | "salary" | "both";
 
+// A physical office. The FIRST office (offices[0]) is the PRIMARY — its state
+// and ZIP are the agency's home state / ZIP. There is no separate home_state /
+// zip_code field anymore; the primary office is the single source of truth.
+export type Office = {
+  label?: string;  // optional, e.g. "Main Office"
+  street: string;
+  city: string;
+  state: string;   // any of the 50
+  zip: string;     // 5 digits
+};
+
 export type AgentProfile = {
   agent_type: AgentType;
   authorized_brands: Brand[]; // exactly 1 if captive, 1+ if independent
   licensed_states: string[];  // every entry must be data_coverage:true
   full_name: string;
-  zip_code: string;           // 5 digits
-  home_state: string;         // any of the 50
+  offices: Office[];          // >= 1; offices[0] is primary (home state/ZIP)
   employee_count: number;     // integer >= 1
   employee_states: string[];  // any of the 50, no data gating
   pay_type: PayType;          // hourly | salary | both
   remote_count: number;       // integer 0..employee_count
   created_at: string;         // ISO
 };
+
+// The primary office is the agency's home state / ZIP. Returns null only for a
+// malformed profile with no offices (callers fall back to "").
+export function primaryOffice(p: AgentProfile | null): Office | null {
+  return p?.offices?.[0] ?? null;
+}
 
 const PAY_TYPES: ReadonlySet<string> = new Set<PayType>(["hourly", "salary", "both"]);
 
@@ -39,9 +55,11 @@ export function needsProfileUpgrade(p: AgentProfile | null): boolean {
 
 const BRAND_SET: ReadonlySet<string> = new Set(BRANDS);
 
-// One validation error per offending field. Empty array = profile is valid.
+// One validation error per offending field. `field` is a key of AgentProfile,
+// "form", or a per-office path like "offices.0.street" (so the form can render
+// the message next to the exact office input).
 export type ValidationError = {
-  field: keyof AgentProfile | "form";
+  field: string;
   message: string;
 };
 
@@ -58,12 +76,27 @@ export function validateProfile(
     errs.push({ field: "full_name", message: "Full name is required." });
   }
 
-  if (!p.zip_code || !/^\d{5}$/.test(p.zip_code)) {
-    errs.push({ field: "zip_code", message: "ZIP code must be exactly 5 digits." });
-  }
-
-  if (!p.home_state) {
-    errs.push({ field: "home_state", message: "Home state is required." });
+  // At least one office; each office needs street/city/state/ZIP (label is
+  // optional). The primary office (offices[0]) doubles as the agency's home
+  // state / ZIP.
+  const offices = p.offices ?? [];
+  if (offices.length === 0) {
+    errs.push({ field: "offices", message: "At least one office address is required." });
+  } else {
+    offices.forEach((o, i) => {
+      if (!o.street || o.street.trim() === "") {
+        errs.push({ field: `offices.${i}.street`, message: "Street address is required." });
+      }
+      if (!o.city || o.city.trim() === "") {
+        errs.push({ field: `offices.${i}.city`, message: "City is required." });
+      }
+      if (!o.state) {
+        errs.push({ field: `offices.${i}.state`, message: "State is required." });
+      }
+      if (!o.zip || !/^\d{5}$/.test(o.zip)) {
+        errs.push({ field: `offices.${i}.zip`, message: "ZIP code must be exactly 5 digits." });
+      }
+    });
   }
 
   if (
@@ -138,6 +171,27 @@ export function validateProfile(
   return errs;
 }
 
+// Migrate a parsed profile in place: legacy profiles (pre-offices) stored flat
+// home_state + zip_code. Synthesize a single primary office from them so no
+// saved data is lost and every reader can rely on offices[0]. Street/city were
+// never collected before → empty (the user fills them next time they save).
+// A profile that already has an offices array is returned untouched.
+export function migrateProfile(parsed: unknown): AgentProfile {
+  if (parsed && typeof parsed === "object" && !Array.isArray((parsed as { offices?: unknown }).offices)) {
+    const legacy = parsed as { home_state?: unknown; zip_code?: unknown; offices?: Office[] };
+    legacy.offices = [
+      {
+        label: "",
+        street: "",
+        city: "",
+        state: typeof legacy.home_state === "string" ? legacy.home_state : "",
+        zip: typeof legacy.zip_code === "string" ? legacy.zip_code : "",
+      },
+    ];
+  }
+  return parsed as AgentProfile;
+}
+
 // localStorage round-trip. Both functions tolerate SSR (return null / no-op
 // when window is undefined) so they're safe to call from any component.
 export function loadProfile(): AgentProfile | null {
@@ -148,7 +202,9 @@ export function loadProfile(): AgentProfile | null {
     const parsed = JSON.parse(raw);
     // Don't strict-validate on load — a profile saved by an older version
     // should still load. Validation is for save and for query-time guards.
-    return parsed as AgentProfile;
+    // Migrate the legacy home_state/zip_code shape into offices[0] so readers
+    // can rely on the primary office.
+    return migrateProfile(parsed);
   } catch {
     return null;
   }

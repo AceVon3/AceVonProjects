@@ -26,6 +26,7 @@ import {
   PROFILE_KEY,
   clearProfile,
   loadProfile,
+  migrateProfile,
   needsProfileUpgrade,
   saveProfile,
   validateProfile,
@@ -43,13 +44,14 @@ function group(name: string, fn: () => void) {
   fn();
 }
 
+const VALID_OFFICE = { label: "Main Office", street: "123 Main St", city: "Spokane", state: "WA", zip: "99206" };
+
 const VALID_INDEPENDENT: AgentProfile = {
   agent_type: "independent",
   authorized_brands: ["State Farm", "Travelers"],
   licensed_states: ["WA", "OR", "ID"],
   full_name: "Ryan Christy",
-  zip_code: "99206",
-  home_state: "WA",
+  offices: [{ ...VALID_OFFICE }],
   employee_count: 20,
   employee_states: ["WA", "OR", "AZ"],
   pay_type: "both",
@@ -71,10 +73,14 @@ group("validateProfile: rejects each missing/invalid field", () => {
   const cases: Array<[string, Partial<AgentProfile>, string]> = [
     ["empty profile",                                       {},                                               "full_name"],
     ["missing full_name",                                   { ...VALID_INDEPENDENT, full_name: "" },          "full_name"],
-    ["zip with non-digits",                                 { ...VALID_INDEPENDENT, zip_code: "9920a" },      "zip_code"],
-    ["zip too short",                                       { ...VALID_INDEPENDENT, zip_code: "9920" },       "zip_code"],
-    ["zip too long",                                        { ...VALID_INDEPENDENT, zip_code: "992066" },     "zip_code"],
-    ["missing home_state",                                  { ...VALID_INDEPENDENT, home_state: "" },         "home_state"],
+    ["no offices",                                          { ...VALID_INDEPENDENT, offices: [] },            "offices"],
+    ["office missing street",                               { ...VALID_INDEPENDENT, offices: [{ ...VALID_OFFICE, street: "" }] }, "offices.0.street"],
+    ["office missing city",                                 { ...VALID_INDEPENDENT, offices: [{ ...VALID_OFFICE, city: "" }] },   "offices.0.city"],
+    ["office missing state",                                { ...VALID_INDEPENDENT, offices: [{ ...VALID_OFFICE, state: "" }] },  "offices.0.state"],
+    ["office zip with non-digits",                          { ...VALID_INDEPENDENT, offices: [{ ...VALID_OFFICE, zip: "9920a" }] }, "offices.0.zip"],
+    ["office zip too short",                                { ...VALID_INDEPENDENT, offices: [{ ...VALID_OFFICE, zip: "9920" }] },  "offices.0.zip"],
+    ["office zip too long",                                 { ...VALID_INDEPENDENT, offices: [{ ...VALID_OFFICE, zip: "992066" }] },"offices.0.zip"],
+    ["second office invalid (path index)",                  { ...VALID_INDEPENDENT, offices: [{ ...VALID_OFFICE }, { ...VALID_OFFICE, zip: "" }] }, "offices.1.zip"],
     ["employee_count = 0",                                  { ...VALID_INDEPENDENT, employee_count: 0 },      "employee_count"],
     ["employee_count not integer",                          { ...VALID_INDEPENDENT, employee_count: 3.5 },    "employee_count"],
     ["missing agent_type",                                  { ...VALID_INDEPENDENT, agent_type: undefined as any }, "agent_type"],
@@ -105,6 +111,10 @@ group("validateProfile: accepts valid profiles", () => {
     validateProfile({ ...VALID_INDEPENDENT, employee_count: 5, remote_count: 5 }).length === 0);
   check("remote_count == 0 is allowed",
     validateProfile({ ...VALID_INDEPENDENT, remote_count: 0 }).length === 0);
+  check("office label is optional (omitted) -> zero errors",
+    validateProfile({ ...VALID_INDEPENDENT, offices: [{ street: "1 A St", city: "Boise", state: "ID", zip: "83702" }] }).length === 0);
+  check("multiple valid offices -> zero errors",
+    validateProfile({ ...VALID_INDEPENDENT, offices: [{ ...VALID_OFFICE }, { street: "2 B St", city: "Reno", state: "NV", zip: "89501" }] }).length === 0);
   for (const pt of ["hourly", "salary", "both"] as const) {
     check(`pay_type '${pt}' is accepted`,
       validateProfile({ ...VALID_INDEPENDENT, pay_type: pt }).length === 0);
@@ -126,6 +136,34 @@ group("needsProfileUpgrade: flags old profiles missing the new fields", () => {
     needsProfileUpgrade({ ...VALID_INDEPENDENT, pay_type: undefined as any }) === true);
 });
 
+group("migrateProfile / loadProfile: legacy home_state+zip → primary office (no data loss)", () => {
+  // The exact migration the task calls out: an existing profile with
+  // home_state=WA, zip=99224 must become one office with state WA, zip 99224.
+  const legacy: any = { ...VALID_INDEPENDENT };
+  delete legacy.offices;
+  legacy.home_state = "WA";
+  legacy.zip_code = "99224";
+
+  const migrated = migrateProfile(JSON.parse(JSON.stringify(legacy)));
+  check("migrated profile has exactly one office", Array.isArray(migrated.offices) && migrated.offices.length === 1);
+  check("primary office state = legacy home_state (WA)", migrated.offices[0].state === "WA");
+  check("primary office zip = legacy zip_code (99224)",  migrated.offices[0].zip === "99224");
+
+  // Same thing end-to-end through localStorage + loadProfile.
+  clearProfile();
+  (globalThis as any).window.localStorage.setItem(PROFILE_KEY, JSON.stringify(legacy));
+  const loaded = loadProfile();
+  check("loadProfile migrates legacy shape on read",
+    !!loaded && loaded.offices.length === 1 && loaded.offices[0].state === "WA" && loaded.offices[0].zip === "99224",
+    { offices: loaded?.offices });
+
+  // A profile that already has offices is left untouched by migration.
+  const alreadyNew = migrateProfile(JSON.parse(JSON.stringify(VALID_INDEPENDENT)));
+  check("profile with offices is not re-migrated",
+    JSON.stringify(alreadyNew.offices) === JSON.stringify(VALID_INDEPENDENT.offices));
+  clearProfile();
+});
+
 group("saveProfile + loadProfile: round-trip via localStorage shim", () => {
   clearProfile();
   check("loadProfile() before any save -> null", loadProfile() === null);
@@ -140,8 +178,7 @@ group("saveProfile + loadProfile: round-trip via localStorage shim", () => {
     check("round-trip preserves authorized_brands", JSON.stringify(loaded.authorized_brands) === JSON.stringify(VALID_INDEPENDENT.authorized_brands));
     check("round-trip preserves licensed_states",   JSON.stringify(loaded.licensed_states) === JSON.stringify(VALID_INDEPENDENT.licensed_states));
     check("round-trip preserves full_name",         loaded.full_name === VALID_INDEPENDENT.full_name);
-    check("round-trip preserves zip_code",          loaded.zip_code === VALID_INDEPENDENT.zip_code);
-    check("round-trip preserves home_state",        loaded.home_state === VALID_INDEPENDENT.home_state);
+    check("round-trip preserves offices",           JSON.stringify(loaded.offices) === JSON.stringify(VALID_INDEPENDENT.offices));
     check("round-trip preserves employee_count",    loaded.employee_count === VALID_INDEPENDENT.employee_count);
     check("round-trip preserves employee_states",   JSON.stringify(loaded.employee_states) === JSON.stringify(VALID_INDEPENDENT.employee_states));
     check("round-trip preserves pay_type",          loaded.pay_type === VALID_INDEPENDENT.pay_type);

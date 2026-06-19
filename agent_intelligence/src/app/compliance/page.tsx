@@ -15,7 +15,7 @@ import {
   ResourceKey,
   StateCode,
 } from "@/lib/resourceUrls";
-import { AgentProfile, loadProfile } from "@/lib/profile";
+import { AgentProfile, loadProfile, primaryOffice } from "@/lib/profile";
 
 const TOPIC_ORDER: ResourceKey[] = [
   "wage_hour",
@@ -129,7 +129,7 @@ export default function CompliancePage(): React.JSX.Element {
         {profile && (
           <ComplianceBriefing
             employeeStates={profile.employee_states}
-            homeState={profile.home_state}
+            homeState={primaryOffice(profile)?.state ?? ""}
             employeeCount={profile.employee_count}
             expanded={expanded}
             onToggle={toggleSection}

@@ -11,7 +11,7 @@ import {
   relevancePointers,
   shouldFlagOutOfStateRemote,
 } from "@/lib/officeSummary";
-import { AgentProfile, needsProfileUpgrade } from "@/lib/profile";
+import { AgentProfile, needsProfileUpgrade, primaryOffice } from "@/lib/profile";
 
 type Props = {
   profile: AgentProfile;
@@ -61,6 +61,9 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
   const pointers = relevancePointers(profile);
   const flag = shouldFlagOutOfStateRemote(profile);
   const outStates = outOfCoverageEmployeeStates(profile.employee_states);
+  // The primary office is the agency's home state — sourced from offices[0]
+  // now that there is no standalone home_state field.
+  const primaryState = primaryOffice(profile)?.state ?? "";
 
   return (
     <section
@@ -77,7 +80,7 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
         data-testid="office-summary-recap"
         className="px-4 py-3.5 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3"
       >
-        <Fact label="Office location" value={stateName(profile.home_state)} />
+        <Fact label="Office location" value={stateName(primaryState)} />
         <Fact
           label="Total employees"
           value={`${profile.employee_count} ${profile.employee_count === 1 ? "employee" : "employees"}`}
@@ -118,7 +121,7 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
             // returns null otherwise — so a link can never point at an absent
             // section, and a no-target pointer (e.g. remote) stays plain text.
             const anchorId = pt.targetSection
-              ? briefingSectionAnchorId(profile.employee_states, profile.home_state, pt.targetSection)
+              ? briefingSectionAnchorId(profile.employee_states, primaryState, pt.targetSection)
               : null;
             return (
               <li
