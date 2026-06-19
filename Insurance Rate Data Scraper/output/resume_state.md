@@ -1,14 +1,22 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-06-19 — offline UI/profile session, NO scraper impact.** Two iterations
+> shipped to the app, both UI/profile-data only: (1) dashboard **Recent Changes**
+> rebuilt as a two-block flex row (`554d90a`), and (2) Agency Profile **office
+> addresses** replacing the standalone home-state/ZIP fields, with in-place
+> migration of legacy profiles (`546d3e4`, the live HEAD). **The SERFF quiet
+> period was NOT touched** — all work was offline in the `agent_intelligence`
+> repo; the guard, the WAF, the parked VA/OH scrapes, and **the June-21
+> cold-capacity read (below) are unaffected and remain the next pending action.**
+> Scraped baseline byte-identical all session (`md5(filings.db)=82e423fd…`).
+> Deploy-hygiene note: the monorepo `origin/master` is ~96 commits behind
+> (`fc11c86`); the live deploy path remains agent-intel/master — left as the norm,
+> not synced. Full UI history: `agent_intelligence/SESSION_STATE.md`.
+>
 > **2026-06-18 — offline UI session, NO scraper impact.** A UI polish pass shipped
 > to the app (agent-intel/master `95534d5`: Prospect/Defend tables + dashboard
-> restyle, UI-only, scraped baseline byte-identical). **The SERFF quiet period was
-> NOT touched** — all work was offline in the `agent_intelligence` repo; the guard,
-> the WAF, the parked VA/OH scrapes, and **the June-21 cold-capacity read (below)
-> are unaffected and remain the next pending action.** Deploy-hygiene note: the
-> monorepo `origin/master` is ~96 commits behind (`fc11c86`); the live deploy path
-> remains agent-intel/master — left as the norm, not synced. Full UI history:
-> `agent_intelligence/SESSION_STATE.md`.
+> restyle, UI-only, scraped baseline byte-identical). Quiet period not touched;
+> deploy path agent-intel/master. Full UI history: `agent_intelligence/SESSION_STATE.md`.
 
 ## 🌍 CURRENT STATE OF THE WORLD (2026-06-16)
 

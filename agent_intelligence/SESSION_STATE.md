@@ -1,3 +1,98 @@
+# Session checkpoint — 2026-06-19  ·  Two UI/profile iterations shipped (45-state data)
+
+Iterate-and-deploy mode, not building. **Two iterations shipped this session**,
+both UI/profile-data only — the scraped baseline stayed byte-identical and
+`filings.db` was never in any changeset.
+
+- **Deployed (agent-intel/master): `546d3e4`** (office addresses — latest of the
+  two). HEAD==origin, Vercel auto-deploying. Monorepo local `8545992`
+  (`origin/master` `fc11c86`, ~96 behind — established norm; deploy path is
+  agent-intel). tsc clean, prod build 12/12, all 13 e2e + verify green. Scraped
+  baseline **untouched all session** (`md5(filings.db)=82e423fd9d51e7d523b644b368188e98`;
+  tags `filings_raw 784f77e6` / `filings b6f83d78`).
+- **Quiet period ACTIVE until 2026-06-21** — fully offline session, zero
+  SERFF/WAF/guard contact. The June-21 cold-capacity read is still the next
+  pending scraper action (carry-forward below).
+
+## Iteration 1 — Recent Changes rows: two-block flex layout (dashboard, `554d90a`)
+
+Replaced the dashboard Recent Changes **full-width column table** with a
+**two-block flex row**. The column-spread approach kept creating gaps (impact
+floated to the far-left edge; a void opened in the middle). New structure:
+- **Left block** (flex:1): impact % (62px, right-aligned, category-colored —
+  Prospect green / Defend red) sitting **directly next to** carrier · line ·
+  state, with **"date · N policyholders"** as a muted secondary line beneath
+  (policyholders folded back inline — no standalone column; count omitted on AM
+  Best rows that have none).
+- **One clean gap**, then the **right cluster** (shrink:0): category pill + muted
+  time badge. Whole row still navigates (role=link + keyboard).
+- Defend/Prospect tables left untouched (real tables with their own
+  Policyholders/Effective columns — they read fine).
+- **LESSON (recorded for future spacing work):** this content is light for a
+  full-width container — **group into tight blocks, don't spread across the
+  width**. Took 4 iterations to land. Start future Recent-Changes-style spacing
+  from "group tight," not "spread wide."
+
+## Iteration 2 — Office addresses replace standalone home state / ZIP (Agency Profile, `546d3e4`)
+
+The Agency Profile's standalone **Home state** + **ZIP** fields were replaced by
+a repeatable **"Office addresses"** section. UI + profile-data change; no
+filings.db / scraped-data impact.
+- **Form:** each office = optional label, street, city, state, ZIP. One office by
+  default ("Primary office"); **+ Add another office** appends, **×** removes;
+  **can't drop below one** (× hidden when a single office remains). No standalone
+  home-state/ZIP fields anymore.
+- **Data model:** `AgentProfile` **dropped `home_state`/`zip_code`, gained
+  `offices: Office[]`** (`offices[0]` = primary = agency home state/ZIP). New
+  `primaryOffice(p)` accessor. **Validation:** ≥1 office; street/city/state/ZIP
+  required per office (label optional, ZIP 5 digits); errors keyed per office
+  (`offices.<i>.<field>`); `ValidationError.field` broadened to `string`.
+- **Migration (no data loss):** `loadProfile` runs `migrateProfile` in place — a
+  legacy profile (`home_state:"WA"`, `zip_code:"99224"`, no `offices`) becomes
+  `offices:[{state:"WA", zip:"99224", street:"", city:"", label:""}]`. Street/city
+  blank until next save. Verified WA/99224 on localhost + a verify_profile
+  round-trip; the injected-fixture e2e suites (old-shape profiles) migrate
+  transparently and all pages render.
+- **`home_state` HAD downstream consumers** (it drove the **/compliance briefing
+  order**). All **3** direct reads re-pointed to `primaryOffice(profile).state`:
+  `OfficeSummary` "Office location" + briefing-anchor, and the compliance page's
+  `ComplianceBriefing` `homeState` prop. The pure briefing helpers
+  (`orderedBriefingStates`, `primaryBriefingState`, `briefingSectionAnchorId`,
+  `ComplianceBriefing`) take a state-**string param** — unchanged, just fed from
+  the primary office now. **`zip_code` had no logic consumers.** tsc confirms no
+  orphaned reads (both fields are gone from the type).
+- **FUTURE NOTE:** office addresses are **recorded profile data only** — they
+  don't yet DRIVE anything beyond the primary feeding home-state. If offices
+  should ever be functional (per-office compliance, multi-state licensing by
+  office), that's a future feature with its own scope. The data is there, ready
+  to be used.
+
+## ⚠️ Recurring gremlin — stale "CA non-covered" test assertion
+
+Fixed **twice** now (`e2e_setup`, `verify_profile`, both CA→WY). CA/NY/TX became
+**permanent covered** states in the 45-state expansion. **If a 3rd surfaces,
+sweep ALL tests at once** for hardcoded CA/NY/TX non-covered assumptions — the
+covered set grew and any test still treating them as non-covered is stale. (This
+session's profile work touched verify_profile + e2e_setup again; both already on
+the correct WY basis.)
+
+## Carry-forward state (unchanged this session)
+
+- **App covers 45 states:** 998 scraped (10 states) + 32 AM Best interim + 3
+  permanent (CA/NY/TX, non-SERFF, excluded from the replacement sweep). All AM
+  Best states render identically to scraped (no badge).
+- Prior **UI polish pass** (agent-perspective color system, table restyle) live.
+- **June-21 cold-capacity read = next pending decision.** Clear the guard →
+  `cold_capacity_read.py` **BEFORE any collection** (collecting first
+  contaminates it). Low pressure — the app already has near-national coverage.
+  Parked scrapes: VA 165/498 PDFs, OH partial.
+- **Re-pull list** (header-only exports, fixable): AL/FL/LA. **Structural gap:**
+  NC (rates via NCRB collectively — not fixable via AM Best). **WY:** no rows.
+- Monorepo `origin/master` ~96 behind (`fc11c86`) by established norm; deploy
+  path is agent-intel/master. Left as norm (not synced).
+
+---
+
 # Session checkpoint — 2026-06-18  ·  UI polish pass (tables + dashboard) on 45-state data
 
 The build is finished and live. We are in **iterate-and-deploy mode, not
