@@ -9,7 +9,7 @@
 //     Auto + Homeowners, 2024-2026.
 //   - Thresholds section states +5% (Prospect) and -2% (Defend) verbatim.
 //   - All 7 excluded brands are listed with a "why" line each.
-//   - Validation table has 10 rows (one per covered state) and the cell
+//   - Validation table has 11 rows (one per directly-scraped state) and the cell
 //     values match STATES.validated exactly. Spot-checks: AZ auto=✓
 //     home=✓, MT auto=✓ home=✓, WA auto=✓ home=—, CO auto=— home=—.
 //   - Known limitations section covers SERFF visibility gaps, CO
@@ -52,6 +52,7 @@ const EXPECTED_VALIDATION: Record<string, { auto: boolean; home: boolean }> = {
   NV: { auto: true,  home: false },
   OR: { auto: true,  home: false },
   UT: { auto: true,  home: false },
+  VA: { auto: true,  home: true  }, // scraped 2026-06-22; PPA 92.3%, HO values cross-checked (68.6% is AM Best-only coverage, not value errors)
   WA: { auto: true,  home: false },
 };
 
@@ -156,7 +157,7 @@ async function main(): Promise<void> {
   // -- (7) AM Best validation table matches STATES.validated ---------------
   console.log("\n(7) validation table matches STATES.validated exactly");
   const rowCount = await page.locator('[data-testid="validation-row"]').count();
-  check(`validation table has 10 rows (got ${rowCount})`, rowCount === 10);
+  check(`validation table has 11 rows (got ${rowCount})`, rowCount === 11);
   for (const [code, expected] of Object.entries(EXPECTED_VALIDATION)) {
     const row = page.locator(`[data-testid="validation-row"][data-state="${code}"]`);
     const autoCell = (await row.locator('[data-testid="cell-auto"]').textContent())?.trim();
@@ -175,9 +176,9 @@ async function main(): Promise<void> {
     /10.{0,3}12/.test(limitsText));
   check("limitations call out Colorado as unvalidated",
     /Colorado/.test(limitsText) && /validat/i.test(limitsText));
-  // 5 not covered = 50 − 45 covered (10 directly scraped + 35 AM Best). The
-  // uncovered 5: AL/FL/LA (header-only re-pull), NC (structural NCRB gap), WY
-  // (no filings). The validation table stays 10 (cross-checked scraped states
+  // 5 not covered = 50 − 45 covered (11 directly scraped incl. VA + 34 AM Best).
+  // The uncovered 5: AL/FL/LA (header-only re-pull), NC (structural NCRB gap), WY
+  // (no filings). The validation table is 11 (cross-checked scraped states
   // only — AM Best states, interim AND permanent, are not validated).
   check("limitations mention '5 states not yet covered'",
     /5 states not yet covered/i.test(limitsText));

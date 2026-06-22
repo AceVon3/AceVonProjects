@@ -59,7 +59,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "TX", name: "Texas",          data_coverage: true,  source: "ambest" }, // PERMANENT (TDI, non-SERFF) — see AMBEST_PERMANENT_STATES
   { code: "UT", name: "Utah",           data_coverage: true,  validated: { auto: true,  home: false } },
   { code: "VT", name: "Vermont",        data_coverage: true,  source: "ambest" },
-  { code: "VA", name: "Virginia",       data_coverage: true,  source: "ambest" },
+  { code: "VA", name: "Virginia",       data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-06-22 (interim->real); AM Best cross-check: PPA 92.3%, HO values agree where they overlap (the 68.6% is AM Best-only coverage/recency, and the lone "disagreement" was AM Best's transposition the scrape got right) -> both validated
   { code: "WA", name: "Washington",     data_coverage: true,  validated: { auto: true,  home: false } },
   { code: "WV", name: "West Virginia",  data_coverage: true,  source: "ambest" },
   { code: "WI", name: "Wisconsin",      data_coverage: true,  source: "ambest" },

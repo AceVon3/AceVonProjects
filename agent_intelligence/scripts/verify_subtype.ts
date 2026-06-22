@@ -17,14 +17,16 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-06-22 when VA moved interim->scraped (+49 active rolled = 342;
+// per-sub_type deltas are exactly VA's contribution, distinct sub_types still 11).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 121,
-  "19.0000 Personal Auto Combinations": 43,
-  "19.0002 Motorcycle": 11,
+  "19.0001 Private Passenger Auto (PPA)": 150,
+  "19.0000 Personal Auto Combinations": 46,
+  "19.0002 Motorcycle": 16,
   "19.0003 Recreational Vehicle (RV)": 8,
-  "19.0004 Other": 3,
-  "04.0003 Owner Occupied Homeowners": 30,
-  "04.0000 Homeowners Sub-TOI Combinations": 49,
+  "19.0004 Other": 4,
+  "04.0003 Owner Occupied Homeowners": 34,
+  "04.0000 Homeowners Sub-TOI Combinations": 56,
   "04.0001 Condominium Homeowners": 10,
   "04.0005 Other Homeowners": 7,
   "04.0004 Tenant Homeowners": 5,
@@ -37,7 +39,7 @@ console.log("=".repeat(72));
 
 const asOf = getDataAsOf();
 // Scoped to source='serff_scraped': the 293/single-valued sub_type recon is a
-// SCRAPED-data invariant. AM Best interim rows (source='ambest_sourced', IL/OH/VA)
+// SCRAPED-data invariant. AM Best interim rows (source='ambest_sourced', IL/OH)
 // are line-level with NULL sub_type by design and are checked separately.
 const rows = getDb().prepare(`
   SELECT sub_type AS sub
@@ -49,7 +51,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 293", rows.length, 293);
+check("active rolled filings = 342", rows.length, 342);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 

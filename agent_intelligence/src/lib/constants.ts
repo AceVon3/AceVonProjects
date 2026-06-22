@@ -39,11 +39,13 @@ export const ACTIVE_RATE_ACTIVITIES = [
 // (and flip data_coverage in states.ts). GA + NM added with the 2026-06
 // expansion. Must stay in sync with the data_coverage:true rows in states.ts.
 export const COVERED_STATES = [
-  "AZ", "CO", "GA", "ID", "MT", "NM", "NV", "OR", "UT", "WA",
+  // Scraped states (source='serff_scraped'). VA joined 2026-06-22 (interim AM
+  // Best → real scrape; 277-row deliverable, AM Best-validated).
+  "AZ", "CO", "GA", "ID", "MT", "NM", "NV", "OR", "UT", "VA", "WA",
   // Interim AM Best industry-data states (2026-06-16). Selectable + queryable
   // like scraped states; rows are source='ambest_sourced' (states.ts
   // source:"ambest"). Replaced in place when directly scraped.
-  "IL", "OH", "VA",
+  "IL", "OH",
   // 10-state AM Best batch (2026-06-17). CA is PERMANENT (non-SERFF); the rest
   // are interim. See AMBEST_PERMANENT_STATES below.
   "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY",
@@ -58,7 +60,7 @@ export type CoveredState = (typeof COVERED_STATES)[number];
 // The subset of COVERED_STATES whose data is AM Best industry data (not a SERFF
 // scrape). Lets coverage-aware UI mark these honestly without re-deriving from
 // states.ts. Must stay in sync with AMBEST_STATES in scripts/import_filings.py.
-export const AMBEST_STATES = ["IL", "OH", "VA",
+export const AMBEST_STATES = ["IL", "OH",  // VA removed 2026-06-22 (now scraped)
   "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY",
   "ME", "MD", "MA", "MI", "MN", "MS", "MO", "NE", "NH", "NJ",
   "NY", "ND", "OK", "PA", "RI", "SC", "SD", "TN", "TX", "VT", "WV", "WI"] as const;
