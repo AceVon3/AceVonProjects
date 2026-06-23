@@ -1,3 +1,32 @@
+# Session checkpoint — 2026-06-22  ·  VA interim→real import SHIPPED (11th scraped state)
+
+VA's directly-scraped SERFF data (277 rows, AM Best-validated) replaced the AM Best
+interim. Full deterministic rebuild of `filings.db`; the first change to `filings.db`
+since the 45-state load. **Deployed (agent-intel/master): `8b813c0`** — live
+`agent-intelligence-sigma.vercel.app` HTTP 200, VA renders directly-scraped.
+Monorepo local `5ffd1b3` (`origin` ~96 behind, established norm). tsc clean, build
+12/12, 6 verify + 10 e2e green.
+
+- **NEW SCRAPED BASELINE (post-VA — the intended new normal; SUPERSEDES the old
+  10-state tags `filings_raw 784f77e6` / `filings b6f83d78`):** **11 states**,
+  `filings_raw` serff_scraped **1893 rows `a1aa7a2e`**, `filings` serff_scraped
+  **1176 rows `ea8ba81e`**, active@2026-06-11 **342**. The 10 original scraped
+  states + CA/NY/TX permanent stayed **byte-identical** (rows AND active counts —
+  as-of pinned at 2026-06-11). `verify()` + `verify_subtype` EXPECTED re-keyed to
+  1893/1176/342; future guards key on THIS baseline, not the pre-VA tags.
+- **VA**: now `source=serff_scraped` (178 rolled), 0 `AMB-` surrogate keys, richer
+  data (89 neutral-0%, 2 withdrawn, 10 sub-types). Dropped from `AMBEST_STATES`;
+  `states.ts` `validated:{auto:true, home:true}`. `derive_brand`: Montgomery Mutual
+  → Liberty Mutual (VA LBPM co-filer; VA-only, 10 states unaffected). AM Best
+  ambest_sourced now 34 states (CA/NY/TX permanent intact).
+- **Scraper-side** (insurancewebscraper `b1ffb28`): `all_states_final_rates.xlsx`
+  regenerated 1616→1893 (VA appended last). VA collection itself ~91% (452/498) —
+  the 46 uncollected (Travelers `TRVD-G` coverage-gap + ~14 scattered) are a future
+  targeted offline run; OH partial still parked. Full scraper history:
+  `Insurance Rate Data Scraper/output/resume_state.md`.
+
+---
+
 # Session checkpoint — 2026-06-19  ·  Two UI/profile iterations shipped (45-state data)
 
 Iterate-and-deploy mode, not building. **Two iterations shipped this session**,
