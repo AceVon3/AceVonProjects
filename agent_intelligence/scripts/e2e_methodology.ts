@@ -50,7 +50,7 @@ const EXPECTED_VALIDATION: Record<string, { auto: boolean; home: boolean }> = {
   ID: { auto: true,  home: false },
   MT: { auto: true,  home: true  },
   NV: { auto: true,  home: false },
-  OH: { auto: false, home: false }, // scraped 2026-06-24 (interim->real); AM Best cross-check not yet run (CO-like) -> not validated
+  OH: { auto: true,  home: true  }, // scraped 2026-06-24; AM Best cross-check 2026-06-25 PPA 96.1% / HO 97.1% / 105-of-105 interim agreement -> both validated
   OR: { auto: true,  home: false },
   UT: { auto: true,  home: false },
   VA: { auto: true,  home: true  }, // scraped 2026-06-22; PPA 92.3%, HO values cross-checked (68.6% is AM Best-only coverage, not value errors)
@@ -180,8 +180,9 @@ async function main(): Promise<void> {
   // 5 not covered = 50 − 45 covered (12 directly scraped incl. VA + OH + 33 AM Best).
   // The uncovered 5: AL/FL/LA (header-only re-pull), NC (structural NCRB gap), WY
   // (no filings). The validation table is 12 rows (one per directly-scraped state;
-  // OH/CO show "— —" — scraped but not yet AM Best cross-checked; AM Best states,
-  // interim AND permanent, are not in the table at all).
+  // CO shows "— —" — scraped but not yet AM Best cross-checked (OH cross-checked
+  // 2026-06-25 -> now ✓✓); AM Best states, interim AND permanent, are not in the
+  // table at all).
   check("limitations mention '5 states not yet covered'",
     /5 states not yet covered/i.test(limitsText));
   check("limitations include the no-future-dated-filings note",

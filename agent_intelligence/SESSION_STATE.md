@@ -1,3 +1,31 @@
+# Session checkpoint — 2026-06-25  ·  OH AM Best CROSS-CHECK DONE → OH VALIDATED (closes the open follow-up)
+
+Offline cross-check (`compare_oh_ambest.py`, adapted from `compare_va_ambest.py`;
+no SERFF, **`filings.db` NOT mutated** — md5 still `3e7d83fe`). OH's
+`validated:{false,false}` → **`{auto:true, home:true}`** (states.ts + e2e). The
+open follow-up from the import session is now CLOSED.
+
+- **(a) STANDARD — scrape values correct:** PPA **74/77 = 96.1%**, HO **34/35 =
+  97.1%** corroboration (combined 108/112 = 96.4%). **Beats VA (92.3% PPA) & GA
+  (93.8%)**; OH HO especially strong vs VA's small-N 68.6%.
+- **(b) INTERIM-QUALITY — 105/105 (entity,eff) impact agreement, 0 disagreements**
+  (VA was 97.7%/127-of-130). **2nd interim→real data point, even cleaner than VA**
+  → strong evidence the AM Best interim is sound across the remaining **33** AM
+  Best states. Zero disagreements → no SFMA-style "AM Best is wrong" case.
+- **(c) REVERSE — scrape richer:** 57 rate-neutral 0% filings + 128 pre-2025
+  back-extension + 10 sub-types AM Best omits. **4 AM Best-only rows, all 0.0%
+  overall** (1 recency: Farmers eff 05/04/**26** > scrape max 2025-12-20; 3
+  immaterial 0% coverage: SF Fire/Mutual 04/15/25, Liberty 05/19/25) — coverage/
+  recency, **not value errors** (the VA pattern).
+- **WATCH cleared:** 6 blank-max/min rows = 3 State Farm co-filed pairs with
+  POPULATED impacts (documented SF `% %` source pattern, 3× precedent); none
+  coincide with the 4 AM Best-only → no parser drop. No parser-family-bug signature.
+- **Methodology now 10 of 12 cross-checked** (OH joins; CO still the lone scraped-
+  but-unvalidated, "— —"). Gates: tsc clean, build 12/12, e2e_methodology + 13 e2e
+  + verify_subtype + 7 verify scripts green. `compare_oh_ambest.py` → insurancewebscraper.
+
+---
+
 # Session checkpoint — 2026-06-24 (cont.)  ·  OH INTERIM→REAL IMPORT SHIPPED (12th scraped state)
 
 Combined **VA-refresh (+5) + OH import (246-row scrape)** replaced OH's AM Best
