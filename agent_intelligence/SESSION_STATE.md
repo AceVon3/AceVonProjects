@@ -1,3 +1,109 @@
+# Session checkpoint — 2026-06-24 (cont.)  ·  OH INTERIM→REAL IMPORT SHIPPED (12th scraped state)
+
+Combined **VA-refresh (+5) + OH import (246-row scrape)** replaced OH's AM Best
+interim in `filings.db`. Full deterministic rebuild (`import_filings.py`), same
+surgical pattern as the VA import. **filings.db rebuilt** (md5 `a1c5cda4` →
+`3e7d83fe`); deployed via subtree split to **agent-intel/master**.
+
+- **NEW SCRAPED BASELINE (post-OH — the intended new normal; SUPERSEDES the
+  post-VA tags `filings_raw a1aa7a2e`/1893 · `filings ea8ba81e`/1176 · 342):**
+  **12 states**, `filings_raw` serff_scraped **2144 rows `1d9b7e74`**, `filings`
+  serff_scraped **1330 rows `a9945257`**, active@2026-06-11 **392**, anchor
+  +93.70% WA SFMA-134315091 (unchanged). Future guards key on THIS.
+- **EVERY delta == VA + OH, nothing more:** raw 1893→2144 (VA 277→282 = +5, OH
+  +246); rolled 1176→1330 (VA 178→182 = +4, OH +150); active 342→392 (VA 49→51 =
+  +2, OH +48). OH `ambest_sourced` remnants: **0 raw / 0 rolled** (clean swap).
+- **BYTE-IDENTICAL PROOF:** the **43 non-VA/OH states** identical in BOTH tables
+  (count + content hash, id-excluded); **CA/NY/TX permanent hashes unchanged**
+  (CA `5c54d9b4`, NY `085e3a52`, TX `19598b24`). As-of **pinned 2026-06-11**
+  (all_states xlsx mtime) so the 12-mo window didn't slide → western active
+  counts identical. **VA `validated:{auto,home}` true; OH `validated:{false,
+  false}`** — OH is directly-scraped REAL data but NOT YET AM Best cross-checked
+  (CO-like; `compare_oh_ambest` is the immediate follow-up). OH richer-scraped:
+  47 rate-neutral 0% filings, 10 sub-types, 0 `AMB-` keys, 12 brands.
+- **OH dropped from `AMBEST_STATES`** (import_filings.py + constants.ts);
+  AM Best now **33 states** (CA/NY/TX permanent intact). Methodology
+  data-driven → **12 cross-checked-table rows** (OH/CO show "— —").
+- **GATES:** import verify 16/16, verify_subtype + 7 verify scripts, tsc clean,
+  build 12/12, e2e 13/13 (all re-keyed to 2144/1330/12/392). Localhost-reviewed
+  (OH/VA/WA/GA) before deploy.
+- **VA collection delta:** the +5-row VA refresh (282 vs the shipped 277) is now
+  live too. Scraper-side `all_states_final_rates.xlsx` regenerated 1893→2144 →
+  insurancewebscraper. Full scraper history: `resume_state.md`.
+
+---
+
+# Session checkpoint — 2026-06-24  ·  OH COLLECTION COMPLETE (scraper-side); import pending
+
+SERFF session — OH download harvest resumed from 45% and **finished to 100%** in
+8 cold bursts. **filings.db / the app were NOT touched this session** — pure
+scraper-side work. Live db remains the post-VA import (`a1c5cda4` / `8b813c0`).
+
+- **OH COLLECTION COMPLETE: 397/397 (100%)**, all 10 carrier groups (Allstate,
+  American Family, Farmers, GEICO, Liberty, State Farm, Nationwide, Progressive,
+  Travelers, USAA). **246-row `oh_final_rates.xlsx`**, **0 true misses**,
+  `filings_excluded_no_pdf: 0` (authoritative completeness). Committed
+  **insurancewebscraper `ceb279a`** (HEAD==origin).
+- **Universe resolved:** the "361 distinct" estimate → **397 actual target
+  filings** (per-group lists; dedup estimate was low); all cached.
+  **AmFam/Liberty 100-cap confirmed a non-issue** (both closed out clean).
+- **WAF held all session:** full-burst 405-challenge series **40→36→30→42→20%**;
+  the 42% (burst 7) was a heavy-load tail (walls all post-completion), **not**
+  cumulative depression — no bank-signal ever materialized. The long cold rest
+  before burst 8 (90+ min, incl. a host suspend) restored a full ceiling that
+  swept all 4 remaining groups in one 24.7-min run. **8 clean banks**, Temp-purge
+  caught once (burst 1) + handled, HEAD==origin every time.
+- **Q2 RECOVERY proven in vivo** (first time since VA): RECOVERY-1 landed all 4
+  transient `NWPP-G`/`TRVD` misses in-burst. The re-pool works on transient
+  misses. Every miss across all 8 bursts (`GECC`/`LBPM`/`GNSC`/`NWPP-G`/`TRVD`)
+  was transient and recovered — hence 0 true misses.
+- **BACKLOG B5 recorded** (`Insurance Rate Data Scraper/BACKLOG.md`):
+  front-of-batch grace — the 2-consecutive-miss early-stop can abort a whole
+  group when 2 transient misses hit the FRONT of the batch before the bulk +
+  later search terms run (killed State Farm on burst 6; recovered on a fresh
+  full-rest burst 7). Efficiency/throughput fix, not blocking.
+- **IMPORT PENDING:** combined **VA-refresh (+5 rows)** + **OH import (246-row
+  scrape)** into `filings.db` — the next deliberate app-side step (surgical
+  rebuild-and-re-key, like VA). `filings.db` UNTOUCHED all session.
+- Full scraper history: `Insurance Rate Data Scraper/output/resume_state.md`.
+
+---
+
+# Session checkpoint — 2026-06-23  ·  VA COLLECTION COMPLETE (scraper-side); OH not started
+
+SERFF session — first contact since the 06-22 VA harvest. **VA scraping is now
+effectively complete**; OH recon is the next step (not yet started this checkpoint).
+**filings.db / the app were NOT touched this session** — pure scraper-side work.
+
+- **VA COLLECTION COMPLETE: 444/450 in-target cached (98.7%)**, `va_final_rates.xlsx`
+  = **282 rows** (was 277 at session start, +5). Two targeted bursts:
+  burst-1 (warm-tail) +17 → 436/450, burst-2 (clean cold) +8 → 444/450.
+  Committed scraper-side **insurancewebscraper `22988d1`** (HEAD==origin); the
+  repair+burst-1 was `11a7163`. 0 deletions staged on both (Temp-purge struck once
+  pre-commit — restored 8 purged tracked files from HEAD, then explicit-path staged).
+- **`TRVD-G` "coverage-gap" HYPOTHESIS DISPROVEN.** The G-series is **normal,
+  downloadable Travelers data that surfaces under bare `travelers`** — NOT a hidden
+  sub-entity and NOT a new-search-term gap. The apparent gap was (a) download-
+  completion (WAF-interrupted empty dirs) + (b) a **tracking#≠filingId keying
+  artifact** (e.g. `TRVD-G134180979` → filingId `134191017`; PDFs cache by filingId).
+  The fallback recovered G-series directly once WAF allowed. This is the 4th VA
+  "limit" to turn out an artifact — consistent with the whole VA arc (row-wall,
+  harvest-early ordering, ceiling-decay, now TRVD-G all were tooling/measurement,
+  not hard walls).
+- **6 genuinely uncollectable** (survived TWO full attempts incl. a clean cold burst):
+  `TRVD-133971305`, `TRVD-133994502`, `TRVD-134013553`, `TRVD-G134247790`
+  (fid 134248929), `TRVD-G134526332` (fid 134528113), `TRVD-G134881614`
+  (fid 134883989) — all Quantum Home/Auto. Accepted as uncollectable-under-`travelers`;
+  AM Best-covered in the app. **Not grinding further** (one-shot rule).
+- **RE-IMPORT DEFERRED.** The +5-row delta does not change validation/tiers; the app's
+  live VA is still the shipped 277-row scrape (`8b813c0`), unchanged and fine. Fold a
+  VA refresh into a later **combined VA-refresh + OH import** when OH lands.
+- **WAF:** two bursts spent today; **ceiling held** (no slow-penalty depression —
+  consistent with yesterday's heavier single-day load). Cold refill behaved as modeled.
+- Full scraper history: `Insurance Rate Data Scraper/output/resume_state.md`.
+
+---
+
 # Session checkpoint — 2026-06-22  ·  VA interim→real import SHIPPED (11th scraped state)
 
 VA's directly-scraped SERFF data (277 rows, AM Best-validated) replaced the AM Best

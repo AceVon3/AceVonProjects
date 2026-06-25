@@ -48,7 +48,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "NY", name: "New York",       data_coverage: true,  source: "ambest" }, // PERMANENT (DFS, non-SERFF) — see AMBEST_PERMANENT_STATES
   { code: "NC", name: "North Carolina", data_coverage: false }, // EXCLUDED: structural NCRB Rate-Bureau gap (no per-carrier AM Best data); not fixable via this source
   { code: "ND", name: "North Dakota",   data_coverage: true,  source: "ambest" },
-  { code: "OH", name: "Ohio",           data_coverage: true,  source: "ambest" },
+  { code: "OH", name: "Ohio",           data_coverage: true,  validated: { auto: false, home: false } }, // scraped 2026-06-24 (interim->real): 246-row SERFF scrape, 397/397 filings. Directly-scraped real data; AM Best cross-check not yet run (CO-like) -> validation pending, not yet a cross-checked state.
   { code: "OK", name: "Oklahoma",       data_coverage: true,  source: "ambest" },
   { code: "OR", name: "Oregon",         data_coverage: true,  validated: { auto: true,  home: false } },
   { code: "PA", name: "Pennsylvania",   data_coverage: true,  source: "ambest" },

@@ -60,7 +60,7 @@ export type CoveredState = (typeof COVERED_STATES)[number];
 // The subset of COVERED_STATES whose data is AM Best industry data (not a SERFF
 // scrape). Lets coverage-aware UI mark these honestly without re-deriving from
 // states.ts. Must stay in sync with AMBEST_STATES in scripts/import_filings.py.
-export const AMBEST_STATES = ["IL", "OH",  // VA removed 2026-06-22 (now scraped)
+export const AMBEST_STATES = ["IL",  // VA removed 2026-06-22, OH removed 2026-06-24 (both now scraped)
   "AK", "AR", "CA", "CT", "DE", "HI", "IA", "IN", "KS", "KY",
   "ME", "MD", "MA", "MI", "MN", "MS", "MO", "NE", "NH", "NJ",
   "NY", "ND", "OK", "PA", "RI", "SC", "SD", "TN", "TX", "VT", "WV", "WI"] as const;
