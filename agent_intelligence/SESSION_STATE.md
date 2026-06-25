@@ -5,6 +5,41 @@ interim in `filings.db`. Full deterministic rebuild (`import_filings.py`), same
 surgical pattern as the VA import. **filings.db rebuilt** (md5 `a1c5cda4` →
 `3e7d83fe`); deployed via subtree split to **agent-intel/master**.
 
+**Shipped HEADs (all HEAD==origin):** agent-intel/master **`c3e92da`** (Vercel
+LIVE — root/methodology/prospect HTTP 200, methodology renders "Ohio · directly
+scraped") · insurancewebscraper **`49bdacd`** · monorepo **`83580c5`** (local,
+origin-behind norm). Deploy was a clean FF onto agent-intel/master (subtree
+split produced content-identical trees w/ divergent hashes → committed the new
+tree onto the real 4372224, no force-push, 0 file deletions).
+
+### ▶ OPEN FOLLOW-UP (next session) — OH AM Best cross-check
+OH currently ships **`validated:{false,false}`** — HONEST: directly-scraped real
+data, NOT yet AM Best cross-checked (renders "— —" in methodology, like CO).
+**Pick up here:**
+1. Adapt `compare_va_ambest.py` → `compare_oh_ambest.py` (the GA/VA 13-brand
+   method) against AM Best OH (`tools/ambest_oh_data.csv`, Rate, 2025+).
+2. Run the 3-part check: **(a) corroboration** (PPA/HO % agreement),
+   **(b) interim-quality** (did the shipped AM Best OH interim match the scrape?),
+   **(c) richer** (the scrape's 47 neutral-0% / withdrawn / 10 sub-types AM Best omits).
+3. **If it corroborates → flip OH to `validated:{true,true}`** in a small commit:
+   2 booleans in `states.ts` + the `OH` line in `e2e_methodology.ts` EXPECTED map
+   (`{false,false}`→`{true,true}`, "—"→"✓") + methodology count auto-updates.
+   Re-deploy via the same subtree-FF path.
+4. **WATCH (VA precedent):** the AM-Best-parser-family bugs AND the
+   "AM-Best-is-wrong-not-the-scrape" pattern (VA's `SFMA-134526917` entity
+   transposition the scrape got right). Treat AM Best as a cross-check, not ground
+   truth — investigate disagreements at the source PDF before assuming a scrape error.
+
+### Collection status & remaining backlog
+- **VA + OH collection COMPLETE** (VA 98.7% / 444-of-450 cached, OH 100% / 397-of-397),
+  **both live as directly-scraped** (`serff_scraped`). VA `validated:{true,true}`,
+  OH validation pending the cross-check above.
+- **Backlog (none urgent):** AL/FL/LA AM Best re-pull (header-only, fixable) ·
+  NC structural NCRB gap (not fixable — needs a different source) · 3 harvest
+  tooling fixes (`BACKLOG.md`: harvest-early ordering re-enable, per-group
+  not-found stop, **B5** front-of-batch grace) · monorepo `origin` ~96 behind
+  (established norm; deploy path is agent-intel, not origin).
+
 - **NEW SCRAPED BASELINE (post-OH — the intended new normal; SUPERSEDES the
   post-VA tags `filings_raw a1aa7a2e`/1893 · `filings ea8ba81e`/1176 · 342):**
   **12 states**, `filings_raw` serff_scraped **2144 rows `1d9b7e74`**, `filings`
