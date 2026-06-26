@@ -26,7 +26,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "GA", name: "Georgia",        data_coverage: true,  validated: { auto: true,  home: true  } },
   { code: "HI", name: "Hawaii",         data_coverage: true,  source: "ambest" },
   { code: "ID", name: "Idaho",          data_coverage: true,  validated: { auto: true,  home: false } },
-  { code: "IL", name: "Illinois",       data_coverage: true,  source: "ambest" },
+  { code: "IL", name: "Illinois",       data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-06-25 (interim->real): 303-row SERFF scrape, 600/602 filings. AM Best cross-check: PPA 93.8% / HO 95.2% corroboration, 155/156 interim-impact agreement. 1 immaterial coverage gap (Liberty HO, AM Best-covered) -> both validated.
   { code: "IN", name: "Indiana",        data_coverage: true,  source: "ambest" },
   { code: "IA", name: "Iowa",           data_coverage: true,  source: "ambest" },
   { code: "KS", name: "Kansas",         data_coverage: true,  source: "ambest" },

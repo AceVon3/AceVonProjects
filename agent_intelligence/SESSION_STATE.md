@@ -1,3 +1,45 @@
+# Session checkpoint — 2026-06-25 (cont.)  ·  IL INTERIM→REAL IMPORT SHIPPED + VALIDATED (13th scraped state)
+
+IL's 303-row SERFF scrape (600/602 collected) replaced its AM Best interim; cross-
+checked FIRST (the VA order), shipped `validated:{auto:true, home:true}`. Full
+deterministic rebuild of `filings.db` (md5 `3e7d83fe` → `19a94a1f`); deployed via
+subtree split to **agent-intel/master**.
+
+- **CROSS-CHECK (offline, before import):** PPA **93.8%** (122/130), HO **95.2%**
+  (60/63), interim agreement **155/156 (99.4%)** — the lone differ a 0.1% rounding
+  diff. **3rd interim→real data point: VA 97.7% / OH 100% / IL 99.4% — the AM Best
+  interim is confirmed sound 3×**, strengthening confidence the ~29 remaining
+  interim states serve good data (less pressure to scrape them). Scrape richer:
+  64 neutral-0% + 6 withdrawn + 134 back-extension + 11 sub-types. 0 parser drops.
+- **NEW SCRAPED BASELINE (post-IL — SUPERSEDES post-OH `2144`/`1330`/392):**
+  **13 states**, `filings_raw` serff_scraped **2447 rows `26a01779`**, `filings`
+  **1536 rows `2510c9da`**, active@2026-06-11 **461**, db md5 **`19a94a1f`**,
+  anchor +93.70% WA (unchanged — IL max below it).
+- **EVERY delta == IL, nothing more:** raw 2144→2447 (+303), rolled 1330→1536
+  (+206), active 392→461 (+69). IL `ambest_sourced` remnants **0/0**.
+- **BYTE-IDENTICAL PROOF:** the **44 non-IL states** identical in BOTH tables
+  (count + content hash), incl. **VA `be861571` + OH `5c9ba09e`** (prior
+  interim→real) and **CA/NY/TX permanent**. As-of pinned 2026-06-11.
+- **LBPM-134662340 OPTION-A RESOLUTION:** IL's one multi-brand co-filing (PPA,
+  0.0%, Liberty+Safeco under an LBPM tracking#) resolves to **Liberty Mutual**
+  (Group filer; Montgomery→Liberty precedent). Scoped to the EXACT
+  `{Liberty Mutual, Safeco}` span — every other multi-brand span still FATALs;
+  **proven isolated** (44 non-IL states byte-identical, standalone Safeco still
+  Safeco). Rolled to 1 Liberty row, entity_count 3, impact 0.0.
+- **UNIVERSE SOFT-MISSES (tracked, immaterial):** the Liberty HO (eff 04/25/25,
+  5.9%) AM Best-only row + the Truck-Ins-Exch first-sweep clean-0 — both single
+  individual filings the "complete" universe didn't surface. AM Best-covered, not
+  value errors. Lesson: even a verified-complete universe can miss the occasional
+  individual filing.
+- **IL dropped from `AMBEST_STATES`** (→ 32 AM Best states; CA/NY/TX permanent
+  intact). Methodology data-driven → **13 cross-checked rows, IL ✓✓**.
+- **GATES:** import verify 16/16, verify_subtype (active 461) + 7 verify scripts,
+  tsc clean, build 12/12, e2e 13/13. Localhost-reviewed (IL + WA/GA/VA/OH).
+  Scraper-side: `all_states_final_rates.xlsx` 2144→2447, `compare_il_ambest.py`
+  → insurancewebscraper.
+
+---
+
 # Session checkpoint — 2026-06-25  ·  OH AM Best CROSS-CHECK DONE → OH VALIDATED (closes the open follow-up)
 
 Offline cross-check (`compare_oh_ambest.py`, adapted from `compare_va_ambest.py`;

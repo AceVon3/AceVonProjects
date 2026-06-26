@@ -17,22 +17,23 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-06-25 when IL moved interim->scraped (+69 active = 461; per-sub_type deltas exactly IL's, distinct still 11). Prior 2026-06-24 OH baseline 392. Earlier note:
 // Re-keyed 2026-06-24 when OH moved interim->scraped (+48 active rolled) and VA
 // refreshed 277->282 (+2 active rolled): active 342 -> 392. Per-sub_type deltas
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 171,
-  "19.0000 Personal Auto Combinations": 55,
-  "19.0002 Motorcycle": 19,
+  "19.0001 Private Passenger Auto (PPA)": 199,
+  "19.0000 Personal Auto Combinations": 67,
+  "19.0002 Motorcycle": 22,
   "19.0003 Recreational Vehicle (RV)": 8,
-  "19.0004 Other": 4,
-  "04.0003 Owner Occupied Homeowners": 35,
-  "04.0000 Homeowners Sub-TOI Combinations": 70,
+  "19.0004 Other": 5,
+  "04.0003 Owner Occupied Homeowners": 41,
+  "04.0000 Homeowners Sub-TOI Combinations": 87,
   "04.0001 Condominium Homeowners": 10,
   "04.0005 Other Homeowners": 7,
-  "04.0004 Tenant Homeowners": 6,
-  "04.0002 Mobile Homeowners": 7,
+  "04.0004 Tenant Homeowners": 7,
+  "04.0002 Mobile Homeowners": 8,
 };
 
 console.log("=".repeat(72));
@@ -53,7 +54,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 392", rows.length, 392);
+check("active rolled filings = 461", rows.length, 461);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 
