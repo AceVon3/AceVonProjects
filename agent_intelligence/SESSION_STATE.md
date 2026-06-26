@@ -1,3 +1,44 @@
+# Session checkpoint — 2026-06-26  ·  WV INTERIM→REAL IMPORT SHIPPED + VALIDATED (14th scraped state)
+
+WV's 113-row SERFF scrape (207/207 collected) replaced its AM Best interim;
+cross-checked FIRST, shipped `validated:{auto:true, home:true}`. Deterministic
+rebuild of `filings.db` (md5 `19a94a1f` → `1147ba06`); deployed via subtree-FF
+to **agent-intel/master `a53592d`** (Vercel LIVE).
+
+- **RANKING-FIRST:** ranked the remaining ~29 AM Best interim states offline by
+  AM Best in-target count (the cross-check in-scope rule); WV (43) was the
+  smallest clean candidate → harvested smallest-first. AM Best in-target RANKS
+  reliably even though absolute scrape size differs (WV 43→113, ~ the VA/OH/IL
+  proxy held the ordering).
+- **CROSS-CHECK (4th interim→real point):** PPA **30/33 (90.9%)**, HO **9/10
+  (90%, lone miss pure recency → 9/9 in-window)**, interim **37/40** — the 3
+  "disagreements" ALL AM-Best-side (scrape correct vs source PDFs; the VA SFMA
+  pattern: AM Best wrong/disposition-stage, not the scrape). **Effectively clean:
+  VA 97.7 / OH 100 / IL 99.4 / WV** — the AM Best interim is sound 4×, strong
+  evidence the remaining ~28 interim states serve good data.
+- **MATERIAL SOFT-MISS RECOVERED (new precedent):** the cross-check surfaced 1
+  MATERIAL AM-Best-only — Liberty Insurance Corporation HO eff 01/09/25 −5% /
+  **7,894ph** (a real Defend signal). Root cause: a search-term gap (the
+  Allstate/Encompass family) — "Liberty Insurance Corporation" has no "mutual".
+  Fixed `GROUP_KW`+`GROUP_SEARCH` (globally correct), recovered `LBPM-134273638`
+  = EXACT AM Best match, **pre-import**. **Precedent: recover MATERIAL soft-misses
+  before importing; drop only IMMATERIAL ones** (Allstate 243ph + Safeco 2039ph
+  dropped per the VA/OH/IL tradeoff; Liberty 7894ph recovered).
+- **NEW SCRAPED BASELINE (SUPERSEDES post-IL `2447`/`1536`/461 / `19a94a1f`):**
+  **14 states**, `filings_raw` serff_scraped **2560**, `filings` **1607**,
+  active@2026-06-11 **480**, db md5 **`1147ba06`**, anchor +93.70% WA (unchanged).
+- **EVERY delta == WV:** raw +113, rolled +71, active +19, states +1. **13 prior
+  scraped states proven BYTE-IDENTICAL** (count + content hash, old vs new db);
+  CA/NY/TX permanent intact. WV `ambest_sourced` remnants **0/0**.
+- **WV dropped from `AMBEST_STATES`** (→ 31 AM Best; CA/NY/TX permanent intact).
+  Methodology → **14 cross-checked rows, WV ✓✓**.
+- **GATES:** import verify 16/16, verify_subtype (480) + 7 verify scripts, tsc
+  clean, build 12/12, e2e 13/13. **Localhost-reviewed + approved.** Scraper-side:
+  `compare_wv_ambest.py` + `all_states` regen → insurancewebscraper `e3c8bf9`.
+  Monorepo `d4adf7d` (local, origin-behind norm).
+
+---
+
 # Session checkpoint — 2026-06-25 (cont.)  ·  IL INTERIM→REAL IMPORT SHIPPED + VALIDATED (13th scraped state)
 
 IL's 303-row SERFF scrape (600/602 collected) replaced its AM Best interim; cross-
