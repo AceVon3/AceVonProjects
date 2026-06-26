@@ -61,7 +61,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "VT", name: "Vermont",        data_coverage: true,  source: "ambest" },
   { code: "VA", name: "Virginia",       data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-06-22 (interim->real); AM Best cross-check: PPA 92.3%, HO values agree where they overlap (the 68.6% is AM Best-only coverage/recency, and the lone "disagreement" was AM Best's transposition the scrape got right) -> both validated
   { code: "WA", name: "Washington",     data_coverage: true,  validated: { auto: true,  home: false } },
-  { code: "WV", name: "West Virginia",  data_coverage: true,  source: "ambest" },
+  { code: "WV", name: "West Virginia",  data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-06-26 (interim->real): 113-row SERFF scrape, 207/207 filings. AM Best cross-check: PPA 30/33 (90.9%) / HO 9/10 (90%, lone miss pure recency -> 9/9 in-window) corroboration, 37/40 interim-impact agreement (the 3 diffs all AM-Best-side per source PDFs). Recovered the material Liberty Insurance Corporation HO (eff 01/09/25 -5%/7894ph) via a search-term fix -> both validated.
   { code: "WI", name: "Wisconsin",      data_coverage: true,  source: "ambest" },
   { code: "WY", name: "Wyoming",        data_coverage: false }, // listed but no filings yet
 ];

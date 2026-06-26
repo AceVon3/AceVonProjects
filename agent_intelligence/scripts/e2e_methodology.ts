@@ -9,7 +9,7 @@
 //     Auto + Homeowners, 2024-2026.
 //   - Thresholds section states +5% (Prospect) and -2% (Defend) verbatim.
 //   - All 7 excluded brands are listed with a "why" line each.
-//   - Validation table has 13 rows (one per directly-scraped state) and the cell
+//   - Validation table has 14 rows (one per directly-scraped state) and the cell
 //     values match STATES.validated exactly. Spot-checks: AZ auto=✓
 //     home=✓, MT auto=✓ home=✓, WA auto=✓ home=—, CO auto=— home=—.
 //   - Known limitations section covers SERFF visibility gaps, CO
@@ -56,6 +56,7 @@ const EXPECTED_VALIDATION: Record<string, { auto: boolean; home: boolean }> = {
   UT: { auto: true,  home: false },
   VA: { auto: true,  home: true  }, // scraped 2026-06-22; PPA 92.3%, HO values cross-checked (68.6% is AM Best-only coverage, not value errors)
   WA: { auto: true,  home: false },
+  WV: { auto: true,  home: true  }, // scraped 2026-06-26 (interim->real); AM Best cross-check PPA 30/33 (90.9%) / HO 9/10 (90%, 9/9 in-window) / 37-of-40 interim agreement (3 diffs all AM-Best-side) -> both validated
 };
 
 let failures = 0;
@@ -159,7 +160,7 @@ async function main(): Promise<void> {
   // -- (7) AM Best validation table matches STATES.validated ---------------
   console.log("\n(7) validation table matches STATES.validated exactly");
   const rowCount = await page.locator('[data-testid="validation-row"]').count();
-  check(`validation table has 13 rows (got ${rowCount})`, rowCount === 13);
+  check(`validation table has 14 rows (got ${rowCount})`, rowCount === 14);
   for (const [code, expected] of Object.entries(EXPECTED_VALIDATION)) {
     const row = page.locator(`[data-testid="validation-row"][data-state="${code}"]`);
     const autoCell = (await row.locator('[data-testid="cell-auto"]').textContent())?.trim();
@@ -178,9 +179,9 @@ async function main(): Promise<void> {
     /10.{0,3}12/.test(limitsText));
   check("limitations call out Colorado as unvalidated",
     /Colorado/.test(limitsText) && /validat/i.test(limitsText));
-  // 5 not covered = 50 − 45 covered (13 directly scraped incl. VA/OH/IL + 32 AM Best).
+  // 5 not covered = 50 − 45 covered (14 directly scraped incl. VA/OH/IL/WV + 31 AM Best).
   // The uncovered 5: AL/FL/LA (header-only re-pull), NC (structural NCRB gap), WY
-  // (no filings). The validation table is 13 rows (one per directly-scraped state;
+  // (no filings). The validation table is 14 rows (one per directly-scraped state;
   // CO shows "— —" — scraped but not yet AM Best cross-checked (OH cross-checked
   // 2026-06-25 -> now ✓✓); AM Best states, interim AND permanent, are not in the
   // table at all).
