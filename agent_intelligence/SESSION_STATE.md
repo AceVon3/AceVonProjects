@@ -1,3 +1,45 @@
+# Session checkpoint — 2026-06-29  ·  NH INTERIM→REAL IMPORT SHIPPED + VALIDATED (15th scraped state)
+
+NH's 113-row SERFF scrape (214/214 in-target) replaced its AM Best interim;
+cross-checked FIRST, shipped `validated:{auto:true, home:true}`. Deterministic
+rebuild of `filings.db` (md5 `1147ba06` → `5c821d8b`); deployed via subtree-FF to
+**agent-intel/master `cd796bd`** (Vercel LIVE).
+
+- **CROSS-CHECK (5th interim→real point, CLEANEST YET):** in-window PPA **22/22
+  (100%)**, HO **14/14 (100%)**, interim **33/33 (100%, ZERO disagreements)**. The
+  headline (PPA 75.9% / HO 87.5%) was deflated ONLY by **9 AM-Best-only 2026-eff
+  RECENCY** filings (May-2026 effective, beyond the scrape window — incl. big-ph
+  Progressive Universal 107k / State Farm Fire 86k) — coverage/recency, not errors.
+  **VA 97.7 / OH 100 / IL 99.4 / WV clean / NH 100** — the AM Best interim is sound
+  5×. 0 blank max/min (clean parser; no SF `% %`, no minus-family bug).
+- **2nd SYSTEMATIC SEARCH-TERM GAP FIXED GLOBALLY (after Liberty):** the lone genuine
+  soft-miss was Safeco **General Insurance Company of America** (PPA, eff 01/19/25,
+  +15.8%, **3,711ph** — a Prospect signal). A subsidiary whose legal name lacks the
+  brand string — the **ROOT PATTERN** shared with Liberty Insurance Corporation.
+  Missed in WV (2039ph, dropped) AND NH. Fixed in `TARGET_COMPANIES` +
+  `GROUP_SEARCH["Liberty Mutual"]` ("general insurance"; GROUP_KW already classified
+  it). Targeted search recovered `LBPM-134225435` = EXACT match (AM Best PPA-buckets
+  its 19.0002 Motorcycle TOI). 0 genuine soft-misses remain.
+- **NEW SCRAPED BASELINE (SUPERSEDES post-WV `2560`/`1607`/480 / `1147ba06`):**
+  **15 states**, `filings_raw` serff_scraped **2673**, `filings` **1673**,
+  active@2026-06-11 **495**, db md5 **`5c821d8b`**, anchor +93.70% WA (unchanged).
+- **EVERY delta == NH:** raw +113, rolled +66, active +15, states +1. **14 prior
+  scraped states proven BYTE-IDENTICAL** (count + content hash); CA/NY/TX intact.
+  NH dropped from `AMBEST_STATES` (kept in `COVERED_STATES`); methodology **15 rows,
+  NH ✓✓**.
+- **GATES:** import 16/16, verify_subtype (495) + 7 verify, tsc, build 12/12, e2e
+  13/13. **Localhost-reviewed + approved.** Scraper-side: `compare_nh_ambest.py` +
+  config fix + all_states → insurancewebscraper `7261209`. Monorepo `1e14362`.
+- **⚠️ BACKLOG (root-pattern gap class — 2 systematic gaps found so far):**
+  (1) retro-audit shipped states (VA/OH/IL/WV) for missed "General Insurance" /
+  "Liberty Insurance" filings with the fixed terms — recover MATERIAL ones (a small
+  targeted pass per state). (2) PROACTIVE `TARGET_COMPANIES` audit for OTHER
+  subsidiary entities whose legal name lacks the brand string (the class Liberty
+  Insurance Corp + General Insurance Co of America belong to) — close the whole gap
+  class before scraping more states.
+
+---
+
 # Session checkpoint — 2026-06-26  ·  WV INTERIM→REAL IMPORT SHIPPED + VALIDATED (14th scraped state)
 
 WV's 113-row SERFF scrape (207/207 collected) replaced its AM Best interim;
