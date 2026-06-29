@@ -42,7 +42,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "MT", name: "Montana",        data_coverage: true,  validated: { auto: true,  home: true  } },
   { code: "NE", name: "Nebraska",       data_coverage: true,  source: "ambest" },
   { code: "NV", name: "Nevada",         data_coverage: true,  validated: { auto: true,  home: false } },
-  { code: "NH", name: "New Hampshire",  data_coverage: true,  source: "ambest" },
+  { code: "NH", name: "New Hampshire",  data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-06-29 (interim->real): 113-row SERFF scrape, 214/214 in-target. AM Best cross-check (in-window): PPA 22/22 (100%) / HO 14/14 (100%) corroboration, interim 33/33 (100%) impact agreement — cleanest yet (0 disagreements). Recovered the Safeco General Insurance Co of America soft-miss (eff 01/19/25 +15.8%/3711ph) via the 2nd search-term fix -> both validated.
   { code: "NJ", name: "New Jersey",     data_coverage: true,  source: "ambest" },
   { code: "NM", name: "New Mexico",     data_coverage: true,  validated: { auto: true,  home: true  } },
   { code: "NY", name: "New York",       data_coverage: true,  source: "ambest" }, // PERMANENT (DFS, non-SERFF) — see AMBEST_PERMANENT_STATES

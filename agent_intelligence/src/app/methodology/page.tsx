@@ -71,7 +71,7 @@ export default function MethodologyPage(): React.JSX.Element {
   const lastUpdated = readLastUpdated();
   const coveredStates = STATES.filter(s => s.data_coverage);
   // Directly-scraped, AM Best-cross-checked states vs. interim AM Best industry-
-  // data states (VA/OH/IL/WV all now scraped 2026-06-22/24/25/26; the original interim trio + WV are fully real). The
+  // data states (VA/OH/IL/WV/NH all now scraped 2026-06-22/24/25/26/29; the original interim trio + WV/NH are fully real). The
   // cross-check validation table is scraped-only —
   // interim states are not cross-checked, so they must NOT appear as validated.
   const scrapedStates = coveredStates.filter(s => s.source !== "ambest");
