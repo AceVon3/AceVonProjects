@@ -1,5 +1,484 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-06-30 — VT COLLECTION COMPLETE (16th state); committed, cross-check NEXT.**
+> Picked up mid-finalize after a VS Code restart. Collection was already done +
+> integrity-verified; this session re-verified the deliverable offline (PARSE-ONLY,
+> no browser → no kill risk) and BANKED it. `filings.db` UNTOUCHED — import pending
+> the cross-check. Baseline unchanged (15 states, raw 2673 / rolled 1673 /
+> active 495 / db md5 `5c821d8b`).
+> - **COLLECTION COMPLETE: 154/154 in-target cached, 0 DOWNLOAD misses.** All 172
+>   cached PDFs proven valid + non-truncated (min 13,208B, valid `%PDF` headers,
+>   none missing). General Insurance gap class CLOSED end-to-end (General Insurance
+>   Co of America captured, 4 rows; 7 General-Insurance rows total incl. Nationwide/
+>   GEICO General). State Farm front-grace worked (SFCI present).
+> - **DELIVERABLE: `vt_final_rates.xlsx` = 103 rows** (entity-grain), 0 true
+>   duplicates, 0 blank max/min (clean parser — no State Farm `% %` family bug).
+>   65 distinct tracking#s; the apparent (tracking#,line) collisions are legit
+>   multi-entity co-files (SF Fire vs Mutual; Liberty Mutual Ins vs Personal;
+>   Progressive Direct vs Northern), rolled premium-weighted only at import.
+> - **PARSE FUNNEL BALANCES (172 = 68 emitted + 75 form/rule + 6 new-product +
+>   22 out-of-window + 1 parse-anomaly):** the fresh PARSE-ONLY run reproduces the
+>   committed 103 rows exactly (108 rows − 5 filing-vehicle exclusions; 68 filings
+>   − 3 fully-excluded = 65 in deliverable). No silent drops.
+> - **⚠️ DEVIATION (transparent — FIRST non-zero `filings_excluded_no_pdf`):**
+>   `no_pdf == 1`, NOT a download gap (all 172 PDFs present/valid). It is a PARSER
+>   limitation — `PRGS-134029613` ("S2008 Symbol Update 2024") has a wrapped
+>   company name in the Company Rate Information table, so the parser extracted 0
+>   rows (also dropped disposition + effective date). The filing is MAXIMALLY
+>   IMMATERIAL: 0.000% overall / $0 premium / 0 policyholders — a rate-neutral
+>   symbol update structurally incapable of a Prospect/Defend/My-Carriers signal.
+>   DROPPED per the WV/NH material-vs-immaterial precedent. The `== 0` gate exists
+>   to catch DOWNLOAD gaps; it fired on a parse anomaly with the PDFs all present,
+>   so its protective purpose (no missing PDFs) is satisfied. Decision confirmed
+>   with the user before committing.
+> - **⚠️ BACKLOG (new): wrapped-company-name parser bug** in
+>   `parse_filing_summary_pdf` — a Company Rate Information row whose company name
+>   wraps to a second line yields 0 extracted rows + blank disposition/effective.
+>   Fix DELIBERATELY in isolation (it is a SHARED parser) with full re-verification
+>   that all shipped states' deliverables stay byte-identical. When fixed, VT
+>   re-finalizes to 105 rows (the 2 recovered rows are 0%/immaterial → no urgency).
+> - **SHIPPED:** insurancewebscraper `7e88281`→**`d0e21a0`** — banks burst-3's
+>   +113 PDFs (59→172) + the 103-row deliverable + ledger the restart left
+>   uncommitted. 115 files, 0 deletions (Temp-purge struck again: 295 root files
+>   purged, restored from index pre-commit), HEAD==origin.
+> - **OPERATIONAL FLAGS carried:** (1) browser-launch-kill — the env kills
+>   Playwright launches; PARSE-ONLY (load_targets + build_rows, no
+>   download_all_pdfs) avoided it cleanly. WATCH if the NEXT state's download
+>   harvest gets killed at launch. (2) Temp-purge (struck ~11×; restore-from-index
+>   when the tree is purged but `.git` survives). (3) harvest-early tail-over-stop
+>   (NH burst-4, VT burst-2 — 3rd occurrence, minor tuning backlog).
+> - **NEXT: VT cross-check** (`compare_vt_ambest.py`, offline, `filings.db`
+>   untouched) — 3-part (PPA/HO corroboration + interim-quality 6th point +
+>   reverse/richer). Expect cleanest soft-miss profile yet (gap class closed,
+>   General Insurance 7 rows captured). The cross-check is the independent
+>   materiality safety net for PRGS-134029613. HOLD for results before import.
+
+> **2026-06-29 — NH INTERIM→REAL IMPORT SHIPPED + VALIDATED (15th scraped state).**
+> 2nd-smallest of the ranked AM Best interim states (NH 45 in-target). Collected
+> 214/214, cross-checked, recovered, imported, deployed. `filings.db` md5
+> `1147ba06`→`5c821d8b`.
+> - **COLLECTION (5 bursts):** universe 689 raw / 203→205 in-target → 219 download
+>   target → **113-row deliverable**, all 214 in-target PDFs cached. 0 true misses
+>   (VA/OH/IL/WV/NH streak holds). **WAF lesson:** burst-1 walled at 4 clean (slow
+>   component depressed by a heavy first day: 26 sweep searches + download = 4th
+>   contact); a normal rest recovered it (burst-2: 11), deep rests ran best
+>   (burst-3/5: 13/18). harvest-early over-stopped on burst-4 (no wall) →
+>   `--no-harvest-early --wall-stop 2` finish-mode cleared it. SF front-grace +
+>   Nationwide de-cap (100→127, 12 in-target) + Liberty Insurance all validated.
+> - **CROSS-CHECK (5th interim→real point, CLEANEST YET):** in-window PPA **22/22
+>   (100%)**, HO **14/14 (100%)**, interim **33/33 (100%, 0 disagreements)**. Headline
+>   (PPA 75.9% / HO 87.5%) deflated ONLY by 9 AM-Best-only 2026-eff RECENCY filings
+>   (beyond the scrape window) — not errors. **VA 97.7 / OH 100 / IL 99.4 / WV clean
+>   / NH 100** — interim sound 5×. 0 blank max/min (clean parser).
+> - **2nd SYSTEMATIC SEARCH-TERM GAP FIXED GLOBALLY (after Liberty):** the genuine
+>   soft-miss was Safeco **General Insurance Company of America** PPA eff 01/19/25
+>   +15.8% / **3,711ph** — a subsidiary whose legal name lacks the brand string (same
+>   ROOT PATTERN as Liberty Insurance Corp). Missed in WV (2039ph, dropped) AND NH.
+>   Fixed in `TARGET_COMPANIES` + `GROUP_SEARCH["Liberty Mutual"]` ("general
+>   insurance"); recovered `LBPM-134225435` = EXACT match (AM Best PPA-buckets its
+>   19.0002 Motorcycle TOI). 0 genuine soft-misses remain.
+> - **NEW BASELINE (SUPERSEDES post-WV 2560/1607/480 / `1147ba06`):** 15 states,
+>   raw **2673**, rolled **1673**, active@2026-06-11 **495**, db md5 **`5c821d8b`**,
+>   anchor +93.70% WA. Every delta == NH (+113/+66/+15/+1); 14 prior scraped states
+>   BYTE-IDENTICAL (count + content hash); CA/NY/TX intact. NH `validated:{true,true}`.
+> - **SHIPPED:** insurancewebscraper `78c03d6`(recovery+config) → `7261209`(all_states);
+>   agent-intel/master `76f2382`→**`cd796bd`** (subtree-FF, 0 deletions; Vercel LIVE —
+>   /,/methodology,/prospect 200, NH directly-scraped, 15 cross-checked rows).
+>   Monorepo `1e14362` (local). Gates: import 16/16, verify_subtype(495) + 7 verify,
+>   tsc, build 12/12, e2e 13/13. Localhost-approved.
+> - **⚠️ BACKLOG (root-pattern gap class):** (1) retro-audit shipped states
+>   (VA/OH/IL/WV) for missed "General Insurance"/"Liberty Insurance" filings with the
+>   fixed terms — recover MATERIAL ones (small targeted pass per state). (2) PROACTIVE
+>   `TARGET_COMPANIES` audit for OTHER subsidiary entities whose legal name lacks the
+>   brand string (the class Liberty + General Insurance belong to) — close the whole
+>   gap class before scraping more states. See `SESSION_STATE.md`.
+
+> **2026-06-26 — WV INTERIM→REAL IMPORT SHIPPED + VALIDATED (14th scraped state).**
+> Smallest-clean of the remaining ~29 AM Best interim states (ranked offline by
+> AM Best in-target; WV 43 the smallest). Collected 207/207, cross-checked,
+> recovered, imported, deployed. `filings.db` md5 `19a94a1f`→`1147ba06`.
+> - **COLLECTION (3 bursts):** universe 681 raw / 200 in-target → 207 download
+>   target → **113-row deliverable**. 0 true misses (VA/OH/IL/WV streak holds).
+>   State-Farm front-grace + Q2 recovery validated in vivo. Travelers correctly
+>   0 in-target (commercial-only, AM-Best-corroborated). insurancewebscraper
+>   `638acc7`(collection) → `d1a0dc2`(recovery) → `e3c8bf9`(all_states regen).
+> - **CROSS-CHECK (4th interim→real point):** PPA 30/33 (90.9%), HO 9/10 (90%,
+>   lone miss pure recency = **9/9 in-window**), interim **37/40** — the 3 diffs
+>   ALL AM-Best-side (scrape correct vs source PDFs, the VA SFMA pattern), so
+>   **effectively clean**. VA 97.7 / OH 100 / IL 99.4 / WV — interim sound 4×,
+>   further cementing the remaining ~28 interim states serve good data.
+> - **MATERIAL SOFT-MISS RECOVERED (the new precedent):** the cross-check found
+>   1 material AM-Best-only — Liberty Insurance Corporation HO eff 01/09/25 −5% /
+>   **7,894ph** (a real Defend signal). Root cause = a SEARCH-TERM GAP (Allstate/
+>   Encompass family): "Liberty Insurance Corporation" has no "mutual", so neither
+>   the "Liberty Mutual" universe search NOR the group download returned it.
+>   Two-layer fix (both globally correct): `GROUP_KW`+`GROUP_SEARCH["Liberty
+>   Mutual"]` += "liberty insurance[ corporation]". `LBPM-134273638` recovered =
+>   EXACT AM Best match. **PRECEDENT: recover MATERIAL soft-misses pre-import
+>   (don't just drop); drop only IMMATERIAL ones** — here Allstate 243ph + Safeco
+>   2039ph dropped (the VA/OH/IL tradeoff), Liberty 7894ph recovered.
+>   ⚠️ BACKLOG: other shipped states may carry the same Liberty Insurance Corp
+>   search-term gap — re-audit when convenient (non-blocking).
+> - **NEW BASELINE (SUPERSEDES post-IL 2447/1536/461 / `19a94a1f`):** 14 states,
+>   raw **2560**, rolled **1607**, active@2026-06-11 **480**, db md5 **`1147ba06`**,
+>   anchor +93.70% WA (unchanged). Every delta == WV (+113/+71/+19/+1 state); the
+>   **13 prior scraped states proven BYTE-IDENTICAL** (count + content hash);
+>   CA/NY/TX permanent intact. WV `validated:{auto:true,home:true}`.
+> - **SHIPPED:** agent-intel/master `fb2a94a`→**`a53592d`** (subtree-FF, 0
+>   deletions; Vercel LIVE — /,/methodology,/prospect 200, WV renders
+>   directly-scraped, 14 cross-checked rows). Monorepo `d4adf7d` (local).
+>   Gates: import 16/16, verify_subtype(480) + 7 verify, tsc, build 12/12,
+>   e2e 13/13. Localhost-reviewed + approved. See `SESSION_STATE.md`.
+
+> **2026-06-25 — IL INTERIM→REAL IMPORT SHIPPED + VALIDATED (13th scraped state).**
+> Cross-check FIRST, then surgical import. `filings.db` md5 `3e7d83fe`→`19a94a1f`,
+> deployed via subtree split to agent-intel/master.
+> - **CROSS-CHECK:** PPA 93.8% / HO 95.2% / interim 155/156 (99.4%). **3rd
+>   interim→real point: VA 97.7% / OH 100% / IL 99.4% — interim sound 3×.** Richer:
+>   64 0% + 6 withdrawn + 134 back-extension + 11 sub-types; 0 parser drops.
+>   (`compare_il_ambest.py`.) IL → `validated:{auto:true,home:true}`.
+> - **NEW BASELINE (SUPERSEDES post-OH 2144/1330/392):** 13 states, raw 2447
+>   `26a01779`, rolled 1536 `2510c9da`, active@2026-06-11 461, db md5 `19a94a1f`.
+>   Every delta == IL (+303 raw / +206 rolled / +69 active); 44 non-IL states
+>   byte-identical; CA/NY/TX permanent intact; anchor +93.70% WA held.
+> - **LBPM-134662340 Option-A:** IL's one Liberty+Safeco co-filing (PPA, 0.0%)
+>   → Liberty Mutual (scoped {Liberty,Safeco} span; Montgomery precedent; proven
+>   isolated). **Soft-misses (immaterial, AM Best-covered):** Liberty HO 04/25/25
+>   5.9% + Truck-Ins-Exch first-sweep clean-0 — single filings a "complete"
+>   universe didn't surface. `all_states_final_rates.xlsx` 2144→2447 (IL appended).
+>   See `agent_intelligence/SESSION_STATE.md`.
+
+> **2026-06-25 — OH AM Best CROSS-CHECK DONE; OH VALIDATED.** Offline
+> (`compare_oh_ambest.py`, no SERFF, `filings.db` NOT mutated). OH flipped to
+> `validated:{auto:true,home:true}` (app-side states.ts/e2e only).
+> - **(a) STANDARD:** PPA 74/77 = **96.1%**, HO 34/35 = **97.1%** (beats VA 92.3% /
+>   GA 93.8%). **(b) INTERIM:** 105/105 impact agreement, **0 disagreements** (VA
+>   97.7%) — 2nd interim→real point, even cleaner. **(c) REVERSE:** scrape richer
+>   (57 0% + 128 back-extension + 10 sub-types); 4 AM Best-only all 0.0% (1 recency
+>   2026-eff + 3 immaterial 0% coverage) — not value errors.
+> - **WATCH cleared:** 6 blank-max/min = State Farm `% %` source pattern (impacts
+>   populated, not parser drops); none coincide with the 4 AM Best-only.
+> - Committed: app flag flip → agent-intel; `compare_oh_ambest.py` → this repo.
+>   `filings.db` md5 unchanged `3e7d83fe`. See `agent_intelligence/SESSION_STATE.md`.
+
+> **2026-06-24 — OH COLLECTION COMPLETE: 397/397 (100%); import pending.** Resumed
+> the download harvest from 45% and finished it to 100% in 8 cold bursts.
+> `filings.db`/app UNTOUCHED (scraper-side only; live db still post-VA
+> `a1c5cda4`/`8b813c0`).
+> - **OH COMPLETE: 397/397 in-target PDFs cached**, all 10 carrier groups done
+>   (Allstate, American Family, Farmers, GEICO, Liberty, State Farm, Nationwide,
+>   Progressive, Travelers, USAA). **`oh_final_rates.xlsx` = 246 rows**,
+>   **0 true misses**, `filings_excluded_no_pdf: 0` (authoritative). Committed
+>   insurancewebscraper **`ceb279a`** (HEAD==origin). 8 clean banks this session:
+>   `c658109`(+33) → `9a49186`(+28) → `fb061ce`(+40) → `65b13c0`(+13) →
+>   `acf76e2`(+8) → `44208bd`(Liberty done) → `4503c73`(State Farm done) →
+>   `ceb279a`(+75, all 4 remaining groups).
+> - **UNIVERSE RESOLVED:** the "361 distinct" estimate → **397 actual target
+>   filings** (the per-group target lists summed higher than the dedup estimate;
+>   not a scope change — the same in-target carriers/TOI, just a truer count).
+>   **AmFam/Liberty 100-cap flag: confirmed a NON-ISSUE** (both groups closed out
+>   clean, no shortfall).
+> - **WAF HELD ALL SESSION — no depression.** Full-burst 405-challenge series
+>   **40→36→30→42→20%**. The 42% (burst 7) was a heavy-load tail (all 5 walls
+>   post-completion, clean-count held at 7), NOT cumulative load — the leading
+>   indicator never climbed across bursts the way it did on the prior heavy day.
+>   The long cold rest before burst 8 (90+ min, incl. a host suspend that stalled
+>   the rest timer) restored a FULL ceiling: burst 8 swept all 4 remaining groups
+>   (Nationwide/Progressive/Travelers/USAA) in one 24.7-min run, 12 clean / 3
+>   intermittent walls. Cold-recovery property intact.
+> - **Q2 RECOVERY PROVEN IN VIVO** (first time since the VA arc left it unproven):
+>   `[RECOVERY-1]` landed all 4 transient misses in-burst (`NWPP-G134739089`,
+>   `NWPP-G134806226`, `TRVD-134025171`, `TRVD-G134441443` — each miss→ok). The
+>   re-pool works on transient degradation-misses. Every miss across all 8 bursts
+>   (`GECC`/`LBPM`/`GNSC`/`NWPP-G`/`TRVD`) was transient and recovered → 0 true
+>   misses in all of OH.
+> - **BACKLOG B5 (recorded in `BACKLOG.md`):** front-of-batch grace for the
+>   2-consecutive-miss early-stop — 2 transient misses at the FRONT of a batch can
+>   abort a whole group before the bulk + later search terms run (killed State
+>   Farm on burst 6; recovered on a fresh full-rest burst 7). Same family as the
+>   VA harvest-early mis-ordering. Efficiency fix, not blocking.
+> - **IMPORT SHIPPED (2026-06-24 cont.):** combined VA-refresh (+5) + OH import
+>   (246-row scrape) rebuilt `filings.db` (md5 `a1c5cda4`→`3e7d83fe`), deployed via
+>   subtree split to agent-intel/master. **New scraped baseline (SUPERSEDES post-VA
+>   1893/1176/342): 12 states, raw 2144 `1d9b7e74`, rolled 1330 `a9945257`,
+>   active@2026-06-11 392.** Every delta == VA(+5/+4/+2) + OH(+246/+150/+48); 43
+>   non-VA/OH states byte-identical; CA/NY/TX permanent unchanged; anchor +93.70% WA
+>   held. `all_states_final_rates.xlsx` regenerated 1893→2144 (OH appended) →
+>   insurancewebscraper. OH `validated:{false,false}` (real scraped data, AM Best
+>   cross-check `compare_oh_ambest` is the immediate follow-up). See
+>   `agent_intelligence/SESSION_STATE.md` for the full import checkpoint.
+>
+> **2026-06-23 (cont.2) — OH DOWNLOAD HARVEST PARTIAL: 163/361 (45%); BANKED on the
+> rising-challenge-rate leading indicator.** Two download bursts, then stopped clean.
+> `filings.db`/app untouched (scraper-side only).
+> - **OH 163/361 in-target PDFs cached (45%)**; `oh_final_rates.xlsx` = 48 rows (partial).
+>   Committed insurancewebscraper **`4e6500a`** (HEAD==origin, 0 deletions; bursts were
+>   `a5599de` +68 and `4e6500a` +95). **Two groups COMPLETE: Allstate (98) + American
+>   Family (53).** Farmers partial (12/61). **Deferred ~234:** Farmers 49, Liberty 55,
+>   State Farm 29, Nationwide 29, GEICO 26, Progressive 19, USAA 15, Travelers 12.
+> - **WHY STOPPED (leading-indicator stop, not a wall):** clean-count HELD across bursts
+>   (12 → 18 clean Begin-Searches — the ceiling itself is fine) BUT the **405-challenge
+>   rate doubled 6 → 13** on the 5th SERFF contact of a heavy day. That's the *leading*
+>   indicator of cumulative load — the WAF challenges more often before the clean-count
+>   actually collapses. Stopped to avoid tipping the SLOW component into multi-day
+>   depression. Per yesterday's guardrail: respect the drift trend, don't grind a heavy
+>   day. (Contrast: yesterday's single-day load showed NO depression because we didn't
+>   push past the leading signal; this is that discipline applied.)
+> - **NO TRUE MISSES** — every deferred filing is WAF-deferred, full search-term coverage
+>   confirmed per group (Allstate `allstate`+`encompass`, Farmers all 4 terms, etc.).
+>   The remaining ~234 are clean resume-fresh work, NOT problem rows.
+> - **RESUME PLAN (next session):** cold ceiling → `run_final_rates.py OH`, proven cadence
+>   (harvest-early ON, full term coverage, `--wall-stop`), rest 25-30 min between bursts.
+>   ~234 remaining ≈ a handful of cold bursts. **Universe is COMPLETE (361 in-target,
+>   swept + merged THIS session) — straight to download harvest, NO universe work needed.**
+> - **RESIDUAL FLAG:** AmFam(100)/Liberty(100) possible lingering universe page-cap —
+>   date-windowed re-search ONLY IF a download-phase AM Best gap appears (non-blocking).
+> - **IMPORT: deferred** — combined VA-refresh (+5 rows) + OH import once OH collection
+>   lands. `filings.db` untouched.
+> - **NO further SERFF today** — stopping the day's contact here protects the ceiling for
+>   a clean cold resume.
+>
+> **2026-06-23 (cont.) — OH UNIVERSE COMPLETED (361 in-target); download harvest next.**
+> After VA, the OH universe-completion sweep ran (searches only, `--no-dates`, 8 terms;
+> `oh_universe_completion.py` → merged via `merge_oh_search.py`). `filings.db`/app untouched.
+> - **OH universe now 991 raw / 361 distinct in-target** (`oh_all_companies_search.xlsx`),
+>   **0 PDFs cached** (download phase not started — fresh, ~VA-sized).
+> - **TRUE-DISTINCT BASELINE was 267, not 296.** The prior "296" summed per-search-term
+>   labels and triple-counted USAA-family co-filings (36 filing_ids carry all of
+>   USAA/United Services/Garrison — one co-filed filing surfacing under each term).
+>   Dedup-by-`filing_id` (the VA/GA pattern) collapses them correctly; **0 distinct
+>   in-target filings lost**, +94 recovered → 361.
+> - **+94 RECOVERED by completing the sweep:** Travelers 0→12 (6 HO + 6 PPA; the bare
+>   `travelers` page-1 100-row cap had returned only commercial — pagination past the cap
+>   captured the Quantum personal lines), Nationwide 0→27, American Family 0→43 (all three
+>   were walled-before-capture in the 06-15 partial), Allstate +11 past the cap.
+> - **Per-group in-target (deduped):** Allstate 90, Farmers 61, Liberty Mutual 51,
+>   American Family 43, State Farm 28, Nationwide 27, GEICO 21, USAA 15, Progressive 13,
+>   Travelers 12. **Country = GENUINE ZERO** (clean 200, 0 results — no OH personal-lines
+>   filings; matches VA).
+> - ⚠️ **RESIDUAL CAP FLAG:** American Family (100) and Liberty Mutual (100) returned
+>   *exactly* 100 raw while Travelers/Nationwide/Allstate paginated past 100 in the same
+>   session — possible lingering page-cap. Their in-target (43/39) is captured; **if a
+>   download-phase gap vs AM Best appears, date-windowed re-search to page past 100.**
+> - **COLD READ (3rd contact today): 8/8 clean, ZERO 405 walls** — no slow-penalty drift.
+>   Per-carrier search-term CONFIG (`GROUP_SEARCH`) verified complete before harvest
+>   (the VA lesson). Committed scraper-side (see hash in SESSION_STATE / git log).
+> - **NEXT: `run_final_rates.py OH` download harvest** (harvest-early ON, full term
+>   coverage, `--wall-stop`), proven cadence. 4th+ contact today = the real test of whether
+>   a heavy day's cumulative load eventually depresses the ceiling — WATCH per-burst clean
+>   count. OH import deferred (later combined VA-refresh + OH import).
+>
+> **2026-06-23 — VA COLLECTION COMPLETE (444/450, 98.7%); TRVD-G "gap" DISPROVEN.**
+> First SERFF contact since the 06-22 VA harvest. Two targeted bursts finished VA;
+> `filings.db`/app untouched (scraper-side only).
+> - **VA now 444/450 in-target cached (98.7%)**; `va_final_rates.xlsx` = **282 rows**
+>   (was 277, +5). Burst-1 (warm-tail) +17 → 436; burst-2 (clean cold) +8 → 444.
+>   Committed insurancewebscraper **`22988d1`** (repair+burst-1 `11a7163`), HEAD==origin,
+>   0 deletions staged on both.
+> - **OFFLINE INVESTIGATION (before any SERFF) DISPROVED the `TRVD-G` coverage-gap
+>   hypothesis.** The G-series is NORMAL downloadable Travelers data, already in the
+>   universe under bare `travelers` (standard entities: Travelers Personal Insurance
+>   38130, Personal Security 36145, Property Casualty 36161, Commercial 36137) — NO
+>   hidden sub-entity, NO new search term. The apparent gap was (a) download-completion
+>   (WAF-interrupted empty dirs) + (b) a **tracking#≠filingId keying artifact**
+>   (`TRVD-G134180979` → filingId `134191017`; the tool correctly caches/skips by
+>   `filing_id` = detail_url filingId, at `run_final_rates.py:921`). The per-target
+>   fallback recovered G-series directly once WAF allowed. **4th VA "limit" to prove an
+>   artifact** (after row-wall, harvest-early ordering, ceiling-decay) — the whole VA
+>   arc was tooling/measurement, never a hard wall.
+> - **6 genuinely uncollectable** (survived TWO attempts incl. a clean cold burst):
+>   `TRVD-133971305`, `TRVD-133994502`, `TRVD-134013553`, `TRVD-G134247790`(fid
+>   134248929), `TRVD-G134526332`(fid 134528113), `TRVD-G134881614`(fid 134883989) —
+>   all Quantum Home/Auto. Accepted uncollectable-under-`travelers`; AM Best-covered.
+>   Not grinding (one-shot rule).
+> - **RE-IMPORT DEFERRED:** +5-row delta doesn't change validation/tiers; app's live VA
+>   stays the shipped 277-row scrape (`8b813c0`). Fold into a later combined VA-refresh
+>   + OH import when OH lands.
+> - **WAF:** two bursts spent today; ceiling HELD (no slow-penalty depression,
+>   consistent with yesterday's heavier load). **NEXT: OH recon (no SERFF yet) →
+>   confirm per-carrier search-term coverage BEFORE harvesting (the VA lesson).**
+>
+> **2026-06-22 — COLD READ DONE + RECOVERY MODEL REWRITTEN (measured, replaces the
+> days-rest premise AND the "85").** First SERFF contact since the rest. Guard
+> cleared (window expired 06-21 16:06; now past). Three measurement-only cold reads
+> (no collection), ledger-logged:
+> - 10:44 cold read #1 → **18** clean Begin-Searches, then 405 wall.
+> - ~20 min pause → small probe → **≥8** clean (budget-capped, no wall).
+> - ~26 min pause → full probe → **17** clean, then 405 wall.
+>
+> **TWO-TIMESCALE WAF MODEL (new, measured):**
+> - **FAST refill (~25–30 min)** restores the per-burst ceiling to its *current max*
+>   (~17–18). A real 405 wall recovers to near-full within ~25 min — NOT days.
+> - **SLOW component (days)**, driven by accumulated heavy load, sets *what that max
+>   IS*. June 11's overnight→**8** was a *depressed max* from that week's heavy
+>   collection; the 72h/6-day rests lifted the max back to ~17–18.
+> - **Per-burst budget: ~17 clean Begin-Searches per ~25–30 min cold window.** Wall
+>   signature = `begin_search_link_timeout` with `last_doc_status=405` (identical to
+>   June 11/15 — a genuine WAF block, not network noise; the Playwright timeout is
+>   just how a 405-blocked Begin-Search surfaces).
+> - **This replaces BOTH the unverified "85" prose AND the "needs multi-day rest
+>   between bursts" premise.** Within a rested state you only need ~25 min between
+>   ~17-search bursts. Multi-day rest is for restoring a *depressed* max, not for
+>   every burst.
+> - Consistency: ceiling reproduced 18 → 17 (±1); across 3 walls in ~1 hr the ceiling
+>   did NOT degrade — mild early evidence against a *fast*-accumulating penalty.
+> - **OPEN RISK (carry into harvest):** sustained *multi-hour* harvesting may
+>   re-depress the max (the slow component). WATCH the per-burst clean count; if it
+>   drifts down across bursts (toward ~10 or below and stays), the slow penalty is
+>   surfacing → STOP and rest, do NOT grind through (grinding re-depresses the max
+>   for days). Harvest cadence: burst ~14–15 (stay JUST UNDER the ~17 wall — leave
+>   headroom, gentler on the slow component), pause ~25–30 min, log every burst.
+>
+> **2026-06-22 (cont.) — VA HARVEST STARTED + "ROW WALL" REFRAMED (measured).**
+> Live bursts via two flags added + offline-tested this session
+> (`run_final_rates.py --burst N` Begin-Search cap, `--no-harvest-early`; cases in
+> `test_recovery_harvest.py`, all green):
+> - **VA REFRAME — burst-#1's "row wall" was a TOOLING ARTIFACT, not a hard limit.**
+>   VA row-download yield is HEALTHY (8/8, 8/8 batches under the correct search
+>   term). The real constraint is the shared **~17 Begin-Search ceiling** (refills
+>   ~25-30 min, per the two-timescale model above). **VA is harvestable on a
+>   rested-burst cadence (~12 bursts = a handful of sessions), NOT a multi-week
+>   grind.** Validation burst: 27 PDFs across 6 clean searches (~4.5 PDFs/search)
+>   before cumulative-window depletion (405 at search #7-8, after ~11 searches in
+>   ~16 min — NOT a row wall). VA now ~185/498 target PDFs cached (+27 this burst).
+> - **BACKLOG (real composition bug): harvest-early mis-ordering.** The
+>   `_HarvestEarlyGuard` judges yield collapsed and bails BEFORE all search terms +
+>   the Q2 recovery round run, mis-reading wrong-search-term misses as a row wall
+>   (exactly what made burst #1 look walled). **Fix: harvest-early must evaluate
+>   yield only AFTER all search terms + recovery have executed.** Affects any
+>   multi-search-term / degradation-prone state, not just VA. Interim workaround in
+>   use: `--no-harvest-early` (with `--burst` as the safety stop).
+> - **SEARCH-TERM COVERAGE (load-bearing).** Allstate needs BOTH `allstate` AND
+>   `encompass` (Encompass-brand `ALSE-`/`GMMX-` filings do NOT surface under
+>   `allstate`). `GROUP_SEARCH` already encodes multi-term coverage (State Farm 2,
+>   Allstate 2, Liberty Mutual 2, USAA 3, Farmers 4); harvest-early was cutting it
+>   off. Confirm full per-carrier search-term execution before trusting any "miss"
+>   as genuine.
+> - **STILL UNPROVEN (carry open): Q2 re-pooling on TRUE degradation-misses.** The
+>   one time `[RECOVERY-1]` ran in vivo its own Begin-Search walled (405), so the 2
+>   genuine American Family misses (one a 90s zip-download timeout `PRCA-134266502`,
+>   one a plain miss) were never recovery-tested. Whether re-pooling lands true
+>   degradation-misses remains unproven.
+> - **HARVEST CADENCE (in use): rest ~25-30 min → `run_final_rates.py VA --burst 12
+>   --no-harvest-early` → rest → repeat.** Cap 12 stays UNDER the ~17 rested ceiling
+>   so searches don't wall mid-burst. Per-burst: log clean-search count, PDFs,
+>   yield/search. WATCH: (a) ceiling drifting DOWN across bursts = slow-penalty
+>   re-depression → rest LONGER; (b) genuine non-wrong-term row-misses = the real
+>   degradation-miss test. Scraper output only; `filings.db`/app untouched until VA
+>   collection is meaningfully complete (separate import).
+>
+> **2026-06-22 (cont.2) — VA HARVEST 348/498 (~70%); CEILING HOLDS AT 45.**
+> Three more wall-stopped runs (harvest-early OFF, `--wall-stop 2`, ALL carrier
+> search terms running):
+> - **VA now 348/498 target PDFs cached (~70%)**; `va_final_rates.xlsx` = 222 rows.
+>   Completed groups: Allstate, American Family, Farmers, GEICO, USAA, Liberty
+>   Mutual, State Farm. **Remaining: Nationwide 41 + Progressive 25 + Travelers 70
+>   + ~14 scattered (~150).** ~2 healthy runs to finish.
+> - **CEILING HOLDS — no slow-penalty depression.** Last run: **45 clean searches
+>   before the sustained wall** (rode through ~18 intermittent 405s) — HEALTHIER than
+>   the morning 17-18 cold baseline despite today's heavy cumulative load. The
+>   earlier "~7" was download-load-dependent (heavy row-fetches per search), not a
+>   depressed max. Guardrail: a drop well below ~17 NOT explained by download-load =
+>   slow penalty surfacing → STOP. Not seen.
+> - **Yield/search swings with carrier mix, not a decline:** 4.5 → 3.1 → 1.0 → 2.7
+>   (low when a run hits search-expensive exchange-entity stragglers e.g. Farmers;
+>   high on term-matched carriers e.g. GEICO/USAA/Liberty/State Farm).
+> - **All misses still wrong-term or transient (90s zip-timeout) — NONE hard.**
+>   WATCH: GEICO 2 (`GECC-133749162`, `GECC-133905105`) missed under its single
+>   term; if they don't land next run they may be the first genuine degradation-miss.
+> - **Tooling (offline-tested, `test_recovery_harvest.py` green):** `--burst N`
+>   Begin-Search cap; `--no-harvest-early`; `--wall-stop K` (stop on K consecutive
+>   walled Begin-Searches — the REAL wall, immune to wrong-term download misses;
+>   fixes the harvest-early ordering bug). BACKLOG: re-order harvest-early to judge
+>   yield only AFTER all terms + recovery run (so it can be re-enabled safely).
+>
+> **2026-06-22 (cont.3) — VA COLLECTION ~COMPLETE: 452/498 (~91%), 277-row deliverable.**
+> One more run (harvest-early OFF, `--wall-stop 2`) cleared the rest of the carrier
+> list:
+> - **VA now 452/498 target PDFs cached (~91%)**; `va_final_rates.xlsx` = **277 rows**
+>   (first real VA deliverable; was 0 this morning). Nationwide + Progressive + most
+>   of Travelers collected this run.
+> - **CEILING HELD MASSIVELY — definitively no slow penalty.** This run made **84
+>   clean Begin-Searches** (rode through 13 intermittent 405s), NEVER sustained-
+>   walled — ran the entire remaining carrier list to completion. After a full day
+>   of heavy load the ceiling is as strong as the morning cold read. The "decays
+>   over days" worry is settled: within a rested state the budget refills fast and
+>   does not progressively depress under a day's harvesting.
+> - **GEICO 2 (`GECC-133749162`/`133905105`) LANDED** — were transient, not genuine.
+> - **FIRST genuine miss class: 32 `TRVD-*`/`TRVD-G*` "not found under travelers."**
+>   Real not-founds (survived fresh-search-per-target fallback), NOT wrong-term-
+>   recoverable here because Travelers is single-term. The **`TRVD-G*` (G-series)
+>   likely a Travelers sub-entity that doesn't surface under the bare `travelers`
+>   keyword** — a SEARCH-TERM COVERAGE GAP (same shape as Allstate/`encompass`),
+>   fixable by identifying the right term (offline investigation), not a hard wall.
+> - **EFFICIENCY (backlog): `--no-harvest-early` grinds the per-target fallback on
+>   genuine not-founds.** With searches returning 200 (no wall to stop it), the run
+>   spent ~40 of its 92 min trying each of the 32 Travelers not-founds with a fresh
+>   search. Need a per-group not-found cap, OR finish the harvest-early ordering fix
+>   so it can be re-enabled to stop fallback grind (wall-stop only catches WALLS,
+>   not clean-search/row-not-found grind).
+> - **Remaining 46 uncached:** ~32 Travelers coverage-gap (`TRVD-G*`) + ~14 scattered
+>   stragglers. Collection is effectively complete; the gap needs a term, not a grind.
+> - Committed to insurancewebscraper (`c78729d` was 348/498; this run re-committed).
+>
+> **2026-06-22 (cont.4) — AM BEST VALIDATION of the VA scrape (offline; IMPORT GATE).**
+> `compare_va_ambest.py` (adapts the GA 13-brand method) cross-checked the 277-row
+> scrape vs AM Best VA (`tools/ambest_va_data.csv` = full VA market → 152 in-scope
+> rows for our brands, Rate, 2025+):
+> - **(a) SCRAPE IS CORRECT:** corroboration PPA **108/117 (92.3%)**, HO 24/35
+>   (68.6%, small-N), combined **132/152 (86.8%)** — comparable to GA (93.8% PPA).
+>   The ~20 AM Best-only rows are COVERAGE/recency (Travelers TRVD gap + 2026-eff
+>   filings), not value errors.
+> - **(b) INTERIM WAS EXCELLENT:** of (entity,eff) pairs in BOTH, **127/130 (97.7%)
+>   exact impact agreement.** Only 3 diffs: 1 tiny rounding (Liberty 0.06 vs -0.22)
+>   + 2 transposed State Farm entities (same filing, parser-suspect — below).
+>   VALIDATES the AM Best interim strategy for all 34 interim states.
+> - **(c) UPGRADE IS REAL:** scrape adds what AM Best omits — 76 rate-neutral 0.0%
+>   filings, 4 withdrawn/returned, 140 pre-2025 back-extension, 10 fine sub-types
+>   (vs AM Best's coarse PPA/HO).
+> - **`SFMA-134526917` RESOLVED — it was AM BEST's error, NOT ours.** Source-PDF
+>   re-parse confirms the scrape is CORRECT: Mutual −4.0%/1,405,716-ph,
+>   Fire −1.2%/71,544-ph — matches the PDF's Company Rate Information table AND its
+>   narrative ("−4.0% … in the State Farm Mutual … and −1.2% … in the … Fire and
+>   Casualty Company"). **AM Best has the entity↔row TRANSPOSED.** The blank max/min
+>   is LEGITIMATE (source columns are bare `% %`), not a parser drop. NO scrape change.
+> - **26/277 blank-max/min rows SCANNED vs source (`scan_blank_maxmin.py`): all 26
+>   legitimately blank (`% %` in source), ZERO parser drops, zero crossed pairings.**
+> - **IMPORT GATE: FULLY GREEN — ZERO rate-cell changes needed.** The scrape is
+>   validated against source (the lone cross-check "disagreement" was AM Best's bug,
+>   which the scrape gets right — another point for interim→real). VA interim→real
+>   import is clear to run as its own deliberate step: DELETE WHERE state=VA AND
+>   source=ambest_sourced → import 277 rows as serff_scraped → re-rollup; OTHER
+>   states' scraped baseline must stay byte-identical (app/`filings.db` untouched
+>   until then).
+>
+> **2026-06-22 (cont.5) — VA INTERIM→REAL IMPORT SHIPPED (app/filings.db).** VA's
+> 277-row scrape replaced the AM Best interim in the app. Full deterministic rebuild
+> (`import_filings.py`); deployed to agent-intel/master **`8b813c0`** (Vercel).
+> - **VA dropped from `AMBEST_STATES`** (import_filings.py + constants.ts), added to
+>   the scraped block; `all_states_final_rates.xlsx` regenerated with VA (1616→1893,
+>   VA appended last). **Scraped baseline re-keyed: raw 1616→1893, rolled 998→1176,
+>   states 10→11, active 293→342** (as-of PINNED at 2026-06-11 so the 12-mo window
+>   didn't slide). verify() + verify_subtype EXPECTED re-keyed.
+> - **10 original scraped states + CA/NY/TX permanent proven BYTE-IDENTICAL** (rows
+>   AND active counts). VA now `serff_scraped` (178 rolled), 0 AMB- keys, richer data
+>   (89 neutral-0%, 2 withdrawn, 10 sub-types).
+> - **`derive_brand`: Montgomery Mutual → Liberty Mutual** (VA co-filer on LBPM-*;
+>   Liberty acquired Montgomery 2008). VA-only; 10 states unaffected.
+> - **states.ts VA `validated:{auto:true, home:true}`** — AM Best cross-check PPA
+>   92.3%; HO values agree (68.6% is AM Best-only coverage/recency, not value errors;
+>   the lone "disagreement" was AM Best's transposition the scrape got right).
+> - **NEW SCRAPED BASELINE FINGERPRINT (the post-VA normal — SUPERSEDES the old
+>   10-state tags `filings_raw 784f77e6` / `filings b6f83d78`):** 11 states,
+>   `filings_raw` serff_scraped **1893 rows `a1aa7a2e`**, `filings` serff_scraped
+>   **1176 rows `ea8ba81e`**, active@2026-06-11 **342**. VA is intended new normal,
+>   NOT an unexpected change — future guards key on THIS, not the pre-VA tags.
+> - Gates: tsc clean, build 12/12, 6 verify + 10 e2e green. **Deploy healthy: live
+>   `agent-intelligence-sigma.vercel.app` HTTP 200, VA renders directly-scraped.**
+>   Monorepo `5ffd1b3` (local, per the origin-behind norm). VA collection itself
+>   still ~91% (452/498) — the 46 uncollected (Travelers TRVD-G coverage gap + ~14
+>   scattered stragglers) are a future targeted run; OH partial still parked.
+>
 > **2026-06-19 — offline UI/profile session, NO scraper impact.** Two iterations
 > shipped to the app, both UI/profile-data only: (1) dashboard **Recent Changes**
 > rebuilt as a two-block flex row (`554d90a`), and (2) Agency Profile **office
