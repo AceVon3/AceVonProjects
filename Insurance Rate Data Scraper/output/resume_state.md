@@ -1,5 +1,36 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-06-30 (cont.) — HI (17th state) IN PROGRESS: universe COMPLETE, download burst-1 done (84/138). PARKED mid-harvest.**
+> Stopped to go offline. `filings.db` UNTOUCHED (still post-VT `be5417b7`; 16 states).
+> Scraper-side only. **RESUMABLE — burst-2 cache-skips the 84.**
+> - **UNIVERSE COMPLETE (committed insurancewebscraper `862998f`):** 457 raw distinct
+>   / 129 TOI-in-target / **116 in-scope by brand** (but `load_targets("HI")` =
+>   **138 download targets** — its TOI-code logic catches PRCA/FAIG/MRTN subs the
+>   in_target flag undercounts; 138 is the operative harvest set). Two SERFF contacts:
+>   cold sweep (19 clean terms, then walled 6) + completion retry (6/6 clean after
+>   ~25min rest) + Travelers de-cap (3 slices → 149 distinct, **0 in-target** =
+>   genuine absence). Farmers (HI brand) captured = 8; USAA family complete; Fire
+>   Ins Exch clean-0 confirmed on retry. **American Family 13 in-target are ALL
+>   excluded subs** (8 Munich Re American Family Home + 5 American Family Connect) →
+>   drop at parse; AM Best HI's 0 AmFam is correct (NOT a richer-than-AM-Best case).
+> - **DOWNLOAD BURST-1 (committed insurancewebscraper `fe5a7ce`):** **84/138 PDFs
+>   cached (61%)**, all valid (min 16,282B, 0 truncated). `hi_final_rates.xlsx` = 28
+>   rows (partial). Browser launched CLEAN (3rd clean launch — VT-kill confirmed
+>   transient). Cold ceiling 32 clean / 9 walls (~22% challenge); self-stopped via
+>   wall-stop at the tail. **2 Liberty misses (LBPM-133918128, LBPM-134246754)** the
+>   recovery round deferred — likely transient WAF, retry burst-2 (genuine TBD).
+> - **RESUME (next session): FULL rest to cold → `run_final_rates.py HI`** (cache-skips
+>   the 84, fetches ~54 remaining + the 2 Liberty misses; harvest-early ON + 3 fixes,
+>   --wall-stop). ~1 burst to finish. Then: cross-check (`compare_*_ambest`→HI; expect
+>   CLEAN like VT — gap class closed, **AmFam pre-resolved = 0 genuine**; HO VERY
+>   small-N at 7, read counts not %; watch AM-Best-side disagreements → adjudicate at
+>   source) → surgical import (prove other 16 byte-identical, delta == EXACTLY HI, pin
+>   as-of 2026-06-11, re-key 17-state baseline, **KEEP HI in COVERED_STATES — the NH
+>   trap**) → validated → deploy both repos.
+> - **HEADs:** insurancewebscraper **`fe5a7ce`** (HEAD==origin). agent-intel/master
+>   `74b6082` (VT live). Monorepo local. `filings.db` `be5417b7` (untouched).
+
+
 > **2026-06-30 — VT INTERIM→REAL IMPORT SHIPPED + VALIDATED (16th scraped state).**
 > Full arc this session: picked up mid-finalize after a VS Code restart →
 > re-verified the deliverable offline (PARSE-ONLY) → banked collection →
