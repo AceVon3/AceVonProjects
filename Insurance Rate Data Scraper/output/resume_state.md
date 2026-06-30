@@ -1,11 +1,31 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
-> **2026-06-30 — VT COLLECTION COMPLETE (16th state); committed, cross-check NEXT.**
-> Picked up mid-finalize after a VS Code restart. Collection was already done +
-> integrity-verified; this session re-verified the deliverable offline (PARSE-ONLY,
-> no browser → no kill risk) and BANKED it. `filings.db` UNTOUCHED — import pending
-> the cross-check. Baseline unchanged (15 states, raw 2673 / rolled 1673 /
-> active 495 / db md5 `5c821d8b`).
+> **2026-06-30 — VT INTERIM→REAL IMPORT SHIPPED + VALIDATED (16th scraped state).**
+> Full arc this session: picked up mid-finalize after a VS Code restart →
+> re-verified the deliverable offline (PARSE-ONLY) → banked collection →
+> cross-checked → surgically imported → deployed both repos. **NEW BASELINE
+> (SUPERSEDES post-NH `2673`/`1673`/495 / `5c821d8b`): 16 states, raw 2776 /
+> rolled 1738 / active@2026-06-11 510 / db md5 `be5417b7`**, anchor +93.70% WA.
+> Every delta == EXACTLY VT (+103 raw / +65 rolled / +15 active / +1 state); the
+> 15 prior scraped states proven BYTE-IDENTICAL (id-excluded content hash, both
+> tables); CA/NY/TX permanent intact. VT dropped from `AMBEST_STATES` (→ 29),
+> KEPT in `COVERED_STATES` (the NH near-miss trap). `validated:{auto:true,
+> home:true}`; methodology 15→16.
+> - **CROSS-CHECK (6th interim→real point, CLEANEST YET — `compare_vt_ambest.py`):**
+>   corroboration PPA 26/32 (81.2%) / HO 16/17 (94.1%); the 7 AM-Best-only rows ALL
+>   recency or 0%/0ph immaterial → **material in-window 42/42 = 100%, 0 soft-misses,
+>   0 recoveries**. Interim **37/37 = 100%, 0 disagreements**. **VA 97.7 / OH 100 /
+>   IL 99.4 / WV clean / NH 100 / VT 100 — interim sound 6×.**
+> - **FIRST FULLY-HARDENED-PIPELINE STATE:** the gap-class closure payoff —
+>   proactive capture replaced WV/NH's reactive recovery. General Insurance Co of
+>   America captured proactively (4 rows live incl. +32.3%/113ph + +17.0%/10,531ph
+>   Prospect signals); NO mid-import recovery needed (contrast WV Liberty 7894ph /
+>   NH General Insurance 3711ph).
+> - **SHIPPED:** agent-intel/master `0435c07`→**`74b6082`** (subtree-FF, 0 deletions;
+>   Vercel LIVE — 200s, "15 of 16 cross-checked", Vermont ✓✓). insurancewebscraper
+>   `b19f560`→**`6b8a7d1`** (all_states regen). Monorepo `de4e003` (local). Gates:
+>   import 16/16, verify_subtype (510) + 7 verify, tsc, build 12/12, e2e 13/13.
+>   Localhost-approved.
 > - **COLLECTION COMPLETE: 154/154 in-target cached, 0 DOWNLOAD misses.** All 172
 >   cached PDFs proven valid + non-truncated (min 13,208B, valid `%PDF` headers,
 >   none missing). General Insurance gap class CLOSED end-to-end (General Insurance
@@ -47,11 +67,11 @@
 >   harvest gets killed at launch. (2) Temp-purge (struck ~11×; restore-from-index
 >   when the tree is purged but `.git` survives). (3) harvest-early tail-over-stop
 >   (NH burst-4, VT burst-2 — 3rd occurrence, minor tuning backlog).
-> - **NEXT: VT cross-check** (`compare_vt_ambest.py`, offline, `filings.db`
->   untouched) — 3-part (PPA/HO corroboration + interim-quality 6th point +
->   reverse/richer). Expect cleanest soft-miss profile yet (gap class closed,
->   General Insurance 7 rows captured). The cross-check is the independent
->   materiality safety net for PRGS-134029613. HOLD for results before import.
+> - **DONE — imported + deployed (see above + `agent_intelligence/SESSION_STATE.md`).**
+>   The PRGS-134029613 wrapped-name parser drop was confirmed immaterial by the
+>   cross-check (it is 0%/0ph; AM Best doesn't surface it either). NEXT STATE: pick
+>   the next smallest AM Best interim by in-target count; WATCH whether its download
+>   harvest gets killed at browser launch (the env's Playwright-launch-kill).
 
 > **2026-06-29 — NH INTERIM→REAL IMPORT SHIPPED + VALIDATED (15th scraped state).**
 > 2nd-smallest of the ranked AM Best interim states (NH 45 in-target). Collected

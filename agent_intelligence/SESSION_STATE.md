@@ -1,3 +1,52 @@
+# Session checkpoint — 2026-06-30  ·  VT INTERIM→REAL IMPORT SHIPPED + VALIDATED (16th scraped state)
+
+VT's 103-row SERFF scrape (154/154 in-target) replaced its AM Best interim;
+cross-checked FIRST, shipped `validated:{auto:true, home:true}`. Deterministic
+rebuild of `filings.db` (md5 `5c821d8b` → `be5417b7`); deployed via subtree-FF to
+**agent-intel/master `74b6082`** (Vercel LIVE — /,/methodology,/prospect 200,
+"15 of 16 cross-checked states", Vermont ✓✓).
+
+- **FIRST FULLY-HARDENED-PIPELINE STATE.** VT is the payoff of the root-pattern
+  gap-class closure: proactive capture replaced reactive recovery. WV/NH each had
+  to RECOVER a material soft-miss mid-import (Liberty Insurance Corp 7894ph; Safeco
+  General Insurance Co of America 3711ph) via a search-term fix. VT's universe
+  already carried those terms → clean collection → clean cross-check → **0
+  recoveries**. General Insurance Co of America captured proactively (4 rows live,
+  incl. the +32.3%/113ph and +17.0%/10,531ph Prospect signals that ARE the
+  gap-class entity).
+- **CROSS-CHECK (6th interim→real point, CLEANEST YET):** corroboration PPA 26/32
+  (81.2%) / HO 16/17 (94.1%); the **7 AM-Best-only rows are ALL recency or
+  immaterial** (3 recency eff > 04/17/26 window: Farmers ×2 04/20/26, Allstate HO
+  05/21/26; 4 zero-impact: the USAA 02/21/26 0%/0ph cluster) → **material in-window
+  42/42 = 100%, 0 soft-misses**. Interim quality **37/37 = 100%, 0 disagreements**
+  (no SFMA-style AM-Best-wrong cases). **VA 97.7 / OH 100 / IL 99.4 / WV clean /
+  NH 100 / VT 100 — the AM Best interim is sound 6×.** Richer: 54 back-extension +
+  17 rate-neutral 0% + 9 sub-types. 0 blank max/min (clean parser).
+- **NEW SCRAPED BASELINE (SUPERSEDES post-NH `2673`/`1673`/495 / `5c821d8b`):**
+  **16 states**, `filings_raw` serff_scraped **2776**, `filings` **1738**,
+  active@2026-06-11 **510**, db md5 **`be5417b7`**, anchor +93.70% WA (unchanged —
+  VT's max active below it).
+- **EVERY delta == VT:** raw +103, rolled +65, active +15, states +1. **15 prior
+  scraped states proven BYTE-IDENTICAL** (count + id-excluded content hash, both
+  tables); CA/NY/TX permanent intact (CA `0dc2e017`, NY `f7bd2df4`, TX `2ab8a852`).
+  VT dropped from `AMBEST_STATES` (→ 29 AM Best states; kept in `COVERED_STATES` —
+  the NH near-miss trap, verified VT stays covered). Methodology **16 rows, VT ✓✓**.
+- **GATES:** import 16/16, verify_subtype (510) + 7 verify, tsc clean, build 12/12,
+  e2e 13/13 (fixed the one stale `15 rows`→`16 rows` methodology assertion).
+  Localhost-reviewed + approved. Scraper-side: `compare_vt_ambest.py` + all_states
+  regen → insurancewebscraper `6b8a7d1`. Monorepo `de4e003` (local).
+- **⚠️ OPERATIONAL FLAGS carried:** (1) **browser-launch-kill** — the env kills
+  Playwright launches; the parse-only finalize (load_targets + build_rows, no
+  download phase) avoided it. WATCH if the NEXT state's download harvest gets killed
+  at launch. (2) **wrapped-company-name parser bug** (`no_pdf==1`, PRGS-134029613) —
+  a Company Rate Information row whose company name wraps to a 2nd line yields 0
+  extracted rows; here maximally immaterial (0%/$0/0ph symbol update), dropped per
+  the WV/NH precedent. Fix DELIBERATELY in isolation (SHARED parser; re-verify all
+  states byte-identical) — backlogged, no urgency. (3) harvest-early
+  tail-over-stop (NH b4, VT b2 — 3rd occurrence, minor tuning backlog).
+
+---
+
 # Session checkpoint — 2026-06-29  ·  NH INTERIM→REAL IMPORT SHIPPED + VALIDATED (15th scraped state)
 
 NH's 113-row SERFF scrape (214/214 in-target) replaced its AM Best interim;
