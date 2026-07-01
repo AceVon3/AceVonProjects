@@ -1,9 +1,26 @@
-# Session checkpoint — 2026-07-01  ·  HI (17th state) COLLECTION COMPLETE + CROSS-CHECK CLEAN (import pending this session)
+# Session checkpoint — 2026-07-01  ·  HI INTERIM→REAL IMPORT SHIPPED + VALIDATED (17th scraped state)
 
-HI's SERFF scrape is COMPLETE (138/138 in-target cached, 0 true misses — the
-VA/OH/IL/WV/NH/VT streak holds) and cross-checked OFFLINE — the CLEANEST result
-yet. `filings.db` UNTOUCHED (still post-VT `be5417b7`, 16 states) until the
-surgical import (the next step this session).
+HI's 71-row SERFF scrape (138/138 in-target, 0 true misses) replaced its AM Best
+interim; cross-checked FIRST (cleanest yet), shipped `validated:{auto:true,
+home:true}`. Deterministic rebuild of `filings.db` (md5 `be5417b7` → `d3075558`);
+deployed via subtree-FF to **agent-intel/master** (Vercel LIVE — HI renders
+directly-scraped, methodology 17 cross-checked). HI is the SMALLEST scraped state
+(138 targets) and the FULL hardened-pipeline payoff: 100/100 standard, 0 interim
+disagreements, 0 soft-misses, 0 parser flags SIMULTANEOUSLY.
+
+- **NEW BASELINE (SUPERSEDES post-VT `2776`/`1738`/510 / `be5417b7`):** **17 states**,
+  raw **2847**, rolled **1773**, active@2026-06-11 **527**, db md5 **`d3075558`**,
+  anchor +93.70% WA (HI max active +28.5% below it).
+- **EVERY delta == HI:** raw +71, rolled +35, active +17, states +1. **16 prior
+  scraped states proven BYTE-IDENTICAL** (id-excluded content hash both tables +
+  active counts); CA/NY/TX permanent intact (91/65, 183/101, 384/249). Proven by
+  the new **`import_gate_verify.py`** — a REUSABLE interim→real import gate
+  (generalized from HI; every future import runs it): ALL GATES PASS.
+- HI dropped from `AMBEST_STATES` (→ 28 states), KEPT in `COVERED_STATES` (the NH
+  trap); as-of PINNED 2026-06-11 (xlsx mtime restored → window didn't slide);
+  methodology derived 16→17. Covered total unchanged (45 = 17 scraped + 28 AM Best).
+- **Gates:** import ALL CHECKS PASSED (2847/1773/17/527), verify_subtype (527) + 7
+  verify, tsc clean, build 12/12, e2e_methodology re-keyed 17 rows. Localhost-approved.
 
 - **CROSS-CHECK (7th interim→real point, CLEANEST YET — `compare_hi_ambest.py`):**
   (a) STANDARD **PPA 44/44 = 100%** (34 direct + 10 date-relaxed, 0 AM-Best-only)
@@ -18,11 +35,8 @@ surgical import (the next step this session).
   HI 100 — the AM Best interim is sound 7×.**
 - **DELIVERABLE `hi_final_rates.xlsx` = 71 rows** (PPA 59 / HO 12; funnel 138 =
   42 emitted (79 − 8 filing-vehicle) + 85 form/rule + 4 new-product + 7 out-of-window).
-- **NEXT — SURGICAL IMPORT (VA/OH/IL/WV/NH/VT pattern, 7th time):** HI dropped from
-  `AMBEST_STATES`, KEPT in `COVERED_STATES` (the NH trap); as-of PINNED 2026-06-11;
-  other 16 proven byte-identical + active unchanged; delta == EXACTLY HI; HI
-  `serff_scraped` + `validated:{auto:true,home:true}`; methodology 16→17.
-- Scraper-side banked: insurancewebscraper `8a3f94b`→`e93d5ea` (HEAD==origin).
+- **Scraper-side banked:** insurancewebscraper `e93d5ea`→`f27785c` (compare +
+  cross-check checkpoint) → `55c9268` (all_states regen + import-gate tool).
 
 ---
 

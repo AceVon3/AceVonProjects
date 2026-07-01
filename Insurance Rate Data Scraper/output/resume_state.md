@@ -1,8 +1,18 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
-> **2026-07-01 — HI (17th state) COLLECTION COMPLETE (138/138) + CROSS-CHECK CLEAN (cleanest yet). Import PENDING (this session).**
-> Two download bursts + the offline AM Best cross-check. `filings.db` UNTOUCHED
-> (still post-VT `be5417b7`; 16 states) until the surgical import.
+> **2026-07-01 — HI INTERIM→REAL IMPORT SHIPPED + VALIDATED (17th scraped state). CLEANEST arc yet.**
+> Full arc: 138/138 collection → cleanest cross-check yet → surgical import (gate
+> hardened by a new reusable import-gate tool) → deployed both repos. **NEW BASELINE
+> (SUPERSEDES post-VT `2776`/`1738`/510 / `be5417b7`): 17 states, raw 2,847 / rolled
+> 1,773 / active@2026-06-11 527 / db md5 `d3075558`**, anchor +93.70% WA (HI max
+> active +28.5% below it). Every delta == EXACTLY HI (+71 raw / +35 rolled / +17
+> active / +1 state); the 16 prior scraped states proven BYTE-IDENTICAL (id-excluded
+> content hash, both tables + active counts); CA/NY/TX permanent intact. HI dropped
+> from `AMBEST_STATES` (→ 28), KEPT in `COVERED_STATES` (the NH trap); `validated:
+> {auto:true, home:true}`; methodology 16→17. HI is the SMALLEST scraped state (138
+> targets). **NEW: `import_gate_verify.py`** — reusable import-gate tool that proves
+> byte-identical-except-this-state mechanically (hardens the import step the way the
+> search-term audit hardened the harvest); ran green on HI (ALL GATES PASS).
 > - **COLLECTION COMPLETE (committed insurancewebscraper `8a3f94b`→`e93d5ea`):**
 >   burst-2 (+28, rested cold ceiling — Progressive 18/18, State Farm +8, the 2
 >   deferred Liberty misses LBPM-133918128/134246754 LANDED = transient confirmed)
@@ -25,11 +35,14 @@
 >   (AM Best HI 0 in-scope AmFam; our 0 AmFam-brand = all excluded subs).
 >   **7th interim→real point, cleanest: VA 97.7 / OH 100 / IL 99.4 / WV clean /
 >   NH 100 / VT 100 / HI 100.**
-> - **NEXT — SURGICAL IMPORT (VA/OH/IL/WV/NH/VT pattern, 7th time):** drop HI from
->   `AMBEST_STATES`, KEEP in `COVERED_STATES` (the NH trap); pin as-of 2026-06-11;
->   prove other 16 byte-identical (count+hash) + active counts unchanged; delta ==
->   EXACTLY HI; HI `serff_scraped` + `validated:{auto:true,home:true}`; methodology
->   16→17; rebuild `filings.db`; deploy both repos after localhost review.
+> - **IMPORT SHIPPED (VA/OH/IL/WV/NH/VT pattern, 7th time):** dropped HI from
+>   `AMBEST_STATES`, KEPT in `COVERED_STATES` (the NH trap); as-of PINNED 2026-06-11
+>   (xlsx mtime restored → window didn't slide); `import_gate_verify.py` proved the
+>   16 prior scraped states BYTE-IDENTICAL + active unchanged + CA/NY/TX intact +
+>   delta == EXACTLY HI (ALL GATES PASS). HI `serff_scraped` + `validated:{true,true}`;
+>   methodology 16→17. Gates: import ALL CHECKS PASSED (2847/1773/17/527), 8 verify
+>   green, tsc clean, build 12/12, e2e_methodology re-keyed 17 rows. Localhost-approved
+>   (HI renders directly-scraped, no interim badge).
 > - **HEADs:** insurancewebscraper **`e93d5ea`** (HEAD==origin). agent-intel/master
 >   `74b6082` (VT live). Monorepo local. `filings.db` `be5417b7` (untouched).
 

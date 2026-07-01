@@ -24,7 +24,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "DE", name: "Delaware",       data_coverage: true,  source: "ambest" },
   { code: "FL", name: "Florida",        data_coverage: false },
   { code: "GA", name: "Georgia",        data_coverage: true,  validated: { auto: true,  home: true  } },
-  { code: "HI", name: "Hawaii",         data_coverage: true,  source: "ambest" },
+  { code: "HI", name: "Hawaii",         data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-07-01 (interim->real): 71-row SERFF scrape, 138/138 in-target. AM Best cross-check CLEANEST YET: PPA 44/44 (100%) / HO 7/7 (100%) corroboration, interim 41/41 (100%) impact agreement — 0 disagreements, 0 soft-misses, 0 recoveries, 0 parser flags. AmFam pre-resolved = 0 genuine. HO small-N (7) read in-context: robust PPA leg 44/44 -> both validated.
   { code: "ID", name: "Idaho",          data_coverage: true,  validated: { auto: true,  home: false } },
   { code: "IL", name: "Illinois",       data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-06-25 (interim->real): 303-row SERFF scrape, 600/602 filings. AM Best cross-check: PPA 93.8% / HO 95.2% corroboration, 155/156 interim-impact agreement. 1 immaterial coverage gap (Liberty HO, AM Best-covered) -> both validated.
   { code: "IN", name: "Indiana",        data_coverage: true,  source: "ambest" },
