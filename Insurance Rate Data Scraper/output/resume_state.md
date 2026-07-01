@@ -1,5 +1,38 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-01 — HI (17th state) COLLECTION COMPLETE (138/138) + CROSS-CHECK CLEAN (cleanest yet). Import PENDING (this session).**
+> Two download bursts + the offline AM Best cross-check. `filings.db` UNTOUCHED
+> (still post-VT `be5417b7`; 16 states) until the surgical import.
+> - **COLLECTION COMPLETE (committed insurancewebscraper `8a3f94b`→`e93d5ea`):**
+>   burst-2 (+28, rested cold ceiling — Progressive 18/18, State Farm +8, the 2
+>   deferred Liberty misses LBPM-133918128/134246754 LANDED = transient confirmed)
+>   → 112/138; finishing burst (+26) cleared the tail: **State Farm 10/10**
+>   (front-grace target, all clean) + **USAA 16/16** (1 wrong-term miss
+>   USAA-134811372 recovered under `united services`, NOT a true miss). **138/138
+>   cached, 0 empty, `filings_excluded_no_pdf=0`, 0 TRUE misses** — the 7-state
+>   streak (VA/OH/IL/WV/NH/VT) holds to HI complete. Browser held clean all 3
+>   launches. Deliverable `hi_final_rates.xlsx` = **71 rows** (funnel: 138 = 42
+>   emitted (79 rows − 8 filing-vehicle = 71) + 85 form/rule + 4 new-product + 7
+>   out-of-window). 0 blank max/min (clean parser).
+> - **CROSS-CHECK CLEAN — the CLEANEST YET (`compare_hi_ambest.py`, offline):**
+>   (a) STANDARD **PPA 44/44 (100%)** (34 direct + 10 date-relaxed, 0 AM-Best-only)
+>   / **HO 7/7 (100%)** (6 direct + 1 date-relaxed). (b) INTERIM **41/41 impact
+>   agreement, 0 disagreements** — no AM-Best-side dispute to adjudicate. (c)
+>   REVERSE richer: 30 extras (22 pre-2025 back-extension + 4 withdrawn + 10
+>   rate-neutral 0%), 6 sub-types, **0 AM-Best-only total, 0 soft-misses, 0
+>   recoveries, 0 parser flags. HO small-N at 7 read in-context — 100% + robust
+>   PPA leg 44/44 → `validated:home` sound. AmFam pre-resolved = 0 genuine**
+>   (AM Best HI 0 in-scope AmFam; our 0 AmFam-brand = all excluded subs).
+>   **7th interim→real point, cleanest: VA 97.7 / OH 100 / IL 99.4 / WV clean /
+>   NH 100 / VT 100 / HI 100.**
+> - **NEXT — SURGICAL IMPORT (VA/OH/IL/WV/NH/VT pattern, 7th time):** drop HI from
+>   `AMBEST_STATES`, KEEP in `COVERED_STATES` (the NH trap); pin as-of 2026-06-11;
+>   prove other 16 byte-identical (count+hash) + active counts unchanged; delta ==
+>   EXACTLY HI; HI `serff_scraped` + `validated:{auto:true,home:true}`; methodology
+>   16→17; rebuild `filings.db`; deploy both repos after localhost review.
+> - **HEADs:** insurancewebscraper **`e93d5ea`** (HEAD==origin). agent-intel/master
+>   `74b6082` (VT live). Monorepo local. `filings.db` `be5417b7` (untouched).
+
 > **2026-06-30 (cont.) — HI (17th state) IN PROGRESS: universe COMPLETE, download burst-1 done (84/138). PARKED mid-harvest.**
 > Stopped to go offline. `filings.db` UNTOUCHED (still post-VT `be5417b7`; 16 states).
 > Scraper-side only. **RESUMABLE — burst-2 cache-skips the 84.**

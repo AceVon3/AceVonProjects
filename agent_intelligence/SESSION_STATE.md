@@ -1,3 +1,31 @@
+# Session checkpoint — 2026-07-01  ·  HI (17th state) COLLECTION COMPLETE + CROSS-CHECK CLEAN (import pending this session)
+
+HI's SERFF scrape is COMPLETE (138/138 in-target cached, 0 true misses — the
+VA/OH/IL/WV/NH/VT streak holds) and cross-checked OFFLINE — the CLEANEST result
+yet. `filings.db` UNTOUCHED (still post-VT `be5417b7`, 16 states) until the
+surgical import (the next step this session).
+
+- **CROSS-CHECK (7th interim→real point, CLEANEST YET — `compare_hi_ambest.py`):**
+  (a) STANDARD **PPA 44/44 = 100%** (34 direct + 10 date-relaxed, 0 AM-Best-only)
+  / **HO 7/7 = 100%** (6 direct + 1 date-relaxed). (b) INTERIM **41/41 impact
+  agreement, 0 disagreements** — no AM-Best-side dispute (no SFMA-style case).
+  (c) REVERSE richer: 30 extras (22 pre-2025 back-extension + 4 withdrawn + 10
+  rate-neutral 0%) + 6 sub-types; **0 AM-Best-only, 0 soft-misses, 0 recoveries,
+  0 blank max/min (clean parser).** HO small-N at 7 read in-context: 100% + robust
+  PPA leg 44/44 → `validated:home` sound. **AmFam pre-resolved = 0 genuine**
+  (AM Best HI 0 in-scope AmFam; our 0 AmFam-brand = all excluded subs — Munich Re
+  Home + Connect). **VA 97.7 / OH 100 / IL 99.4 / WV clean / NH 100 / VT 100 /
+  HI 100 — the AM Best interim is sound 7×.**
+- **DELIVERABLE `hi_final_rates.xlsx` = 71 rows** (PPA 59 / HO 12; funnel 138 =
+  42 emitted (79 − 8 filing-vehicle) + 85 form/rule + 4 new-product + 7 out-of-window).
+- **NEXT — SURGICAL IMPORT (VA/OH/IL/WV/NH/VT pattern, 7th time):** HI dropped from
+  `AMBEST_STATES`, KEPT in `COVERED_STATES` (the NH trap); as-of PINNED 2026-06-11;
+  other 16 proven byte-identical + active unchanged; delta == EXACTLY HI; HI
+  `serff_scraped` + `validated:{auto:true,home:true}`; methodology 16→17.
+- Scraper-side banked: insurancewebscraper `8a3f94b`→`e93d5ea` (HEAD==origin).
+
+---
+
 # Session checkpoint — 2026-06-30  ·  VT INTERIM→REAL IMPORT SHIPPED + VALIDATED (16th scraped state)
 
 VT's 103-row SERFF scrape (154/154 in-target) replaced its AM Best interim;
