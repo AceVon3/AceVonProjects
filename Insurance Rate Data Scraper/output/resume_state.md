@@ -43,8 +43,10 @@
 >   methodology 16→17. Gates: import ALL CHECKS PASSED (2847/1773/17/527), 8 verify
 >   green, tsc clean, build 12/12, e2e_methodology re-keyed 17 rows. Localhost-approved
 >   (HI renders directly-scraped, no interim badge).
-> - **HEADs:** insurancewebscraper **`e93d5ea`** (HEAD==origin). agent-intel/master
->   `74b6082` (VT live). Monorepo local. `filings.db` `be5417b7` (untouched).
+> - **HEADs (post-deploy):** insurancewebscraper `f27785c`→**`55c9268`** (HEAD==origin;
+>   all_states regen + import-gate tool). agent-intel/master `74b6082`→**`84e371e`**
+>   (subtree-FF, 0 deletions; Vercel LIVE — HI directly-scraped, methodology 17).
+>   Monorepo `b93c04c` (local). `filings.db` **`d3075558`** (HI imported, new baseline).
 
 > **2026-06-30 (cont.) — HI (17th state) IN PROGRESS: universe COMPLETE, download burst-1 done (84/138). PARKED mid-harvest.**
 > Stopped to go offline. `filings.db` UNTOUCHED (still post-VT `be5417b7`; 16 states).
