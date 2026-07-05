@@ -17,6 +17,33 @@ driven by per-state config (markers, text paths, schema). Ends the
 per-character-patch cycle; lets new states reuse a tested extractor.
 **Spec:** `tools/AMBEST_PARSER_NOTES.md` (history + rationale).
 
+## B6 — Wrapped-company-name bug in `parse_filing_summary_pdf` (SHARED scrape parser)
+**Opened:** 2026-06-30 (VT). **Escalated:** 2026-07-01 (AK — 2nd occurrence, now
+MATERIAL). **Size:** ~1 standalone session. **Priority:** MEDIUM.
+**Gate:** all 17 shipped states' deliverables byte-identical EXCEPT the states
+whose wrapped-name rows are newly emitted (re-verify + re-import those).
+
+A Company Rate Information row whose company name wraps to a 2nd line (the numbers
+are on the data line; "Insurance Company" is on the next line) yields **0 extracted
+rows** + blank disposition/effective — the whole filing drops. **Two occurrences:**
+- VT `PRGS-134029613` (2026-06-30): 0.000% / $0 / 0 ph — MAXIMALLY IMMATERIAL →
+  dropped (no urgency).
+- AK `CFPC-134283900` + `CFPC-133947234` (2026-07-01): **MATERIAL** — Country
+  Financial Personal Auto, +9.591%/9,644ph (active Prospect signal) and
+  +11.414%/4,486ph. Recovered surgically via `recover_ak_cfpc.py` (targeted
+  wrapped-name re-parse of the 2 PDFs, AK-only append, 94→100 rows) per the
+  WV Liberty / NH General Insurance material-recovery precedent.
+
+The bug catches MATERIAL filings, not just 0% ones — so it can silently lose real
+signal in any state (small regional multi-entity co-files like COUNTRY are the
+common shape). **Fix:** patch the wrapped-name extraction in the shared
+`parse_filing_summary_pdf` (join a data line with its wrapped continuation before
+column-splitting — see the `_DATA` regex + continuation join in
+`recover_ak_cfpc.py` for the working approach). Then FULL re-verification: it will
+also re-emit VT's 2 immaterial rows (VT deliverable 103→105 → re-verify/re-import
+VT) and any other state's wrapped-name filings. DELIBERATE, standalone — NOT
+mid-state. Audit shipped states for wrapped-name drops when done.
+
 ## Separate issues surfaced 2026-06-15 (NOT the block-drop bug — own fixes)
 
 ### B2 — UT date-column mis-assignment (~2-3 rows)
@@ -52,3 +79,21 @@ bug. No fix needed.
 Best NV; the policyholder count (212,801) coincided with a different Progressive
 filing in the raw text, which over-counted the blast-radius harness. Correctly
 left as `none`. No action — recorded so it isn't re-flagged.
+
+## B5 — Front-of-batch grace for the 2-consecutive-miss early-stop
+**Opened:** 2026-06-24 (OH harvest, burst 6). **Size:** small. **Gate:**
+`test_recovery_harvest.py` (add a front-of-batch transient-miss case).
+
+The batch downloader's "2 consecutive misses → end session early" guard can
+abort an ENTIRE group when 2 transient row-fetch misses land at the FRONT of
+the batch, before the productive bulk + later search terms run. OH burst 6:
+State Farm's `state farm` batch hit `GNSC-133748377` + `GNSC-133954835` misses
+as filings 1-2 → the guard fired and deferred all 29, never reaching the SFMA-*
+bulk or the `mga insurance` term. 0 WAF walls — purely transient front misses
+(same family as the GECC-/LBPM- misses that landed clean on retry). Same shape
+as the harvest-early mis-ordering bug fixed for VA (judge yield only AFTER all
+terms/recovery run). **Fix:** grant a front-of-batch grace window (e.g. don't
+arm the consecutive-miss early-stop until N filings have been attempted, or
+until at least one later search term has run) so transient front misses can't
+abort an otherwise-healthy group. Not blocking — a deferred group is re-attempted
+clean on the next burst; this is an efficiency/throughput fix.
