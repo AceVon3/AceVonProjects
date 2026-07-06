@@ -1,3 +1,41 @@
+# Session checkpoint — 2026-07-07  ·  B6 COMPLETE: comma-percent parser fix + 18-state retro-verification + 7-state gated re-import
+
+The "wrapped-name" backlog bug root-caused to the shared parser's row regexes
+rejecting thousands-comma percentages ("1,830.500%") → silent 0-row / PARTIAL /
+WRONG-VALUE extraction. Fixed additively (`_FS_PCT` comma-tolerant core + shapes
+H/I/J), verified by a FULL 5,113-PDF old-vs-new parse diff across all 18 scraped
+states (5,098 byte-identical, exactly 15 adjudicated diffs), then a 7-state
+surgical gated re-import. **Deployed; localhost-approved (IL Defend renders).**
+
+- **NEW BASELINE (SUPERSEDES post-AK `2947`/`1826`/550 / `23f0bf29`):** **18
+  states**, raw **2963**, rolled **1832**, active@2026-06-11 **551**, db md5
+  **`8941a436`**, anchor +93.70% WA (unchanged). as-of pin held (2026-06-11).
+- **THE RECOVERED SIGNAL: IL CFPC-134419708 — a LIVE Defend row** (COUNTRY
+  Financial −4.38% rolled / 334,163 ph / eff 09/21/2025, Personal Auto). Both
+  gates had missed it: IL shipped before the funnel gate existed, and the AM Best
+  cross-check is Country-blind (the AK coverage-thin lesson, IL instance).
+- **Also corrected:** WV FAIG-134672434 wrong-value 0.000%→2.800% (old parser
+  fell through to a stale pre-amendment row — adjudicated at source PDF); GA
+  rollups → source-true (CFPC-133859077 16.98→17.56%, CFPC-134294144 3.376→3.467%
+  == the PDF's own filing-level value); IL CFPC-133968582 +12.95%/98k back-ext;
+  immaterial 0% completeness VT+2/NM+1/VA+1/WA+1. AZ/AK deliverables unchanged
+  (AK native parse == recover_ak_cfpc adjudication exactly — no-op).
+- **GATE (import_gate_verify capture-diff): 38 states byte-identical** incl.
+  CA/NY/TX permanent; ONLY the 7 allowed states changed; per-state deltas exact
+  (IL +6 raw/+2 rolled/+1 active; GA +5/+1; VT +2/+1; NM/VA +1/+1; WA +1 raw;
+  WV hash-only). Import ALL CHECKS PASSED (re-keyed 2963/1832/551);
+  verify_subtype 551 (Auto-Comb 81→82 == exactly the IL filing); 8 verify + tsc
+  + build 12/12 + 13 e2e green (run on top of the 2026-07-06 copy change set).
+- **LESSONS (recorded in scraper resume_state.md):** (1) a symptom sweep catches
+  0-row failures; only a full old-vs-new parse diff catches partial/wrong-value
+  corruption — the diff found 6 cases the sweep couldn't. (2) GA/AZ/NM
+  deliverables carry post-build AM-Best tier enrichment a raw re-finalize
+  silently downgrades (314 rows) → surgical append-only for enriched states.
+- **BACKLOG:** root-cause the Temp-purge (~12th strike, happens in non-harvest
+  sessions). Next state: MA (medium tier; parser now hardened for comma values).
+
+---
+
 # Session checkpoint — 2026-07-06  ·  COPY/CLARITY CHANGE SET SHIPPED (6 items — UI copy + spec + e2e)
 
 Copy-only iteration (no data, query, or routing changes; `filings.db` untouched —
