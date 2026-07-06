@@ -1,5 +1,40 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-05 — AK INTERIM→REAL IMPORT SHIPPED + VALIDATED (18th scraped state). Coverage-thin AM Best; a material recovery.**
+> Full arc across sessions: universe (cold sweep walled → completion retry after
+> rest recovered USAA family + Farmers + Allstate de-cap past the 100-cap) → 3-burst
+> harvest (189/189, 0 true misses; same-day depletion at burst-2 group-2, finished
+> cold burst-3 after ~3-day gap) → adjudicated + RECOVERED 2 material COUNTRY CFPC
+> (wrapped-name bug) → cross-check → surgical import → deployed. **NEW BASELINE
+> (SUPERSEDES post-HI `2847`/`1773`/527 / `d3075558`): 18 states, raw 2,947 / rolled
+> 1,826 / active@2026-06-11 550 / db md5 `23f0bf29`**, anchor +93.70% WA (AK max
+> active +32.9% below it). Every delta == EXACTLY AK (+100 raw / +53 rolled / +23
+> active / +1 state); 17 prior scraped states proven BYTE-IDENTICAL (via
+> `import_gate_verify.py`, ALL GATES PASS); CA/NY/TX permanent intact. AK dropped
+> from `AMBEST_STATES` (→ 27), KEPT in `COVERED_STATES` (the NH trap); `validated:
+> {auto:true, home:true}`; methodology 17→18.
+> - **CROSS-CHECK (8th interim→real point — `compare_ak_ambest.py`, TWO reads):**
+>   (1a) VALUE-AGREEMENT on SHARED filings **41/41 = 100%** (the quality signal —
+>   our values are correct); PPA in-window 34/34 / HO 13/13 = 100%; headline PPA
+>   85% deflated PURELY by 6 recency/immaterial AM-Best-only (5 eff > 04/17/26
+>   window + 1 0%). (2) INTERIM **41/41, 0 disagreements.** (3) REVERSE: 59
+>   scrape-only (49 back-extension + 4 withdrawn + 23 rate-neutral 0%). **0 material
+>   soft-miss. 0 blank max/min.**
+> - **⚠️ COVERAGE-THIN finding, CORRECTED:** AM Best undercounts **COUNTRY
+>   specifically** — 32 real in-target vs 2 shown (6 rolled rate filings vs AM
+>   Best's 2), the genuine enrichment; multiple live Country Prospect signals AM
+>   Best lacks (CFPC-134388842 +11.5%/13,794ph; recovered CFPC-134283900
+>   +9.59%/9,644ph). **Liberty/Farmers are NOT a gap** — their 11 AK in-target-by-
+>   line filings are ALL Form/Rule (no rates), so AM Best's 0 is CORRECT. **LESSON:
+>   AM Best can undercount SPECIFIC major writers in small isolated markets; verify
+>   via RATE-filing presence, not brand/line presence (the Form/Rule distinction).**
+> - **MATERIAL RECOVERY (Option A, WV/NH precedent):** 2 COUNTRY CFPC zeroed by the
+>   wrapped-company-name parser bug (VT PRGS family, 2nd occurrence — now MATERIAL:
+>   CFPC-134283900 +9.6%/9,644ph active Prospect) recovered via `recover_ak_cfpc.py`
+>   (targeted wrapped-name re-parse, AK-only append 94→100 rows, asserted vs
+>   adjudication). **B6 backlog: deliberate shared-parser fix (MEDIUM — re-emits
+>   VT's 2 immaterial rows).** HO small-N 13 read in-context (100%) → validated:home.
+
 > **2026-07-01 — HI INTERIM→REAL IMPORT SHIPPED + VALIDATED (17th scraped state). CLEANEST arc yet.**
 > Full arc: 138/138 collection → cleanest cross-check yet → surgical import (gate
 > hardened by a new reusable import-gate tool) → deployed both repos. **NEW BASELINE

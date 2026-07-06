@@ -82,15 +82,19 @@ def parse_rate_table(fid: str) -> list[dict]:
         name = m.group(1)
         if cont.startswith("Insurance Company"):
             name = f"{name} Insurance Company"
+        # Strip thousands-commas from % fields — the scraper/import format is
+        # comma-free ('2162.300%' not '2,162.300%'); parse_percent does float()
+        # after rstrip('%') and chokes on a comma.
+        _pct = lambda s: s.replace(",", "")
         out.append({
             "company_name": name,
-            "overall_indicated_change": m.group(2),
-            "overall_rate_impact": m.group(3),
+            "overall_indicated_change": _pct(m.group(2)),
+            "overall_rate_impact": _pct(m.group(3)),
             "written_premium_change": _num(m.group(4)),
             "policyholders_affected": int(_num(m.group(5))),
             "written_premium_for_program": _num(m.group(6)),
-            "maximum_percent_change": m.group(7),
-            "minimum_percent_change": m.group(8),
+            "maximum_percent_change": _pct(m.group(7)),
+            "minimum_percent_change": _pct(m.group(8)),
         })
     return out
 

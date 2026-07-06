@@ -17,6 +17,7 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-07-05 when AK moved interim->scraped (+23 active = 550; per-sub_type deltas exactly AK's: PPA +9, Auto-Comb +1, Motorcycle +2, RV +2, Owner-Occ +4, HO-Comb +3, Condo +1, Other-HO +1; distinct still 11 — AK's 8 sub_types are a subset). Prior 2026-07-01 HI baseline 527. Earlier note:
 // Re-keyed 2026-07-01 when HI moved interim->scraped (+17 active = 527; per-sub_type deltas exactly HI's: PPA +10, Auto-Comb +3, Motorcycle +1, HO-Comb +2, Condo +1; distinct still 11 — HI's 5 sub_types are a subset). Prior 2026-06-30 VT baseline 510. Earlier note:
 // Re-keyed 2026-06-30 when VT moved interim->scraped (+15 active = 510; per-sub_type deltas exactly VT's: PPA +1, Auto-Comb +3, Motorcycle +2, RV +2, HO-Comb +5, Owner-Occ +1, Condo +1; distinct still 11 — VT's 7 sub_types are a subset). Prior 2026-06-29 NH baseline 495. Earlier note:
 // Re-keyed 2026-06-24 when OH moved interim->scraped (+48 active rolled) and VA
@@ -24,15 +25,15 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 227,
-  "19.0000 Personal Auto Combinations": 80,
-  "19.0002 Motorcycle": 26,
-  "19.0003 Recreational Vehicle (RV)": 11,
+  "19.0001 Private Passenger Auto (PPA)": 236,
+  "19.0000 Personal Auto Combinations": 81,
+  "19.0002 Motorcycle": 28,
+  "19.0003 Recreational Vehicle (RV)": 13,
   "19.0004 Other": 5,
-  "04.0003 Owner Occupied Homeowners": 42,
-  "04.0000 Homeowners Sub-TOI Combinations": 100,
-  "04.0001 Condominium Homeowners": 13,
-  "04.0005 Other Homeowners": 7,
+  "04.0003 Owner Occupied Homeowners": 46,
+  "04.0000 Homeowners Sub-TOI Combinations": 103,
+  "04.0001 Condominium Homeowners": 14,
+  "04.0005 Other Homeowners": 8,
   "04.0004 Tenant Homeowners": 7,
   "04.0002 Mobile Homeowners": 9,
 };
@@ -55,7 +56,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 527", rows.length, 527);
+check("active rolled filings = 550", rows.length, 550);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 

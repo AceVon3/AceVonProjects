@@ -1,3 +1,39 @@
+# Session checkpoint — 2026-07-05  ·  AK INTERIM→REAL IMPORT SHIPPED + VALIDATED (18th scraped state)
+
+AK's 100-row SERFF scrape (189/189 in-target, 0 true misses) replaced its AM Best
+interim; cross-checked, a material recovery, shipped `validated:{auto:true,
+home:true}`. Deterministic rebuild of `filings.db` (md5 `d3075558` → `23f0bf29`);
+deployed via subtree-FF to **agent-intel/master** (Vercel LIVE — AK renders
+directly-scraped, methodology 18). AK is a COVERAGE-THIN AM Best state — the 8th
+interim→real point, and the first where AM Best undercounts a SPECIFIC major writer.
+
+- **NEW BASELINE (SUPERSEDES post-HI `2847`/`1773`/527 / `d3075558`):** **18 states**,
+  raw **2947**, rolled **1826**, active@2026-06-11 **550**, db md5 **`23f0bf29`**,
+  anchor +93.70% WA (AK max active +32.9% below it).
+- **EVERY delta == AK:** raw +100, rolled +53, active +23, states +1. **17 prior
+  scraped states proven BYTE-IDENTICAL** (via `import_gate_verify.py`: ALL GATES
+  PASS); CA/NY/TX permanent intact (91/65, 183/101, 384/249).
+- **CROSS-CHECK (8th point, TWO reads):** (1a) VALUE-AGREEMENT on shared filings
+  **41/41 = 100%** (values correct); PPA in-window 34/34 / HO 13/13 = 100%; headline
+  PPA 85% deflated PURELY by 6 recency/immaterial AM-Best-only. (2) INTERIM 41/41,
+  0 disagreements. (3) REVERSE: 59 scrape-only. 0 material soft-miss, 0 parser flags.
+- **⚠️ COVERAGE-THIN finding (CORRECTED):** AM Best undercounts **COUNTRY
+  specifically** (32 real in-target vs 2 shown; 6 rolled rate filings vs 2) — the
+  genuine enrichment, with live Country Prospect signals AM Best lacks (CFPC-134388842
+  +11.5%/13,794ph; recovered CFPC-134283900 +9.59%/9,644ph). **Liberty/Farmers are
+  NOT a gap** — their AK in-target-by-line filings are ALL Form/Rule (no rates), so
+  AM Best's 0 is correct. LESSON: verify undercount via RATE-filing presence, not
+  brand/line presence. AK's rate-writing brands = the 7 AM Best also sees.
+- **MATERIAL RECOVERY:** 2 COUNTRY CFPC (wrapped-name parser bug, VT PRGS family
+  2nd occurrence — now MATERIAL) recovered via `recover_ak_cfpc.py` (targeted,
+  AK-only, asserted vs adjudication). B6 backlog: shared-parser fix (MEDIUM).
+- AK dropped from `AMBEST_STATES` (→ 27), KEPT in `COVERED_STATES` (NH trap);
+  methodology 17→18. Covered total unchanged (45 = 18 scraped + 27 AM Best).
+- **Gates:** import ALL CHECKS PASSED (2947/1826/18/550), verify_subtype (550) + 7
+  verify, tsc clean, build 12/12, e2e_methodology re-keyed 18 rows. Localhost-approved.
+
+---
+
 # Session checkpoint — 2026-07-01  ·  HI INTERIM→REAL IMPORT SHIPPED + VALIDATED (17th scraped state)
 
 HI's 71-row SERFF scrape (138/138 in-target, 0 true misses) replaced its AM Best

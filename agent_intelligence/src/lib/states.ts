@@ -15,7 +15,7 @@ export type StateRecord = {
 
 export const STATES: readonly StateRecord[] = [
   { code: "AL", name: "Alabama",        data_coverage: false },
-  { code: "AK", name: "Alaska",         data_coverage: true,  source: "ambest" },
+  { code: "AK", name: "Alaska",         data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-07-05 (interim->real): 100-row SERFF scrape, 189/189 in-target. Coverage-thin AM Best (53 in-target): value-agreement on SHARED filings 41/41 (100%), interim 41/41 (0 disagreements), PPA in-window 34/34 (100%) / HO 13/13 (100%). Scrape RICHER (59 scrape-only) — genuine Country enrichment (12 rate rows vs AM Best's 2) + 0% filings, sub-types, back-extension. (Farmers/Liberty file only Form/Rule in AK, no rates → AM Best correctly 0, NOT a gap.) 0 material soft-miss (6 AM-Best-only all recency/immaterial). Recovered 2 material COUNTRY CFPC (wrapped-name bug) incl. CFPC-134283900 +9.6%/9,644ph Prospect signal -> both validated.
   { code: "AZ", name: "Arizona",        data_coverage: true,  validated: { auto: true,  home: true  } },
   { code: "AR", name: "Arkansas",       data_coverage: true,  source: "ambest" },
   { code: "CA", name: "California",     data_coverage: true,  source: "ambest" }, // PERMANENT (non-SERFF) — see AMBEST_PERMANENT_STATES
