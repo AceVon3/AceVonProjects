@@ -1,5 +1,60 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-07 — B6 COMPLETE: comma-percent shared-parser bug fixed + ALL-18-STATE
+> retro-verification + 7-state gated re-import. A correctness win far beyond the
+> original immaterial-VT expectation.**
+> **ROOT CAUSE (reframed from "wrapped-name"):** the row regexes rejected
+> thousands-comma percentages ("1,830.500%" in COUNTRY/CFPC max-min columns) → the
+> data line failed EVERY pattern → silent 0-row, PARTIAL (some entities dropped),
+> or WRONG-VALUE (first-seen dedup fell through to a stale pre-amendment row)
+> extraction. Fixed in `src/utils.py`: `_FS_PCT` comma-tolerant core (strict
+> superset; commas stripped on capture) + 3 additive shapes H (blank-ph "$0 $0",
+> VT PRGS/NM), I (blank-min-only, VA NWPP), J (pct-only, GA CFPC 0% rule revs).
+> `test_b6_parser_shapes.py` = 41 PASS (incl. AK native == recover_ak_cfpc
+> adjudicated values EXACTLY; all 7 pre-B6 shapes byte-identical).
+> - **SCOPE (measured, not guessed):** symptom sweep 5,113 PDFs/18 states → 118
+>   silent 0-row filings (102 all-blank-cells = correctly empty; 4 amendment-shape
+>   immaterial; 2 comma-percent MATERIAL IL; 10 data-present-unparsed). Then the
+>   **FULL OLD-vs-NEW PARSE DIFF (the gold standard): 5,098/5,113 byte-identical,
+>   exactly 15 filings differ, every one adjudicated.** The diff caught 6 cases the
+>   sweep structurally couldn't (partial extracts + the WV wrong-value). **LESSON:
+>   a symptom sweep catches "0 rows"; only a full old-vs-new diff catches
+>   partial/wrong-value corruption.**
+> - **CORRECTIONS RECOVERED:** IL +2 filings incl. **CFPC-134419708 = an ACTIVE
+>   Defend signal (COUNTRY −4.38% rolled / 334,163 ph, eff 09/21/2025) that BOTH
+>   gates missed** (IL shipped pre-funnel-gate; AM Best cross-check is
+>   Country-blind — the AK coverage-thin lesson, IL instance) + CFPC-133968582
+>   (+12.95%/98k, 2024 back-ext). **WV FAIG-134672434 WRONG-VALUE fixed
+>   0.000%→2.800%** (stale-amendment row; adjudicated at source PDF). **GA rollups
+>   → source-true** (CFPC-133859077 16.98→17.56%/20,485ph; CFPC-134294144
+>   3.376→3.467% == the PDF's own filing-level; +2 immaterial 0%). Immaterial
+>   completeness: VT +2 (the planned PRGS), NM +1, VA +1, WA +1 entity — all 0%.
+>   **AZ/AK deliverables unchanged** (AZ's 2 parser-recovered 0% rows are
+>   funnel-excluded on principle; AK native parse == recovery → no-op; AK nuance:
+>   amendment "Requested (New)" eff 05/29/2024 ≠ adjudicated disposition eff
+>   08/28/2024 — deliverable keeps the adjudicated date).
+> - **⚠️ SURGICAL-APPLY LESSON (load-bearing for future re-finalizes):** GA/AZ/NM
+>   committed deliverables carry POST-BUILD AM-Best tier enrichment
+>   (`ambest_validated`/`match_strength`, 314 rows) that a raw re-finalize silently
+>   DOWNGRADES to pipeline_only. → GA/NM/WA got restore-backup + append-adjudicated-
+>   rows-only; IL/WV/VA/VT re-finalized pure (proven exactly-delta). NEVER wholesale
+>   re-finalize an enriched state.
+> - **IMPORT SHIPPED (gated):** `import_gate_verify` capture-diff — **38 states
+>   byte-identical** (incl. CA/NY/TX permanent), only the 7 allowed states changed,
+>   every delta exact (IL +6 raw/+2 rolled/+1 active; GA +5/+1; VT +2/+1; NM/VA
+>   +1/+1; WA +1 raw; WV hash-only value fix). **NEW BASELINE (SUPERSEDES post-AK
+>   2,947/1,826/550/`23f0bf29`): 18 states, raw 2,963 / rolled 1,832 / active@
+>   2026-06-11 551 / db md5 `8941a436`**, anchor +93.70% WA unchanged. as-of pin
+>   held (all_states mtime re-pinned 2026-06-11 12:00). Import ALL CHECKS PASSED
+>   (re-keyed), verify_subtype 551 (Auto-Comb 81→82 == exactly the IL filing),
+>   8 verify + tsc + build 12/12 + 13 e2e green. Localhost-approved (IL Defend
+>   renders live, WV 2.8%, GA 17.56/3.467, OH/HI spot-checked identical,
+>   methodology still 18).
+> - **FORWARD:** MA + all future states parse comma-values natively — the bug
+>   class is closed retroactively AND forward. **BACKLOG: root-cause the
+>   Temp-purge (struck AGAIN this session = ~12th; systematic, happens in
+>   non-harvest sessions too).**
+
 > **2026-07-05 — AK INTERIM→REAL IMPORT SHIPPED + VALIDATED (18th scraped state). Coverage-thin AM Best; a material recovery.**
 > Full arc across sessions: universe (cold sweep walled → completion retry after
 > rest recovered USAA family + Farmers + Allstate de-cap past the 100-cap) → 3-burst

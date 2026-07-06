@@ -18,6 +18,15 @@ per-character-patch cycle; lets new states reuse a tested extractor.
 **Spec:** `tools/AMBEST_PARSER_NOTES.md` (history + rationale).
 
 ## B6 — Wrapped-company-name bug in `parse_filing_summary_pdf` (SHARED scrape parser)
+**CLOSED 2026-07-07.** Root cause was NOT the name wrap — the row regexes rejected
+thousands-comma percentages ("1,830.500%"), so the data line failed every pattern
+(silent 0-row / partial / wrong-value extraction). Fixed via `_FS_PCT`
+comma-tolerant core + additive shapes H/I/J (`src/utils.py`); gate =
+`test_b6_parser_shapes.py` (41 PASS) + a FULL 5,113-PDF old-vs-new parse diff
+(5,098 byte-identical, 15 adjudicated diffs) + 7-state gated re-import
+(new baseline 2963/1832/551, db `8941a436`). Recovered: IL active Defend
+CFPC-134419708 (−4.38%/334k ph), WV wrong-value fix, GA rollup corrections.
+Full record: `output/resume_state.md` 2026-07-07.
 **Opened:** 2026-06-30 (VT). **Escalated:** 2026-07-01 (AK — 2nd occurrence, now
 MATERIAL). **Size:** ~1 standalone session. **Priority:** MEDIUM.
 **Gate:** all 17 shipped states' deliverables byte-identical EXCEPT the states
@@ -97,3 +106,16 @@ arm the consecutive-miss early-stop until N filings have been attempted, or
 until at least one later search term has run) so transient front misses can't
 abort an otherwise-healthy group. Not blocking — a deferred group is re-attempted
 clean on the next burst; this is an efficiency/throughput fix.
+
+## B7 — Root-cause the recurring Temp-checkout purge (Windows wipes the working tree)
+**Opened:** 2026-07-07. **Size:** small investigation. **Priority:** LOW-MEDIUM
+(mitigated by the restore-from-index procedure, but it keeps recurring).
+
+The insurancewebscraper checkout under `%LOCALAPPDATA%\Temp` has had its working
+tree purged ~12 times (tracked files deleted, `.git` survives — most recently
+2026-07-06, a NON-harvest session, 1,918 files). Working theory: Windows Storage
+Sense / disk-cleanup removes old files under Temp on a schedule. Mitigation in
+use: `git checkout -- .` restore + explicit-path staging (NEVER `git add -A`).
+**Fix candidates:** (a) move the checkout OUT of Temp to a stable path (then
+retire the hazard memory), (b) confirm/exclude Storage Sense as the culprit,
+(c) a pre-commit purge-check script. (a) is likely the whole fix.

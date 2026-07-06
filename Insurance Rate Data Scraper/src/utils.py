@@ -582,39 +582,47 @@ class FilingSummary:
     multi_company_policyholders: Optional[int] = None
 
 
+# Percent-value core shared by the row patterns. B6 (2026-07-07): allow
+# thousands-commas ("1,830.500%") — COUNTRY/CFPC max-min columns carry them and
+# the comma-free core silently zeroed those filings (IL CFPC-133968582/
+# 134419708 material, AK CFPC x2, the "wrapped-name" bug's true root cause).
+# Superset of the old core: comma-free values match identically; commas are
+# stripped on capture so emitted values stay comma-free ("1830.500%").
+_FS_PCT = r"-?\d+(?:,\d{3})*(?:\.\d+)?"
+
 # Pattern A: all 7 numeric values present
 _FS_RATE_ROW_RE_A = re.compile(
     r"^(?P<name>.+?)\s+"
-    r"(?P<ind>-?\d+(?:\.\d+)?)%\s+"
-    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<ind>" + _FS_PCT + r")%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
     r"\$\(?(?P<prem_chg>-?[\d,]+)\)?\s+"
     r"(?P<ph>[\d,]+)\s+"
     r"\$(?P<prem_for>[\d,]+)\s+"
-    r"(?P<maxp>-?\d+(?:\.\d+)?)%\s+"
-    r"(?P<minp>-?\d+(?:\.\d+)?)%\s*$"
+    r"(?P<maxp>" + _FS_PCT + r")%\s+"
+    r"(?P<minp>" + _FS_PCT + r")%\s*$"
 )
 # Pattern B: blank "Overall Indicated Change" rendered as bare `%`
 _FS_RATE_ROW_RE_B = re.compile(
     r"^(?P<name>.+?)\s+%\s+"
-    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
     r"\$\(?(?P<prem_chg>-?[\d,]+)\)?\s+"
     r"(?P<ph>[\d,]+)\s+"
     r"\$(?P<prem_for>[\d,]+)\s+"
-    r"(?P<maxp>-?\d+(?:\.\d+)?)%\s+"
-    r"(?P<minp>-?\d+(?:\.\d+)?)%\s*$"
+    r"(?P<maxp>" + _FS_PCT + r")%\s+"
+    r"(?P<minp>" + _FS_PCT + r")%\s*$"
 )
 # Pattern C: only ind% and impact% present; rest blank ("name ind% imp% % %")
 _FS_RATE_ROW_RE_C = re.compile(
     r"^(?P<name>.+?)\s+"
-    r"(?P<ind>-?\d+(?:\.\d+)?)%\s+"
-    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<ind>" + _FS_PCT + r")%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
     r"%\s+%\s*$"
 )
 # Pattern D: blank indicated + blank max/min, has prem_chg + ph + prem_for
 # Seen in OR State Farm filings: "name % imp% $prem_chg ph $prem_for % %"
 _FS_RATE_ROW_RE_D = re.compile(
     r"^(?P<name>.+?)\s+%\s+"
-    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
     r"\$\(?(?P<prem_chg>-?[\d,]+)\)?\s+"
     r"(?P<ph>[\d,]+)\s+"
     r"\$(?P<prem_for>[\d,]+)\s+"
@@ -624,7 +632,7 @@ _FS_RATE_ROW_RE_D = re.compile(
 # Seen in OR State Farm 0% filings: "name % 0.000% ph $prem_for % %"
 _FS_RATE_ROW_RE_E = re.compile(
     r"^(?P<name>.+?)\s+%\s+"
-    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
     r"(?P<ph>[\d,]+)\s+"
     r"\$(?P<prem_for>[\d,]+)\s+"
     r"%\s+%\s*$"
@@ -636,8 +644,8 @@ _FS_RATE_ROW_RE_E = re.compile(
 #  loop after the first line matches.)
 _FS_RATE_ROW_RE_F = re.compile(
     r"^(?P<name>.+?)\s+"
-    r"(?P<ind>-?\d+(?:\.\d+)?)%\s+"
-    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<ind>" + _FS_PCT + r")%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
     r"\$\(?(?P<prem_chg>-?[\d,]+)\)?\s+"
     r"(?P<ph>[\d,]+)\s+"
     r"\$(?P<prem_for>[\d,]+)\s+"
@@ -653,12 +661,55 @@ _FS_RATE_ROW_RE_F = re.compile(
 # existing match. (2026-06-04 final parser pass.)
 _FS_RATE_ROW_RE_G = re.compile(
     r"^(?P<name>.+?)\s+"
-    r"(?P<ind>-?\d+(?:\.\d+)?)%\s+"
-    r"(?P<imp>-?\d+(?:\.\d+)?)%\s+"
+    r"(?P<ind>" + _FS_PCT + r")%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
     r"\$\(?(?P<prem_chg>-?[\d,]+)\)?\s+"
     r"(?P<ph>[\d,]+)\s+"
-    r"(?P<maxp>-?\d+(?:\.\d+)?)%\s+"
-    r"(?P<minp>-?\d+(?:\.\d+)?)%\s*$"
+    r"(?P<maxp>" + _FS_PCT + r")%\s+"
+    r"(?P<minp>" + _FS_PCT + r")%\s*$"
+)
+# Patterns H/I/J — B6 sweep additions (2026-07-07). The 18-state / 5,113-PDF
+# silent-drop sweep surfaced three more real table shapes; every observed
+# occurrence is 0%-impact (immaterial), added so the data-present-unparsed
+# silent-drop CLASS is closed, not just the material comma-percent case.
+# Each is tried AFTER A-G and is shape-disjoint with them (H lacks a ph
+# between the two $ amounts, I ends in a bare "%" where A needs a value and
+# F needs two, J has four REAL percents where C requires two bare "%"), so
+# none can alter an existing match — purely additive.
+# Pattern H: policyholders column blank, both $ amounts adjacent.
+# Seen in VT PRGS-134029613 + NM ALSE-134500230:
+#   "Progressive Direct 0.000% 0.000% $0 $0 0.000% 0.000%"
+_FS_RATE_ROW_RE_H = re.compile(
+    r"^(?P<name>.+?)\s+"
+    r"(?P<ind>" + _FS_PCT + r")%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
+    r"\$\(?(?P<prem_chg>-?[\d,]+)\)?\s+"
+    r"\$(?P<prem_for>[\d,]+)\s+"
+    r"(?P<maxp>" + _FS_PCT + r")%\s+"
+    r"(?P<minp>" + _FS_PCT + r")%\s*$"
+)
+# Pattern I: full row but the MINIMUM %-change cell alone is blank.
+# Seen in VA NWPP-134099347:
+#   "Nationwide Mutual 0.000% 0.000% $0 4,868 $2,440,405 0.000% %"
+_FS_RATE_ROW_RE_I = re.compile(
+    r"^(?P<name>.+?)\s+"
+    r"(?P<ind>" + _FS_PCT + r")%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
+    r"\$\(?(?P<prem_chg>-?[\d,]+)\)?\s+"
+    r"(?P<ph>[\d,]+)\s+"
+    r"\$(?P<prem_for>[\d,]+)\s+"
+    r"(?P<maxp>" + _FS_PCT + r")%\s+"
+    r"%\s*$"
+)
+# Pattern J: ind/imp/max/min only — no money or policyholder columns rendered.
+# Seen in GA CFPC-133861112/134290937 (0% rule revisions):
+#   "COUNTRY Mutual 0.000% 0.000% 0.000% 0.000%"
+_FS_RATE_ROW_RE_J = re.compile(
+    r"^(?P<name>.+?)\s+"
+    r"(?P<ind>" + _FS_PCT + r")%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
+    r"(?P<maxp>" + _FS_PCT + r")%\s+"
+    r"(?P<minp>" + _FS_PCT + r")%\s*$"
 )
 _FS_MULTI_INDICATED_RE = re.compile(r"Overall Percentage Rate Indicated For This Filing\s+(-?\d+(?:\.\d+)?)%")
 _FS_MULTI_IMPACT_RE    = re.compile(r"Overall Percentage Rate Impact For This Filing\s+(-?\d+(?:\.\d+)?)%")
@@ -753,9 +804,17 @@ def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "", *,
         if not m: m = _FS_RATE_ROW_RE_E.match(ln)
         if not m: m = _FS_RATE_ROW_RE_C.match(ln)
         if not m: m = _FS_RATE_ROW_RE_G.match(ln)  # additive: omitted-prem_for shape
+        if not m: m = _FS_RATE_ROW_RE_H.match(ln)  # additive: blank-ph shape (B6)
+        if not m: m = _FS_RATE_ROW_RE_I.match(ln)  # additive: blank-min shape (B6)
+        if not m: m = _FS_RATE_ROW_RE_J.match(ln)  # additive: pct-only shape (B6)
         if not m:
             i += 1; continue
         gd = m.groupdict()
+        # B6: percent captures may carry thousands-commas ("1,830.500%") —
+        # strip so emitted values stay comma-free (parse_percent does float()).
+        for _k in ("ind", "imp", "maxp", "minp"):
+            if gd.get(_k):
+                gd[_k] = gd[_k].replace(",", "")
         name_parts = [gd["name"].strip()]
         j = i + 1
         while j < len(lines):

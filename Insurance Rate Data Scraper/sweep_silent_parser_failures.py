@@ -20,7 +20,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 from src.utils import parse_filing_summary_pdf
 
 PDF_ROOT = Path("output/pdfs")
-STATES = ("ID", "WA", "CO", "OR", "UT")
+STATES = ("ID", "WA", "CO", "OR", "UT", "AZ", "MT", "NV", "NM", "GA",
+          "VA", "OH", "IL", "WV", "NH", "VT", "HI", "AK")
 
 
 def extract_table_section(pdf_path: Path) -> str:
