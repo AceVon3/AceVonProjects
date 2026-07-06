@@ -39,6 +39,9 @@ all localhost-reviewed on all four surfaces before commit:
 - **Gates:** tsc clean, 8 verify scripts, prod build 12/12, 13/13 e2e
   (`e2e_mobile`'s pass banner is "MOBILE LAYOUT CHECKS PASSED", not "ALL CHECKS
   PASSED" — don't grep it as a failure). Localhost-approved.
+- **Deployed via subtree-FF to agent-intel/master `016ea60`** (clean FF from
+  `b9caaa7`, delta exactly the 11 files; Vercel auto-deploying). Monorepo
+  `6f10cc5` (feat) + this docs(state) line.
 
 ---
 
