@@ -34,6 +34,11 @@
 >   (targeted wrapped-name re-parse, AK-only append 94→100 rows, asserted vs
 >   adjudication). **B6 backlog: deliberate shared-parser fix (MEDIUM — re-emits
 >   VT's 2 immaterial rows).** HO small-N 13 read in-context (100%) → validated:home.
+> - **HEADs (post-deploy):** insurancewebscraper `5bd60fd`→**`dd0862f`** (HEAD==origin;
+>   all_states regen + comma-fixed recovery). agent-intel/master `84e371e`→**`b9caaa7`**
+>   (subtree-FF literal fast-forward, 0 deletions; Vercel LIVE — AK directly-scraped,
+>   methodology 18). Monorepo `d857d2d` (local). `filings.db` **`23f0bf29`** (18-state
+>   baseline).
 
 > **2026-07-01 — HI INTERIM→REAL IMPORT SHIPPED + VALIDATED (17th scraped state). CLEANEST arc yet.**
 > Full arc: 138/138 collection → cleanest cross-check yet → surgical import (gate
