@@ -31,6 +31,10 @@ surgical gated re-import. **Deployed; localhost-approved (IL Defend renders).**
   corruption — the diff found 6 cases the sweep couldn't. (2) GA/AZ/NM
   deliverables carry post-build AM-Best tier enrichment a raw re-finalize
   silently downgrades (314 rows) → surgical append-only for enriched states.
+- **HEADs (post-deploy):** insurancewebscraper `97a7edf`->**`a439e2b`** (HEAD==
+  origin). agent-intel/master `016ea60`->**`8b5f858`** (subtree-FF, 0 deletions;
+  Vercel LIVE — the IL COUNTRY Defend row confirmed serving from the production
+  API). Monorepo `a548964`+`dc50272` (local). `filings.db` **`8941a436`**.
 - **BACKLOG:** root-cause the Temp-purge (~12th strike, happens in non-harvest
   sessions). Next state: MA (medium tier; parser now hardened for comma values).
 

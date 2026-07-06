@@ -50,6 +50,12 @@
 >   8 verify + tsc + build 12/12 + 13 e2e green. Localhost-approved (IL Defend
 >   renders live, WV 2.8%, GA 17.56/3.467, OH/HI spot-checked identical,
 >   methodology still 18).
+> - **HEADs (post-deploy):** insurancewebscraper `97a7edf`->**`a439e2b`** (HEAD==origin;
+>   14 files, 0 deletions — Temp checkout verified clean pre-sync, purge restored at
+>   orientation). agent-intel/master `016ea60`->**`8b5f858`** (subtree-FF literal
+>   fast-forward, 4 files, 0 deletions; Vercel LIVE — /,/methodology,/prospect,/defend
+>   200; the IL COUNTRY Defend row serves from the production API). Monorepo
+>   `a548964`+`dc50272` (local). `filings.db` **`8941a436`** (B6 baseline).
 > - **FORWARD:** MA + all future states parse comma-values natively — the bug
 >   class is closed retroactively AND forward. **BACKLOG: root-cause the
 >   Temp-purge (struck AGAIN this session = ~12th; systematic, happens in
