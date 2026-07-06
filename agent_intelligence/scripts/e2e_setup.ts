@@ -146,7 +146,7 @@ async function main(): Promise<void> {
   // landed page so this stays green as later steps build on /.
   await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
   const overviewHeading = (await page.locator('[data-testid="page-title"]').textContent())?.trim();
-  check("Overview heading present", overviewHeading === "Overview", { overviewHeading });
+  check("Overview heading present", overviewHeading === "Overview of Rate Change Activity", { overviewHeading });
   const cardCount = await page.locator(
     '[data-testid="ov-card-prospect"], [data-testid="ov-card-defend"], [data-testid="ov-card-my-carrier"], [data-testid="ov-card-compliance"]',
   ).count();

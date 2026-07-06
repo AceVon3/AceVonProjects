@@ -6,7 +6,9 @@
 // Independent {SF, Travelers, Progressive}, all 8:
 //   64 comparison rows, 30 higher-confidence.
 // Plus: the persistent rate-change framing band is present; spread appears
-// only on higher-confidence rows; a row expands to its underlying filings.
+// only on higher-confidence rows; a row expands to its underlying filings;
+// the date-range note states the 12-month window; the plain-language
+// explainer renders from real data and passes the determination blocklist.
 //
 // Usage: E2E_BASE=http://localhost:3000 npx tsx scripts/e2e_positioning.ts
 
@@ -26,6 +28,23 @@ function check(label: string, cond: boolean, detail?: unknown) {
   if (!cond) failures++;
   console.log(`  [${cond ? "OK  " : "FAIL"}] ${label}` + (detail !== undefined ? `  (${JSON.stringify(detail)})` : ""));
 }
+
+// Determination-language blocklist — same line verify_office_summary.ts and
+// verify_briefing_language.ts hold their copy to. The rendered explainer
+// interprets real data and must never cross into a per-reader determination.
+const DETERMINATION: RegExp[] = [
+  /\bapplies to you\b/i,
+  /\bdoes not apply to you\b/i,
+  /\bdoesn'?t apply to you\b/i,
+  /\byou are (exempt|subject|required|liable|covered|owed|cheaper)\b/i,
+  /\byou'?re (exempt|subject|required|liable|covered|cheaper)\b/i,
+  /\byou must\b/i,
+  /\byou qualify\b/i,
+  /\byou owe\b/i,
+  /\bnot subject to\b/i,
+  /\byou should\b/i,
+  /\bswitch to\b/i,
+];
 
 async function open(page: Page, profile: unknown): Promise<void> {
   await page.goto(`${BASE}/setup`, { waitUntil: "domcontentloaded" });
@@ -77,6 +96,29 @@ async function main(): Promise<void> {
   // At least one insufficient-data line is present (29 competitor absences).
   check("insufficient-data line(s) present", (await page.locator('[data-testid="insufficient-line"]').count()) >= 1);
 
+  // Date-range note: must describe the actual 12-month window, never the
+  // full dataset range.
+  const note = page.locator('[data-testid="date-range-note"]');
+  check("date-range note present", (await note.count()) === 1);
+  const noteText = (await note.textContent()) ?? "";
+  check("note says 'last 12 months'", /last 12 months/i.test(noteText), { noteText });
+  check("note carries a 'Data as of' stamp", /Data as of/i.test(noteText));
+
+  // Plain-language explainer — this profile has 23 higher-confidence
+  // comparisons, so it must render, use the pts-spread (not a side's own
+  // average) as the differential, carry the not-premium-levels caveat, and
+  // pass the determination blocklist.
+  const expl = page.locator('[data-testid="positioning-explainer"]');
+  check("explainer present (higher-confidence comparisons exist)", (await expl.count()) === 1);
+  const explText = (await expl.textContent()) ?? "";
+  check("explainer uses the pts-spread differential", /points (more|less) than/.test(explText), { explText });
+  check("explainer carries the rate-changes-not-premium-levels caveat",
+    /rate changes, not premium levels/i.test(explText));
+  check("explainer names real brands from the data (no template braces)", !/[{}]/.test(explText));
+  const detHit = DETERMINATION.find(re => re.test(explText));
+  check("explainer passes the determination-language blocklist", !detHit,
+    detHit ? { matched: String(detHit), explText } : undefined);
+
   // Expand the first comparison row → underlying filings appear.
   const firstCmp = page.locator('[data-testid="comparison-row"] button').first();
   await firstCmp.click();
@@ -92,6 +134,11 @@ async function main(): Promise<void> {
   check("64 comparison rows", ti.total === 64, { total: ti.total });
   check("30 higher-confidence rows", ti.high === 30, { high: ti.high });
   check("spread shown on exactly the 30 high rows", ti.spread === 30, { spread: ti.spread });
+
+  // Explainer renders for the independent view too, and stays determination-free.
+  const explInd = (await page.locator('[data-testid="positioning-explainer"]').textContent()) ?? "";
+  check("independent explainer present + passes blocklist",
+    explInd.length > 0 && !DETERMINATION.some(re => re.test(explInd)), { explInd });
 
   await browser.close();
   console.log("\n" + "=".repeat(72));

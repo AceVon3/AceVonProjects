@@ -126,8 +126,12 @@ export default function DefendPage(): React.JSX.Element {
           <h1 className="text-18 font-medium m-0 text-ink">
             Defend
           </h1>
+          {/* Same per-agent-type split as Prospect: only captives see a pure
+              competitor set. */}
           <p className="text-13 mt-1 m-0 text-ink-2">
-            Rate decreases in your states — your customers may shop.
+            {profile.agent_type === "captive"
+              ? `Rate decreases filed by ${profile.authorized_brands[0]}'s competitors in your states — your customers may shop.`
+              : "Rate decreases in your states from competitors and carriers you sell — your customers may shop."}
           </p>
         </div>
 

@@ -580,10 +580,10 @@ Same components, slightly different framing text. Drives this from `agent_type` 
 | Page | Captive copy | Independent copy |
 |---|---|---|
 | Prospect title | "Prospect" | "Prospect" |
-| Prospect subtitle | "Competitors raising rates in your states — your opportunity." | "Rate increases in your states — opportunities to attack and decisions to make." |
+| Prospect subtitle | "Rate increases filed by {captive_brand}'s competitors in your states — opportunities to attack and decisions to make." | "Rate increases in your states from competitors and carriers you sell — opportunities to attack and decisions to make." |
 | Prospect header card label | "Filings vs {captive_brand}" | "Filings in your states" |
 | Defend title | "Defend" | "Defend" |
-| Defend subtitle | "Competitors lowering rates — your customers may shop." | "Rate decreases in your states — your customers may shop." |
+| Defend subtitle | "Rate decreases filed by {captive_brand}'s competitors in your states — your customers may shop." | "Rate decreases in your states from competitors and carriers you sell — your customers may shop." |
 | My Carriers visible? | Yes (labelled "My Carrier", singular) | Yes ("My Carriers", plural) |
 
 ---
@@ -600,7 +600,7 @@ The default landing page after setup. A calm, scannable dashboard that answers "
 
 ### Page header
 
-- Title: **"Overview"** (18px medium).
+- Title: **"Overview of Rate Change Activity"** (18px medium). (Nav label stays "Overview".)
 - Subtitle: the agent's scope, e.g. *"State Farm · AZ, NV"* (captive) or *"AZ, NV · 3 carriers"* (independent). Secondary text, 13px.
 
 No "Demo Mode" badge — the Overview always renders real data for the agent's actual profile. (Demo mode is not a v1 feature.)
@@ -1023,9 +1023,10 @@ Captive = their one carrier vs the field. Independent = each of their carriers v
 
 ### Route, nav, chrome
 
-- **Route:** `/positioning`. **Nav label:** "Positioning" (icon `ti-arrows-left-right`, confirmed present in the self-hosted Tabler webfont). Shown for **both** agent types. Hidden in the no-profile nav; redirects to `/setup` when no profile (same guard as Prospect/Defend/My Carriers).
+- **Route:** `/positioning`. **Nav label:** "Competitive Positioning" — never "Pricing", which would contradict the page's own rate-changes-not-prices band (renamed from "Positioning" 2026-07-06; icon `ti-arrows-left-right`, confirmed present in the self-hosted Tabler webfont). Shown for **both** agent types. Hidden in the no-profile nav; redirects to `/setup` when no profile (same guard as Prospect/Defend/My Carriers).
 - **ScopeStrip:** shown — `"Showing: {states} · vs competitors of {brand}"` (captive) / `"Showing: {states}"` (independent).
 - **Title:** "Rate positioning." **Subtitle (captive):** *"How {brand}'s recent rate changes compare to each competitor, by line and state."* **(independent):** *"How your carriers' recent rate changes compare to the rest of the market."*
+- **Date-range note** (12px tertiary, under the subtitle): *"Comparisons cover filings effective in the last 12 months (since {Month YYYY}), plus announced changes not yet effective. Data as of {Mon D, YYYY}."* — derived dynamically from `asOf`. This wording states what the query actually does (`effective_date >= date(asOf, '-12 months')`, no upper bound); if the window ever changes, the note must change with it. It must never claim the full dataset range (e.g. "since 2024") while the query is windowed.
 
 ### Rate-change framing is LOAD-BEARING PRODUCT COPY, not a footnote
 
@@ -1038,6 +1039,15 @@ This feature's central risk is being read as a price/cheapness comparison. The d
 - Reinforced so the frame travels with the data: the comparison column header reads **"avg rate change"** (never "rate"/"avg" alone), and each expanded audit panel repeats a one-line **"change filed, not price"** caption.
 
 This band is not dismissible and not collapsible. If it is ever rendered as fine print or removed, the feature is mis-built.
+
+### Plain-language explainer — generated from the agent's real data
+
+Directly below the band (above the cards), a "How to read this" box interprets ONE real comparison from the agent's own view — never a hardcoded carrier pair:
+
+- **Selection:** first anchored cell containing a higher-confidence comparison (cells are already sorted richest-first), then the comparison with the largest absolute spread across that cell's anchors. **Higher-confidence only** — thin comparisons deliberately carry no spread, so if the view has zero higher-confidence comparisons the explainer does not render.
+- **Template** (`{agent}` = anchor brand, `{comp}` = competitor; spread = compAvg − agentAvg): *"In {state} {line}, {agent}'s filed rates have {fallen|risen} an average of {|agentAvg|}% over the last 12 months, while {comp}'s have {fallen|risen} {|compAvg|}% — {agent} has {lowered|raised} rates {|spread|} points {more|less} than {comp}. Note: {riser} may still be cheaper in absolute terms — these figures are rate changes, not premium levels — but {riser}'s rates have risen relative to {other}'s over this period."* where `{riser}` is the brand whose rates moved up in relative terms (spread > 0 → competitor, else agent).
+- **The comparison figure is the spread, never a side's own average** — "agent's own −3.9% avg" is not "3.9% more than the competitor"; the honest differential is compAvg − agentAvg.
+- **No determinations.** The wording must pass the same determination-language blocklist `verify_office_summary.ts` / `verify_briefing_language.ts` enforce (no "you are cheaper", no "switch", no second-person conclusions); `e2e_positioning.ts` scans the rendered text.
 
 ### Computation (no new data path — same source as every other page)
 
@@ -1255,8 +1265,8 @@ Persistent across all pages:
 
 - Product name (left)
 - Links (right):
-  - Captive: Overview · Prospect · Defend · **My Carrier** · Compliance · Methodology · Profile
-  - Independent: Overview · Prospect · Defend · **My Carriers** · Compliance · Methodology · Profile
+  - Captive: Overview · Prospect · Defend · **My Carrier** · Competitive Positioning · Compliance · Methodology · Profile
+  - Independent: Overview · Prospect · Defend · **My Carriers** · Competitive Positioning · Compliance · Methodology · Profile
 
 The My Carrier(s) link is shown for **both** agent types. Its label is `agent_type`-dependent: **"My Carrier"** (singular) for captives, **"My Carriers"** (plural) for independents.
 

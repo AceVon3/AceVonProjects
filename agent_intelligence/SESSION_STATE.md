@@ -1,3 +1,47 @@
+# Session checkpoint — 2026-07-06  ·  COPY/CLARITY CHANGE SET SHIPPED (6 items — UI copy + spec + e2e)
+
+Copy-only iteration (no data, query, or routing changes; `filings.db` untouched —
+md5 still `23f0bf29`, baseline 2947/1826/18/550 intact). Six confirmed items,
+all localhost-reviewed on all four surfaces before commit:
+
+- **Overview title** → **"Overview of Rate Change Activity"** (`page.tsx` main
+  h1 + the error-state h1; nav label stays "Overview").
+- **Prospect/Defend subtitles per agent type:** captive *"Rate increases/decreases
+  filed by {brand}'s competitors in your states…"* / independent *"…in your states
+  from competitors and carriers you sell…"*. Captive P/D excludes the own brand so
+  "competitors" is literally true; independent includes sold carriers so it can't
+  say that — the split is the point, don't unify it.
+- **Positioning date-range note** (new, under the subtitle, testid
+  `date-range-note`): *"Comparisons cover filings effective in the last 12 months
+  (since {Month YYYY}), plus announced changes not yet effective. Data as of
+  {Mon D, YYYY}."* — derived dynamically from `asOf`
+  (`src/lib/positioningExplainer.ts` `dateRangeNote`). **DELIBERATELY 12-month
+  wording, NOT "since 2024"** — recon proved Positioning applies the rolling
+  window (`effective_date >= date(asOf,'-12 months')`, no upper bound), not the
+  full dataset range. If the window ever changes, the note changes with it.
+- **Plain-language explainer** (new `buildExplainer` + "How to read this" box on
+  /positioning): interprets ONE real comparison from the agent's own view — the
+  richest cell's largest-|spread| **high-confidence** comparison.
+  **Both-averages-plus-spread template** — the differential is the spread
+  (compAvg − agentAvg), NEVER a side's own average; keeps the word "filed";
+  embedded rate-change-not-price caveat. **No render when zero high-confidence
+  comparisons exist** (thin ones carry no spread to explain).
+  **Blocklist-locked via e2e:** `e2e_positioning` scans the RENDERED text against
+  the determination-language blocklist (the same line `verify_office_summary` /
+  `verify_briefing_language` hold), captive AND independent views.
+- **Tab rename** → **"Competitive Positioning"** (`NavBar.tsx`; never "Pricing" —
+  it would contradict the page's own rate-changes-not-prices band).
+- **spec.md updated alongside the code (the conflict rule):** copy table, Overview
+  header, nav section, new Positioning date-note + explainer sections. e2e
+  re-keyed: `e2e_setup` Overview heading; `e2e_nav` label arrays + route↔label
+  pairs (added the /positioning pair); `e2e_positioning` + date-note & explainer
+  checks.
+- **Gates:** tsc clean, 8 verify scripts, prod build 12/12, 13/13 e2e
+  (`e2e_mobile`'s pass banner is "MOBILE LAYOUT CHECKS PASSED", not "ALL CHECKS
+  PASSED" — don't grep it as a failure). Localhost-approved.
+
+---
+
 # Session checkpoint — 2026-07-05  ·  AK INTERIM→REAL IMPORT SHIPPED + VALIDATED (18th scraped state)
 
 AK's 100-row SERFF scrape (189/189 in-target, 0 true misses) replaced its AM Best

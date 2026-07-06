@@ -113,7 +113,7 @@ export default function OverviewPage(): React.JSX.Element {
       <main className="min-h-screen bg-canvas">
         <div className="max-w-[1100px] mx-auto px-4 py-10">
           <h1 className="text-18 font-medium m-0 text-ink">
-            Overview
+            Overview of Rate Change Activity
           </h1>
           <p className="text-13 mt-3 p-3 rounded-md text-red-text bg-red-fill border border-hairline border-line">
             Couldn’t load Overview: {error}
@@ -131,7 +131,7 @@ export default function OverviewPage(): React.JSX.Element {
             className="text-18 font-medium m-0 text-ink"
             data-testid="page-title"
           >
-            Overview
+            Overview of Rate Change Activity
           </h1>
           <p
             className="text-13 mt-1 m-0 text-ink-2"

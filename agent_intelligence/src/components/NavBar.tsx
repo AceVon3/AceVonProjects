@@ -9,8 +9,8 @@ import { AgentType, loadProfile } from "@/lib/profile";
 type NavItem = { label: string; href: string; icon: string };
 
 // Build the nav list per spec §Navigation:
-//   Captive:     Overview · Prospect · Defend · My Carrier  · Positioning · Compliance · Methodology · Profile
-//   Independent: Overview · Prospect · Defend · My Carriers · Positioning · Compliance · Methodology · Profile
+//   Captive:     Overview · Prospect · Defend · My Carrier  · Competitive Positioning · Compliance · Methodology · Profile
+//   Independent: Overview · Prospect · Defend · My Carriers · Competitive Positioning · Compliance · Methodology · Profile
 //   No profile:  Overview · Methodology  (matches ui-reference Screen 1)
 //
 // My Carrier(s) shows for BOTH agent types — a captive wants to see their own
@@ -33,7 +33,9 @@ function buildItems(agentType: AgentType | null): NavItem[] {
       href: "/my-carriers",
       icon: "ti-briefcase",
     },
-    { label: "Positioning", href: "/positioning", icon: "ti-arrows-left-right" },
+    // "Competitive Positioning", not "Pricing" — the page's load-bearing band
+    // says these are rate changes, NOT price levels (decided 2026-07-06).
+    { label: "Competitive Positioning", href: "/positioning", icon: "ti-arrows-left-right" },
     { label: "Compliance", href: "/compliance", icon: "ti-gavel" },
     { label: "Methodology", href: "/methodology", icon: "ti-book-2" },
     { label: "Profile", href: "/setup", icon: "ti-settings" },

@@ -1,8 +1,8 @@
 // End-to-end check of NavBar + ScopeStrip across all routes.
 //
 // NavBar (per spec §Navigation):
-//   - Captive:     Overview · Prospect · Defend · My Carrier  · Positioning · Compliance · Methodology · Profile
-//   - Independent: Overview · Prospect · Defend · My Carriers · Positioning · Compliance · Methodology · Profile
+//   - Captive:     Overview · Prospect · Defend · My Carrier  · Competitive Positioning · Compliance · Methodology · Profile
+//   - Independent: Overview · Prospect · Defend · My Carriers · Competitive Positioning · Compliance · Methodology · Profile
 //   - No profile:  Overview · Methodology only
 //   - "Overview" is always first; My Carrier(s) shows for both agent types
 //     (singular "My Carrier" for captives, plural "My Carriers" for independents).
@@ -110,9 +110,9 @@ async function main(): Promise<void> {
   await setProfile(page, CAPTIVE_SF);
   await gotoWithNav(page, "/");
   const captiveLabels = await navLabels(page);
-  check("nav = Overview, Prospect, Defend, My Carrier, Positioning, Compliance, Methodology, Profile (8 items)",
+  check("nav = Overview, Prospect, Defend, My Carrier, Competitive Positioning, Compliance, Methodology, Profile (8 items)",
     JSON.stringify(captiveLabels) ===
-      JSON.stringify(["Overview", "Prospect", "Defend", "My Carrier", "Positioning", "Compliance", "Methodology", "Profile"]),
+      JSON.stringify(["Overview", "Prospect", "Defend", "My Carrier", "Competitive Positioning", "Compliance", "Methodology", "Profile"]),
     { captiveLabels });
   check("'Overview' is the first nav item", captiveLabels[0] === "Overview");
   check("captive nav uses singular 'My Carrier' (not plural 'My Carriers')",
@@ -135,9 +135,9 @@ async function main(): Promise<void> {
   await setProfile(page, INDEPENDENT_SF_TRV);
   await gotoWithNav(page, "/");
   const indLabels = await navLabels(page);
-  check("nav = Overview, Prospect, Defend, My Carriers, Positioning, Compliance, Methodology, Profile (8 items)",
+  check("nav = Overview, Prospect, Defend, My Carriers, Competitive Positioning, Compliance, Methodology, Profile (8 items)",
     JSON.stringify(indLabels) ===
-      JSON.stringify(["Overview", "Prospect", "Defend", "My Carriers", "Positioning", "Compliance", "Methodology", "Profile"]),
+      JSON.stringify(["Overview", "Prospect", "Defend", "My Carriers", "Competitive Positioning", "Compliance", "Methodology", "Profile"]),
     { indLabels });
   check("'My Carriers' appears right after 'Defend'",
     indLabels.indexOf("My Carriers") === indLabels.indexOf("Defend") + 1);
@@ -149,6 +149,7 @@ async function main(): Promise<void> {
     ["/prospect", "Prospect"],
     ["/defend", "Defend"],
     ["/my-carriers", "My Carriers"],
+    ["/positioning", "Competitive Positioning"],
     ["/compliance", "Compliance"],
     ["/setup", "Profile"],
   ];

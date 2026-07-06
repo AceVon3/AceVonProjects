@@ -7,6 +7,7 @@ import PageSkeleton from "@/components/PageSkeleton";
 import PositioningCard from "@/components/PositioningCard";
 import ScopeStrip from "@/components/ScopeStrip";
 import type { PositioningResult } from "@/lib/positioning";
+import { buildExplainer, dateRangeNote } from "@/lib/positioningExplainer";
 import { AgentProfile, loadProfile } from "@/lib/profile";
 
 type Phase = "loading" | "ready" | "error";
@@ -17,6 +18,7 @@ export default function PositioningPage(): React.JSX.Element {
   const [phase, setPhase] = useState<Phase>("loading");
   const [profile, setProfile] = useState<AgentProfile | null>(null);
   const [result, setResult] = useState<PositioningResult | null>(null);
+  const [asOf, setAsOf] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -44,6 +46,7 @@ export default function PositioningPage(): React.JSX.Element {
         return r.json() as Promise<ApiResponse>;
       })
       .then(d => {
+        setAsOf(d.asOf);
         setResult(d.result);
         setPhase("ready");
       })
@@ -77,6 +80,9 @@ export default function PositioningPage(): React.JSX.Element {
 
   const sellsEverything = result.competitorBrands.length === 0;
   const nothingAnchored = result.anchoredCells.length === 0;
+  // Interprets one real comparison from THIS agent's view; null when the view
+  // has no higher-confidence comparison (thin ones carry no spread to explain).
+  const explainer = buildExplainer(result);
 
   return (
     <main className="min-h-screen bg-canvas">
@@ -89,6 +95,13 @@ export default function PositioningPage(): React.JSX.Element {
         <div className="mb-3">
           <h1 className="text-18 font-medium m-0 text-ink">Rate positioning</h1>
           <p className="text-13 mt-1 m-0 text-ink-2">{subtitle}</p>
+          {/* States what the query actually covers: the rolling 12-month
+              effective-date window (DEFAULT_WINDOW) — NOT the full dataset. */}
+          {asOf && (
+            <p className="text-12 mt-1 m-0 text-ink-3" data-testid="date-range-note">
+              {dateRangeNote(asOf)}
+            </p>
+          )}
         </div>
 
         {/* LOAD-BEARING framing — rate change, not price. Persistent + sticky;
@@ -118,6 +131,16 @@ export default function PositioningPage(): React.JSX.Element {
           </div>
         ) : (
           <>
+            {explainer && (
+              <div
+                data-testid="positioning-explainer"
+                className="mb-4 rounded-lg border border-hairline border-line px-4 py-3 text-13 text-ink-2"
+              >
+                <span className="font-medium text-ink">How to read this: </span>
+                {explainer}
+              </div>
+            )}
+
             <div className="flex flex-col gap-3">
               {result.anchoredCells.map(cell => (
                 <PositioningCard key={`${cell.line}@@${cell.state}`} cell={cell} />

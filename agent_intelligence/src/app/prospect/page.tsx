@@ -139,8 +139,14 @@ export default function ProspectPage(): React.JSX.Element {
           <h1 className="text-18 font-medium m-0 text-ink">
             Prospect
           </h1>
+          {/* Captive Prospect excludes the agent's own brand, so "competitors"
+              is literally true; independent Prospect includes carriers the
+              agent sells (spec §Important framing change), so it can't say
+              that — the wording differs per agent type. */}
           <p className="text-13 mt-1 m-0 text-ink-2">
-            Rate increases in your states — opportunities to attack and decisions to make.
+            {profile.agent_type === "captive"
+              ? `Rate increases filed by ${profile.authorized_brands[0]}'s competitors in your states — opportunities to attack and decisions to make.`
+              : "Rate increases in your states from competitors and carriers you sell — opportunities to attack and decisions to make."}
           </p>
         </div>
 
