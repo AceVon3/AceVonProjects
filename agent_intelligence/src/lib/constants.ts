@@ -62,7 +62,7 @@ export type CoveredState = (typeof COVERED_STATES)[number];
 // states.ts. Must stay in sync with AMBEST_STATES in scripts/import_filings.py.
 export const AMBEST_STATES = [  // VA (06-22), OH (06-24), IL (06-25), WV (06-26), NH (06-29), VT (06-30), HI (07-01), AK (07-05) removed — all now scraped
   "AR", "CA", "CT", "DE", "IA", "IN", "KS", "KY",
-  "ME", "MD", "MA", "MI", "MN", "MS", "MO", "NE", "NJ",
+  "ME", "MD", "MI", "MN", "MS", "MO", "NE", "NJ",
   "NY", "ND", "OK", "PA", "RI", "SC", "SD", "TN", "TX", "WI"] as const;
 
 // The subset of AMBEST_STATES that are PERMANENT, not interim: they are not on

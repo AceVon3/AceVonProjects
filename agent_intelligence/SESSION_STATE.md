@@ -1,3 +1,34 @@
+# Session checkpoint — 2026-07-06 (MA)  ·  MA INTERIM→REAL IMPORT SHIPPED + VALIDATED (19th scraped state; first medium tier)
+
+MA's 129-row SERFF scrape (281/282 in-target, 0 true misses) replaced its AM
+Best interim; cross-checked (9th point — VALUE-AGREEMENT 53/53 = 100%, INTERIM
+49/49 = 100%, **HO 27/27 = 100% on ROBUST N for the first time**), shipped
+validated:{auto:true, home:true}. db md5 `14f12fab` (supersedes post-B6
+`8941a436`). **NEW BASELINE: 19 states, raw 3,092 / rolled 1,890 / active 566.**
+
+- **Gate:** 18 prior scraped states byte-identical (incl. B6-corrected
+  IL/WV/GA); CA/NY/TX intact; MA delta exact; **6 interim states consciously
+  enriched** (TravCo/Phoenix → Travelers brand-map fix: MI/ND/SD/PA/RI/TN,
+  +13 raw/+6 rolled — the WV/NH globally-correct precedent; NJ/WI reverted to
+  byte-identical after the Wausau exclusion).
+- **COVERAGE VERDICT: richness-only** — GEICO/Progressive/Farmers AM-Best-0
+  adjudicated form/rule-heavy per-brand; dense mature markets are AM-Best-
+  complete (coverage-thinness = isolated-market phenomenon, the AK lesson).
+  +1 marginal GEICO enrichment (GECC-134365103 +3.7%/18,651ph).
+- **Exclusion doctrine resolved:** LM P&C + Wausau family excluded (retired-
+  brand/no-consumer-channel LM vehicles, Peerless-consistent — Peerless was
+  already excluded on the same MA filing). Near-miss recorded: bare "wausau"
+  substring almost mapped an independent WI mutual into Liberty; the import
+  gate caught it (specific-name patterns only).
+- **NICOA paginator-glitch save end-to-end:** +6.1%/4,038ph HO renders live,
+  matches AM Best. B8 opened (glitch, 3rd occurrence). MA in COVERED_STATES;
+  AMBEST_STATES → 26; methodology 19 rows, MA ✓✓.
+- **Gates:** import ALL CHECKS PASSED (3092/1890/19/566), verify_subtype 566
+  (deltas == exactly MA), 8 verify + tsc + build 12/12 + 13 e2e green.
+  Localhost-approved.
+
+---
+
 # Session checkpoint — 2026-07-07  ·  B6 COMPLETE: comma-percent parser fix + 18-state retro-verification + 7-state gated re-import
 
 The "wrapped-name" backlog bug root-caused to the shared parser's row regexes

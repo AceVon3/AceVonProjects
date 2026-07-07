@@ -34,7 +34,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "LA", name: "Louisiana",      data_coverage: false },
   { code: "ME", name: "Maine",          data_coverage: true,  source: "ambest" },
   { code: "MD", name: "Maryland",       data_coverage: true,  source: "ambest" },
-  { code: "MA", name: "Massachusetts",  data_coverage: true,  source: "ambest" },
+  { code: "MA", name: "Massachusetts",  data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-07-06 (interim->real): 129-row SERFF scrape (LM P&C + Wausau family excluded per the LM-vehicle doctrine), 281/282 in-target (the 1 a Rule filing). AM Best cross-check: PPA 37/38 (97.4%, the 1 miss pure recency) / HO 27/27 (100% — FIRST robust-N home read), value-agreement on shared 53/53 (100%), interim 49/49 (0 disagreements, 9th interim->real point). Coverage verdict: richness-only (GEICO/Progressive/Farmers form/rule-heavy per-brand — the AK resolution) + 1 GEICO enrichment (GECC-134365103 +3.7% AM Best lacks). NICOA paginator-glitch save corroborated -> both validated
   { code: "MI", name: "Michigan",       data_coverage: true,  source: "ambest" },
   { code: "MN", name: "Minnesota",      data_coverage: true,  source: "ambest" },
   { code: "MS", name: "Mississippi",    data_coverage: true,  source: "ambest" },
