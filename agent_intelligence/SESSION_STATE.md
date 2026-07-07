@@ -1,3 +1,61 @@
+# Session checkpoint — 2026-07-07 (ND)  ·  ND INTERIM→REAL IMPORT SHIPPED + VALIDATED (20th scraped state) + B9 FARMERS-MISLABEL INTERIM CORRECTION
+
+ND's 114-row SERFF scrape (290/290 in-target, 0 true misses — 10-state streak)
+replaced its AM Best interim; the SAME gated import carried the **B9
+bare-"farmers" interim correction** (~86 mislabeled independent-mutual rows /
+13 mutuals dropped across 12 interim states). db md5 `c3ffe169` (supersedes
+post-MA `14f12fab`). **NEW BASELINE: 20 states, raw 3,206 / rolled 1,966 /
+active@2026-06-11 594.** Localhost-approved + deployed.
+
+- **RESUME-FROM-INTERRUPTION NOTE:** the import step was interrupted mid-run in
+  a prior session. Assessment proved the db was already FULLY REBUILT and
+  correct (import log complete; gate green); the interruption hit mid-re-key
+  of the EXPECTED constants. A clean re-run reproduced **byte-identical md5
+  `c3ffe169`** — the import is deterministic; no restore needed (pre-import
+  `14f12fab` stayed recoverable from monorepo HEAD throughout).
+- **Gate (import_gate_verify, fresh both runs): ALL GATES PASS** — all 19
+  prior scraped states BYTE-IDENTICAL (raw+rolled hash, counts, active);
+  CA/NY/TX permanent intact (91/65, 183/101, 384/249); ND delta exact
+  (+114 raw / +76 rolled / +28 active; ambest→serff flip, 0 interim remnants);
+  as-of pin held (2026-06-11).
+- **B9 INTERIM CORRECTION EXACT:** ambest −192 raw / −158 rolled = ND's
+  replaced interim block (115/81) + exactly the 86 mislabeled rows (77 across
+  AR −2, IN −16, KS −6, MN −3, NE −7, NJ −2, OK −13, PA −8, SD −8, TN −2,
+  WI −10, + ND's own 9). Every state's delta == its pattern-row count; **0
+  independent-mutual rows remain anywhere.** Remaining interim Farmers rows
+  verified genuine FIG (Farmers/Fire Insurance Exchange etc.). 2nd LIVE
+  over-match after Wausau — bare-substring place/occupation names are a
+  CLASS; derive_brand now uses the explicit `_FIG_FARMERS_PATTERNS` allowlist
+  (never a bare "farmers"), + `test_brand_mapping.py` (ALL PASS; full-surface
+  old-vs-new derive_brand over 828 real names == exactly the independents).
+- **CROSS-CHECK (10th interim→real point):** value-agreement on shared 44/44
+  (100%), interim 45/45 (0 disagreements), in-window PPA 35/35 + HO 20/20 =
+  100%. **Coverage verdict RICHNESS-ONLY on all 4 divergence brands → the
+  coverage-thinness pattern REFINED: it is a VERY-ISOLATED-market phenomenon
+  (AK), NOT general small/rural — ND is small/rural but integrated and
+  AM-Best-complete.**
+- ND dropped from `AMBEST_STATES` (→ 25), KEPT in `COVERED_STATES` (the NH
+  trap); `validated:{auto:true, home:true}`; methodology 19→20 rows, ND ✓✓.
+  verify_subtype re-keyed 566→594 (per-sub_type deltas exactly ND's: PPA +10,
+  HO-Comb +6, Other-HO +4, Auto-Comb +3, Owner-Occ +3, Motorcycle +1,
+  Mobile +1; distinct still 11).
+- **Gates:** import ALL CHECKS PASSED (3206/1966/20/594), 8 verify + tsc +
+  build 12/12 + 13 e2e green (e2e_methodology validated the 20-row table
+  live). Localhost-approved (ND directly-scraped, 21 FIG raw rows; KS/IN
+  interim Farmers = genuine FIG only; unchanged states spot-checked).
+- **HEADs (post-deploy):** insurancewebscraper `ef59e58`->**`9645a69`**
+  (HEAD==origin; all_states 3092→3206, 0 deletions; ND collection/cross-check/
+  B9 scraper fix were already banked at `fc3257c`..`ef59e58`). agent-intel/
+  master `81fba2b`->**`96e3149`** (subtree-FF literal fast-forward, 8 files,
+  0 deletions; Vercel LIVE — /,/methodology,/prospect,/defend 200, ND renders,
+  methodology 20 rows). Monorepo `f35a9a4` (+docs, local). `filings.db`
+  **`c3ffe169`**.
+- **B7/B7b HELD through the disk-heavy rebuild:** repos/ checkout intact +
+  clean (HEAD==origin) across the interruption AND the re-run; pin held
+  (11,341 PDFs, 0 dehydrated). B7 confirmation-over-time strengthening.
+
+---
+
 # Session checkpoint — 2026-07-06 (MA)  ·  MA INTERIM→REAL IMPORT SHIPPED + VALIDATED (19th scraped state; first medium tier)
 
 MA's 129-row SERFF scrape (281/282 in-target, 0 true misses) replaced its AM

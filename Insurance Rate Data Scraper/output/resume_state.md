@@ -1,5 +1,59 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-07 — ND INTERIM→REAL IMPORT SHIPPED + VALIDATED (20th scraped state)
+> + B9 FARMERS-MISLABEL INTERIM CORRECTION (2nd live over-match after Wausau).**
+> Full arc: universe (949 raw / 265 in-target / 290 targets — B8-hardened native
+> pagination proven at sweep scale) → 3-burst harvest (197 → 208 → **290/290
+> cached, 0 true misses — 10-state streak**) → cross-check → B9 found+fixed →
+> combined gated import (ND + interim correction) → deployed. **NEW BASELINE
+> (SUPERSEDES post-MA 3,092/1,890/566/`14f12fab`): 20 states, raw 3,206 /
+> rolled 1,966 / active@2026-06-11 594 / db md5 `c3ffe169`**, anchor +93.70% WA.
+> Every scraped delta == EXACTLY ND (+114 raw / +76 rolled / +28 active / +1
+> state); **19 prior scraped states BYTE-IDENTICAL**; CA/NY/TX intact; as-of
+> pin held. ND dropped from AMBEST_STATES (→ 25), KEPT in COVERED_STATES;
+> validated:{auto:true, home:true}; methodology 19→20.
+> - **IMPORT INTERRUPTED MID-RUN, RECOVERED CLEAN:** a prior session's Step-4
+>   run was cut off. Assessment (before touching anything): db was already
+>   FULLY REBUILT + correct (import log ran to completion; only stale 19-state
+>   EXPECTED constants "failed"); interruption hit mid-re-key. Clean re-run
+>   reproduced **byte-identical `c3ffe169`** — import determinism PROVEN;
+>   pre-import `14f12fab` was recoverable from monorepo HEAD the whole time.
+>   LESSON: assess-before-rerun on interrupted imports; the gate capture
+>   (before.json) + committed db make every state recoverable.
+> - **B9 (the ND cross-check finding): bare-"farmers" substring had swept 13
+>   INDEPENDENT mutuals** (Farmers Mutual of Nebraska, Farmers Alliance,
+>   Pekin's Farmers Automobile Ins Assoc, National Farmers Union, Indiana/
+>   Tennessee Farmers Mutual, Flemington, …) into the Farmers brand — the
+>   Mutual-of-Wausau class, LIVE in interim data: **~86 rows / 12 states**
+>   (incl. 17 active-window, e.g. PA HO +23.7% Pekin shown as Farmers).
+>   Scraper: INDEPENDENT_COMPANY_PATTERNS (decisive in carrier_group) —
+>   `ef59e58`; ND deliverable rebuilt 121→114 (dropped EXACTLY the 7
+>   independent rows, FIG 21 intact). Importer twin: `_FIG_FARMERS_PATTERNS`
+>   explicit allowlist (NEVER bare "farmers") + test_brand_mapping.py.
+>   **Interim correction verified EXACT in-import:** ambest −192 raw/−158
+>   rolled == ND interim (115/81) + the 86 pattern rows (AR 2, IN 16, KS 6,
+>   MN 3, NE 7, NJ 2, OK 13, PA 8, SD 8, TN 2, WI 10, ND 9); 0 remain;
+>   surviving interim Farmers rows verified genuine FIG. **NEVER bare-substring
+>   a place/occupation name — 2nd live instance; the class is now closed on
+>   both sides (scraper + importer).**
+> - **CROSS-CHECK (10th interim→real point):** value-agreement 44/44 (100%),
+>   interim 45/45 (0 disagreements), in-window PPA 35/35 + HO 20/20 = 100%.
+>   **COVERAGE PATTERN REFINED: richness-only on all 4 divergence brands —
+>   coverage-thinness is a VERY-ISOLATED-market phenomenon (AK), NOT general
+>   small/rural. ND is small/rural but integrated & AM-Best-complete** (the
+>   apparent Country AK-thinness parallel dissolved on adjudication).
+> - **B7/B7b HELD through the interruption + disk-heavy rebuild:** repos/
+>   checkout intact + clean both sessions (HEAD==origin); pin held (11,341
+>   PDFs, 0 dehydrated). B7 confirmed-over-time strengthening.
+> - **HEADs (post-deploy):** insurancewebscraper `ef59e58`→**`9645a69`**
+>   (HEAD==origin; all_states regen 3092→3206 + build_all_states ND; the ND
+>   collection/cross-check/B9 fix were banked at `fc3257c`..`ef59e58`).
+>   agent-intel/master `81fba2b`→**`96e3149`** (subtree-FF, 8 files, 0
+>   deletions; Vercel LIVE — 200s, ND renders, methodology 20 rows). Monorepo
+>   `f35a9a4`+docs. `filings.db` **`c3ffe169`** (20-state baseline).
+> - **NEXT:** the large tier (PA/IN/TN) on the hardened pipeline — B7's 100%
+>   closure call comes at the next disk-heavy harvest session at the new path.
+
 > **2026-07-08 — TOOLING SESSION: B7 (Temp-purge) ROOT-CAUSED + RELOCATED, B8
 > (paginator glitch) FIXED + LIVE-VERIFIED. Hardened before the large tier.**
 > `filings.db` UNTOUCHED (`14f12fab`, 19-state baseline intact). UI-deploy loop

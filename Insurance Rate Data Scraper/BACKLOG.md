@@ -133,6 +133,70 @@ use: `git checkout -- .` restore + explicit-path staging (NEVER `git add -A`).
 retire the hazard memory), (b) confirm/exclude Storage Sense as the culprit,
 (c) a pre-commit purge-check script. (a) is likely the whole fix.
 
+### B6 residual (ND 2026-07-07, immaterial): row-shape variant "pct pct $0 0 + blank premium-for-program + blank %-only max/min"
+ND adjudication of 14 cached-but-0-rows filings (all 14 PDFs read at source):
+12/14 genuinely all-blank Company Rate Information ("% % % %" — 10 FARM
+Mid-Century quarterly Auto Symbols Updates, 1 FMIN, 1 ALSE credit/symbol
+filing) = correct 0, dropped. 2/14 (FMIN-134183412, FMIN-134243214) carry a
+populated-but-all-zero row — `0.000% 0.000% $0 0 % %` (premium change $0, ph
+0, premium-for-program BLANK, max/min blank-%) — a sibling of shape H
+(`$0 $0` blank-ph) that the B6-fixed parser still rejects → 0 rows. BOTH
+maximally immaterial (0.000%/$0/0ph, rate-neutral page corrections) →
+dropped per the WV/NH/AK materiality rule. Fix additively as shape K next
+time the shared parser is touched (test first: both PDFs cached under
+output/pdfs/ND/134183412 + 134243214).
+
+## B9 — bare-"farmers" substring mislabeled 13 independent mutuals as Farmers (LIVE in interim; 2nd substring-over-match after Wausau)
+**FIXED 2026-07-07 (combined gated import pending).** The ND cross-check's
+brand sweep found `derive_brand`'s `"farmers" in name -> Farmers` rule had
+**~86 live interim raw rows across 13 independent mutuals** (Farmers Alliance
+18 KS/NE/ND/OK/SD, Pekin's "The Farmers Automobile Insurance Association" 18
+IN/WI, National Farmers Union P&C 11, Farmers Mutual of Nebraska 10, Indiana
+Farmers Mutual 7, American Farmers & Ranchers 6 OK, Tennessee Farmers Mutual
+2, + PA/NJ/OK fire mutuals) served as brand=Farmers — the Mutual-of-Wausau
+class, but LIVE and uncaught (Wausau was caught by the MA import gate; this
+one shipped). The 19 SCRAPED states were clean (0 such rows). ND's scrape
+also swept FMN/FAMI (7 deliverable rows incl. material +24.1%/+19.9% —
+MISLABELED independents, not Farmers data).
+**Fix (both layers, both repos):** importer `_FIG_FARMERS_PATTERNS` explicit
+FIG allowlist (21 patterns; "Farmers Insurance Company of <state>" enumerated
+because "...of Flemington" is an independent — never wildcard) replacing the
+bare substring + independents added to `_AMBEST_EXCLUDE`; scraper
+`INDEPENDENT_COMPANY_PATTERNS` (decisive in `carrier_group` — no
+target_company fallback; folded into `_is_excluded_subsidiary` for row drops;
+deliberately SEPARATE from `EXCLUDED_SUBSIDIARY_PATTERNS`, whose filing-
+vehicle entries like Standard Fire keep filing-level classification).
+**Gates:** `tests/test_farmers_scope.py` 8/8 PASS;
+`scripts/test_brand_mapping.py` ALL PASS (47 cases); full-surface old-vs-new
+derive_brand diff over 828 distinct real names (filings_raw + all AM Best
+CSVs + deliverables) = exactly the 14 independents Farmers->None, 0
+unexpected.
+**⚠️ OPEN (the ROOT PATTERN): audit derive_brand/GROUP_KW for OTHER
+bare-substring rules that could catch unaffiliated entities** — 2nd
+occurrence (Wausau in MA, Farmers in ND). Candidates to audit: "liberty"
+(bare! e.g. hypothetical "Liberty Farm Mutual"), "nationwide", "american
+family" (guarded once already), "travelers", "country" label fallback. The
+828-name current surface shows 0 other mis-maps, but the audit should reason
+about FUTURE-state names (the TARGET_COMPANIES-audit precedent). ~1 short
+session.
+
+## B7b — OneDrive dehydration exposure of the monorepo HARVEST workspace (PINNED 2026-07-07)
+**CLOSED AT ROOT 2026-07-07 (pin).** Surfaced during the ND mid-burst shutoff
+assessment: the harvest reads/writes the MONOREPO working copy
+(`OneDrive\Desktop\ClaudeCodeTest\Insurance Rate Data Scraper`), which lives
+INSIDE OneDrive — and Storage Sense has OneDrive **dehydration enabled with a
+30-day threshold** (provider subkey `02=1`, `128=30`; same low-disk trigger as
+the B7 Temp purge). Files unopened 30 days would become online-only
+placeholders mid-tree. Distinct from B7: B7 relocated the repos/ PUBLISH
+checkout out of %TEMP%; this pins the monorepo HARVEST workspace in place.
+**Fix: `attrib +p ... /s /d`** (FILE_ATTRIBUTE_PINNED = "Always keep on this
+device") on the whole scraper folder — verified 11,203/11,203 cached PDFs
+pinned, 0 placeholders, dirs pinned too (new files inherit). Lower severity
+than the Temp purge (dehydration deletes nothing — cloud + GitHub both hold
+copies; failure mode was mid-harvest stalls/placeholder reads, not loss).
+Both protection mechanisms now in place, one per exposure:
+repos/ = relocated (B7); monorepo = pinned (B7b).
+
 ## B8 — SERFF search paginator glitch on big result sets (3rd occurrence)
 **FIXED + LIVE-VERIFIED 2026-07-08.** Root cause was THREE stacked defects in
 `src/search.py` plus a missing guard: (1) `_set_rows_per_page_100` swallowed
