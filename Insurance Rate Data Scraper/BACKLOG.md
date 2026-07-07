@@ -134,6 +134,21 @@ retire the hazard memory), (b) confirm/exclude Storage Sense as the culprit,
 (c) a pre-commit purge-check script. (a) is likely the whole fix.
 
 ## B8 — SERFF search paginator glitch on big result sets (3rd occurrence)
+**FIXED + LIVE-VERIFIED 2026-07-08.** Root cause was THREE stacked defects in
+`src/search.py` plus a missing guard: (1) `_set_rows_per_page_100` swallowed
+the RPP-100 AJAX re-render timeout on big result sets -> extraction read the
+mid-render emptied tbody -> false clean-ok 0 (the AK/MA signature); (2)
+`_click_next_page` bare .click() died on navbar pointer-interception ->
+silent partial stop; (3) `_has_next_page` read ui-state-disabled off a stale
+mid-render paginator. Fix: re-render completion wait + retry (loud on
+failure), scroll+JS-click fallback + data-rk progress verification, a
+first-extract-empty re-wait, and the **reconciliation guard** — rows saved
+vs the paginator's own "of N" total; any shortfall = ledger outcome
+`extract_mismatch_*`, never "ok" (kills the false-clean-0 CLASS, including
+unmet future variants). LIVE VERIFY: bare-term MA Travelers captured **206
+rows natively** (== the date-slice ground truth; pre-fix the same term
+false-0'd twice), 0 paginator warnings, ledger ok. Date-slicing remains
+available but is no longer required for big-footprint carriers.
 **Opened:** 2026-07-06 (MA). **Size:** small-medium. **Priority:** MEDIUM (it
 hides ENTIRE PRESENT BRANDS silently).
 

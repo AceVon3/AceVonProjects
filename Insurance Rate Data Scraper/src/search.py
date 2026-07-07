@@ -240,21 +240,50 @@ def _submit_search_attempt(
     return True, "ok"
 
 
+def _paginator_total(page: Page) -> int | None:
+    """Read the results total from the PrimeFaces paginator ("1 - 100 of N" /
+    "Showing x to y of N"). Returns None when no paginator/total is rendered.
+    B8 (2026-07-08): this is the reconciliation source — rows SAVED must equal
+    the total the page itself reports, else the search is NOT ok."""
+    try:
+        txt = page.locator(".ui-paginator-current").first.text_content(timeout=3000) or ""
+        m = re.search(r"of\s+([\d,]+)", txt)
+        return int(m.group(1).replace(",", "")) if m else None
+    except Exception:
+        return None
+
+
 def _set_rows_per_page_100(page: Page) -> None:
     """Reduce pagination by selecting the 100 rows-per-page option if present.
 
-    PrimeFaces re-renders the table via AJAX (`persistRows`) after the change
-    event — we must wait for networkidle, not just for the existing rows.
+    B8 (2026-07-08): the old body waited networkidle 15s and SWALLOWED the
+    timeout — on a BIG result set the PrimeFaces AJAX re-render outlives the
+    wait, extraction then reads the mid-render (emptied) tbody, and the search
+    exits "ok" with 0 rows (the AK/MA Travelers + MA Nationwide false-clean-0).
+    Now: wait for the re-render to COMPLETE (rows present again), retry once,
+    and WARN LOUDLY if it never settles (the extract-retry + reconciliation
+    guard downstream then catch any residue — nothing is silent).
     """
     try:
         sel = page.locator("select.ui-paginator-rpp-options").first
         if not sel.count():
             return
-        sel.select_option("100")
-        page.wait_for_load_state("networkidle", timeout=15000)
-        time.sleep(1.0)
     except Exception:
-        pass
+        return
+    for attempt in (1, 2):
+        try:
+            sel.select_option("100")
+            page.wait_for_function(
+                "() => !!document.querySelector('tr[data-rk]')", timeout=45000)
+            page.wait_for_load_state("networkidle", timeout=45000)
+            time.sleep(1.0)
+            return
+        except Exception as e:
+            print(f"    [paginator] RPP-100 re-render not settled "
+                  f"(attempt {attempt}/2): {type(e).__name__}", flush=True)
+            time.sleep(2.0)
+    print("    [paginator] WARNING: RPP-100 re-render never settled — "
+          "extraction proceeds under the reconciliation guard", flush=True)
 
 
 def _extract_rows(page: Page, state: str, company: str) -> list[Filing]:
@@ -333,12 +362,35 @@ def _has_next_page(page: Page) -> bool:
 
 
 def _click_next_page(page: Page) -> bool:
+    """B8 (2026-07-08): a bare .click() dies when a floating navbar overlay
+    intercepts the pointer (the AK-noted mode) — scroll into view first, fall
+    back to a JS click on interception, then VERIFY PROGRESS (the first row's
+    data-rk changed) instead of trusting the click."""
     nxt = page.locator(".ui-paginator-top .ui-paginator-next").first
     if not nxt.count():
         return False
-    nxt.click()
     try:
-        _wait_for_results(page)
+        before = page.locator("tr[data-rk]").first.get_attribute("data-rk")
+    except Exception:
+        before = None
+    try:
+        nxt.scroll_into_view_if_needed(timeout=5000)
+        nxt.click(timeout=10000)
+    except Exception:
+        try:
+            nxt.evaluate("el => el.click()")  # JS click bypasses pointer interception
+        except Exception:
+            return False
+    try:
+        if before is not None:
+            page.wait_for_function(
+                """(prev) => {
+                    const r = document.querySelector('tr[data-rk]');
+                    return r && r.getAttribute('data-rk') !== prev;
+                }""",
+                arg=before, timeout=20000)
+        else:
+            _wait_for_results(page)
         return True
     except Exception:
         return False
@@ -480,10 +532,24 @@ def search_company(
         if not _submit_search(page, state, company, date_from=date_from, date_to=date_to):
             return filings
         _set_rows_per_page_100(page)
+        reported_total = _paginator_total(page)
 
         seen: set[str] = set()
         while True:
             batch = _extract_rows(page, state, company)
+            if not batch and not filings:
+                # B8: the results-wait saw rows (or no-records) before we got
+                # here; an empty FIRST read on a page that reported a total is
+                # a mid-render race, not an answer. Re-wait and retry once.
+                if reported_total:
+                    print(f"    [paginator] first extract empty but paginator "
+                          f"reports {reported_total} — re-waiting", flush=True)
+                    try:
+                        _wait_for_results(page)
+                    except Exception:
+                        pass
+                    time.sleep(2.0)
+                    batch = _extract_rows(page, state, company)
             new = [f for f in batch if f.filing_id not in seen]
             for f in new:
                 seen.add(f.filing_id)
@@ -492,6 +558,17 @@ def search_company(
                 break
             if not _click_next_page(page):
                 break
+
+        # B8 reconciliation guard: rows SAVED must match the total the page
+        # itself reported. Any shortfall is a LOUD non-ok ledger outcome —
+        # the false-clean-0 class (and any future variant) cannot masquerade
+        # as a genuine empty result again.
+        if reported_total is not None and len(filings) < reported_total:
+            print(f"    [paginator] EXTRACT MISMATCH: saved {len(filings)} of "
+                  f"{reported_total} reported — flagging in ledger", flush=True)
+            _diag_record(state, company,
+                         f"extract_mismatch_{len(filings)}_of_{reported_total}",
+                         0.0, [], None, page)
 
         if fetch_submission_dates and filings:
             print(f"    fetching submission dates for {len(filings)} filings ...", flush=True)
