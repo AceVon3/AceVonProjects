@@ -1,5 +1,48 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-08 — TOOLING SESSION: B7 (Temp-purge) ROOT-CAUSED + RELOCATED, B8
+> (paginator glitch) FIXED + LIVE-VERIFIED. Hardened before the large tier.**
+> `filings.db` UNTOUCHED (`14f12fab`, 19-state baseline intact). UI-deploy loop
+> CLOSED: the 016ea60 copy/clarity change set was a legitimate separate session
+> (its own SESSION_STATE checkpoint documents "six confirmed items, all
+> localhost-reviewed"; ancestor of live HEAD; its e2e assertions pass) — nothing
+> crossed or unintended.
+> - **B7 ROOT CAUSE CONFIRMED (not just hypothesized):** the checkout lived in
+>   %TEMP% itself and Windows **Storage Sense policy 04** ("delete temporary
+>   files apps aren't using", ENABLED, auto low-disk trigger) + `SilentCleanup`
+>   reaped unaccessed working-tree files (`.git` survived via git-op access
+>   recency — hence the selective pattern; irregular strikes = low-disk events
+>   during heavy sessions). **RELOCATED to `C:/Users/ryanc/repos/
+>   insurancewebscraper`** (outside %TEMP% + OneDrive): 9,884 files intact,
+>   status clean, HEAD==origin, commit+push proven from the new path. Memory
+>   hazard note retired (historical stub kept). **Status: HIGH-CONFIDENCE,
+>   confirmed-over-time — declare 100% closed only after the next disk-heavy
+>   session passes clean at the new path.**
+> - **B8 = THREE stacked defects + a missing guard** (`src/search.py`):
+>   (1) RPP-100 AJAX re-render timeout silently swallowed on big result sets →
+>   mid-render 0-row extraction → the false-clean-0 (AK/MA signature);
+>   (2) bare `.click()` on Next dying to navbar pointer-interception → silent
+>   partial stop; (3) stale `ui-state-disabled` reads mid-render. **Fix:**
+>   completion waits + retries (loud on failure), scroll+JS-click fallback with
+>   data-rk progress verification, first-extract-empty re-wait, and the
+>   **reconciliation guard** (rows saved vs the paginator's own "of N" total →
+>   any shortfall = `extract_mismatch_*` ledger outcome, NEVER ok — kills the
+>   false-clean-0 CLASS including unmet variants). **LIVE-VERIFIED: bare-term
+>   MA Travelers = 206 rows natively** (== the date-slice ground truth; the
+>   same term false-0'd twice pre-fix), 0 paginator warnings, ledger ok.
+>   Date slices remain available but are no longer REQUIRED for big carriers —
+>   large-tier (PA/IN/TN) sweeps can run bare terms.
+> - **MA collection CLOSED at 282/282 (100%):** the deferred TRVD-134026815
+>   Rule filing fetched (`ok`); funnel form/rule 204→205, no_pdf 2→1 (only the
+>   adjudicated NWPP-134391109 source-blank-impact remains); deliverable **129
+>   rows byte-identical** — no import needed, the shipped MA data is unchanged.
+> - **HEADs (post-session):** insurancewebscraper `84fdc97`→**`e03930b`**
+>   (`5e9f759` B7 + `e03930b` B8; HEAD==origin, committed from the NEW path).
+>   Monorepo `533c366`+`76b870f` (+docs, local). agent-intel/master **`81fba2b`**
+>   unchanged (no app changes; Vercel 200). `filings.db` **`14f12fab`** untouched.
+> - **NEXT:** the large tier (PA/IN/TN) on the hardened pipeline — watch B7 at
+>   the first disk-heavy session (the confirmation event).
+
 > **2026-07-06 — MA INTERIM→REAL IMPORT SHIPPED + VALIDATED (19th scraped state; FIRST MEDIUM TIER).**
 > Full arc in ONE day: recon → universe sweep (783 raw / 264 in-target / 282
 > targets; USAA-wall retry + Travelers AND Nationwide recovered from the
