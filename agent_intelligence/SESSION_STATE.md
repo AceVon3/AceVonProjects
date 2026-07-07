@@ -1,3 +1,66 @@
+# Session checkpoint — 2026-07-07 (B9 audit)  ·  DERIVE_BRAND OVER-MATCH CLASS AUDIT COMPLETE + AMFAM-CONNECT INTERIM CORRECTION SHIPPED (61 rows / 23 states)
+
+The 3rd class-audit (search-terms → parser-shapes B6 → mapping-rules B9): a
+full-surface scan of every brand-mapping rule over **852 distinct entity
+names** (live db both tables + all 41 AM Best CSVs + all deliverables + all
+search universes) through the REAL derive_brand/carrier_group with a tracing
+mirror asserted identical per name. **db `5423a7c3`** (supersedes `c3ffe169`;
+scraped baseline UNCHANGED: 20 states, raw 3,206 / rolled 1,966 / active 594).
+
+- **HONEST SCOPE:** the ask estimated ~240 live mislabels across 3 rule
+  classes; measured reality = **61 live (AmFam Connect only)** — there is no
+  bare 'american'/'standard'/'national' rule, and American National / American
+  Modern / Standard Mutual / National General / Integon have **0 rows under
+  any brand** (proven by query, before AND after). The rest of the class was
+  LATENT (vulnerable rules, no live rows) and is now hardened forward.
+- **THE LIVE CORRECTION:** American Family Connect P&C (ex-Ameriprise, a
+  DISTINCT excluded brand — the scraper's EXCLUDED_SUBSIDIARY_PATTERNS had it;
+  the importer's `_AMBEST_EXCLUDE` never got the entry) served as
+  brand=American Family in **61 raw / 61 rolled ambest rows across 23 states,
+  18 active-window** (SC +14.0%/9,616ph was a LIVE phantom Prospect signal).
+  **Correction gate ALL PASS:** all 20 scraped states BYTE-IDENTICAL; exactly
+  23 states changed; every per-state delta == the adjudicated rows (MD −6,
+  PA −5, CT/IN/MI/NE/TX −4, MN/MO/NJ/CA −3, KS/KY/MS/OK/TN/WI −2,
+  AR/DE/IA/NY/SC/SD −1; raw == rolled); **first-ever consciously-approved
+  permanent-state touch (CA −3 / NY −1 / TX −4)**; ambest 5,237→5,176 raw /
+  3,323→3,262 rolled; as-of pin held. Footprint-verified: MD/PA/CT/MI had
+  ONLY Connect (now 0 AmFam rows — AM Best had no genuine AmFam there);
+  IN/NE/WI/MN/MO/KS genuine AmFam intact.
+- **FORWARD HARDENING (852-name full-surface old-vs-new diff — 0 collateral,
+  0 affiliates lost):** importer diffs = exactly 8 intended drops (3 Connect
+  variants + 5 Nationwide-warranty) + 2 intended re-maps; scraper diffs =
+  exactly 12 + 2. Bare "liberty" → `_LM_LIBERTY_PATTERNS` allowlist (all 10
+  live liberty names genuine — 0 live change). Connect/AFLAC/warranty guards
+  decisive-None. Scraper: bare "farmers"/"country" REMOVED from GROUP_KW —
+  the label fallback now matches labels EXACTLY (`LABEL_EXACT`), killing the
+  substring-through-label mechanism that caused Wausau AND Farmers; +11
+  unaffiliated tripwires (Countryway = the proven near-miss: swept in-target
+  into MA/NH/VT universes under the "Country" label); pre-existing
+  General/First-National/Liberty-Insurance label-fallback gap fixed. The
+  guard CAUGHT REAL COLLATERAL: 5 genuine FIG entities (Columbus — live
+  scraped OH; New Century/TX County Mutual/Lloyds — live ambest; Hawaii)
+  would have been orphaned by removing the bare keyword → enumerated
+  explicitly. **American Standard of WI/OH** (genuine AmFam subs, no brand
+  string; only in UT/GA cross-check CSVs, all 0.0%) allowlisted forward +
+  own search term — **byte-identical-proven no-op** (re-import reproduced
+  `5423a7c3` exactly).
+- **Gates:** import ALL CHECKS PASSED; correction gate ALL PASS; tsc, 8/8
+  verify, build 12/12, 13/13 e2e; `test_brand_mapping.py` 82 cases ALL PASS;
+  scraper `test_farmers_scope.py` 8/8 (2 pre-existing stale 8-brand-era test
+  failures logged as B10). Methodology UNCHANGED at 20 rows (data correction,
+  not a new state). Localhost-approved (MD/SC 0 AmFam, WI/MN genuine intact,
+  OH/ND identical).
+- **HEADs (post-deploy):** insurancewebscraper `9645a69`->**`d692e1f`**
+  (HEAD==origin, 0 deletions). agent-intel/master `96e3149`->**`e7debfe`**
+  (subtree-FF, 0 deletions; Vercel LIVE — 200s, methodology 20; **PROD==LOCAL
+  on the API**: MD/SC/WI/MN prospect shows exactly the 2 genuine MN AmFam
+  rows, SC's phantom +14% Connect signal GONE from production). Monorepo
+  `8607127`+docs. `filings.db` **`5423a7c3`**.
+- **BACKLOG:** B10 (stale 8-brand-era tests) + B11 (American Standard UT/GA
+  footnote, note-only) opened. NEXT: RI (user structuring a pipelined run).
+
+---
+
 # Session checkpoint — 2026-07-07 (ND)  ·  ND INTERIM→REAL IMPORT SHIPPED + VALIDATED (20th scraped state) + B9 FARMERS-MISLABEL INTERIM CORRECTION
 
 ND's 114-row SERFF scrape (290/290 in-target, 0 true misses — 10-state streak)

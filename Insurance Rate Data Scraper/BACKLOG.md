@@ -2,6 +2,28 @@
 
 Tracked-but-deferred work. Each item: rationale + spec pointer + sizing.
 
+## B10 — Stale 8-brand-era tests in insurancewebscraper tests/
+**Opened:** 2026-07-07 (B9-audit deploy). **Size:** small. Two pre-existing
+failures (fail identically on unmodified `9645a69`; NOT B9-related):
+`tests/test_parsers.py::test_match_target_company_no_match` asserts
+"USAA Casualty Insurance" is a non-match (predates the 13-brand expansion
+adding USAA to TARGET_COMPANIES) and
+`tests/test_output.py::test_write_excel_smoke` expects the pre-
+New-Product-Launches sheet list. Refresh both to the 13-brand basis. Also:
+the checkout's `.venv` didn't survive the repos/ relocation — tests now run
+under system Python 3.14 + pip-installed pytest.
+
+## B11 — American Standard (AmFam) UT/GA historical footnote
+**Opened:** 2026-07-07 (B9 audit). **Size:** note-only, likely no action.
+American Standard Insurance Company of Wisconsin/Ohio (genuine AmFam auto
+subs, no brand string in the legal name) appear ONLY in the UT/GA AM Best
+cross-check CSVs — **every row 0.0% impact** (immaterial by the WV/NH
+precedent). The UT/GA SERFF scrapes had no "american standard" search term,
+so any solo filings were never harvested; forward-closed 2026-07-07 (B9-audit
+deploy: derive_brand allowlist + GROUP_KW + a TARGET_COMPANIES search term).
+Only revisit if a future AmFam cross-check surfaces a MATERIAL
+American-Standard-only row in UT/GA.
+
 ## B1 — Consolidate the 6 AM Best parsers into one blank-safe shared extractor
 **Opened:** 2026-06-15. **Size:** ~1 session. **Gate:** existing harness
 (`confirm_blast_radius.py`) + base-column zero-diff + anchor 14/14.

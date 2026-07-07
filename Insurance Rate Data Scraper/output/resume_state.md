@@ -1,5 +1,52 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-07 (cont.) — B9 DERIVE_BRAND OVER-MATCH CLASS AUDIT COMPLETE +
+> AMFAM-CONNECT INTERIM CORRECTION SHIPPED (61 rows / 23 states).** Offline,
+> 0 SERFF. The 3rd class-audit (search-terms → parser-shapes B6 →
+> mapping-rules B9): every mapping rule enumerated (derive_brand, GROUP_KW,
+> label-fallback, exclude/independent lists), then a full-surface scan of
+> **852 distinct names** (db both tables + 41 AM Best CSVs + deliverables +
+> search universes) through the REAL functions. db **`c3ffe169`→`5423a7c3`**;
+> scraped baseline UNCHANGED (20 states / 3,206 / 1,966 / 594, anchor WA).
+> - **HONEST SCOPE:** estimated ~240 live → measured **61 live** (AmFam
+>   Connect ONLY; no bare 'american'/'standard'/'national' rule exists, and
+>   the feared names — American National, Standard Mutual, National General —
+>   have 0 rows under any brand, proven by query). Everything else was LATENT
+>   and is now hardened forward. The class (live + latent) is CLOSED.
+> - **LIVE FIX:** Connect (ex-Ameriprise, excluded distinct brand — scraper
+>   excluded it; importer `_AMBEST_EXCLUDE` never got the entry) served as
+>   AmFam in 61 raw/61 rolled rows / 23 states / 18 active-window (SC
+>   +14.0%/9,616ph = a phantom live Prospect signal, now gone from PROD).
+>   Correction gate ALL PASS: 20 scraped BYTE-IDENTICAL; exactly 23 states
+>   changed, per-state deltas == adjudicated (MD −6, PA −5, CT/IN/MI/NE/TX −4,
+>   MN/MO/NJ/CA −3, KS/KY/MS/OK/TN/WI −2, AR/DE/IA/NY/SC/SD −1); **first
+>   consciously-approved permanent-state touch (CA −3/NY −1/TX −4)**; ambest
+>   5,237→5,176 / 3,323→3,262.
+> - **FORWARD HARDENING (852-name old-vs-new diff = EXACTLY intended, 0
+>   collateral):** bare "liberty" → _LM_LIBERTY_PATTERNS allowlist (10/10
+>   live names genuine, 0 live change); Connect/AFLAC/Nationwide-warranty
+>   decisive-None; scraper bare "farmers"/"country" REMOVED from GROUP_KW →
+>   **LABEL_EXACT** exact-label fallback (kills the substring-through-label
+>   mechanism behind Wausau AND Farmers; Countryway = the proven near-miss,
+>   swept in-target into MA/NH/VT universes); +11 unaffiliated tripwires;
+>   General/First-National/Liberty-Insurance label gap fixed. **The guard
+>   caught real collateral:** 5 genuine FIG entities (Columbus live-scraped
+>   OH; New Century/TX County Mutual/Lloyds live ambest; Hawaii) would have
+>   been orphaned → enumerated explicitly, 0 affiliates lost. **American
+>   Standard of WI/OH allowlisted forward** (genuine AmFam subs, UT/GA
+>   CSVs only, all 0.0% — byte-identical-proven no-op) + own search term.
+> - **Gates:** import ALL CHECKS PASSED ×2 (incl. the no-op proof rebuild ==
+>   `5423a7c3` byte-identical); tsc + 8 verify + build 12/12 + 13 e2e green;
+>   test_brand_mapping 82 ALL PASS; test_farmers_scope 8/8. Methodology
+>   UNCHANGED (20 rows). Localhost-approved. **PROD==LOCAL API-verified.**
+> - **HEADs (post-deploy):** insurancewebscraper `9645a69`→**`d692e1f`**
+>   (HEAD==origin, 0 deletions). agent-intel/master `96e3149`→**`e7debfe`**
+>   (subtree-FF, 0 deletions; Vercel LIVE). Monorepo `8607127`+docs.
+>   `filings.db` **`5423a7c3`** (20-state corrected-interim baseline).
+> - **BACKLOG:** B10 (stale 8-brand-era scraper tests) + B11 (American
+>   Standard UT/GA footnote) opened. **NEXT: RI** (pipelined structure per
+>   user) on the fully-hardened mapping layer.
+
 > **2026-07-07 — ND INTERIM→REAL IMPORT SHIPPED + VALIDATED (20th scraped state)
 > + B9 FARMERS-MISLABEL INTERIM CORRECTION (2nd live over-match after Wausau).**
 > Full arc: universe (949 raw / 265 in-target / 290 targets — B8-hardened native
