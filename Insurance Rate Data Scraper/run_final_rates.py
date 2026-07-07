@@ -21,6 +21,7 @@ Non-rate filings (Form, Rule, new-product Rate/Rule) are excluded.
 """
 from __future__ import annotations
 
+import argparse
 import re
 import sys
 import time
@@ -179,15 +180,19 @@ GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate 
     # own name on SERFF and is NOT returned by a "state farm" keyword search
     # (Item #3a, 2026-05-15).
     "State Farm":     ["state farm", "mga insurance"],
-    "GEICO":          ["geico"],
+    "GEICO":          ["geico", "government employees"],
     # Encompass files under its own brand on SERFF and is NOT returned by an
     # "allstate" keyword search; we search both names under the Allstate group.
     "Allstate":       ["allstate", "encompass"],
     "Travelers":      ["travelers"],
     # Safeco is Liberty Mutual's independent-agent brand and files under its
-    # own name; it does NOT surface under a "liberty mutual" search.
-    "Liberty Mutual": ["liberty mutual", "safeco"],
-    "Progressive":    ["progressive"],
+    # own name; it does NOT surface under a "liberty mutual" search. Liberty
+    # Insurance Corporation (a Liberty Mutual legacy rating company) likewise
+    # files under its own name and is NOT returned by "liberty mutual" (no
+    # "mutual" in the name) — the Allstate/Encompass search-term-gap family
+    # (WV 2026-06-26: surfaced 2 in-target HO filings the group search missed).
+    "Liberty Mutual": ["liberty mutual", "safeco", "liberty insurance", "general insurance", "american states", "first national insurance"],
+    "Progressive":    ["progressive", "artisan and truckers"],
     # 13-brand expansion (2026-06-10, SCOPE.md). USAA needs three keywords —
     # the parent files as "United Services Automobile Association" and
     # Garrison carries neither string (GA portal check: three disjoint NAIC
@@ -200,11 +205,11 @@ GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate 
 }
 GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent group
     "State Farm":     ["state farm", "mga insurance"],
-    "GEICO":          ["geico"],
+    "GEICO":          ["geico", "government employees"],
     "Allstate":       ["allstate", "encompass", "integon", "north american insurance"],
     "Travelers":      ["travelers", "standard fire"],
-    "Liberty Mutual": ["liberty mutual", "safeco", "first national insurance company of america", "general insurance company of america", "american states"],
-    "Progressive":    ["progressive"],
+    "Liberty Mutual": ["liberty mutual", "liberty insurance corporation", "safeco", "first national insurance company of america", "general insurance company of america", "american states"],
+    "Progressive":    ["progressive", "artisan and truckers"],
     # 13-brand expansion (2026-06-10, SCOPE.md). Anchors are tighter than the
     # search keywords where bare keywords risk stray matches (Farm-Bureau-
     # style names, Country-Wide); the bare forms remain at the END of each
@@ -290,6 +295,23 @@ PDF_FILING_TYPE_RE = re.compile(r"Filing Type:\s*([A-Za-z/ \-]+)\s*$", re.MULTIL
 EXCLUDED_SUBSIDIARY_PATTERNS = (
     "lm general insurance company",
     "lm insurance corporation",
+    # LM Property and Casualty Insurance Company — the 3rd LM-prefixed Liberty
+    # filing vehicle (MA LBPM-133878161, 2026-07-06). Same doctrine as LM
+    # General / LM Insurance Corp: no consumer brand, no own agent channel.
+    # Decisive: LM General AND Peerless were already excluded at parse ON THE
+    # SAME MA FILING -> including LM P&C would split the family arbitrarily.
+    "lm property and casualty",
+    # Liberty-Wausau family (Decision 2, 2026-07-06): brand retired ~2009 into
+    # Liberty Commercial Markets — same profile as Peerless (no consumer
+    # website, no own agent channel, AM Best consolidated under LM, legal/
+    # filing vehicle). Identical profiles get identical treatment; Peerless is
+    # excluded ON THE SAME MA FILING (LBPM-133878161). Patterns are specific
+    # so "Mutual of Wausau Insurance Corporation" (an INDEPENDENT WI mutual,
+    # no Liberty affiliation) can never match.
+    "wausau underwriters",
+    "wausau general",
+    "wausau business",
+    "employers insurance of wausau",
     "standard fire insurance",
     "integon ",                  # Integon Indemnity / Integon National (Allstate-acquired specialty)
     "national general",
@@ -647,6 +669,25 @@ DOWNLOAD_BATCH_SIZE = 8  # tune against JSF degradation; 1 = legacy fresh-per-ta
 # batch's unattempted targets go back to the remaining pool (fallback /
 # convergence), so aborting early costs nothing but a fresh search.
 BATCH_ABORT_CONSECUTIVE_MISSES = 2
+# FRONT-OF-BATCH GRACE: the consecutive-miss abort above is the *mid-session*
+# degradation signature (a session that WAS landing rows then degraded). Two
+# transient misses at the FRONT of a batch — before any row has landed — are NOT
+# that signature; aborting on them kills an otherwise-healthy group before its
+# bulk/later filings run (OH State Farm burst 6: 2 GNSC front-misses aborted the
+# batch before the SFMA bulk; it recovered fine on a fresh run). So the degrade
+# abort only arms AFTER a success; until then a larger front grace must pass
+# before a "cold abort" (a dead session — wrong term / wall — that never landed a
+# row). front_grace > BATCH_ABORT_CONSECUTIVE_MISSES.
+BATCH_FRONT_GRACE = 4
+# NOT-FOUND STOP: in the per-target fallback, a coverage-gap tail (rows not
+# present under any of the group's search terms) returns clean Begin-Search 200s
+# with row-not-found downloads — neither a 405 wall (so wall-stop never fires) nor
+# a yield collapse the harvest guard reliably catches — so it grinds a fresh
+# walling Begin-Search per straggler with nothing to halt it (VA Travelers
+# coverage gap, ~40 min wasted). Stop the fallback after this many CONSECUTIVE
+# genuine not-founds. None disables. Distinct from wall-stop (405) and from a
+# transient row-miss (which still gets its retry across the group's terms).
+NOTFOUND_STOP_THRESHOLD = 8
 
 # Re-batched recovery (Q2): batch misses are mostly JSF-degradation misses (the
 # row WAS findable; the reused session was contaminated), not genuine
@@ -709,20 +750,152 @@ class _HarvestEarlyGuard:
         return self._stopped
 
 
+class _BeginSearchBudget:
+    """Optional hard cap on Begin-Searches per run — a 'burst'. None = unlimited
+    (default; preserves prior behavior). Counts every Begin-Search ATTEMPT (the
+    WAF-rationed unit — incl. retries and re-batched-recovery searches). When the
+    cap is reached the run stops SCHEDULING new searches and defers the rest, so a
+    burst stops UNDER the wall (~17) instead of grinding into the 405. This is the
+    proactive complement to _HarvestEarlyGuard, which only trips AFTER yield
+    collapses (i.e. post-wall) — the cap lets us bank near-not-at the ceiling and
+    leave headroom, which is gentler on the slow (days-scale) penalty component.
+
+    Miss-safe, same guarantee as harvest-early: a capped run is a PARTIAL run, not
+    a corrupt one — the deliverable is re-derived from whatever PDFs are cached on
+    disk, so a deferred target is missing, never wrong, and the next burst (or a
+    convergence re-run) collects it. Pairs with _HarvestEarlyGuard via an OR'd
+    stop predicate (see download_all_pdfs._stop)."""
+
+    def __init__(self, limit: int | None = None):
+        self.limit = limit
+        self.count = 0
+
+    def spend(self) -> None:
+        self.count += 1
+
+    def exhausted(self) -> bool:
+        return self.limit is not None and self.count >= self.limit
+
+
+class _SustainedWallStop:
+    """Stop the run after `threshold` CONSECUTIVE walled Begin-Searches — the REAL
+    WAF wall signal (a Begin-Search that fails all its retries: the
+    begin_search_link_timeout / HTTP 405 signature). threshold=None disables it.
+
+    This is the correct stop signal for a no-cap harvest, and fixes the
+    harvest-early ORDERING BUG: harvest-early keys on per-batch DOWNLOAD yield, so a
+    wrong-search-term miss (the row is under a later term, e.g. Encompass filings
+    under `encompass` not `allstate`) reads as a yield collapse and bails BEFORE the
+    later terms + Q2 recovery run. A wrong-term search still returns 200 — only its
+    row-downloads miss — so keying the stop on Begin-Search SUCCESS/FAILURE never
+    mis-fires on wrong-term misses, lets every term + recovery have its chance, and
+    still halts the 405-grind promptly (no fixed cap needed)."""
+
+    def __init__(self, threshold: int | None = 2):
+        self.threshold = threshold
+        self.consecutive = 0
+        self.tripped = False
+
+    def record(self, search_ok: bool) -> None:
+        if self.threshold is None or self.tripped:
+            return
+        if search_ok:
+            self.consecutive = 0
+        else:
+            self.consecutive += 1
+            if self.consecutive >= self.threshold:
+                self.tripped = True
+
+    def should_stop(self) -> bool:
+        return self.tripped
+
+
+class _NotFoundStop:
+    """Stop the per-target fallback after `threshold` CONSECUTIVE genuine
+    not-founds — a clean Begin-Search (HTTP 200) whose row download still misses,
+    i.e. the row is not present under the search term. That is the coverage-gap
+    signature (e.g. VA's TRVD-G series absent under bare `travelers`): it is NOT a
+    405 wall (wall-stop owns that) and NOT a transient row-miss (which still gets
+    its retry across the group's other terms). Without this stop the fallback
+    fires one fresh walling Begin-Search per straggler with nothing to halt it
+    (VA Travelers, ~40 min). threshold=None disables (default-off at the class
+    level; the caller passes the configured threshold).
+
+    record(search_ok, found): a wall (search_ok=False) is ignored here (wall-stop
+    owns it); a found row resets the streak; a clean-but-not-found increments it.
+    Pure / no I/O -> unit-testable in isolation."""
+
+    def __init__(self, threshold: int | None = None):
+        self.threshold = threshold
+        self.consecutive = 0
+        self.tripped = False
+
+    def record(self, search_ok: bool, found: bool) -> None:
+        if self.threshold is None or self.tripped:
+            return
+        if not search_ok:
+            return  # a walled Begin-Search is not a not-found — wall-stop owns it
+        if found:
+            self.consecutive = 0
+        else:
+            self.consecutive += 1
+            if self.consecutive >= self.threshold:
+                self.tripped = True
+
+    def should_stop(self) -> bool:
+        return self.tripped
+
+
+def _should_abort_batch(consecutive_misses: int, seen_success: bool, *,
+                        degradation_threshold: int = BATCH_ABORT_CONSECUTIVE_MISSES,
+                        front_grace: int = BATCH_FRONT_GRACE) -> bool:
+    """Decide whether to end a reused batch session early (pure -> testable).
+
+    Two distinct signatures:
+      - DEGRADATION abort: >= degradation_threshold consecutive misses AFTER at
+        least one row has landed this session (`seen_success`). This is the
+        documented OR-degradation signature — a working session that decayed —
+        and is the ORIGINAL behavior, unchanged.
+      - COLD abort: >= front_grace consecutive misses with NO success yet — a dead
+        session (wrong term / wall) that never produced a row.
+
+    front_grace > degradation_threshold, so a couple of transient misses at the
+    FRONT of a batch (before any success) are tolerated and the bulk + later
+    filings still run (the OH State Farm burst-6 fix). When a success has been
+    seen, behavior is identical to the prior `consecutive >= degradation_threshold`
+    rule — defaults preserved for the normal mid-session-degradation case."""
+    if seen_success:
+        return consecutive_misses >= degradation_threshold
+    return consecutive_misses >= front_grace
+
+
 def _batched_with_recovery(search_terms, remaining, *, batch_size, run_batch_fn,
                            recovery_rounds: int = REBATCH_RECOVERY_ROUNDS,
-                           on_batch=None, should_stop=None, log=print):
+                           on_batch=None, should_stop=None, post_pass_stop=None,
+                           log=print):
     """Primary batched pass + up to `recovery_rounds` re-batched passes over the
     misses, returning (still_remaining, stopped_early). `run_batch_fn(term, chunk)
     -> list[miss]` runs ONE fresh-context batched session (real impl drives
     Playwright; tests inject a mock). `on_batch(landed, attempted)` feeds the
-    harvest guard; `should_stop()` ends collection early, banking progress and
-    skipping the per-target fallback. Pure orchestration otherwise — the I/O is
-    entirely behind the injected callables, so this is unit-testable offline.
+    harvest guard.
 
-    Stable-filing_id keying and the per-batch degradation guard live inside
-    run_batch_fn (real _run_batch) and are untouched — this only schedules which
-    targets get re-batched vs dropped to per-target."""
+    TWO stop hooks, deliberately ordered (the harvest-early ORDERING fix):
+      - `should_stop()` — checked MID-CHUNK, for the IMMEDIATE signals only
+        (sustained 405 wall, burst-cap). These are WAF/budget facts that should
+        halt scheduling at once.
+      - `post_pass_stop()` — checked ONLY AFTER all search terms + every recovery
+        round have run. This is where the harvest-early yield guard belongs: a
+        wrong-term round-0 search returns 200 with zero landed rows (e.g. Encompass
+        filings miss under `allstate`, land under `encompass`), which looks like a
+        yield collapse mid-round. Judging yield only after the LATER terms +
+        recovery have had their chance prevents that false bail (VA Allstate). If
+        it trips, bank progress and skip the per-target fallback.
+
+    Pure orchestration otherwise — the I/O is entirely behind the injected
+    callables, so this is unit-testable offline. Stable-filing_id keying and the
+    per-batch abort/grace live inside run_batch_fn (real _run_batch) and are
+    untouched — this only schedules which targets get re-batched vs dropped to
+    per-target. Backward-compatible: post_pass_stop=None preserves prior behavior."""
     remaining = list(remaining)
     rounds = 1 + max(0, recovery_rounds)
     for round_idx in range(rounds):
@@ -749,11 +922,18 @@ def _batched_with_recovery(search_terms, remaining, *, batch_size, run_batch_fn,
         if round_idx > 0 and after >= before:
             log(f"[RECOVERY-{round_idx}] no progress ({after} remain) -> stop recovery")
             break
+    # All terms + recovery have run — NOW judge harvest-early yield (ordering fix).
+    if remaining and post_pass_stop is not None and post_pass_stop():
+        return remaining, True
     return remaining, False
 
 
 def download_all_pdfs(state: str, targets: list[Target], *,
-                      batch_size: int = DOWNLOAD_BATCH_SIZE) -> dict[str, str]:
+                      batch_size: int = DOWNLOAD_BATCH_SIZE,
+                      begin_search_budget: int | None = None,
+                      harvest_early: bool = True,
+                      wall_stop: int | None = 2,
+                      notfound_stop: int | None = NOTFOUND_STOP_THRESHOLD) -> dict[str, str]:
     """Download system PDF for every target. Returns {filing_id: download_status}.
     Primary path: batched (batch_size downloads per fresh search session).
     Stragglers then get the legacy fresh-search-per-target fallback."""
@@ -764,7 +944,38 @@ def download_all_pdfs(state: str, targets: list[Target], *,
     for t in targets:
         by_group.setdefault(t.group, []).append(t)
     statuses: dict[str, str] = {}
-    harvest = _HarvestEarlyGuard()  # run-level yield watchdog (1b); inert when fully cached
+    harvest = _HarvestEarlyGuard(enabled=harvest_early)  # run-level yield watchdog (1b); inert when fully cached
+    # ORDERING FIX (2026-06-25): harvest-early is now evaluated only AFTER all
+    # search terms + the recovery round run (passed as post_pass_stop, NOT in the
+    # mid-chunk _stop_hard), so a wrong-term round-0 search (Encompass under
+    # `allstate`) can no longer read as a yield collapse and bail before the later
+    # terms + recovery land their rows. The mid-chunk stop is the WAF/budget facts
+    # only (sustained wall + burst cap). harvest_early ON is now safe to default.
+    budget = _BeginSearchBudget(begin_search_budget)  # optional burst cap (Begin-Searches); None = unlimited
+    wall = _SustainedWallStop(wall_stop)  # stop on the REAL wall (consecutive Begin-Search 405s)
+    notfound = _NotFoundStop(notfound_stop)  # stop the per-target fallback on a coverage-gap not-found tail
+
+    def _stop_hard() -> bool:
+        """IMMEDIATE stop (checked mid-chunk): the sustained Begin-Search wall (real
+        WAF wall) or the burst cap. WAF/budget facts that must halt scheduling at
+        once — NOT harvest-early (that is judged only after all terms + recovery)."""
+        return wall.should_stop() or budget.exhausted()
+
+    def _stop() -> bool:
+        """Full stop predicate (post-pass / fallback): adds the harvest-yield
+        collapse and the coverage-gap not-found tail to the hard signals. Either
+        way the orchestration defers the rest cleanly (miss-safe)."""
+        return _stop_hard() or harvest.should_stop() or notfound.should_stop()
+
+    def _stop_reason() -> str:
+        if wall.should_stop():
+            return "sustained wall"
+        if budget.exhausted():
+            return "burst cap"
+        if notfound.should_stop():
+            return "not-found tail"
+        return "harvest-early"
+
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=HEADLESS)
         ctx = browser.new_context(user_agent=USER_AGENT, accept_downloads=True)
@@ -780,13 +991,21 @@ def download_all_pdfs(state: str, targets: list[Target], *,
             page = ctx.new_page()
 
         def _submit_with_retry(st: str, term: str) -> bool:
+            attempted = False
             for attempt in range(3):
+                if budget.exhausted():  # never fire a Begin-Search past the burst cap
+                    break
+                budget.spend()          # count every attempt (the WAF-rationed unit)
+                attempted = True
                 try:
                     if _submit_search(page, st, term):
+                        wall.record(True)   # clean search resets the consecutive-wall counter
                         return True
                 except Exception as e:
                     print(f"    [retry {attempt+1}/3] submit_search {term!r}: {e}", flush=True)
                 _refresh_context()
+            if attempted:               # all retries failed -> one walled Begin-Search
+                wall.record(False)      # (budget-pre-empted searches are not counted as walls)
             return False
 
         def _run_batch(term: str, batch: list[Target]) -> list[Target]:
@@ -799,6 +1018,7 @@ def download_all_pdfs(state: str, targets: list[Target], *,
             _set_rows_per_page_100(page)
             misses: list[Target] = []
             consecutive = 0
+            seen_success = False
             for j, t in enumerate(batch, 1):
                 dest_dir = Path(f"output/pdfs/{state}/{t.filing_id}")
                 try:
@@ -809,12 +1029,16 @@ def download_all_pdfs(state: str, targets: list[Target], *,
                 if pdf:
                     statuses[t.filing_id] = "ok"
                     consecutive = 0
+                    seen_success = True
                     print(f"    [batch {j}/{len(batch)}] {t.tracking}: ok", flush=True)
                 else:
                     misses.append(t)
                     consecutive += 1
                     print(f"    [batch {j}/{len(batch)}] {t.tracking}: miss", flush=True)
-                    if consecutive >= BATCH_ABORT_CONSECUTIVE_MISSES and j < len(batch):
+                    # Front-of-batch grace: a couple of transient FRONT misses (no
+                    # success yet) don't abort — only mid-session degradation
+                    # (after a success) or a dead session (front_grace misses) does.
+                    if _should_abort_batch(consecutive, seen_success) and j < len(batch):
                         rest = batch[j:]
                         print(f"    [batch] {consecutive} consecutive misses — ending session early "
                               f"({len(rest)} unattempted -> retried later)", flush=True)
@@ -823,6 +1047,11 @@ def download_all_pdfs(state: str, targets: list[Target], *,
             return misses
 
         for grp, items in by_group.items():
+            # The not-found tail is a PER-GROUP coverage-gap signal (a gap in
+            # Travelers says nothing about Liberty), so reset it each group — unlike
+            # the wall/budget/harvest signals, which are run-level. _stop() reads
+            # this rebind at call time.
+            notfound = _NotFoundStop(notfound_stop)
             uncached = []
             for t in items:
                 pdf = Path(f"output/pdfs/{state}/{t.filing_id}/filing_summary.pdf")
@@ -832,8 +1061,8 @@ def download_all_pdfs(state: str, targets: list[Target], *,
                     uncached.append(t)
             if not uncached:
                 print(f"[{grp}] all {len(items)} cached", flush=True); continue
-            if harvest.should_stop():
-                print(f"[{grp}] harvest-early already tripped — deferring {len(uncached)} "
+            if _stop():
+                print(f"[{grp}] {_stop_reason()} reached — deferring {len(uncached)} "
                       f"uncached to next burst (no grind)", flush=True)
                 continue
             search_terms = GROUP_SEARCH[grp]
@@ -851,11 +1080,12 @@ def download_all_pdfs(state: str, targets: list[Target], *,
                 remaining, stopped_early = _batched_with_recovery(
                     search_terms, remaining, batch_size=batch_size,
                     run_batch_fn=_run_batch, on_batch=harvest.record,
-                    should_stop=harvest.should_stop,
+                    should_stop=_stop_hard,            # mid-chunk: WAF wall + burst cap only
+                    post_pass_stop=harvest.should_stop,  # harvest judged AFTER all terms + recovery
                     log=lambda m, g=grp: print(f"  [{g}] {m}", flush=True),
                 )
             if stopped_early:
-                print(f"  [{grp}] harvest-early stop — banked {len(uncached) - len(remaining)} landed, "
+                print(f"  [{grp}] {_stop_reason()} stop — banked {len(uncached) - len(remaining)} landed, "
                       f"{len(remaining)} deferred to next burst (skipping per-target grind)", flush=True)
                 continue  # do NOT enter the per-target fallback for the deferred misses
 
@@ -874,6 +1104,7 @@ def download_all_pdfs(state: str, targets: list[Target], *,
                     _refresh_context()
                     if not _submit_with_retry(state, search_term):
                         still_remaining.append(t)
+                        notfound.record(search_ok=False, found=False)  # wall, not a not-found
                         continue
                     _set_rows_per_page_100(page)
                     dest_dir = Path(f"output/pdfs/{state}/{t.filing_id}")
@@ -885,23 +1116,34 @@ def download_all_pdfs(state: str, targets: list[Target], *,
                     if pdf:
                         statuses[t.filing_id] = "ok"
                         harvest.record(1, 1)
+                        notfound.record(search_ok=True, found=True)
                         print(f"    [{idx}/{len(remaining)}] {t.tracking}: ok", flush=True)
                     else:
                         still_remaining.append(t)
                         harvest.record(0, 1)
-                    if harvest.should_stop():
+                        # clean Begin-Search but row not found -> coverage-gap signal
+                        notfound.record(search_ok=True, found=False)
+                    if _stop():
                         still_remaining.extend(t2 for t2 in remaining[idx:])
-                        print(f"  [{grp}] harvest-early stop in fallback — "
+                        print(f"  [{grp}] {_stop_reason()} stop in fallback — "
                               f"{len(still_remaining)} deferred to next burst", flush=True)
                         break
                 remaining = still_remaining
-                if harvest.should_stop():
+                if _stop():
                     break
-            if not harvest.should_stop():
+            if not _stop():
                 for t in remaining:
                     statuses[t.filing_id] = "fail:row_not_found"
                     print(f"  {t.tracking}: not found in any of {search_terms!r}", flush=True)
         browser.close()
+    if begin_search_budget is not None:
+        print(f"\n[burst] Begin-Searches spent this run: {budget.count}/{begin_search_budget} "
+              f"(cap {'REACHED — stopped under the wall' if budget.exhausted() else 'not reached'}). "
+              f"Per-search clean/wall outcomes: output/serff_diagnostics/search_ledger.csv", flush=True)
+    if wall.should_stop():
+        print(f"\n[wall] sustained-wall stop tripped ({wall.threshold} consecutive walled "
+              f"Begin-Searches) — run halted at the WAF wall; remaining deferred (miss-safe). "
+              f"Ledger: output/serff_diagnostics/search_ledger.csv", flush=True)
     return statuses
 
 
@@ -1101,13 +1343,40 @@ def verify_anchor(rows: list[dict]) -> tuple[int, list[str]]:
 
 
 def main():
-    state = (sys.argv[1] if len(sys.argv) > 1 else "ID").upper()
+    ap = argparse.ArgumentParser(
+        description="Build {state}_final_rates.xlsx from cached/downloaded SERFF system PDFs.")
+    ap.add_argument("state", nargs="?", default="ID", help="two-letter state code (default ID)")
+    ap.add_argument("--burst", type=int, default=None, metavar="N",
+                    help="Begin-Search budget for THIS run (a 'burst'): stop scheduling new "
+                         "searches after N Begin-Searches and defer the rest, so the run stops "
+                         "UNDER the WAF wall (~17) instead of grinding into it. Omit = unlimited "
+                         "(prior behavior). Miss-safe: a capped run is partial, not corrupt "
+                         "(deliverable re-derived from cached PDFs; missing != wrong).")
+    ap.add_argument("--no-harvest-early", action="store_true",
+                    help="Disable the harvest-early yield watchdog for this run (default: ON). "
+                         "Use with --burst when validating Q2 re-batched recovery on a "
+                         "degradation-prone state: harvest-early can trip on round-0 misses "
+                         "before the recovery round (and later search terms) run, so disabling it "
+                         "lets recovery execute, bounded by the --burst Begin-Search cap.")
+    ap.add_argument("--wall-stop", type=int, default=2, metavar="K",
+                    help="Stop the run after K CONSECUTIVE walled Begin-Searches (the real WAF "
+                         "wall: begin_search_link_timeout/405). Default 2; 0 disables. This is the "
+                         "no-cap harvest's natural stop and avoids the harvest-early ordering bug — "
+                         "it keys on Begin-Search success, never on wrong-term download misses, so "
+                         "all search terms + recovery run before the wall halts it.")
+    args = ap.parse_args()
+    state = args.state.upper()
     _quiet_guard("run_final_rates")  # refuse during a declared SERFF rest window
     t0 = time.time()
-    print(f"=== {state} final-rates pipeline ===")
+    wall_stop = args.wall_stop or None  # 0 -> disabled
+    cap = f" (BURST cap: {args.burst} Begin-Searches)" if args.burst is not None else ""
+    he = " | harvest-early OFF" if args.no_harvest_early else ""
+    ws = f" | wall-stop {wall_stop}" if wall_stop else " | wall-stop OFF"
+    print(f"=== {state} final-rates pipeline{cap}{he}{ws} ===")
     targets = load_targets(state)
     print(f"loaded {len(targets)} target-TOI target-carrier filings")
-    download_all_pdfs(state, targets)
+    download_all_pdfs(state, targets, begin_search_budget=args.burst,
+                      harvest_early=not args.no_harvest_early, wall_stop=wall_stop)
     backfill_ids = _load_backfill_ids(state)
     if backfill_ids:
         print(f"loaded {len(backfill_ids)} back-extension filing_ids for tiering", flush=True)

@@ -1,5 +1,50 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-06 — MA INTERIM→REAL IMPORT SHIPPED + VALIDATED (19th scraped state; FIRST MEDIUM TIER).**
+> Full arc in ONE day: recon → universe sweep (783 raw / 264 in-target / 282
+> targets; USAA-wall retry + Travelers AND Nationwide recovered from the
+> PAGINATOR GLITCH via date slices — B8 opened, 3rd occurrence; a clean-ok 0
+> for a big-footprint carrier is SUSPECT) → 2-burst harvest (281/282, the 1 a
+> Rule filing; 0 true misses — 9-state streak) → cross-check → import →
+> deployed. **NEW BASELINE (SUPERSEDES post-B6 2,963/1,832/551/`8941a436`):
+> 19 states, raw 3,092 / rolled 1,890 / active@2026-06-11 566 / db md5
+> `14f12fab`**, anchor +93.70% WA. Every scraped delta == EXACTLY MA (+129 raw
+> / +58 rolled / +15 active / +1 state); 18 prior scraped states BYTE-IDENTICAL
+> (incl. B6-corrected IL/WV/GA); CA/NY/TX intact. MA dropped from AMBEST_STATES
+> (→ 26), KEPT in COVERED_STATES; validated:{auto:true, home:true};
+> methodology 18→19.
+> - **CROSS-CHECK (9th interim→real point; HO on ROBUST N for the first time):**
+>   PPA 37/38 (97.4%, the 1 miss pure recency) / **HO 27/27 = 100%**;
+>   VALUE-AGREEMENT on shared 53/53 = 100%; INTERIM 49/49, 0 disagreements.
+>   0 material soft-miss. B6 held forward (0 comma issues; 1 blank max/min =
+>   the documented SF `% %` source pattern).
+> - **MA COVERAGE VERDICT: RICHNESS-ONLY.** GEICO/Progressive/Farmers
+>   (SERFF-present vs AM-Best-0) adjudicated PER-BRAND on cached PDFs: form/
+>   rule-heavy (17/21, 19/24, 42/46) — AM Best's zeros are CORRECT (the AK
+>   Liberty/Farmers resolution). +1 marginal GEICO enrichment (GECC-134365103
+>   +3.7%/18,651ph eff 04/21/25, AM Best lacks). **LESSON CONFIRMED: AM Best
+>   coverage-thinness is an ISOLATED-market phenomenon (AK); dense mature
+>   markets are complete.** MA structural signature: 72% form/rule.
+> - **EXCLUSION DOCTRINE resolved (Decisions 1+2):** LM Property & Casualty +
+>   the Wausau family (Underwriters/General/Business/Employers-of-Wausau)
+>   EXCLUDED — retired-brand/no-consumer-channel Liberty filing vehicles, same
+>   profile as Peerless (which was already excluded ON THE SAME MA FILING).
+>   TravCo + The Phoenix → Travelers MAPPED (real consumer subs). The mappings
+>   are shared with the AM Best interim pipeline → **6 interim states
+>   consciously enriched** (MI +3/+3, ND +1/+1, SD +2/+2, PA/RI/TN raw-only =
+>   +13 raw/+6 rolled TravCo/Phoenix rows AM Best data always had but the brand
+>   map missed — the WV/NH globally-correct precedent). ⚠️ NEAR-MISS: a bare
+>   "wausau" substring initially swept "Mutual of Wausau Insurance Corporation"
+>   (an INDEPENDENT WI mutual) into Liberty — caught by the import gate, fixed
+>   with specific-name patterns. NEVER bare-substring a place-name.
+> - **NICOA paginator-glitch save corroborated END-TO-END:** the +6.1%/4,038ph
+>   HO eff 06/14/25 signal (hidden by the glitch, recovered by slices) renders
+>   live and matches AM Best row-for-row. Wausau name-fold duplicate dissolved
+>   by the exclusion (nuance recorded in BACKLOG).
+> - **BACKLOG carried:** B7 (Temp-purge ~12×), B8 (paginator glitch — NEW),
+>   Wausau name-fold nuance, TRVD-134026815 single Rule-filing retry (fold into
+>   any future SERFF touch).
+
 > **2026-07-07 — B6 COMPLETE: comma-percent shared-parser bug fixed + ALL-18-STATE
 > retro-verification + 7-state gated re-import. A correctness win far beyond the
 > original immaterial-VT expectation.**

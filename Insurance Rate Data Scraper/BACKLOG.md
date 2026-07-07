@@ -119,3 +119,27 @@ use: `git checkout -- .` restore + explicit-path staging (NEVER `git add -A`).
 **Fix candidates:** (a) move the checkout OUT of Temp to a stable path (then
 retire the hazard memory), (b) confirm/exclude Storage Sense as the culprit,
 (c) a pre-commit purge-check script. (a) is likely the whole fix.
+
+## B8 — SERFF search paginator glitch on big result sets (3rd occurrence)
+**Opened:** 2026-07-06 (MA). **Size:** small-medium. **Priority:** MEDIUM (it
+hides ENTIRE PRESENT BRANDS silently).
+
+A bare company-term search whose result set is large returns **clean-ok with 0
+rows saved** (disabled next-page / navbar intercept) — indistinguishable from a
+genuine-0 in the ledger. 3 occurrences: AK Travelers (2026-07-01), MA Travelers
+(206 raw hidden), MA Nationwide (116 raw hidden — incl. a live +6.1%/4,038ph HO
+signal; caught ONLY because AM Best contradicted the 0). **Workaround in use:**
+non-overlapping date slices (each slice < ~100 rows renders clean). **Rule until
+fixed: a clean-ok 0 for a big-footprint carrier is SUSPECT — date-slice before
+accepting.** Fix: detect the disabled-next-page state in search_all and either
+fail loudly (status != ok) or auto-slice.
+
+## NOTE — Wausau name-fold duplicate (dissolved in MA, parser nuance recorded)
+MA LBPM-133878161 emitted the same entity twice: "Wausau Underwriters" AND
+"Wausau Underwriters Insurance Company" (identical values) — the wrapped name
+folded in one disposition section but not another, and the first-seen-by-name
+dedup treated them as different entities. Dissolved in MA because the Wausau
+family became EXCLUDED (Decision 2). If a future filing shows same-tracking
+duplicate rows with identical values and prefix-related names, this is the
+cause; the fix is name-normalized dedup (prefix-match) in
+parse_filing_summary_pdf — SHARED parser, so B6-style full re-verify required.
