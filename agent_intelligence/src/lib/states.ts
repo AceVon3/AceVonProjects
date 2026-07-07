@@ -47,7 +47,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "NM", name: "New Mexico",     data_coverage: true,  validated: { auto: true,  home: true  } },
   { code: "NY", name: "New York",       data_coverage: true,  source: "ambest" }, // PERMANENT (DFS, non-SERFF) — see AMBEST_PERMANENT_STATES
   { code: "NC", name: "North Carolina", data_coverage: false }, // EXCLUDED: structural NCRB Rate-Bureau gap (no per-carrier AM Best data); not fixable via this source
-  { code: "ND", name: "North Dakota",   data_coverage: true,  source: "ambest" },
+  { code: "ND", name: "North Dakota",   data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-07-07 (interim->real): 114-row SERFF scrape (121->114 after the B9 bare-"farmers" fix dropped 7 independent-mutual rows), 290/290 in-target cached, 0 true misses (10-state streak). AM Best cross-check (10th interim->real point): value-agreement on shared 44/44 (100%), interim 45/45 (0 disagreements), in-window PPA 35/35 + HO 20/20 (100%). Coverage verdict: richness-only on all 4 divergence brands. B9 surfaced HERE: bare-"farmers" had mislabeled 13 independent mutuals (~86 interim rows / 12 states) as Farmers — fixed globally in the same import -> both validated
   { code: "OH", name: "Ohio",           data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-06-24 (interim->real); AM Best cross-check 2026-06-25: PPA 96.1% / HO 97.1% corroboration, 105/105 interim-impact agreement (0 disagreements). 4 AM Best-only rows all 0% (coverage/recency, not value errors) -> both validated.
   { code: "OK", name: "Oklahoma",       data_coverage: true,  source: "ambest" },
   { code: "OR", name: "Oregon",         data_coverage: true,  validated: { auto: true,  home: false } },

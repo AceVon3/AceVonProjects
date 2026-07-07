@@ -62,8 +62,9 @@ AMBEST_STATES = [  # VA (06-22), OH (06-24), IL (06-25), WV (06-26), NH (06-29),
                  # a re-pull won't help; NC needs a different source (NCRB direct
                  # or another vendor), so it is NOT on any re-pull list.
                  # MA (07-06) removed: scraped (serff_scraped), no longer interim.
+                 # ND (07-07) removed: scraped (serff_scraped), no longer interim.
                  "ME", "MD", "MI", "MN", "MS", "MO", "NE", "NJ",
-                 "NY", "ND", "OK", "PA", "RI", "SC", "SD", "TN", "TX",
+                 "NY", "OK", "PA", "RI", "SC", "SD", "TN", "TX",
                  "WI"]
 AMBEST_CSV_DIR = PROJECT_DIR.parent / "Insurance Rate Data Scraper" / "tools"
 AMBEST_WINDOW = (date(2024, 1, 1), date(2026, 4, 17))  # match the scraped data span
@@ -78,7 +79,20 @@ _AMBEST_EXCLUDE = ("american family home", "american modern", "homesite", "midva
                    "victoria fire", "lm general", "lm property and casualty", "wausau underwriters",
                    "wausau general", "wausau business", "employers insurance of wausau",
                    "standard fire", "american economy",
-                   "peerless")
+                   "peerless",
+                   # Independent "farmers"-named mutuals (NOT Farmers Insurance
+                   # Group) — the ND cross-check finding, 2026-07-07. Belt-and-
+                   # suspenders with the _FIG_FARMERS_PATTERNS allowlist:
+                   # derive_brand no longer matches these, and this list keeps
+                   # them out even if a future rule change re-catches them.
+                   "farmers alliance", "farmers mutual of nebraska",
+                   "farmers union mutual", "national farmers union",
+                   "farmers automobile insurance association",
+                   "indiana farmers mutual", "ferdinand farmers mutual",
+                   "tennessee farmers mutual", "american farmers & ranchers",
+                   "farmers mutual fire", "the farmers fire insurance",
+                   "farmers insurance company of flemington",
+                   "alliance insurance company")
 
 
 def _ambest_dt(s: str):
@@ -188,6 +202,36 @@ LOB_CLEAN = {
 }
 
 
+# Farmers Insurance Group (Zurich) entities — the ONLY names that map to the
+# Farmers brand. Explicit by design; no bare "farmers" (see derive_brand note).
+# "Farmers Insurance Company of <state>" subs are enumerated one by one because
+# "Farmers Insurance Company of Flemington" is an INDEPENDENT NJ mutual —
+# never wildcard that prefix.
+_FIG_FARMERS_PATTERNS = (
+    "farmers insurance exchange",
+    "fire insurance exchange",
+    "truck insurance exchange",
+    "mid-century",
+    "farmers casualty insurance",
+    "farmers direct property",
+    "farmers group property",
+    "farmers property and casualty",
+    "farmers new century",
+    "farmers texas county mutual",
+    "farmers lloyds",
+    "illinois farmers insurance",
+    "texas farmers insurance",
+    "farmers insurance company, inc",
+    "farmers insurance of columbus",
+    "farmers insurance company of arizona",
+    "farmers insurance company of idaho",
+    "farmers insurance company of oregon",
+    "farmers insurance company of washington",
+    "farmers insurance hawaii",
+    "farmers specialty insurance",
+)
+
+
 def derive_brand(name) -> str | None:
     """Map a company_name to one of the 13 covered brands. First match wins."""
     if name is None or not isinstance(name, str):
@@ -241,13 +285,14 @@ def derive_brand(name) -> str | None:
     # "general") goes to USAA. Includes its non-"usaa"-named entities.
     if "usaa" in n or "united services" in n or "garrison" in n:
         return "USAA"
-    # Farmers: the "farmers*" entities PLUS the historical Farmers exchanges that
-    # carry no "farmers" in the name (Fire Insurance Exchange + Mid-Century are
-    # Farmers underwriting affiliates; Truck Insurance Exchange the commercial one).
-    if ("farmers" in n
-            or "fire insurance exchange" in n
-            or "truck insurance exchange" in n
-            or "mid-century" in n):
+    # Farmers = Farmers Insurance Group (Zurich) ONLY — explicit FIG entity
+    # patterns, NEVER a bare "farmers" substring. "Farmers <place> Mutual" /
+    # "Farmers Union" / "Farmers Alliance" / Pekin's "The Farmers Automobile
+    # Insurance Association" etc. are INDEPENDENT mutuals (the Mutual-of-Wausau
+    # class): the bare substring mislabeled ~86 interim rows across 13
+    # independent mutuals as Farmers before the ND cross-check caught it
+    # (2026-07-07). The exchanges + Mid-Century carry no "farmers" in the name.
+    if any(p in n for p in _FIG_FARMERS_PATTERNS):
         return "Farmers"
     if "nationwide" in n:
         return "Nationwide"
@@ -637,22 +682,23 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     failed = False
 
     # Scraped invariants are SCOPED to source='serff_scraped'. Baseline re-keyed
-    # 2026-07-06 when MA moved interim->scraped (+129 raw / +58 rolled / 19th
-    # state / +15 active): 3,092/1,890/566, +93.70% anchor (WA, unchanged). MA is
-    # the FIRST MEDIUM-TIER state (65 AM Best in-target): 281/282 in-target cached
-    # (the 1 a Rule filing), cross-check PPA 37/38 (97.4%, 1 recency) / HO 27/27
-    # (100% — first robust-N home read), value-agreement 53/53 = 100%, interim
-    # 49/49 (0 disagreements, 9th point). Coverage verdict: richness-only (the
-    # GEICO/Progressive/Farmers AM-Best-0 adjudicated form/rule-heavy per-brand)
-    # + 1 GEICO enrichment (GECC-134365103 +3.7%). NICOA paginator-glitch save
-    # corroborated (+6.1%/4,038ph HO). LM P&C + the Wausau family excluded
-    # (LM-vehicle doctrine, Decision 2 — same profile as Peerless, excluded on
-    # the same MA filing); TravCo/Phoenix->Travelers mapped (MA-firsts). The 18 prior scraped states proven byte-identical.
-    # Prior 2026-07-07 baseline (post-B6) was 2,963/1,832/551.
+    # 2026-07-07 when ND moved interim->scraped (+114 raw / +76 rolled / 20th
+    # state / +28 active): 3,206/1,966/594, +93.70% anchor (WA, unchanged).
+    # ND: 290/290 in-target cached (0 true misses, 10-state streak), cross-check
+    # value-agreement 44/44 = 100%, in-window PPA 35/35 + HO 20/20 = 100%,
+    # interim 45/45 (0 disagreements, 10th point). Coverage verdict:
+    # RICHNESS-ONLY on all 4 divergence brands (Country/GEICO/Farmers/Encompass
+    # adjudicated per-brand on cached PDFs) — the coverage-thinness pattern
+    # refines to very-isolated(AK)=thin, NOT small/rural=thin. SAME IMPORT
+    # carries the B9 Farmers-mislabel correction: bare-"farmers" substring had
+    # mislabeled 13 independent mutuals (~86 interim raw rows / 12 states, 17
+    # active-window) as brand=Farmers — derive_brand now uses the explicit
+    # _FIG_FARMERS_PATTERNS allowlist; the independents dropped from interim.
+    # Prior 2026-07-06 baseline (post-MA) was 3,092/1,890/566 (19 states).
     raw = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
-    ok = raw == 3092
+    ok = raw == 3206
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 3092, got {raw}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 3206, got {raw}")
 
     null_brand = con.execute("SELECT COUNT(*) FROM filings_raw WHERE brand IS NULL").fetchone()[0]
     ok = null_brand == 0
@@ -660,9 +706,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (2) unmatched company_name: expected 0, got {null_brand}")
 
     rolled = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = rolled == 1890
+    ok = rolled == 1966
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 1890, got {rolled}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 1966, got {rolled}")
 
     # (4) GECC-134661852 Personal Auto spot-check
     raw_n = con.execute(
@@ -740,9 +786,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (7) scraped distinct brands: expected 13, got {n_brands}")
 
     n_states = con.execute("SELECT COUNT(DISTINCT state) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = n_states == 19
+    ok = n_states == 20
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 19, got {n_states}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 20, got {n_states}")
 
     # (9) active window + (10) anchor — SCOPED to scraped so AM Best can't move them.
     as_of = LAST_UPDATED_PATH.read_text(encoding="utf-8").strip()
@@ -753,10 +799,10 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
              AND effective_date >= date(?, '-12 months')""",
         (as_of,),
     ).fetchone()[0]
-    ok = active == 566
+    ok = active == 594
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (9) scraped active-window filings (as of {as_of}): "
-          f"expected 566, got {active}")
+          f"expected 594, got {active}")
 
     anchor = con.execute(
         """SELECT serff_tracking_number, brand, state, overall_rate_impact
@@ -777,16 +823,16 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # (11)/(12) source tags — scraped baseline intact + AM Best present.
     raw_scraped = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
     raw_ambest = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced'").fetchone()[0]
-    ok = raw_scraped == 3092 and raw_ambest > 0
+    ok = raw_scraped == 3206 and raw_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 3092 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 3206 serff_scraped "
           f"+ {raw_ambest} ambest_sourced (got {raw_scraped} / {raw_ambest})")
 
     f_scraped = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     f_ambest = con.execute("SELECT COUNT(*) FROM filings WHERE source='ambest_sourced'").fetchone()[0]
-    ok = f_scraped == 1890 and f_ambest > 0
+    ok = f_scraped == 1966 and f_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 1890 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 1966 serff_scraped "
           f"+ {f_ambest} ambest_sourced (got {f_scraped} / {f_ambest})")
 
     # ---- AM Best-specific checks (own invariants) ----
