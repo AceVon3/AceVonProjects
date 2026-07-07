@@ -200,7 +200,9 @@ GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate 
     "USAA":             ["usaa", "united services", "garrison"],
     "Farmers":          ["farmers", "mid-century", "fire insurance exchange", "truck insurance exchange"],
     "Nationwide":       ["nationwide"],
-    "American Family":  ["american family"],
+    # "american standard insurance": AmFam WI/OH auto subs, no brand string in
+    # the legal name (B9 audit) — a solo filing needs its own search term.
+    "American Family":  ["american family", "american standard insurance"],
     "Country Financial": ["country"],
 }
 GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent group
@@ -223,10 +225,40 @@ GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent g
                          "truck insurance exchange", "mid-century",
                          "farmers insurance company", "farmers casualty",
                          "farmers property and casualty", "farmers direct",
-                         "farmers group property", "farmers"],
+                         "farmers group property",
+                         # FIG entities the bare-"farmers" keyword used to
+                         # cover (B9 audit full-surface diff caught these as
+                         # collateral when the bare term was removed):
+                         "farmers new century", "farmers texas county mutual",
+                         "farmers lloyds", "farmers insurance hawaii",
+                         "farmers insurance of columbus", "farmers specialty"],
     "Nationwide":       ["nationwide"],
-    "American Family":  ["american family"],
-    "Country Financial": ["country mutual", "country preferred", "country casualty", "country"],
+    # American Standard of Wisconsin/Ohio: genuine AmFam auto subs whose legal
+    # names lack the brand string (B9 audit; the Liberty Insurance Corp
+    # under-match family). Enumerated explicitly — never a bare "american
+    # standard".
+    "American Family":  ["american family",
+                         "american standard insurance company of wisconsin",
+                         "american standard insurance company of ohio"],
+    "Country Financial": ["country mutual", "country preferred", "country casualty"],
+}
+# The bare "farmers"/"country" keywords used to sit at the END of the two lists
+# above ONLY so the target_company label fallback ("Multiple"-company filings
+# carry the short label "Farmers"/"Country") could classify. That substring
+# path was the exact B9 over-match mechanism (Countryway swept in-target under
+# "Country"; a bare "farmers" swept 13 independent mutuals). The labels are now
+# matched EXACTLY here instead — a company NAME merely containing the word can
+# no longer classify through the label path.
+LABEL_EXACT = {
+    "farmers": "Farmers",
+    "country": "Country Financial",
+    # Liberty-group search labels whose GROUP_KW keywords are full legal-name
+    # phrases the short label doesn't contain — pre-existing fallback gap the
+    # B9 audit surfaced (a "Multiple"-company filing found under one of these
+    # searches previously fell through to None):
+    "general insurance": "Liberty Mutual",
+    "first national insurance": "Liberty Mutual",
+    "liberty insurance": "Liberty Mutual",
 }
 # Out-of-scope subsidiaries (do NOT classify as one of our groups):
 #   - Esurance (Allstate, wound down 2020)
@@ -361,20 +393,76 @@ EXCLUDED_SUBSIDIARY_PATTERNS = (
     "general automobile",
 )
 
+# UNAFFILIATED companies that a brand keyword would otherwise sweep in — the
+# Mutual-of-Wausau class, found live for "farmers" by the ND cross-check
+# (2026-07-07): independent mutuals with "Farmers" in their legal name that are
+# NOT Farmers Insurance Group. UNLIKE EXCLUDED_SUBSIDIARY_PATTERNS (in-scope
+# groups' filing vehicles whose rows drop at emission while the FILING stays
+# in-target), these companies are out of scope ENTIRELY: carrier_group treats
+# them as DECISIVE non-matches (never in-target), and build_rows also drops
+# their co-filed rows. "Farmers Insurance Company of Flemington" is the known
+# independent a "farmers insurance company" keyword would catch — tripwired.
+INDEPENDENT_COMPANY_PATTERNS = (
+    "farmers alliance",
+    "farmers mutual of nebraska",
+    "farmers union mutual",
+    "national farmers union",
+    "farmers automobile insurance association",
+    "indiana farmers mutual",
+    "ferdinand farmers mutual",
+    "tennessee farmers mutual",
+    "american farmers & ranchers",
+    "farmers mutual fire",
+    "the farmers fire insurance",
+    "farmers insurance company of flemington",
+    "alliance insurance company",
+    # B9 root-pattern audit (2026-07-07 follow-up) — latent unaffiliated names
+    # the full-surface scan found in AM Best CSVs / SERFF search universes that
+    # a brand keyword would sweep (the Mutual-of-Wausau class). Countryway was
+    # the proven near-miss: swept in-target into the MA/NH/VT universes under
+    # the "Country" label (never shipped only because no in-window rate filing
+    # existed).
+    "farmers mutual hail",           # Farmers Mutual Hail of Iowa (GA/IL/ND/OH/WV universes)
+    "farmers and mechanics", "farmers & mechanics",   # WV/VA independents
+    "farmers' mutual insurance",     # Farmers' Mutual Insurance Company/WV
+    "countryway",                    # independent NY farm-line insurer, NOT COUNTRY Financial
+    "town & country insurance",      # MO Farm Bureau Town & Country
+    "north country insurance",
+    "nationwide warranty", "nationwide protection plan",
+    "nationwide vehicle services",   # warranty/service-contract outfits, not Nationwide P&C
+    "american family life",          # AFLAC — not AmFam
+)
+
+
+def _is_independent_company(name: str | None) -> bool:
+    n = (name or "").lower()
+    return any(p in n for p in INDEPENDENT_COMPANY_PATTERNS)
+
 
 def _is_excluded_subsidiary(name: str | None) -> bool:
     n = (name or "").lower()
-    return any(p in n for p in EXCLUDED_SUBSIDIARY_PATTERNS)
+    return any(p in n for p in EXCLUDED_SUBSIDIARY_PATTERNS) or _is_independent_company(n)
 
 
 def carrier_group(*names: Optional[str]) -> Optional[str]:
     """Match the first non-empty name against carrier-group keywords.
     Multi-company filings list company_name as 'Multiple' — pass target_company
-    as a fallback so they're not dropped."""
+    as a fallback so they're not dropped.
+
+    An INDEPENDENT company name is DECISIVE (returns None, no fallback): an
+    independent mutual like "Farmers Mutual of Nebraska" must not fall through
+    to a target_company label ("Farmers") and classify anyway. Deliberately
+    scoped to INDEPENDENT_COMPANY_PATTERNS only — EXCLUDED_SUBSIDIARY_PATTERNS
+    entries (e.g. Standard Fire, a Travelers filing vehicle GROUP_KW classifies
+    on purpose) keep their filing-level classification, row-level drop."""
     for name in names:
-        n = (name or "").lower()
+        n = (name or "").lower().strip()
         if not n:
             continue
+        if _is_independent_company(n):
+            return None
+        if n in LABEL_EXACT:            # target_company label, exact only
+            return LABEL_EXACT[n]
         for g, kws in GROUP_KW.items():
             if any(k in n for k in kws):
                 return g

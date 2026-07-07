@@ -92,7 +92,26 @@ _AMBEST_EXCLUDE = ("american family home", "american modern", "homesite", "midva
                    "tennessee farmers mutual", "american farmers & ranchers",
                    "farmers mutual fire", "the farmers fire insurance",
                    "farmers insurance company of flemington",
-                   "alliance insurance company")
+                   "alliance insurance company",
+                   # B9 root-pattern audit (2026-07-07 follow-up). LIVE fix:
+                   # American Family Connect (ex-Ameriprise, a DISTINCT brand
+                   # not sold through AmFam channels — the SCOPE.md/HI
+                   # adjudication the scraper's EXCLUDED_SUBSIDIARY_PATTERNS
+                   # already encodes; this list had never gotten the entry, so
+                   # 61 interim rows across 23 states served as brand=American
+                   # Family). The rest are LATENT unaffiliated names the audit
+                   # found in AM Best CSVs / SERFF search universes that a
+                   # brand keyword would sweep (the Mutual-of-Wausau class):
+                   "american family connect",
+                   "american family life",          # AFLAC — not AmFam
+                   "countryway",                    # independent NY farm-line insurer, NOT COUNTRY Financial
+                   "town & country insurance",      # MO Farm Bureau
+                   "north country insurance",
+                   "farmers mutual hail",
+                   "farmers and mechanics", "farmers & mechanics",
+                   "farmers' mutual insurance",
+                   "nationwide warranty", "nationwide protection plan",
+                   "nationwide vehicle services")
 
 
 def _ambest_dt(s: str):
@@ -232,6 +251,25 @@ _FIG_FARMERS_PATTERNS = (
 )
 
 
+# Liberty Mutual entities — explicit allowlist replacing the bare "liberty"
+# substring (B9 root-pattern audit, 2026-07-07 follow-up). The audit found all
+# 10 live "liberty" names genuine (no over-match), so this is FORWARD-protective
+# hardening only: an unaffiliated "Liberty Bankers"/"Liberty National"-style
+# name can never sweep in. Covers every LM entity observed across the live db,
+# all AM Best CSVs, and all search universes; a new genuine LM entity outside
+# these patterns surfaces loudly (unmatched-name FATAL on the scraped path).
+_LM_LIBERTY_PATTERNS = (
+    "liberty mutual",
+    "liberty insurance corporation",
+    "the first liberty insurance",
+    "liberty county mutual",         # LM Texas county-mutual vehicle
+    "liberty lloyds",                # LM Texas vehicle
+    "liberty personal insurance",
+    "liberty insurance underwriters",
+    "liberty northwest",
+)
+
+
 def derive_brand(name) -> str | None:
     """Map a company_name to one of the 13 covered brands. First match wins."""
     if name is None or not isinstance(name, str):
@@ -278,7 +316,7 @@ def derive_brand(name) -> str | None:
     # "Mutual of Wausau Insurance Corporation" is an INDEPENDENT WI mutual —
     # a bare "wausau" substring must never be used (it mis-mapped 6 WI rows
     # before the MA import gate caught it).
-    if "liberty" in n or "montgomery mutual" in n:
+    if any(p in n for p in _LM_LIBERTY_PATTERNS) or "montgomery mutual" in n:
         return "Liberty Mutual"
     # --- 5 new carriers (13-brand expansion) ---
     # USAA checked before any generic match so "USAA General Indemnity" (carries
@@ -294,11 +332,31 @@ def derive_brand(name) -> str | None:
     # (2026-07-07). The exchanges + Mid-Century carry no "farmers" in the name.
     if any(p in n for p in _FIG_FARMERS_PATTERNS):
         return "Farmers"
-    if "nationwide" in n:
+    # Nationwide — guard the warranty/service-contract outfits the B9 audit
+    # found in search universes ("Nationwide Warranty Corp" etc., unverified
+    # affiliation, not P&C personal lines): decisive None, like the Farmers
+    # independents.
+    if "nationwide" in n and not any(x in n for x in (
+            "nationwide warranty", "nationwide protection plan",
+            "nationwide vehicle services")):
         return "Nationwide"
     # American Family — guard the Munich Re name collision (American Family Home
-    # Insurance, NAIC 23450, is American Modern/Munich Re, NOT AmFam).
-    if "american family" in n and "american family home" not in n:
+    # Insurance, NAIC 23450, is American Modern/Munich Re, NOT AmFam), the
+    # American Family Connect line (ex-Ameriprise, a distinct excluded brand —
+    # the B9-audit LIVE fix), and AFLAC ("American Family Life Assurance").
+    if ("american family" in n
+            and "american family home" not in n
+            and "american family connect" not in n
+            and "american family life" not in n):
+        return "American Family"
+    # American Standard Insurance Company of Wisconsin / of Ohio — genuine
+    # AmFam auto subs whose legal names lack the brand string (the Liberty
+    # Insurance Corp / General Insurance Co of America under-match family;
+    # B9-audit finding, latent-only: they appear only in UT/GA cross-check
+    # CSVs today, all 0.0% rows). Enumerated explicitly — never wildcard
+    # "american standard" (the Flemington lesson).
+    if ("american standard insurance company of wisconsin" in n
+            or "american standard insurance company of ohio" in n):
         return "American Family"
     # COUNTRY Financial — the consumer-facing brand label.
     if ("country mutual" in n

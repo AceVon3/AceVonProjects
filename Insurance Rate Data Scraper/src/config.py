@@ -10,7 +10,12 @@ LOG_FILE = OUTPUT_DIR / "scraper.log"
 TARGET_COMPANIES = [
     "State Farm",
     "GEICO",
+    # GEICO's parent legal name lacks "geico" (root-pattern audit 2026-06-29):
+    # a SOLO Government Employees Insurance Company filing would be missed.
+    "Government Employees",
     "Progressive",
+    # Progressive non-standard underwriter (root-pattern audit): no "progressive" string.
+    "Artisan and Truckers",
     "Allstate",
     "Travelers",
     "Liberty Mutual",
@@ -19,6 +24,25 @@ TARGET_COMPANIES = [
     # SERFF search keyword because filings are submitted under the brand
     # name and do not surface under the parent-group search.
     "Safeco",     # Liberty Mutual independent-agent brand
+    # Safeco/Liberty affiliate (General Insurance Company of America) that files
+    # under its own name and is NOT returned by "safeco"/"liberty mutual" (no
+    # brand string in the legal name) — the SAME search-term-gap family as
+    # Liberty Insurance Corporation. Missed in WV (2,039ph, dropped) AND NH
+    # (3,711ph) before this fix; GROUP_KW already classifies it -> Liberty Mutual.
+    "General Insurance",
+    # Liberty/Safeco affiliates whose legal names lack the brand string (root-
+    # pattern audit 2026-06-29): American States* (Liberty) + First National
+    # Insurance Company of America (Safeco). Captured via co-filing in scraped
+    # states; these terms catch a SOLO filing in a future state.
+    "American States",
+    "First National Insurance",
+    # Liberty Mutual "Legacy" rating company that files under its own name and
+    # is NOT returned by a "liberty mutual" search (no "mutual" in the name) —
+    # the same search-term-gap family as Safeco/Encompass. WV 2026-06-26
+    # surfaced a material Liberty Insurance Corporation HO filing the sweep
+    # missed; this puts the fix in the universe-sweep path so every state
+    # surfaces it from the start (GROUP_SEARCH/GROUP_KW already classify it).
+    "Liberty Insurance",
     "Encompass",  # Allstate independent-agent brand
     # State Farm subsidiary that files under its own name on SERFF and is
     # NOT returned by a "state farm" keyword search. Added as a separate
@@ -37,6 +61,10 @@ TARGET_COMPANIES = [
     "Truck Insurance Exchange",  # Farmers exchange (mostly commercial; cheap)
     "Nationwide",
     "American Family",
+    # AmFam auto subs whose legal names lack the brand string (B9 audit) —
+    # same search-term-gap family as Liberty Insurance / General Insurance:
+    # a SOLO American Standard filing would not surface under "american family".
+    "American Standard Insurance",
     "Country",                   # COUNTRY Mutual / Preferred / Casualty
 ]
 # Excluded as out-of-scope (specialty / wound-down):
