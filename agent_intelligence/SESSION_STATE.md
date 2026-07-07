@@ -23,6 +23,10 @@ validated:{auto:true, home:true}. db md5 `14f12fab` (supersedes post-B6
 - **NICOA paginator-glitch save end-to-end:** +6.1%/4,038ph HO renders live,
   matches AM Best. B8 opened (glitch, 3rd occurrence). MA in COVERED_STATES;
   AMBEST_STATES → 26; methodology 19 rows, MA ✓✓.
+- **HEADs (post-deploy):** insurancewebscraper `09cdf15`->**`09a4305`**
+  (HEAD==origin). agent-intel/master `8b5f858`->**`81fba2b`** (subtree-FF, 0
+  deletions; Vercel LIVE — MA Prospect serves incl. the NICOA +6.1% signal).
+  Monorepo `ea2c1ad`+`fa44056` (local). `filings.db` **`14f12fab`**.
 - **Gates:** import ALL CHECKS PASSED (3092/1890/19/566), verify_subtype 566
   (deltas == exactly MA), 8 verify + tsc + build 12/12 + 13 e2e green.
   Localhost-approved.

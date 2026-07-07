@@ -41,6 +41,12 @@
 >   HO eff 06/14/25 signal (hidden by the glitch, recovered by slices) renders
 >   live and matches AM Best row-for-row. Wausau name-fold duplicate dissolved
 >   by the exclusion (nuance recorded in BACKLOG).
+> - **HEADs (post-deploy):** insurancewebscraper `09cdf15`->**`09a4305`** (HEAD==origin;
+>   8 files, 0 deletions, checkout verified clean pre-sync). agent-intel/master
+>   `8b5f858`->**`81fba2b`** (subtree-FF literal fast-forward, 7 files, 0 deletions;
+>   Vercel LIVE — /,/methodology,/prospect,/defend 200; MA Prospect serves from the
+>   production API incl. the NICOA +6.1% glitch-save signal). Monorepo
+>   `ea2c1ad`+`fa44056` (local). `filings.db` **`14f12fab`** (19-state baseline).
 > - **BACKLOG carried:** B7 (Temp-purge ~12×), B8 (paginator glitch — NEW),
 >   Wausau name-fold nuance, TRVD-134026815 single Rule-filing retry (fold into
 >   any future SERFF touch).
