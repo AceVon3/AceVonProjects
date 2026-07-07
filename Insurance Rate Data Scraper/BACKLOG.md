@@ -108,6 +108,19 @@ abort an otherwise-healthy group. Not blocking — a deferred group is re-attemp
 clean on the next burst; this is an efficiency/throughput fix.
 
 ## B7 — Root-cause the recurring Temp-checkout purge (Windows wipes the working tree)
+**ROOT-CAUSED + RELOCATED 2026-07-08.** Cause CONFIRMED: the checkout lived in
+%TEMP% itself, and Windows **Storage Sense** (policy 04 = "delete temporary
+files apps aren't using", ENABLED, auto-triggered on low free disk) + the
+`SilentCleanup` scheduled task reaped unaccessed working-tree files (`.git`
+survived because git ops keep it recently-accessed — explains the selective
+pattern; irregular timing = low-disk triggers during disk-heavy sessions).
+**Fix: relocated to `C:/Users/ryanc/repos/insurancewebscraper`** (outside
+%TEMP%, outside OneDrive). Verified: 9,884 files moved intact, git status
+clean, fetch OK, HEAD==origin. Status: **HIGH-CONFIDENCE, confirmed-over-time**
+— the trigger is irregular, so the proof is the next disk-heavy session
+(harvest / big scan) passing with no strike at the new path. Don't declare
+100% closed until then. If purge symptoms EVER recur, check the new path
+isn't also being reaped.
 **Opened:** 2026-07-07. **Size:** small investigation. **Priority:** LOW-MEDIUM
 (mitigated by the restore-from-index procedure, but it keeps recurring).
 
