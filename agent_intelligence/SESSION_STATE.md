@@ -1,3 +1,66 @@
+# Session checkpoint — 2026-07-07 (RI)  ·  RI INTERIM→REAL IMPORT SHIPPED + VALIDATED (21st scraped state; same-day full arc on the adaptive cadence)
+
+RI's 100-row SERFF scrape (193/193 in-target, 0 true misses — 11-state streak)
+replaced its AM Best interim; full arc IN ONE DAY: recon → sweep (walled 5
+terms same-day, rested retry clean) → TravCo gap found+fixed globally →
+5-burst harvest → cross-check → import → deployed. db md5 **`5ce58df3`**
+(supersedes post-B9-correction `5423a7c3`). **NEW BASELINE: 21 states, raw
+3,306 / rolled 2,019 / active@2026-06-11 614.**
+
+- **Gate ALL PASS:** 20 prior scraped states BYTE-IDENTICAL; CA/NY/TX intact
+  (post-Connect values 88/182/380 raw); RI flip exact (+100 raw / +53 rolled /
+  +20 active; ambest −119/−62; 0 remnants); as-of pin held (one self-caught
+  slip: the all_states regen reset the xlsx mtime → check (9) caught the slid
+  window → re-pinned 2026-06-11, rebuilt byte-identical).
+- **CROSS-CHECK (11th interim→real point):** PPA 39/42 (92.9%) / **HO 24/25
+  (96.0%) on ROBUST N** (coastal HO, the real home read — no small-N caveat);
+  **adjudicated in-window 100%/100%**; value-agreement 41/42 → **42/42** and
+  interim 40/41 → **41/41** after adjudicating 2 AM-BEST-SIDE errors at the
+  source PDFs: (1) TRVD-G134527101 ENTITY TRANSPOSITION (AM Best swapped Home
+  and Marine ↔ TravCo values; ours matches the PDF — the VA SFMA pattern);
+  (2) SFMA-134293558 PRE-REVISION STAGE (AM Best −1.0%/4,391 = the PDF's
+  "Prior Value"; ours −0.9%/4,463 = the requested/current). Scrape
+  source-true on both. 0 genuine soft-misses (2 AM-Best-only = 04/20/26
+  recency). validated:{auto:true, home:true}.
+- **COVERAGE VERDICT: RICHNESS-ONLY ×4** (Country/GEICO/Farmers/Encompass) —
+  Encompass's 8 SERFF in-target = 6 form/rule + 2 new-product → AM Best's 0
+  CORRECT. **Pattern CONFIRMED across 11 states: coverage-thinness is
+  VERY-ISOLATED-market only (AK); small-integrated (ND/RI) + dense (MA) =
+  AM-Best-complete.**
+- **TRAVCO SEARCH-TERM GAP (found at recon, fixed globally):** a TravCo-led
+  Quantum Home HO rate filing (+1.3%/10,207ph eff 07/11/25, AM-Best-
+  corroborated) was INVISIBLE to the bare "travelers" search — TravCo leads
+  20 RI filings (12 personal-lines). The Liberty-Insurance/General-Insurance
+  gap family: TARGET_COMPANIES/GROUP_SEARCH += travco; GROUP_KW += travco
+  insurance / the phoenix insurance (allowlist phrases, 0 over-matches).
+  Recovered, captured, and MORE accurate than AM Best (the transposition).
+- **PARSE FUNNEL (balances, no_pdf=0):** 193 = 55 emitted + 115 form/rule +
+  11 new-product + 4 rate-data-n/a + 8 out-of-window + 0 no_pdf; 104 rows −
+  4 filing-vehicle = 100. **0 blank max/min (cleanest parse yet)**; Munich Re
+  AmFam collision 0 rows ✓.
+- **15-MIN REST TEST: PASSED at small-state load** — 15–17-min rests held
+  between CLEAN bursts (b2 5/5, b3 12, b4 22 searches, recoveries in-burst,
+  intermittent challenges 15-18% never re-walling); burst-1 walled at 11
+  clean on a 30-min rest = SAME-DAY SLOW DEPRESSION (the sweep's wall at ~15
+  predicted it) — rest length doesn't fix a depressed slow component → bank.
+  **Adaptive cadence confirmed: short-rest-when-clean, bank-when-walled.**
+  CAVEAT: RI is small; the large tier (PA/IN/TN) is the real stress test.
+- **B7/B7b: held through the 5-burst disk-heavy harvest** (checkout clean
+  every bank; pin 11,534 PDFs / 0 dehydrated). Strong confirmation-over-time;
+  definitive proof still awaits a low-disk-trigger event. **B12 opened:** 2×
+  external task-kill at ~30-min age (mid-burst, both miss-safe) = possible
+  environmental timeout — investigate before the large tier.
+- **HEADs (post-deploy):** insurancewebscraper `d692e1f`→`5dad0a0`(universe)
+  →`ea0340d`/`dfe32f5`/`865ac61`/`862f962`(burst banks)→`be692fe`(collection
+  complete)→**`81aba34`** (all_states regen; HEAD==origin, 0 deletions
+  throughout). agent-intel/master `e7debfe`→**`61b7f2c`** (subtree-FF, 0
+  deletions; Vercel LIVE — RI renders, methodology 21 rows). Monorepo
+  `a670f16`+docs. `filings.db` **`5ce58df3`**.
+- **NEXT:** ME (71 AM Best in-target, next smallest) — recon can run offline
+  anytime; then the large tier after B12 is understood.
+
+---
+
 # Session checkpoint — 2026-07-07 (B9 audit)  ·  DERIVE_BRAND OVER-MATCH CLASS AUDIT COMPLETE + AMFAM-CONNECT INTERIM CORRECTION SHIPPED (61 rows / 23 states)
 
 The 3rd class-audit (search-terms → parser-shapes B6 → mapping-rules B9): a

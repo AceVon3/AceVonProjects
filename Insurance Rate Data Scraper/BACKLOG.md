@@ -2,6 +2,20 @@
 
 Tracked-but-deferred work. Each item: rationale + spec pointer + sizing.
 
+## B12 — 2× external background-task kill at ~30-min age (RI harvest)
+**Opened:** 2026-07-07 (RI). **Size:** investigate before the LARGE tier.
+During the RI harvest, two burst tasks were killed externally at ~30-31 min
+of task age (burst-2 at 18:20 mid-LBPM-batch; burst-4 at ~19:24 mid-travco
+batch) — NOT WAF walls (both were running clean), not user stops (unconfirmed),
+not crashes (no tracebacks). Tasks under ~30 min never got killed; one 49-min
+task (rest+retry) survived, so the boundary is fuzzy. Both kills were
+MISS-SAFE (cache-and-resume lost nothing) — but a large-tier burst (PA/IN/TN)
+will routinely exceed 30 min, so an environmental timeout would fragment
+bursts and waste Begin-Search budget. Investigate: harness background-task
+limits, Windows power/idle policies, OneDrive/AV interference. Mitigation if
+unresolved: schedule long harvests as several sub-30-min capped bursts
+(--burst N) with 15-min rests — the adaptive cadence already supports this.
+
 ## B10 — Stale 8-brand-era tests in insurancewebscraper tests/
 **Opened:** 2026-07-07 (B9-audit deploy). **Size:** small. Two pre-existing
 failures (fail identically on unmodified `9645a69`; NOT B9-related):

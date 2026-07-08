@@ -1,5 +1,44 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-07 (cont.2) — RI INTERIM→REAL IMPORT SHIPPED + VALIDATED (21st
+> scraped state). FULL ARC IN ONE DAY on the adaptive cadence.**
+> recon (offline) → sweep (15 clean then a 5-term same-day wall; rested retry
+> 5/5 clean; USAA/Farmers "0s" were WALL ARTIFACTS not absence) → **TravCo
+> search-term gap found at recon-vs-universe check + fixed globally**
+> (TARGET_COMPANIES/GROUP_SEARCH += travco, GROUP_KW += travco insurance/the
+> phoenix insurance — the Liberty-Insurance gap family; a TravCo-led Quantum
+> Home +1.3%/10,207ph HO rate block was invisible to bare "travelers"; TravCo
+> leads 20 RI filings/12 personal) → 5-burst harvest **193/193, 0 true misses
+> (11-state streak)** → cross-check → import → deployed. **NEW BASELINE
+> (SUPERSEDES post-B9-correction 3,206/1,966/594/`5423a7c3`): 21 states, raw
+> 3,306 / rolled 2,019 / active@2026-06-11 614 / db md5 `5ce58df3`.**
+> - **CROSS-CHECK (11th point):** PPA 39/42 / **HO 24/25 ROBUST-N (coastal)**;
+>   adjudicated in-window **100%/100%**; value-agreement **42/42** + interim
+>   **41/41** after adjudicating 2 AM-BEST-SIDE errors at source PDFs
+>   (TRVD-G134527101 entity TRANSPOSITION — ours matches the PDF, the VA SFMA
+>   pattern; SFMA-134293558 pre-revision-stage values). 0 genuine soft-misses.
+>   **COVERAGE: RICHNESS-ONLY ×4 — Encompass 8 SERFF = 6 form/rule + 2
+>   new-product → AM Best 0 CORRECT. Pattern CONFIRMED (11 states):
+>   thin = VERY-ISOLATED only (AK); small-integrated (ND/RI) + dense (MA) =
+>   AM-Best-complete.** Funnel: 193 = 55+115+11+4+8+0(no_pdf); 100 rows;
+>   0 blank max/min (cleanest parse yet).
+> - **WAF — 15-MIN TEST PASSED (small-state load):** b1 (30-min rest) walled
+>   at 11 clean = same-day slow depression (bank, don't grind); b2–b5 on
+>   15–17-min rests ALL CLEAN (5/12/22/6 searches, recoveries in-burst incl.
+>   the cross-term safeco→LBPM save, challenges 15–18% never re-walling).
+>   **Adaptive cadence confirmed: short-rest-when-clean, bank-when-walled.**
+>   Caveat: large tier = the real stress test. **B12 opened:** 2× external
+>   task-kill at ~30-min age (both miss-safe, resumed losslessly) — possible
+>   environmental timeout, investigate before the large tier.
+> - **B7/B7b held through 5 disk-heavy banks** (checkout clean each time; pin
+>   11,534 PDFs / 0 dehydrated post-harvest).
+> - **HEADs (post-deploy):** insurancewebscraper `d692e1f`→…→**`81aba34`**
+>   (7 commits, HEAD==origin, 0 deletions throughout). agent-intel/master
+>   `e7debfe`→**`61b7f2c`** (subtree-FF, 0 deletions; Vercel LIVE — RI ✓✓,
+>   methodology 21). Monorepo `a670f16`+docs. `filings.db` **`5ce58df3`**.
+> - **NEXT: ME** (71 AM Best in-target, next smallest; recon offline anytime)
+>   → the large tier (PA/IN/TN) after B12 is understood.
+
 > **2026-07-07 (cont.) — B9 DERIVE_BRAND OVER-MATCH CLASS AUDIT COMPLETE +
 > AMFAM-CONNECT INTERIM CORRECTION SHIPPED (61 rows / 23 states).** Offline,
 > 0 SERFF. The 3rd class-audit (search-terms → parser-shapes B6 →
