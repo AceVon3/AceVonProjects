@@ -184,7 +184,11 @@ GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate 
     # Encompass files under its own brand on SERFF and is NOT returned by an
     # "allstate" keyword search; we search both names under the Allstate group.
     "Allstate":       ["allstate", "encompass"],
-    "Travelers":      ["travelers"],
+    # "travco": TravCo Insurance Company leads Quantum Home filings whose legal
+    # name lacks "travelers" (RI 2026-07-07: an AM-Best-corroborated TravCo-led
+    # HO block was invisible to the bare "travelers" search — the Liberty
+    # Insurance / General Insurance search-term-gap family).
+    "Travelers":      ["travelers", "travco"],
     # Safeco is Liberty Mutual's independent-agent brand and files under its
     # own name; it does NOT surface under a "liberty mutual" search. Liberty
     # Insurance Corporation (a Liberty Mutual legacy rating company) likewise
@@ -209,7 +213,7 @@ GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent g
     "State Farm":     ["state farm", "mga insurance"],
     "GEICO":          ["geico", "government employees"],
     "Allstate":       ["allstate", "encompass", "integon", "north american insurance"],
-    "Travelers":      ["travelers", "standard fire"],
+    "Travelers":      ["travelers", "standard fire", "travco insurance", "the phoenix insurance"],
     "Liberty Mutual": ["liberty mutual", "liberty insurance corporation", "safeco", "first national insurance company of america", "general insurance company of america", "american states"],
     "Progressive":    ["progressive", "artisan and truckers"],
     # 13-brand expansion (2026-06-10, SCOPE.md). Anchors are tighter than the

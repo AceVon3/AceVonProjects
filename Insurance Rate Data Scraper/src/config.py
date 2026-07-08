@@ -44,6 +44,14 @@ TARGET_COMPANIES = [
     # surfaces it from the start (GROUP_SEARCH/GROUP_KW already classify it).
     "Liberty Insurance",
     "Encompass",  # Allstate independent-agent brand
+    # Travelers Quantum-Home co-file leads whose legal names lack "travelers"
+    # (TravCo Insurance Company; The Phoenix Insurance rides its co-files).
+    # RI 2026-07-07: AM Best shows a TravCo-led HO rate block (+1.3%/10,207ph
+    # eff 07/11/25) that a bare "travelers" search did NOT return — the same
+    # search-term-gap family as Liberty Insurance / General Insurance. MA had
+    # only shown them co-filing on TRVD filings that DID surface; RI proves a
+    # TravCo-led filing can be invisible to the brand term.
+    "TravCo",
     # State Farm subsidiary that files under its own name on SERFF and is
     # NOT returned by a "state farm" keyword search. Added as a separate
     # search keyword (Item #3a). Classification via GROUP_KW folds it back

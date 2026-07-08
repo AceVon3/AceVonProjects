@@ -52,7 +52,7 @@ export const STATES: readonly StateRecord[] = [
   { code: "OK", name: "Oklahoma",       data_coverage: true,  source: "ambest" },
   { code: "OR", name: "Oregon",         data_coverage: true,  validated: { auto: true,  home: false } },
   { code: "PA", name: "Pennsylvania",   data_coverage: true,  source: "ambest" },
-  { code: "RI", name: "Rhode Island",   data_coverage: true,  source: "ambest" },
+  { code: "RI", name: "Rhode Island",   data_coverage: true,  validated: { auto: true,  home: true  } }, // scraped 2026-07-07 (interim->real): 100-row SERFF scrape, 193/193 in-target cached, 0 true misses (11-state streak). AM Best cross-check (11th interim->real point): PPA 39/42 (92.9%; 3 AM-Best-only = 2 recency eff 04/20/26 + 1 adjudicated stale-stage) / HO 24/25 (96.0% — ROBUST N, coastal) -> adjudicated in-window 100%/100%; value-agreement 41/42 (the 1 differ = AM Best's OWN entity transposition on TRVD-G134527101, ours matches the source PDF); interim 40/41 (same transposition) -> effectively 0 disagreements. Coverage verdict: RICHNESS-ONLY x4 (incl. Encompass 8 SERFF = 6 form/rule + 2 new-product vs AM Best 0 — correct). TravCo Quantum Home captured via the search-term fix found at recon -> both validated
   { code: "SC", name: "South Carolina", data_coverage: true,  source: "ambest" },
   { code: "SD", name: "South Dakota",   data_coverage: true,  source: "ambest" },
   { code: "TN", name: "Tennessee",      data_coverage: true,  source: "ambest" },
