@@ -17,6 +17,7 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-07-08 when SD moved interim->scraped (+28 active = 662; per-sub_type deltas exactly SD's: PPA +11, HO-Comb +7, Motorcycle +3, Auto-Comb +2, Owner-Occ +2, Tenant +1, RV +1, Other +1; distinct still 11 — SD's 8 active sub_types are a subset). Prior 2026-07-08 ME baseline 634. Earlier note:
 // Re-keyed 2026-07-08 when ME moved interim->scraped (+20 active = 634; per-sub_type deltas exactly ME's: PPA +8, Auto-Comb +6, HO-Comb +3, Motorcycle +2, RV +1; distinct still 11 — ME's 5 active sub_types are a subset). Prior 2026-07-07 RI baseline 614. Earlier note:
 // Re-keyed 2026-07-07 when RI moved interim->scraped (+20 active = 614; per-sub_type deltas exactly RI's: PPA +11, HO-Comb +6, Condo +2, Auto-Comb +1; distinct still 11 — RI's 4 active sub_types are a subset). Prior 2026-07-07 ND baseline 594. Earlier note:
 // Re-keyed 2026-07-07 when ND moved interim->scraped (+28 active = 594; per-sub_type deltas exactly ND's: PPA +10, HO-Comb +6, Other-HO +4, Auto-Comb +3, Owner-Occ +3, Motorcycle +1, Mobile +1; distinct still 11 — ND's 7 sub_types are a subset). Prior 2026-07-06 MA baseline 566. Earlier note:
@@ -30,16 +31,16 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 269,
-  "19.0000 Personal Auto Combinations": 95,
-  "19.0002 Motorcycle": 32,
-  "19.0003 Recreational Vehicle (RV)": 15,
-  "19.0004 Other": 5,
-  "04.0003 Owner Occupied Homeowners": 49,
-  "04.0000 Homeowners Sub-TOI Combinations": 124,
+  "19.0001 Private Passenger Auto (PPA)": 280,
+  "19.0000 Personal Auto Combinations": 97,
+  "19.0002 Motorcycle": 35,
+  "19.0003 Recreational Vehicle (RV)": 16,
+  "19.0004 Other": 6,
+  "04.0003 Owner Occupied Homeowners": 51,
+  "04.0000 Homeowners Sub-TOI Combinations": 131,
   "04.0001 Condominium Homeowners": 16,
   "04.0005 Other Homeowners": 12,
-  "04.0004 Tenant Homeowners": 7,
+  "04.0004 Tenant Homeowners": 8,
   "04.0002 Mobile Homeowners": 10,
 };
 
@@ -61,7 +62,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 634", rows.length, 634);
+check("active rolled filings = 662", rows.length, 662);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 
