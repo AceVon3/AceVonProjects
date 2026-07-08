@@ -1,5 +1,41 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-08 (cont.) — SD INTERIM→REAL IMPORT SHIPPED + VALIDATED (23rd
+> scraped state). THE COVERAGE THESIS SEALED: AK definitively the lone thin
+> case (13 states).**
+> Sweep (24/27 + 3-term 15-min retry clean; **the AK-test resolved at sweep:
+> COUNTRY's entire SD presence = 1 Farmowners FORM filing → AM Best 0
+> CORRECT in Country's own footprint**) → 6-burst harvest (the CAP
+> EXPERIMENT: 12→15→18 all clean-to-cap on 15-min rests; single-wall =
+> transient/15-min-recoverable, consecutive = depression; **cap 18 +
+> wall-stop 2 + 15-min cadence + B12 timer/fresh-task = the LARGE-TIER
+> PLAYBOOK**) → **250/250, 0 download misses (13-state streak)** → offline
+> tail (2 cached-but-0-rows PDFs adjudicated at source: both 0.000%
+> rate-neutral, **shape-L backlogged — the blank/zero family is 5 shapes
+> (H..L); the deliberate fix should GENERALIZE, not enumerate**) → import →
+> deployed. **NEW BASELINE (SUPERSEDES post-ME 3,420/2,098/634/`e28c47fc`):
+> 23 states, raw 3,541 / rolled 2,173 / active@2026-06-11 662 / db md5
+> `bd36ba67`.**
+> - **CROSS-CHECK (13th point):** value-agreement 67/67 adjudicated (the
+>   lone differ = AM Best carrying BOTH stages of a Safeco filing; our
+>   −6.0% == the source PDF — a pairing artifact, not a 4th AM-Best error);
+>   interim 59/59; in-window 100%/100%; **HO ROBUST-N 27/31 (hail country)**.
+>   0 genuine soft-misses. Blank max/min ×20 all impacts-populated (SF %-%
+>   ×11 + FIG exchanges ×8 + Allstate NA — source pattern, 0 parser drops).
+> - **B9 SHOWCASE:** 121 phantom Farmers independents prevented (FMN 53 /
+>   Alliance 34 / Hail 34 → 0 in deliverable); genuine AmFam clean at scale
+>   (12 rows, 2 real entities, 0 Connect/Munich-Re); American Standard of WI
+>   captured natively. SD alone justifies the B9 audit.
+> - **HEADs (post-deploy):** insurancewebscraper `b2e1fe1`→…→**`27c3f00`**
+>   (9 commits; HEAD==origin, 0 deletions). agent-intel/master
+>   `ff3634d`→**`df4c2ee`** (subtree-FF, 0 deletions; Vercel LIVE — SD ✓✓,
+>   methodology 23). Monorepo `2528774`+docs. `filings.db` **`bd36ba67`**.
+>   B7/B7b held (pin 12,093/0).
+> - **NEXT: DE (recon DONE)** — 190 in-scope == db, GEICO-dominated (54),
+>   AmFam/COUNTRY absent (plausible), Travelers HO-only Quantum, regionals
+>   clean. Then the remaining small/mid interim states; the large tier
+>   (PA/IN/TN) now has a validated playbook.
+
 > **2026-07-08 — ME INTERIM→REAL IMPORT SHIPPED + VALIDATED (22nd scraped
 > state). THE ISOLATION-BOUNDARY VERDICT: ND/RI-COMPLETE — AK stays the lone
 > thin case; the pattern is now a PREDICTIVE RULE.**

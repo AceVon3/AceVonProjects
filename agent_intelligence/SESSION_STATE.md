@@ -1,3 +1,61 @@
+# Session checkpoint — 2026-07-08 (SD)  ·  SD INTERIM→REAL IMPORT SHIPPED + VALIDATED (23rd scraped state; THE COVERAGE THESIS SEALED)
+
+SD's 121-row SERFF scrape (250/250 in-target, 0 download misses — 13-state
+streak) replaced its AM Best interim. db md5 **`bd36ba67`** (supersedes
+post-ME `e28c47fc`). **NEW BASELINE: 23 states, raw 3,541 / rolled 2,173 /
+active@2026-06-11 662.**
+
+- **THE COVERAGE THESIS SEALED:** SD — squarely in COUNTRY's plains
+  footprint — resolves RICHNESS-ONLY: COUNTRY's entire windowed SERFF
+  presence is ONE Personal-Farmowners FORM filing (CFPC-133997117), zero
+  PPA/HO rate filings → **AM Best's 0 CORRECT in a genuine Country market.
+  AK is DEFINITIVELY the lone thin case across 13 interim→real states; its
+  thinness was ISOLATION, not Country's markets.** The predictive rule (scan
+  for a specific major-writer undercount, not size/isolation) survived its
+  hardest counterfactual — the basis for trusting the ~19 remaining interim
+  states' coverage.
+- **CROSS-CHECK (13th point):** value-agreement 66/67 → **67/67 adjudicated**
+  (the differ = AM Best carrying BOTH stages of one Safeco filing — original
+  −6.0% + 0.0% amendment; our −6.0% == the source PDF; a comparator pairing
+  artifact, NOT a 4th AM-Best-side error); interim 58/59 → **59/59**;
+  in-window **PPA/HO 100%/100%** with **HO ROBUST-N (27/31, hail country)**.
+  0 genuine soft-misses. validated:{auto:true, home:true}.
+- **B9 SHOWCASE STATE:** the sweep's 190 "farmers" rows contained **121
+  tripwired independents (FMN 53, Farmers Alliance 34, Farmers Mutual Hail
+  34) → decisive None, 0 in targets, 0 in the deliverable** — pre-B9, SD
+  ships 121 phantom Farmers rows; this state alone justifies the audit.
+  Genuine AmFam clean at scale (12 rows, only the 2 real entities, 0
+  Connect/Munich-Re — the first big AmFam state post-correction). American
+  Standard of WI captured natively (5 filings, the under-match fix's first
+  solo-presence plains state).
+- **SHAPE-L found + backlogged:** LBPM-134438278 (0.000%/5,597ph,
+  blank-premium-change cell — data-present-unparsed but rate-neutral,
+  AM-Best-corroborated at 0.0) + SFMA-134609419 (the SF %-blank pattern).
+  Both dropped correctly (immaterial). The blank/zero shape family is now
+  5 members (H/I/J/K/L) — **the eventual deliberate fix should GENERALIZE
+  to the blank/zero family, not enumerate another shape.**
+- **LARGE-TIER PLAYBOOK VALIDATED (SD's 6-burst cap experiment):** caps
+  12→15→18 all clean-to-cap on 15-min rests (yield ~linear, challenges flat
+  ~20%); burst-1's sustained wall recovered on ONE 15-min rest → **single
+  wall = transient cluster (15-min-recoverable); CONSECUTIVE walls = true
+  depression (bank + long rest). Cap 18 + wall-stop 2 + 15-min cadence +
+  timer-task/fresh-run-task (B12-safe) = the large-tier setting.**
+  B7/B7b held (pin 12,093 PDFs / 0 dehydrated).
+- **Gate ALL PASS:** 22 prior scraped byte-identical; CA/NY/TX intact; SD
+  flip exact (+121/+75/+28; ambest −145/−86; 0 remnants); as-of pinned.
+- **HEADs (post-deploy):** insurancewebscraper `b2e1fe1`→`f06bb8f`(universe)
+  →6 burst banks→`b45cc33`(collection)→**`27c3f00`** (all_states + compare;
+  HEAD==origin, 0 deletions throughout). agent-intel/master
+  `ff3634d`→**`df4c2ee`** (subtree-FF, 0 deletions; Vercel LIVE — SD ✓✓,
+  methodology 23). Monorepo `2528774`+docs. `filings.db` **`bd36ba67`**.
+- **NEXT: DE (recon DONE, pipelined)** — 190 in-scope == db interim, 10
+  brands, GEICO-dominated (54 rows), AmFam/COUNTRY absent (east-coast-
+  plausible), Travelers 0/6 HO-only (Quantum, travco native), regionals
+  clean (Amica/Root/Goodville/Atlantic States/Nutmeg; LM Insurance Corp
+  correctly excluded). Sweep-ready.
+
+---
+
 # Session checkpoint — 2026-07-08 (ME)  ·  ME INTERIM→REAL IMPORT SHIPPED + VALIDATED (22nd scraped state; the ISOLATION-BOUNDARY verdict)
 
 ME's 114-row SERFF scrape (309/309 in-target, 0 true misses — 12-state streak)
