@@ -1,5 +1,47 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-08 — ME INTERIM→REAL IMPORT SHIPPED + VALIDATED (22nd scraped
+> state). THE ISOLATION-BOUNDARY VERDICT: ND/RI-COMPLETE — AK stays the lone
+> thin case; the pattern is now a PREDICTIVE RULE.**
+> Overnight-cold sweep (27 terms incl. travco/american-standard natively; 15
+> clean → the 5-term wall family → 15-MIN-rest retry 5/5 CLEAN) → 7-burst
+> harvest on the adaptive cadence (**every stop = own --burst 12 cap or
+> completion, NEVER a sustained wall**; survived a mid-burst system sleep
+> losslessly; B12 timer+fresh-task+cap pattern validated ×7 = the large-tier
+> playbook) → **309/309, 0 true misses (12-state streak)** → offline tail →
+> import → deployed. **NEW BASELINE (SUPERSEDES post-RI 3,306/2,019/614/
+> `5ce58df3`): 22 states, raw 3,420 / rolled 2,098 / active@2026-06-11 634 /
+> db md5 `e28c47fc`.**
+> - **CROSS-CHECK (12th point — CLEANEST EVER):** value-agreement **48/48 =
+>   100% (first perfect)**, interim **46/46 (0 disagreements)**; adjudicated
+>   in-window PPA 45/45 + HO 18/18. **3rd consecutive AM-Best-side error
+>   corrected at source** (LBPM-134490019: AM Best carried a pre-final stage
+>   −3.03%/0.154%; the PDF shows 0.000% both entities, eff 05/22/25 — ours
+>   source-true). 0 genuine soft-misses. 2nd consecutive PERFECT parse
+>   (0 blank max/min, no_pdf=0).
+> - **ISOLATION-BOUNDARY VERDICT:** Nationwide (25-vs-6) and Travelers
+>   (23-vs-4) watch-points BOTH adjudicated form/rule-richness (Travelers' 1
+>   material Quantum +7.5%/16,008ph IS in AM Best). **Thin = a major regional
+>   writer AM Best undercounts (AK's Country). AK = the LONE thin case in 12
+>   states. Size/isolation NOT sufficient. PREDICTIVE RULE: scan for a
+>   major-regional-writer-undercount, not market profile.**
+> - **B9 first LIVE catch:** the sweep's 21 "country" results = ALL Countryway
+>   (incl. live PPA/HO rate filings) → decisive None → 0 in targets, 0 in the
+>   deliverable. Pre-B9 = phantom COUNTRY rows in a no-COUNTRY state.
+> - **HEADs (post-deploy):** insurancewebscraper `81aba34`→…→**`b2e1fe1`**
+>   (10 commits: universe + 7 burst banks + collection + all_states;
+>   HEAD==origin, 0 deletions throughout). agent-intel/master
+>   `61b7f2c`→**`ff3634d`** (subtree-FF, 0 deletions; Vercel LIVE — ME ✓✓,
+>   methodology 22). Monorepo `983b8f6`+docs. `filings.db` **`e28c47fc`**.
+>   B7/B7b held (pin 11,843/0).
+> - **NEXT: SD (recon DONE — 145 in-scope == db, 11/13 brands, fullest
+>   footprint yet; 43% HO/hail).** THE SHARPEST BOUNDARY TEST: plains =
+>   COUNTRY's actual footprint and AM Best SD shows 0 COUNTRY rows → **the
+>   sweep's "country" search IS the AK-reproduction test** (Country SERFF
+>   rate filings vs AM-Best-0 = undercount reproduces; absent/form-rule = AK
+>   truly lone). Watch: Liberty-brand absent from AM Best SD (Safeco present
+>   — plains channel, confirm at sweep); Farmers Mutual of Nebraska tripwired.
+
 > **2026-07-07 (cont.2) — RI INTERIM→REAL IMPORT SHIPPED + VALIDATED (21st
 > scraped state). FULL ARC IN ONE DAY on the adaptive cadence.**
 > recon (offline) → sweep (15 clean then a 5-term same-day wall; rested retry

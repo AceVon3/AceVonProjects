@@ -1,3 +1,64 @@
+# Session checkpoint — 2026-07-08 (ME)  ·  ME INTERIM→REAL IMPORT SHIPPED + VALIDATED (22nd scraped state; the ISOLATION-BOUNDARY verdict)
+
+ME's 114-row SERFF scrape (309/309 in-target, 0 true misses — 12-state streak)
+replaced its AM Best interim. Overnight-cold sweep + 15-min retry + 7-burst
+adaptive-cadence harvest + offline tail, deployed same day. db md5
+**`e28c47fc`** (supersedes post-RI `5ce58df3`). **NEW BASELINE: 22 states,
+raw 3,420 / rolled 2,098 / active@2026-06-11 634.**
+
+- **CROSS-CHECK (12th interim→real point — CLEANEST EVER):** value-agreement
+  **48/48 = 100% (first perfect)**; interim **46/46 = 100%, 0 disagreements**;
+  STANDARD PPA 43/52 / HO 18/19 headline deflated ONLY by 2026-eff recency +
+  one LBPM pair → **adjudicated in-window 100%/100%**. **3rd CONSECUTIVE
+  AM-Best-side error corrected at source** (ME LBPM-134490019 pre-final stage —
+  PDF shows 0.000% both entities; after RI's TravCo transposition + SF
+  pre-revision): **on divergence the scrape is MORE accurate than AM Best.**
+  0 genuine soft-misses. HO N=19 mid-N read with the perfect PPA leg (ND
+  precedent) → validated:{auto:true, home:true}.
+- **ISOLATION-BOUNDARY VERDICT — pattern SHARPENED:** ME (small/rural/
+  somewhat-isolated) resolves **ND/RI-COMPLETE**. Both recon watch-points
+  adjudicated form/rule-richness: Nationwide 25-vs-6 (18/25 form/rule; 0
+  material Rate-2025+ on EITHER side) and Travelers 23-vs-4 (16/23 form/rule;
+  its 1 material — Quantum +7.5%/16,008ph — IS in AM Best). **Thin = a major
+  regional writer AM Best undercounts (AK's Country, 16×). AK is the LONE thin
+  case across 12 states. Small/rural/isolation is NOT sufficient. PREDICTIVE
+  RULE for remaining states: look for a major-regional-writer-undercount, not
+  market size.**
+- **Funnel (balances, no_pdf=0):** 309 = 81 emitted + 191 form/rule + 11
+  new-product + 4 rate-n/a + 22 out-of-window; 119 rows − 5 filing-vehicle =
+  114. **2nd consecutive PERFECT parse (0 blank max/min).** B9 held forward
+  AND at emit: the sweep's 21 "country" results were ALL Countryway (incl.
+  live PPA/HO rate filings) → decisive None, 0 in targets, 0 in deliverable —
+  **the tripwire's first live catch** (pre-B9 = phantom COUNTRY rows in a
+  state COUNTRY doesn't write). Munich-Re AmFam (45 sweep rows) excluded ✓.
+- **WAF/ops:** 15-min cadence held the ENTIRE harvest (7 bursts, every stop =
+  own `--burst 12` cap or completion, NEVER a sustained wall; intermittent
+  challenges 3/2/5/5/-/3/0 all self-recovered; one mid-burst SYSTEM SLEEP
+  survived losslessly). **B12 cap validated across all 7 bursts** (timer-task
+  + fresh run-task + --burst cap = the large-tier playbook). B7/B7b held
+  (pin 11,843 PDFs / 0 dehydrated).
+- **Gate ALL PASS:** 21 prior scraped states byte-identical; CA/NY/TX intact;
+  ME flip exact (+114/+79/+20; ambest −131/−91; 0 remnants); as-of pinned
+  PROACTIVELY (the RI mtime lesson applied — import passed first run).
+- **HEADs (post-deploy):** insurancewebscraper `81aba34`→`6007b47`(universe)
+  →`508a665`/`31fe306`/`43d0d76`/`5744b9a`/…/`b75db3b`(7 burst banks +
+  collection)→**`b2e1fe1`** (all_states + compare; HEAD==origin, 0 deletions
+  throughout). agent-intel/master `61b7f2c`→**`ff3634d`** (subtree-FF, 0
+  deletions; Vercel LIVE — ME ✓✓, methodology 22). Monorepo `983b8f6`+docs.
+  `filings.db` **`e28c47fc`**.
+- **NEXT: SD (recon DONE, pipelined)** — **the SHARPEST boundary test:
+  plains/midwest = COUNTRY's actual footprint.** AM Best SD shows 0 COUNTRY
+  rows and 11/13 brands present (fullest yet: genuine AmFam 12 + Encompass 4;
+  Liberty-brand absent but Safeco present — plains channel, confirm-at-sweep;
+  USAA 28 w/ 20 HO; SD 43% HO in-scope, hail country). **If COUNTRY writes SD,
+  the sweep's "country" search IS the AK-reproduction test:** SERFF Country
+  rate filings vs AM-Best-0 = the undercount reproducing (pattern = "Country
+  markets thin"); Country genuinely absent/form-rule = AK truly lone.
+  Regionals pre-checked clean (Wadena/Midwest Family/North Star/American
+  West; Farmers Mutual of Nebraska present + already tripwired).
+
+---
+
 # Session checkpoint — 2026-07-07 (RI)  ·  RI INTERIM→REAL IMPORT SHIPPED + VALIDATED (21st scraped state; same-day full arc on the adaptive cadence)
 
 RI's 100-row SERFF scrape (193/193 in-target, 0 true misses — 11-state streak)
