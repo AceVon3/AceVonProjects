@@ -91,31 +91,36 @@ check("size pointer states their employee_count and the 50-employee line",
   })());
 
 console.log("\nOut-of-state remote flag — the honesty safeguard:");
-// BASE employee states are WA, CO, ID. WA and ID are now briefing-ready
-// (ID was added in the multi-state expansion), so CO is the only one the
-// briefing can't speak to — the flag still fires on it.
-check("fires: remote workers + an uncovered employee state (CO)",
-  shouldFlagOutOfStateRemote(BASE) === true);
-check("lists only the still-uncovered state (CO); ID now has its own briefing",
-  JSON.stringify(outOfCoverageEmployeeStates(BASE.employee_states)) === JSON.stringify(["CO"]),
+// 50-STATE EXPANSION (2026-07): every real state is now briefing-ready, so
+// the out-of-state flag never fires on real employee states — that is the
+// intended outcome of the expansion, not a regression. The safeguard LOGIC
+// stays covered (it protects any future state whose summaries all fail
+// generation) via a synthetic non-ready code ("ZZ"): buildSections gives it
+// sections, but it has no grounded summaries, so isBriefingReady is false.
+check("does NOT fire on real states — all 50 are briefing-ready (BASE: WA/CO/ID)",
+  shouldFlagOutOfStateRemote(BASE) === false);
+check("real employee states yield no out-of-coverage states",
+  outOfCoverageEmployeeStates(BASE.employee_states).length === 0,
   { got: outOfCoverageEmployeeStates(BASE.employee_states) });
-check("multiple uncovered states are returned sorted (CO, MT, NV)",
-  JSON.stringify(outOfCoverageEmployeeStates(["NV", "CO", "MT"])) === JSON.stringify(["CO", "MT", "NV"]),
-  { got: outOfCoverageEmployeeStates(["NV", "CO", "MT"]) });
-check("does NOT fire when no remote workers (remote_count 0)",
-  shouldFlagOutOfStateRemote({ ...BASE, remote_count: 0 }) === false);
+check("safeguard still fires: remote workers + a non-ready state (synthetic ZZ)",
+  shouldFlagOutOfStateRemote({ ...BASE, employee_states: ["WA", "ZZ"] }) === true);
+check("non-ready states are returned sorted (synthetic QQ, ZZ)",
+  JSON.stringify(outOfCoverageEmployeeStates(["ZZ", "WA", "QQ"])) === JSON.stringify(["QQ", "ZZ"]),
+  { got: outOfCoverageEmployeeStates(["ZZ", "WA", "QQ"]) });
+check("does NOT fire when no remote workers (remote_count 0, even with ZZ)",
+  shouldFlagOutOfStateRemote({ ...BASE, employee_states: ["WA", "ZZ"], remote_count: 0 }) === false);
 check("does NOT fire when all employee states are covered (WA only)",
   shouldFlagOutOfStateRemote({ ...BASE, employee_states: ["WA"] }) === false);
 check("WA is covered, so WA alone yields no out-of-coverage states",
   outOfCoverageEmployeeStates(["WA"]).length === 0);
-check("ID is now covered, so ID alone yields no out-of-coverage states",
+check("ID is covered, so ID alone yields no out-of-coverage states",
   outOfCoverageEmployeeStates(["ID"]).length === 0);
-check("coverage label names WA when WA is an employee state",
-  briefingCoverageLabel(["WA", "CO"]) === "Washington");
-check("coverage label names a covered non-WA state (ID) when WA isn't present",
-  briefingCoverageLabel(["CO", "ID"]) === "Idaho");
-check("coverage label falls back to Washington when no employee state is covered",
-  briefingCoverageLabel(["CO", "MT"]) === "Washington");
+check("coverage label names every covered employee state (WA + CO)",
+  briefingCoverageLabel(["WA", "CO"]) === "Washington, Colorado");
+check("coverage label names covered non-WA states (CO + ID)",
+  briefingCoverageLabel(["CO", "ID"]) === "Colorado, Idaho");
+check("coverage label falls back to Washington when no employee state is covered (synthetic ZZ)",
+  briefingCoverageLabel(["ZZ"]) === "Washington");
 
 console.log("\nPay-type labels:");
 check("hourly -> 'Hourly'", payTypeLabel("hourly") === "Hourly");

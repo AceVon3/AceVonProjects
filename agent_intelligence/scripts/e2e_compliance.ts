@@ -24,6 +24,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { Page, chromium } from "playwright";
 
+import { COMPLIANCE_SUMMARIES } from "../src/lib/complianceData";
+
 const BASE = process.env.E2E_BASE ?? "http://localhost:3000";
 
 // Profile: employee_states = WA + AZ + OR — gives us both a state with
@@ -155,23 +157,24 @@ async function main(): Promise<void> {
       variant: el.getAttribute("data-variant"),
     })),
   );
-  // WA: 7 topics seeded (Remote Work intentionally absent from seed →
-  // coming-soon). AZ + OR: 8 coming-soon each.
-  const waFull = cardMeta.filter(c => c.state === "WA" && c.variant === "full");
-  const waComingSoon = cardMeta.filter(c => c.state === "WA" && c.variant === "coming-soon");
-  check("WA: 7 full-summary cards", waFull.length === 7, { waFull: waFull.length });
-  // WA Remote Work: the L&I source page is a generic hub with no
-  // remote-work-specific content, so the generator's refusal detector
-  // stores null title/summary → ComplianceCard renders coming-soon.
-  check("WA: 1 coming-soon card (Remote Work — model refused to ground)",
-    waComingSoon.length === 1 && waComingSoon[0].topic === "remote",
-    { waComingSoon });
-  const azCards = cardMeta.filter(c => c.state === "AZ");
-  const orCards = cardMeta.filter(c => c.state === "OR");
-  check("AZ: 8 coming-soon cards (state stubbed in resourceUrls.ts)",
-    azCards.length === 8 && azCards.every(c => c.variant === "coming-soon"));
-  check("OR: 8 coming-soon cards (state stubbed in resourceUrls.ts)",
-    orCards.length === 8 && orCards.every(c => c.variant === "coming-soon"));
+  // 50-STATE EXPANSION (2026-07): card expectations derive from the
+  // generated complianceData itself, so future regens that ground more or
+  // fewer topics don't stale-break this test. A cell renders "full" iff its
+  // (state, topic) entry is grounded (non-null title/summary); every other
+  // cell — refused, or never generated (fetch-blocked) — is coming-soon.
+  const groundedGrid = (st: string) => TOPIC_KEYS.filter(t =>
+    COMPLIANCE_SUMMARIES.some(e => e.state === st && e.topic === t && e.title && e.summary));
+  for (const st of ["WA", "AZ", "OR"]) {
+    const cards = cardMeta.filter(c => c.state === st);
+    const expectFull = groundedGrid(st);
+    check(`${st}: 8 cards render (one per grid topic)`, cards.length === 8, { n: cards.length });
+    check(`${st}: full cards match grounded data (${expectFull.length})`,
+      cards.filter(c => c.variant === "full").length === expectFull.length
+        && cards.filter(c => c.variant === "full").every(c => expectFull.includes((c.topic ?? "") as typeof TOPIC_KEYS[number])),
+      { expectFull, got: cards.filter(c => c.variant === "full").map(c => c.topic) });
+    check(`${st}: remaining ${8 - expectFull.length} cards are coming-soon`,
+      cards.filter(c => c.variant === "coming-soon").length === 8 - expectFull.length);
+  }
 
   console.log("\n(3a) WA seeded cards: source links as bare domains + last_checked");
   // Spot-check the WA wage_hour card.
@@ -227,8 +230,9 @@ async function main(): Promise<void> {
     els.map(e => ({ state: e.getAttribute("data-state"), ready: e.getAttribute("data-ready") })));
   check("primary state first is WA", stateBlocks[0]?.state === "WA", { order: stateBlocks.map(s => s.state) });
   check("WA briefing is ready (full)", stateBlocks.find(s => s.state === "WA")?.ready === "true");
-  check("OR briefing is coming-soon", stateBlocks.find(s => s.state === "OR")?.ready === "false");
-  check("AZ briefing is coming-soon", stateBlocks.find(s => s.state === "AZ")?.ready === "false");
+  // 50-state expansion: OR and AZ now render their own ready briefings.
+  check("OR briefing is ready (50-state expansion)", stateBlocks.find(s => s.state === "OR")?.ready === "true");
+  check("AZ briefing is ready (50-state expansion)", stateBlocks.find(s => s.state === "AZ")?.ready === "true");
 
   // WA has the 6 briefing sections, all grounded.
   const waBlock = page.locator('[data-testid="briefing-state"][data-state="WA"]');
@@ -248,11 +252,11 @@ async function main(): Promise<void> {
     els => els.some(e => (e as HTMLElement).offsetParent !== null));
   check("no section content is visible while collapsed", anyContentVisible === false);
 
-  // Disclaimer band + out-of-state flag are NOT gated behind expansion.
+  // Disclaimer band is NOT gated behind expansion. (The out-of-state remote
+  // flag no longer renders for real states — all 50 are briefing-covered;
+  // its absence is asserted in the office-summary section above.)
   check("disclaimer band visible while everything is collapsed",
     await page.locator('[data-testid="briefing-disclaimer"]').isVisible());
-  check("out-of-state remote flag visible while everything is collapsed",
-    await page.locator('[data-testid="remote-out-of-state-flag"]').isVisible());
 
   // Salary caution pill shows ON THE COLLAPSED HEADER.
   const salaryToggle = waBlock.locator('[data-testid="briefing-section"][data-section="salary"] [data-testid="briefing-section-toggle"]');
@@ -291,8 +295,13 @@ async function main(): Promise<void> {
   const salary = (await salarySec.textContent()) ?? "";
   check("salary section shows the formula (× and a weekly $ figure)",
     /×|x/i.test(salary) && /\$[\d,]+\.\d{2}\s*(per|a)\s*week/i.test(salary), { sample: salary.slice(0, 140) });
-  check("salary summary keeps the 'tiers currently match' line",
-    /tiers? currently match|currently match/i.test(salary), { sample: salary.slice(0, 160) });
+  // The grounded summary must still speak to both employer tiers and that
+  // they currently coincide — exact phrasing varies across regens ("tiers
+  // currently match" vs "the same threshold"), so match either form.
+  check("salary summary covers both tiers coinciding (match/same threshold)",
+    /small employers[\s\S]*large employers/i.test(salary)
+      && /(currently match|same threshold)/i.test(salary),
+    { sample: salary.slice(0, 160) });
 
   // Strong inline warning box (not the generic size-gate) + derived annual.
   const warnBox = salarySec.locator('[data-testid="salary-warning"]');
@@ -383,20 +392,15 @@ async function main(): Promise<void> {
     !DETERMINATION.some(re => re.test(relevanceText)),
     { matched: DETERMINATION.filter(re => re.test(relevanceText)).map(String) });
 
-  // The load-bearing out-of-state remote flag — present, lists OR + AZ, prominent.
+  // The out-of-state remote flag — 50-STATE EXPANSION (2026-07): OR and AZ
+  // (and every real state) are now briefing-ready, so the flag must NOT
+  // render for this profile. Its absence is the correct behavior — the
+  // briefing genuinely covers all the agent's employee states now. The
+  // flag's fire-path logic is covered in verify_office_summary.ts with a
+  // synthetic non-ready state code.
   const oosFlag = summary.locator('[data-testid="remote-out-of-state-flag"]');
-  check("out-of-state remote flag present", (await oosFlag.count()) === 1);
-  const oosList = (await oosFlag.locator('[data-testid="remote-out-of-state-list"]').textContent()) ?? "";
-  check("flag lists the uncovered remote states (Arizona + Oregon)",
-    /Arizona/.test(oosList) && /Oregon/.test(oosList), { oosList });
-  const oosText = (await oosFlag.textContent()) ?? "";
-  check("flag says those workers may be subject to their own states' rules",
-    /own states.{0,3} rules/i.test(oosText));
-  check("flag names the briefing's coverage (Washington) as NOT covering them",
-    /this briefing \(currently Washington\) does not cover/i.test(oosText));
-  // Prominence: not fine print — visibly bordered amber callout (2px border).
-  const oosBorderW = await oosFlag.evaluate(el => window.getComputedStyle(el as HTMLElement).borderTopWidth);
-  check("flag is visually prominent (2px border, not fine print)", oosBorderW === "2px", { oosBorderW });
+  check("out-of-state remote flag ABSENT — all employee states are briefing-covered",
+    (await oosFlag.count()) === 0);
 
   // -- Relevance pointers as in-page links to briefing sections ------------
   console.log("\nRelevance links (WA briefing renders → size/salary/hourly link; remote does not)");
@@ -462,10 +466,13 @@ async function main(): Promise<void> {
   check("target header is within the viewport after the jump",
     landing.secTop >= 0 && landing.secTop < landing.viewportH, { secTop: landing.secTop, viewportH: landing.viewportH });
 
-  // -- No ready briefing state → relevance pointers are NOT links -----------
-  // Employee states OR + AZ (neither briefing-ready) → no briefing sections
-  // render, so the pointers must stay plain text rather than become dead links.
-  console.log("\nNo ready briefing state (emp OR+AZ) → pointers render but are NOT links");
+  // -- Non-WA primary state → links resolve against ITS sections ------------
+  // 50-STATE EXPANSION (2026-07): OR and AZ are briefing-ready now, so this
+  // scenario flips from "no links render" to "links render against the OR
+  // (primary) briefing". OR has salary/wage section keys but NO "pfml" key,
+  // so the size pointer must stay unlinked — the no-dead-links invariant is
+  // what this scenario actually protects.
+  console.log("\nNon-WA primary (emp OR+AZ) → salary/hourly link to OR sections; size stays plain");
   await setProfileAndOpen(page, { ...PROFILE, home_state: "OR", employee_states: ["OR", "AZ"] });
   const summaryNoReady = page.locator('[data-testid="office-summary"]');
   check("office summary still renders (ready variant — profile complete)",
@@ -473,10 +480,16 @@ async function main(): Promise<void> {
   const noReadyRelevance = summaryNoReady.locator('[data-testid="office-summary-relevance"]');
   check("relevance pointers still present",
     (await noReadyRelevance.locator('[data-testid="relevance-pointer"]').count()) >= 1);
-  check("NO relevance link rendered (no briefing section to jump to)",
-    (await noReadyRelevance.locator('[data-testid="relevance-link"]').count()) === 0);
-  check("every pointer marked data-linked='false' (no dead links)",
-    (await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-linked="true"]').count()) === 0);
+  check("salary pointer links to the OR briefing salary section",
+    (await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-key="salary"] [data-testid="relevance-link"]').getAttribute("href")) === "#briefing-OR-salary");
+  check("size pointer stays plain text (OR has no 'pfml' section key — no dead link)",
+    (await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-key="size"] [data-testid="relevance-link"]').count()) === 0);
+  const orLinkTargets = await noReadyRelevance.locator('[data-testid="relevance-link"]').evaluateAll(
+    els => els.map(e => (e as HTMLAnchorElement).getAttribute("href")?.slice(1) ?? ""));
+  for (const id of orLinkTargets) {
+    check(`OR link target #${id} resolves to a rendered section (not a dead link)`,
+      (await page.locator(`#${id}[data-testid="briefing-section"]`).count()) === 1);
+  }
 
   // -- Graceful upgrade path: old profile missing the new fields ------------
   console.log("\nUpgrade path: profile saved before pay_type/remote_count existed");
@@ -493,16 +506,18 @@ async function main(): Promise<void> {
   check("briefing still renders for a legacy profile (not blocked)",
     (await page.locator('[data-testid="compliance-briefing"]').count()) === 1);
 
-  // -- Non-covered employee state is SURFACED as coming-soon (not dropped) --
-  console.log("\nNon-covered employee state surfacing (employees WA + CA)");
+  // -- Every employee state renders its own briefing (50-state expansion) --
+  console.log("\nSecond-state briefing rendering (employees WA + CA)");
   await setProfileAndOpen(page, { ...PROFILE, employee_states: ["WA", "CA"] });
   const caBlock = page.locator('[data-testid="briefing-state"][data-state="CA"]');
-  check("CA (non-covered) is surfaced as a briefing block", (await caBlock.count()) === 1);
-  check("CA briefing is coming-soon (not dropped)",
-    (await caBlock.getAttribute("data-ready")) === "false");
+  check("CA is surfaced as a briefing block", (await caBlock.count()) === 1);
+  check("CA briefing is ready (50-state expansion)",
+    (await caBlock.getAttribute("data-ready")) === "true");
   const caText = (await caBlock.textContent()) ?? "";
-  check("CA block names the state and says coming soon",
-    /California/i.test(caText) && /coming soon/i.test(caText), { sample: caText.slice(0, 100) });
+  check("CA block names the state and renders its section set",
+    /California/i.test(caText)
+      && (await caBlock.locator('[data-testid="briefing-section"]').count()) >= 5,
+    { sample: caText.slice(0, 100) });
 
   // -- Multi-state expansion: ID, UT, and a mixed profile ------------------
   // Helper: the section keys rendered for a given state block, in order.
@@ -549,21 +564,25 @@ async function main(): Promise<void> {
   check("UT has NO WA Cares section",
     (await utBlock.locator('[data-testid="briefing-section"][data-section="wacares"]').count()) === 0);
 
-  console.log("\nMulti-state mix — WA + ID + AZ (built + built + not-yet-built)");
+  console.log("\nMulti-state mix — WA + ID + AZ (bespoke + federal-default + config-driven)");
   await setProfileAndOpen(page, { ...PROFILE, home_state: "WA", licensed_states: ["WA"], employee_states: ["WA", "ID", "AZ"] });
   const mixOrder = await page.$$eval('[data-testid="briefing-state"]', els =>
     els.map(e => ({ state: e.getAttribute("data-state"), ready: e.getAttribute("data-ready") })));
   check("primary (home WA) renders first", mixOrder[0]?.state === "WA", { order: mixOrder.map(s => s.state) });
   check("WA renders its own briefing (ready)", mixOrder.find(s => s.state === "WA")?.ready === "true");
   check("ID renders its own briefing (ready)", mixOrder.find(s => s.state === "ID")?.ready === "true");
-  check("AZ (not-yet-built) renders coming-soon", mixOrder.find(s => s.state === "AZ")?.ready === "false");
+  // 50-state expansion: AZ renders its own config-driven briefing now.
+  check("AZ renders its own briefing (ready, 50-state expansion)",
+    mixOrder.find(s => s.state === "AZ")?.ready === "true");
   check("WA keeps its 6-section set (incl. WA Cares)",
     (await sectionKeysFor("WA")).length === 6
       && (await page.locator('[data-testid="briefing-state"][data-state="WA"] [data-testid="briefing-section"][data-section="wacares"]').count()) === 1);
   check("ID shows its 5-section set in the same multi-state page",
     (await sectionKeysFor("ID")).length === 5);
-  const azText = (await page.locator('[data-testid="briefing-state"][data-state="AZ"]').textContent()) ?? "";
-  check("AZ block says coming soon", /coming soon/i.test(azText));
+  // AZ's ungrounded sections (e.g. leave — the azica.gov fetch is bot-walled)
+  // render coming-soon INSIDE the ready briefing; grounded ones render full.
+  check("AZ shows its 5-section config-driven set",
+    (await sectionKeysFor("AZ")).length === 5, { keys: await sectionKeysFor("AZ") });
 
   await browser.close();
 
