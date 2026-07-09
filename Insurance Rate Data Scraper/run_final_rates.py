@@ -1320,12 +1320,27 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
         if is_new:
             stats["filings_excluded_new_product"] += 1; continue
         fs = parse_filing_summary_pdf(pdf, t.tracking, text=pdf_text)
-        if not fs.rate_data_applies:
+        # DE layout-class fix (2026-07-08): some filings (the "Rate Information
+        # for Multiple Company Filings" summary layout) OMIT the "Rate data
+        # applies/does NOT apply to filing." sentence entirely, so
+        # rate_data_applies is None (UNKNOWN), not False. The old
+        # `if not fs.rate_data_applies` conflated the two and silently dropped
+        # filings whose per-company rows parsed fine — in DE that hid a
+        # MATERIAL class (SF -1.5%/244,139ph; the Nationwide 24,671ph block;
+        # Encompass +8.6%; Allstate +17.5%). Only an EXPLICIT "does NOT apply"
+        # excludes now; UNKNOWN falls through to the row-based decision.
+        if fs.rate_data_applies is False:
             stats["filings_excluded_rate_data_does_not_apply"] += 1; continue
         if not fs.company_rates:
-            # rate_data_applies=True but no rows extracted — record as zero-row anomaly
-            print(f"  ! {t.tracking}: rate_data_applies=True but 0 rows extracted")
-            stats["filings_excluded_no_pdf"] += 1
+            if fs.rate_data_applies:
+                # rate_data_applies=True but no rows extracted — zero-row anomaly
+                print(f"  ! {t.tracking}: rate_data_applies=True but 0 rows extracted")
+                stats["filings_excluded_no_pdf"] += 1
+            else:
+                # UNKNOWN (sentence absent) + no parseable rows = no rate
+                # evidence in the summary at all — classify rate-n/a, loudly.
+                print(f"  ! {t.tracking}: rate-data sentence ABSENT and 0 rows (value-less summary)")
+                stats["filings_excluded_rate_data_does_not_apply"] += 1
             continue
 
         # Determine rate_activity from disposition status. UT uses REJECTED for
