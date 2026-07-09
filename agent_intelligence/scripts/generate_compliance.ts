@@ -48,6 +48,7 @@ import {
   ResourceKey,
   StateCode,
 } from "../src/lib/resourceUrls";
+import { STATES } from "../src/lib/states";
 
 // ---- config ---------------------------------------------------------------
 
@@ -95,10 +96,11 @@ If the source pages do not contain enough substantive content to write a grounde
 
 // ---- helpers --------------------------------------------------------------
 
-const STATE_NAMES: Record<StateCode, string> = {
-  AZ: "Arizona", CO: "Colorado", ID: "Idaho", MT: "Montana",
-  NV: "Nevada", OR: "Oregon", UT: "Utah", WA: "Washington",
-};
+// Full-name lookup sourced from the app's canonical 50-state list, so the
+// generator never drifts from states.ts as coverage expands.
+const STATE_NAMES: Record<StateCode, string> = Object.fromEntries(
+  STATES.map(s => [s.code, s.name]),
+) as Record<StateCode, string>;
 
 const TOPIC_LABELS: Record<ResourceKey, string> = {
   wage_hour: "Wage & Hour",
@@ -113,7 +115,12 @@ const TOPIC_LABELS: Record<ResourceKey, string> = {
   salary_threshold: "Salary & Exempt Thresholds",
   wa_cares: "WA Cares (Long-Term Care)",
   at_will: "At-Will Termination",
-  business_tax: "Business Tax (B&O)",
+  // Generic across all 50 states — the per-state guidance profile carries the
+  // state's actual structure (WA B&O gross receipts, OH CAT, TX margin, ...).
+  business_tax: "Business Tax",
+  // 50-state expansion: state disability insurance / paid-leave premium
+  // programs / retirement mandates. Only mapped where a state runs one.
+  state_programs: "State Employer Programs",
 };
 
 // Per-topic extra grounding constraints, appended to the user message for
@@ -204,8 +211,44 @@ const GUIDANCE_BY_STATE: Partial<Record<StateCode, Partial<Record<ResourceKey, s
   UT: { ...FEDERAL_DEFAULT_GUIDANCE, business_tax: UT_BUSINESS_TAX_GUIDANCE },
 };
 
+// --- 50-state expansion (2026-07): universal per-topic guidance -------------
+//
+// States beyond WA/ID/UT get SOURCE-DRIVEN guidance: instead of classifying
+// each state by hand (own-threshold vs federal-default vs program state — a
+// drift hazard across 47 states), each topic's guidance instructs the model
+// to follow whichever structure the fetched official pages establish. The
+// absolute grounding rules still bind: no figure prints unless a source
+// states it. WA/ID/UT keep their bespoke profiles so their shipped summaries
+// don't churn.
+const UNIVERSAL_GUIDANCE: Partial<Record<ResourceKey, string>> = {
+  wage_hour:
+    "The summary MUST cover BOTH (1) minimum wage and (2) overtime. (1) If the state sets its own minimum wage, INCLUDE the current dollar amount exactly as the source states it, plus any scheduled increase the source gives. If the source says the state follows the federal minimum wage (or has no state minimum wage law), state that plainly with the federal figure only if a source states it. (2) INCLUDE the overtime rule the source states — the multiplier and the weekly (and any daily) trigger. If the state has no overtime law and follows the federal FLSA, say so plainly. Note any unusual rule the source states (daily overtime, seventh-day pay, no tip credit). Quote figures verbatim; never supply one from prior knowledge.",
+  salary_threshold:
+    "Determine from the sources which regime applies. If the state sets its OWN overtime-exempt salary threshold, INCLUDE the state weekly (or monthly) figure exactly as the source states it, note when it updates if the source says so, and — only if the sources support it — note that it exceeds the federal floor. Do NOT state an annual figure; the app derives it. If the state follows the federal FLSA threshold, state that plainly; include the federal weekly figure ONLY if a source states it, presented as the figure as of the source (the federal level has changed and been litigated), deferring confirmation to the U.S. Department of Labor. Never supply a number from prior knowledge.",
+  leave:
+    "Determine from the sources what the state actually mandates. If the state runs a paid sick leave mandate and/or a paid family-medical leave premium program, summarize each with the source-stated accrual rate, annual caps, contribution rate and employer/employee split, and any employer-size threshold — exactly as stated, clearly distinguishing the programs if there are two. If the state has NO state leave program, say that plainly, then summarize the federal FMLA from the FMLA source, framed clearly as a FEDERAL law that may apply to larger employers. Do not manufacture a program the sources don't establish.",
+  at_will:
+    "CRITICAL FOR THIS TOPIC: If the sources establish the state follows at-will employment, the summary MUST convey BOTH halves: (1) employment may generally be ended at any time without cause or notice, AND (2) the exceptions the source states — discrimination, retaliation for protected activity, violations of public policy. Never present at-will without its exceptions. EXCEPTION — if the sources establish the state does NOT follow at-will (Montana's Wrongful Discharge from Employment Act), summarize the actual standard instead: the probationary period and the good-cause requirement after it, as the source states them. If the sources do not actually establish the state's termination doctrine, return the cannot-summarize response.",
+  business_tax:
+    "The audience is an insurance agency. Describe the state's business tax STRUCTURE as the sources present it — which may be a corporate income tax, a gross-receipts tax, a franchise/margin/net-worth tax, a combination, or no income-based tax at all. Distinguish what applies to C corporations versus pass-through entities (LLCs, S corporations, partnerships) whose income flows to owners' personal returns. Include the rates, minimums, and thresholds the sources state, exactly as stated. If the sources give a classification or rate that applies specifically to insurance agency/commission revenue, surface it. Do not present a single 'your rate' figure unless the source itself frames one that way; close by deferring the agency's specific situation to a tax professional. Every number must come verbatim from the source.",
+  state_programs:
+    "Summarize the state-run employer program(s) the sources establish — disability insurance (TDI/SDI/DBL), a paid-leave premium program, a state retirement-savings mandate, or similar. For each: what it is, who must participate (include the employer-size or other threshold the source states), the contribution rate and employer/employee split as stated, and key deadlines the source gives. If a program is new or mid-rollout and the source says dates are staggered or subject to change, say so and defer to the source. Do not blend distinct programs into one; never supply a figure the sources don't state.",
+  workers_comp:
+    "Summarize the state's workers' compensation coverage requirement for employers: who must carry it and any employee-count or industry threshold the source states, how coverage is obtained (private insurers, competitive/monopolistic state fund, or self-insurance) as the source presents it, and any notable exemption. If the source establishes that coverage is elective/optional in this state, say that plainly and note what non-subscribing means if stated.",
+  payroll:
+    "Summarize the state's employer payroll obligations as the sources present them: unemployment-insurance registration and quarterly wage reporting/tax payment, plus any other employer withholding obligation the sources cover. Include the taxable wage base and rate details ONLY if a source states them.",
+  termination:
+    "Summarize the state's separation obligations as the sources present them: final-paycheck timing rules (include the deadline the source states, distinguishing quit vs discharge if it does), plus any state WARN-style mass-layoff notice requirement the sources cover, including its size threshold as stated.",
+  nexus:
+    "The audience is an insurance agency. Summarize insurance producer/agency licensing in this state as the sources present it: that a license is required to sell or adjust insurance, how licenses are obtained or renewed (state portal or NIPR) as stated, and continuing-education or renewal obligations the source states. Include business-registration basics only if a source covers them.",
+  hiring:
+    "Summarize the employer obligations when hiring in this state as the sources present them: new-hire reporting (to whom and the deadline the source states), plus core employment-standards obligations the sources cover. Do not include federal I-9/E-Verify rules unless a source states them.",
+  remote:
+    "Frame this for an agency employing someone who works remotely in this state: the state's employment rules generally apply based on where the employee performs the work. Summarize the standards-hub obligations the sources present (wage, leave, protections) as applying to employees working in the state regardless of where the employer sits. Only source-stated specifics.",
+};
+
 function getExtraGuidance(state: StateCode, topic: ResourceKey): string | undefined {
-  return GUIDANCE_BY_STATE[state]?.[topic];
+  return GUIDANCE_BY_STATE[state]?.[topic] ?? UNIVERSAL_GUIDANCE[topic];
 }
 
 function stripHtml(html: string): string {
@@ -230,12 +273,18 @@ async function fetchPageText(url: string): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
+    // Browser-like headers: several state sites (VT, NH) and federal hosts
+    // (dol.gov, ecfr.gov) 403-block obvious bot user-agents but serve the
+    // same static HTML to a browser UA (verified during the 50-state URL
+    // harvest, 2026-07).
     const resp = await fetch(url, {
       signal: controller.signal,
       headers: {
         "User-Agent":
-          "agent-intelligence/compliance-generator (insurance agent reference)",
-        Accept: "text/html,application/xhtml+xml",
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
       },
     });
     if (!resp.ok) {

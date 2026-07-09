@@ -16,6 +16,7 @@ import {
   StateCode,
 } from "@/lib/resourceUrls";
 import { AgentProfile, loadProfile, primaryOffice } from "@/lib/profile";
+import { STATES } from "@/lib/states";
 
 const TOPIC_ORDER: ResourceKey[] = [
   "wage_hour",
@@ -28,9 +29,10 @@ const TOPIC_ORDER: ResourceKey[] = [
   "remote",
 ];
 
-const COVERED: ReadonlySet<string> = new Set<StateCode>([
-  "AZ", "CO", "ID", "MT", "NV", "OR", "UT", "WA",
-]);
+// Compliance coverage is nationwide (50-state expansion, 2026-07) —
+// independent of the filing-data coverage flags. Every employee state
+// renders; unmapped (state, topic) cells fall back to coming-soon.
+const COVERED: ReadonlySet<string> = new Set<string>(STATES.map(s => s.code));
 
 // Build a quick lookup so the page never iterates the whole array per cell.
 function buildSummaryIndex(): Map<string, ComplianceSummary> {

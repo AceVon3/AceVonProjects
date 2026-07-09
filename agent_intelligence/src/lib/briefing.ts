@@ -112,23 +112,230 @@ const FEDERAL_DEFAULT_SECTIONS: BriefingSectionDef[] = [
   { key: "btax", label: "Business tax basics", topic: "business_tax" },
 ];
 
-// Built states → their section list. A new state with its own structure (e.g.
-// CO's own salary threshold + FAMLI, OR's regional wages) gets its own list.
+// --- 50-state expansion (2026-07) ------------------------------------------
+//
+// Per-state briefing configuration. Every state renders the five shared
+// sections (wage / salary / leave / termination-doctrine / business tax);
+// program states add a "State employer programs" section (TDI/SDI/DBL,
+// paid-leave premium programs, retirement mandates) between leave and the
+// termination doctrine. Structure-only config — every figure a section shows
+// comes from the grounded summaries, and size-gate framing lines carry the
+// same "verify" hedge WA's PFML gate set the precedent for.
+type StateBriefingConfig = {
+  // State sets its own overtime-exempt salary threshold — the salary warning
+  // names this agency instead of the U.S. DOL.
+  thresholdAgency?: string;
+  // State runs signature employer programs → add the state_programs section.
+  programsLabel?: string;
+  // State has a real state leave mandate (sick leave / PFML premium program)
+  // → the leave section keeps the generic size note visible unless a
+  // specific gate replaces it. Federal-FMLA-only states hide it.
+  hasStateLeave?: boolean;
+  leaveLabel?: string;
+  leaveSizeGate?: SectionSizeGate;
+  // Montana: the ONLY non-at-will state (WDEA good-cause standard).
+  notAtWill?: boolean;
+};
+
+const gate = (threshold: number, line: (n: number) => string): SectionSizeGate => ({
+  threshold,
+  framing: line,
+});
+
+// Size-gate framings follow WA's pattern: state the threshold, the agent's N,
+// the neutral above/below comparison, and ALWAYS defer to verification.
+const STATE_CONFIG: Record<string, StateBriefingConfig> = {
+  // --- Own-threshold states -------------------------------------------------
+  AK: {
+    thresholdAgency: "the Alaska Department of Labor",
+    hasStateLeave: true,
+    leaveLabel: "Paid sick leave",
+  },
+  CA: {
+    thresholdAgency: "the California DIR",
+    programsLabel: "SDI, Paid Family Leave & CalSavers",
+    hasStateLeave: true,
+  },
+  CO: {
+    thresholdAgency: "the Colorado CDLE",
+    programsLabel: "FAMLI & Colorado SecureSavings",
+    hasStateLeave: true,
+    leaveLabel: "Paid sick leave & FAMLI",
+    leaveSizeGate: gate(10, n =>
+      `The FAMLI employer share applies at 10+ employees; under 10, only the employee share is collected and remitted. You have ${emp(n)} — ${sit(n, 10)} the 10-employee line. Counting rules vary — verify your obligation.`),
+  },
+  HI: {
+    thresholdAgency: "the Hawaii DLIR",
+    programsLabel: "TDI & Prepaid Health Care Act",
+    hasStateLeave: true,
+  },
+  ME: {
+    thresholdAgency: "the Maine Department of Labor",
+    programsLabel: "Maine PFML & MERIT",
+    hasStateLeave: true,
+    leaveLabel: "Earned paid leave & PFML",
+    leaveSizeGate: gate(15, n =>
+      `Maine PFML's full employer share applies at 15+ employees; under 15, a reduced rate can be funded through employee withholding. You have ${emp(n)} — ${sit(n, 15)} the 15-employee line. Counting rules vary — verify your obligation.`),
+  },
+  NY: {
+    thresholdAgency: "the New York DOL",
+    programsLabel: "DBL, Paid Family Leave & NY Secure Choice",
+    hasStateLeave: true,
+  },
+
+  // --- Program states on the federal salary floor ---------------------------
+  AZ: {
+    hasStateLeave: true,
+    leaveLabel: "Earned paid sick time",
+    leaveSizeGate: gate(15, n =>
+      `Employers with 15+ employees must allow up to 40 hours of earned paid sick time per year; under 15, the cap is lower. You have ${emp(n)} — ${sit(n, 15)} the 15-employee line. Counting rules vary — verify your obligation.`),
+  },
+  CT: {
+    programsLabel: "CT Paid Leave & MyCTSavings",
+    hasStateLeave: true,
+    leaveLabel: "Paid sick leave & CT Paid Leave",
+  },
+  DE: {
+    programsLabel: "Delaware Paid Leave",
+    hasStateLeave: true,
+    leaveSizeGate: gate(10, n =>
+      `Delaware Paid Leave participation is generally mandatory at 10+ employees working in Delaware. You have ${emp(n)} — ${sit(n, 10)} the 10-employee line. Counting rules vary — verify your obligation.`),
+  },
+  IL: {
+    programsLabel: "Illinois Secure Choice",
+    hasStateLeave: true,
+    leaveLabel: "Paid Leave for All Workers (PLAWA)",
+  },
+  MA: {
+    programsLabel: "Massachusetts PFML",
+    hasStateLeave: true,
+    leaveLabel: "Paid Family & Medical Leave (PFML)",
+    leaveSizeGate: gate(25, n =>
+      `The PFML employer share applies at 25+ covered individuals; under 25, a lower employee-funded rate applies. You have ${emp(n)} — ${sit(n, 25)} the 25-employee line. Counting rules vary — verify your obligation.`),
+  },
+  MD: {
+    programsLabel: "Maryland FAMLI & MarylandSaves",
+    hasStateLeave: true,
+    leaveSizeGate: gate(15, n =>
+      `The FAMLI employer share applies at 15+ employees; under 15, only the employee share is collected and remitted. You have ${emp(n)} — ${sit(n, 15)} the 15-employee line. The program's dates have shifted — verify your obligation and its current timeline.`),
+  },
+  MI: {
+    hasStateLeave: true,
+    leaveLabel: "Earned Sick Time Act (ESTA)",
+    leaveSizeGate: gate(10, n =>
+      `ESTA's full paid-leave cap applies at 10+ employees; under 10, a lower paid cap applies. You have ${emp(n)} — ${sit(n, 10)} the 10-employee line. Counting rules vary — verify your obligation.`),
+  },
+  MN: {
+    programsLabel: "Minnesota Paid Leave & Secure Choice",
+    hasStateLeave: true,
+    leaveLabel: "Earned Sick & Safe Time + Paid Leave",
+    leaveSizeGate: gate(31, n =>
+      `Minnesota Paid Leave's standard premium split applies above 30 employees; at 30 or fewer (with average wages under the statutory level), a reduced employer rate applies. You have ${emp(n)} — ${sit(n, 31)} the 30-employee line. Counting rules vary — verify your obligation.`),
+  },
+  NJ: {
+    programsLabel: "TDI, Family Leave Insurance & NJ Secure Choice",
+    hasStateLeave: true,
+    leaveLabel: "Earned sick leave, TDI & FLI",
+  },
+  NM: {
+    hasStateLeave: true,
+    leaveLabel: "Healthy Workplaces Act (paid sick leave)",
+  },
+  NV: {
+    hasStateLeave: true,
+    leaveLabel: "Paid leave (SB 312)",
+    leaveSizeGate: gate(50, n =>
+      `SB 312's any-reason paid-leave accrual applies at 50+ employees; under 50 it is optional. You have ${emp(n)} — ${sit(n, 50)} the 50-employee line. Counting rules vary — verify your obligation.`),
+  },
+  OR: {
+    programsLabel: "Paid Leave Oregon & OregonSaves",
+    hasStateLeave: true,
+    leaveLabel: "Paid Leave Oregon",
+    leaveSizeGate: gate(25, n =>
+      `The Paid Leave Oregon employer share applies at 25+ employees; under 25, only the employee share is withheld and remitted. You have ${emp(n)} — ${sit(n, 25)} the 25-employee line. Counting rules vary — verify your obligation.`),
+  },
+  RI: {
+    programsLabel: "TDI/TCI & RISavers",
+    hasStateLeave: true,
+    leaveLabel: "Paid sick leave & TDI/TCI",
+    leaveSizeGate: gate(18, n =>
+      `Rhode Island's paid-sick-leave mandate applies at 18+ employees; TDI/TCI applies regardless of size. You have ${emp(n)} — ${sit(n, 18)} the 18-employee line. Counting rules vary — verify your obligation.`),
+  },
+  NE: {
+    hasStateLeave: true,
+    leaveLabel: "Paid sick time (Healthy Families Act)",
+    leaveSizeGate: gate(11, n =>
+      `Nebraska's paid-sick-time mandate applies at 11+ employees, with a higher annual cap at 20+. You have ${emp(n)} — ${sit(n, 11)} the 11-employee line. Counting rules vary — verify your obligation.`),
+  },
+  VA: {
+    programsLabel: "RetirePath Virginia & PFML (2028)",
+  },
+  VT: {
+    programsLabel: "VT Saves",
+    hasStateLeave: true,
+    leaveLabel: "Earned sick time",
+  },
+  // --- Montana: the one non-at-will state -----------------------------------
+  MT: { notAtWill: true },
+};
+
+// Assemble a state's section list from its config. Shared keys (wage/salary/
+// leave/atwill/btax) match WA's so office-summary relevance links resolve
+// identically across states.
+function buildSections(state: string): BriefingSectionDef[] {
+  const cfg = STATE_CONFIG[state] ?? {};
+  const sections: BriefingSectionDef[] = [
+    { key: "wage", label: "Minimum wage & overtime", topic: "wage_hour" },
+    { key: "salary", label: "Salary & exempt thresholds", topic: "salary_threshold", salaryRisk: true },
+    {
+      key: "leave",
+      label: cfg.leaveLabel ?? (cfg.hasStateLeave ? "Paid leave" : "Leave laws"),
+      topic: "leave",
+      ...(cfg.leaveSizeGate ? { sizeGate: cfg.leaveSizeGate } : {}),
+      // Federal-FMLA-only states explain the FMLA 50-employee gate in the
+      // summary itself, so the generic size note would contradict it.
+      ...(!cfg.hasStateLeave && !cfg.leaveSizeGate ? { hideSizeNote: true } : {}),
+    },
+  ];
+  if (cfg.programsLabel) {
+    sections.push({ key: "programs", label: cfg.programsLabel, topic: "state_programs" });
+  }
+  sections.push(
+    cfg.notAtWill
+      ? { key: "atwill", label: "Termination — good cause required (WDEA)", topic: "at_will" }
+      : { key: "atwill", label: "At-will termination", topic: "at_will" },
+    { key: "btax", label: "Business tax basics", topic: "business_tax" },
+  );
+  return sections;
+}
+
+// Built states → their section list. WA keeps its bespoke original list
+// (PFML gate + WA Cares + B&O framing) so it renders exactly as before;
+// ID/UT keep the federal-default list they shipped with; every other state
+// gets a config-driven list.
 const SECTIONS_BY_STATE: Record<string, BriefingSectionDef[]> = {
   WA: WA_SECTIONS,
   ID: FEDERAL_DEFAULT_SECTIONS,
   UT: FEDERAL_DEFAULT_SECTIONS,
 };
 
-// The sections that apply to a state — empty for not-yet-built states.
+// The sections that apply to a state — config-driven for the 50-state set.
 export function sectionsForState(state: string): BriefingSectionDef[] {
-  return SECTIONS_BY_STATE[state] ?? [];
+  const bespoke = SECTIONS_BY_STATE[state];
+  if (bespoke) return bespoke;
+  return buildSections(state);
 }
 
 // Which salary-misclassification warning a state's salary section carries.
-// WA names L&I; federal-default states name the U.S. DOL.
+// WA names L&I; own-threshold states name their own agency; federal-default
+// states name the U.S. DOL.
 export function salaryWarningForState(state: string): string {
-  return state === "WA" ? SALARY_WARNING : FEDERAL_SALARY_WARNING;
+  if (state === "WA") return SALARY_WARNING;
+  const agency = STATE_CONFIG[state]?.thresholdAgency;
+  if (agency) {
+    return `This salary determines overtime-exempt status under state law. A figure that's out of date can cause an employee to be misclassified and owed back overtime — confirm the current threshold with ${agency} before classifying anyone as exempt or setting a salary by it.`;
+  }
+  return FEDERAL_SALARY_WARNING;
 }
 
 const SUMMARY_INDEX = new Map<string, ComplianceSummary>(

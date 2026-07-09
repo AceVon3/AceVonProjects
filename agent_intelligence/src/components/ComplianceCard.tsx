@@ -35,6 +35,7 @@ const TOPIC_TAG_CLASS: Record<ResourceKey, string> = {
   wa_cares:         "bg-blue-fill text-blue-text",
   at_will:          "bg-red-fill text-red-text",
   business_tax:     "bg-green-fill text-green-text",
+  state_programs:   "bg-blue-fill text-blue-text",
 };
 
 const TOPIC_LABELS: Record<ResourceKey, string> = {
@@ -49,7 +50,8 @@ const TOPIC_LABELS: Record<ResourceKey, string> = {
   salary_threshold: "Salary & Exempt Thresholds",
   wa_cares: "WA Cares",
   at_will: "At-Will Termination",
-  business_tax: "Business Tax (B&O)",
+  business_tax: "Business Tax",
+  state_programs: "State Employer Programs",
 };
 
 // "https://www.lni.wa.gov/workers-rights/wages/minimum-wage/" → "lni.wa.gov"
