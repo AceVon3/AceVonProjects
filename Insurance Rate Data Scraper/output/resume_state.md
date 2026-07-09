@@ -1,5 +1,61 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-09 — CT IMPORTED (25th state) + B14 FLEX-RATE CLASS FIXED + B13/B14
+> AUDITS CLOSED EMPTY + KS IN FLIGHT.**
+> Overnight arc: B13 deliverable-drift scan (all 25 shipped states, offline
+> re-finalize vs shipped, full-surface diff) → **CLOSED EMPTY** (0 live-material
+> drift; VA +2 rate-neutral 2024 back-ext; AK 3 diffs = the documented
+> adjudication a re-finalize would REGRESS — pin CFPC-133947234 if AK is ever
+> re-finalized; MT 2 cosmetic filing_date blanks; the B13 premise itself was
+> stale — MT Allstate +20.1%/642ph ALSE-134863872 was already shipped).
+> CT full arc: 5-term retry 10/10 clean (travco zero-trace catch) → universe
+> 1,231/359 targets → 9 bursts, **359/359 cached, 0 download misses (15-state
+> streak)** → **B14 FOUND AT CROSS-CHECK**: flex-rating states file "Flex
+> Rate"; the Rate/Rate-Rule gate silently dropped LIVE PPA signals (GEICO
+> Choice +6.0%/12,316ph + Secure +5.8%/89,618ph eff 01/22/26; Progressive
+> Direct +6.0%/182,485ph eff 02/27/26) — 4th filing-type-vocabulary variant
+> (WA bare / GA prefixed / CT flex). Fixed exact-match; **retro A/B sweep
+> (toggle isolation) across all 25 prior states: 6,689 PDFs, 0 Flex Rate
+> sightings, 0 delta — CLOSED EMPTY (B14_SWEEP.md)**. Deliverable 137 rows /
+> 103 filings (funnel exact, 0 blank max/min); cross-check (15th point)
+> value-agreement 55/56 = 98.2% (the 1 differ = AM Best zeroing a REJECTED
+> Allstate NA filing; ours source-true), 0 genuine soft-misses, Farmers
+> enrichment ×2 (AM Best lacks). Import gate ALL PASS (24 prior states
+> byte-identical; CA/NY/TX intact; delta == exactly CT +137/+95/+29; as-of
+> pinned; determinism reproduced). **NEW BASELINE (SUPERSEDES post-DE
+> 3,684/2,247/683/`2b9316cf`): 25 states, raw 3,821 / rolled 2,342 /
+> active@2026-06-11 712 / db `03f2ad5e`.** validated {true,true};
+> methodology 25. Gates: tsc + 8/8 verify (verify_subtype re-keyed 712;
+> CT deltas exact: PPA +13 / HO-Comb +10 / Auto-Comb +4 / Other +1 / Condo
+> +1) + build 12/12 + 13/13 e2e. **PROD verified**: /,/methodology 200 (25
+> scraped, CT ✓✓), CT Prospect 15 rows serves live incl. B14-recovered
+> GECC-134763927 (+5.83% weighted, 2 entities); PRGS-134767624 rolls to
+> ~+3.6% (below Prospect ≥5) — in data, correctly not a Prospect row.
+> - **KS (26th arc) IN FLIGHT:** universe COMPLETE 1,005 / 311 targets
+>   (27/27 terms; wall family MGA/USAA/United/Garrison/Farmers retried 5/5
+>   clean; farmers 115 raw incl. plains independents → B9 filters at parse;
+>   COUNTRY 29 targets = the AK-thinness watch state at cross-check).
+>   Bursts 1-2 banked 134/311 (43%): Allstate 51/51 + AmFam 53/53 + Country
+>   29/29 complete. Burst-3+ on the 15-min cap-18 cadence; then offline tail
+>   → compare_ks_ambest (mirror CT comparator) → gated import (baseline will
+>   re-key from 3,821/2,342/712/`03f2ad5e`).
+> - **B12 UPDATE (environmental task-kill):** 2 kill-waves in one session
+>   (~03:08, ~03:18) hit background tasks incl. plain sleep timers; monitors
+>   survived. WORKAROUND ADOPTED: long jobs launched DETACHED (Start-Process)
+>   + Monitor-based timers; all kills were lossless (resume guards). Also:
+>   the DE session's localhost `next start` pair was left running and held
+>   filings.db locked — import unlink failed harmlessly; killed with user
+>   approval. LESSON: shut localhost servers down at checkpoint close.
+> - **HEADs (post-deploy):** insurancewebscraper `3f34590`→**`71c2a9b`**
+>   (3 commits: b14+audits / ct arc / ks bank; HEAD==origin, 0 deletions).
+>   agent-intel/master `6f9873c`→**`79b4ec2`** (subtree push; Vercel LIVE).
+>   Monorepo `3223162`+docs. `filings.db` **`03f2ad5e`** (25-state baseline).
+>   CT retry-loop scripts banked; ct/ks caches committed (`output/pdfs/CT`
+>   359, `output/pdfs/KS` 134-at-bank).
+> - **NEXT:** finish KS bursts → cross-check → gated import (26th). Then
+>   next-smallest: NJ (154) / MS (177) / IA (191). Large tier (PA/IN/TN)
+>   playbook stands. B10/B11 backlog carried.
+
 > **2026-07-08 (cont.2) — DE IMPORTED (24th state) + THE 3rd SILENT-DROP
 > CLASS CORRECTED (None≡False conflation in the rate_data_applies gate).**
 > DE's cross-check flagged 4 material AM-Best-only clusters → root cause: the

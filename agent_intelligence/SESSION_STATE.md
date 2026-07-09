@@ -1,3 +1,50 @@
+# Session checkpoint — 2026-07-09 (CT + B14)  ·  CT IMPORTED (25th state) + B14 FLEX-RATE GATE FIXED + B13/B14 AUDITS CLOSED EMPTY
+
+CT's 137-row scrape imported; the Flex Rate filing-type class it surfaced
+(B14) fixed pre-ship and retro-audited across the full prior corpus. db
+**`03f2ad5e`** (supersedes post-DE `2b9316cf`). **NEW BASELINE: 25 states,
+raw 3,821 / rolled 2,342 / active@2026-06-11 712.**
+
+- **B14 (4th filing-type-vocabulary variant):** flex-rating CT files "Flex
+  Rate" → the Rate/Rate-Rule gate silently dropped LIVE PPA signals (GEICO
+  Choice +6.0%/12,316ph + Secure +5.8%/89,618ph eff 01/22/26; Progressive
+  Direct +6.0%/182,485ph eff 02/27/26). Caught by the CT cross-check (the
+  drift scan structurally cannot see gate bugs — same gate both sides).
+  Fix: exact-match "Flex Rate" accept. Retro A/B sweep (toggle isolation,
+  real gate chain, PDF-level Filing Type) across all 25 prior states:
+  6,689 PDFs, 0 sightings, 0 delta, all 50 funnels balance — CLOSED EMPTY
+  (scraper repo B14_SWEEP.md).
+- **B13 (deliverable drift) CLOSED EMPTY:** all 25 shipped states
+  re-finalized offline vs shipped deliverables — 0 live-material drift.
+  The founding premise was stale (MT Allstate +20.1% was already shipped).
+  Doctrine: pin AK CFPC-133947234's adjudicated disposition date on any AK
+  re-finalize.
+- **CT cross-check (15th interim→real point):** value-agreement 55/56
+  (98.2%; the differ = AM Best zeroing a REJECTED Allstate NA filing, ours
+  source-true), PPA 43/54 / HO 25/33 (AM-Best-only = recency / 0%-immaterial
+  / 1 adjudicated new-product), 0 genuine soft-misses; Farmers enrichment ×2
+  (AM Best lacks — incl. FARM-134733599 +6.0%/5,133ph eff 04/14/26, serves
+  on PROD). validated:{auto:true, home:true}; methodology 24→25.
+- **Import gate ALL PASS:** 24 prior scraped states byte-identical; CA/NY/TX
+  intact; delta == exactly CT (+137 raw / +95 rolled / +29 active — the +29
+  splits PPA +13 / HO-Comb +10 / Auto-Comb +4 / Other +1 / Condo +1, re-keyed
+  in verify_subtype); as-of pin held; import determinism reproduced. Gates:
+  tsc + 8/8 verify + build 12/12 + 13/13 e2e. **PROD verified**: methodology
+  25 scraped CT ✓✓; CT Prospect 15 rows live incl. B14-recovered
+  GECC-134763927 (+5.83% weighted); PRGS-134767624 rolls ~+3.6% (below
+  Prospect ≥5) — in data, correctly not a Prospect row.
+- **HEADs (post-deploy):** insurancewebscraper `3f34590`→**`71c2a9b`**
+  (HEAD==origin, 0 deletions). agent-intel/master `6f9873c`→**`79b4ec2`**
+  (subtree push; Vercel LIVE). Monorepo `3223162`+docs. KS (26th) in flight:
+  universe complete 1,005/311, bursts 1-2 banked 134/311.
+- **B12 update:** environmental kill-waves hit background tasks (incl. sleep
+  timers) twice in-session; detached-process launches + Monitor timers
+  adopted, all recoveries lossless. The DE session's leftover localhost
+  `next start` held filings.db locked at import (killed with approval) —
+  shut localhost servers down at checkpoint close.
+
+---
+
 # Session checkpoint — 2026-07-08 (DE + rda-gate)  ·  DE IMPORTED (24th state) + THE 3rd SILENT-DROP CLASS CORRECTED (None-conflation, multi-state)
 
 DE's 133-row scrape imported AND the class it surfaced corrected in ONE gated
