@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { stateName } from "@/lib/briefing";
+import { sectionsForState, stateName } from "@/lib/briefing";
 import {
   briefingCoverageLabel,
   briefingSectionAnchorId,
@@ -10,6 +10,7 @@ import {
   payTypeLabel,
   relevancePointers,
   shouldFlagOutOfStateRemote,
+  stateReviews,
 } from "@/lib/officeSummary";
 import { AgentProfile, needsProfileUpgrade, primaryOffice } from "@/lib/profile";
 
@@ -158,6 +159,60 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
             );
           })}
         </ul>
+        {/* Per-state review blocks (50-state expansion): each employee
+            state's own gates and mandates, read against the agent's
+            headcount. Same derivation as the briefing sections, so the
+            summary can never claim a gate the briefing doesn't render.
+            Lines link into the state's own briefing section when it
+            renders (expand-then-scroll via onJump, like the pointers). */}
+        <div data-testid="state-reviews" className="mt-3.5 flex flex-col gap-2.5">
+          {stateReviews(profile.employee_states, primaryState, profile.employee_count).map(sr => (
+            <div key={sr.state} data-testid="state-review-block" data-state={sr.state}>
+              <div className="text-11 uppercase tracking-wider04 text-ink-3 mb-1">
+                {sr.name} ({sr.state})
+              </div>
+              <ul className="m-0 pl-0 list-none flex flex-col gap-1">
+                {sr.lines.map(line => {
+                  // Link only when the state actually renders that section.
+                  const hasSection = line.targetSection
+                    ? sectionsForState(sr.state).some(s => s.key === line.targetSection)
+                    : false;
+                  const anchorId = hasSection ? `briefing-${sr.state}-${line.targetSection}` : null;
+                  return (
+                    <li
+                      key={line.key}
+                      data-testid="state-review-pointer"
+                      data-state={sr.state}
+                      data-key={line.key}
+                      data-linked={anchorId ? "true" : "false"}
+                      className="text-13 text-ink-2 leading-[1.5] flex gap-2"
+                    >
+                      <span aria-hidden className="text-ink-3 mt-px">·</span>
+                      {anchorId ? (
+                        <a
+                          href={`#${anchorId}`}
+                          data-testid="state-review-link"
+                          data-target={anchorId}
+                          onClick={e => {
+                            if (onJump) {
+                              e.preventDefault();
+                              onJump(anchorId);
+                            }
+                          }}
+                          className="text-blue-text hover:underline"
+                        >
+                          {line.text}
+                        </a>
+                      ) : (
+                        <span>{line.text}</span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
         <p className="text-11 text-ink-3 m-0 mt-2.5">
           These flag what&rsquo;s worth a closer look given your numbers. Whether a
           given rule actually reaches your office depends on the counting rules —

@@ -16,6 +16,7 @@ import {
   payTypeLabel,
   relevancePointers,
   shouldFlagOutOfStateRemote,
+  stateReviews,
 } from "../src/lib/officeSummary";
 import type { AgentProfile } from "../src/lib/profile";
 
@@ -126,6 +127,50 @@ console.log("\nPay-type labels:");
 check("hourly -> 'Hourly'", payTypeLabel("hourly") === "Hourly");
 check("salary -> 'Salary'", payTypeLabel("salary") === "Salary");
 check("both -> 'Both hourly and salaried'", payTypeLabel("both") === "Both hourly and salaried");
+
+console.log("\nPer-state review blocks (stateReviews):");
+// N=15 profile against NY (10-line: at or above), OR (25-line: below),
+// MT (not at-will), GA (pure federal-default), WA (bespoke PFML + WA Cares).
+const reviews = stateReviews(["WA", "NY", "OR", "MT", "GA"], "WA", 15);
+const byState = new Map(reviews.map(r => [r.state, r] as const));
+check("one block per employee state, primary (WA) first",
+  reviews.length === 5 && reviews[0].state === "WA",
+  { order: reviews.map(r => r.state) });
+const nyLines = byState.get("NY")?.lines.map(l => l.text).join(" ") ?? "";
+check("NY: Secure Choice 10-line read against N=15 as at-or-above",
+  /10-employee line/.test(nyLines) && /15 employees — at or above/.test(nyLines),
+  { nyLines: nyLines.slice(0, 200) });
+check("NY: own-threshold salary line present",
+  /its own overtime-exempt salary threshold/.test(nyLines));
+const orLines = byState.get("OR")?.lines.map(l => l.text).join(" ") ?? "";
+check("OR: Paid Leave 25-line read against N=15 as below",
+  /25-employee line/.test(orLines) && /15 employees — below/.test(orLines),
+  { orLines: orLines.slice(0, 200) });
+const mtLines = byState.get("MT")?.lines.map(l => l.text).join(" ") ?? "";
+check("MT: not-at-will (WDEA good cause) line present",
+  /not an at-will state/.test(mtLines) && /good cause/.test(mtLines));
+const gaLines = byState.get("GA")?.lines ?? [];
+check("GA (pure federal-default): exactly one honest fallback line",
+  gaLines.length === 1 && /follows the federal wage-and-hour floors/.test(gaLines[0].text),
+  { gaLines: gaLines.map(l => l.text) });
+const waLines = byState.get("WA")?.lines.map(l => l.text).join(" ") ?? "";
+check("WA: PFML 50-line + WA Cares lines present",
+  /50-employee line/.test(waLines) && /WA Cares/.test(waLines));
+check("every review line has a target section key",
+  reviews.every(r => r.lines.every(l => !!l.targetSection)),
+  { missing: reviews.flatMap(r => r.lines.filter(l => !l.targetSection).map(l => `${r.state}/${l.key}`)) });
+// The determination line holds across ALL 50 states at several headcounts.
+const allStates = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VA","VT","WA","WV","WI","WY"];
+const offenders: string[] = [];
+for (const n of [1, 15, 60]) {
+  for (const r of stateReviews(allStates, "WA", n)) {
+    for (const l of r.lines) {
+      if (DETERMINATION.some(re => re.test(l.text))) offenders.push(`${r.state}/${l.key}@${n}`);
+    }
+  }
+}
+check("NO review line uses determination language (50 states × N=1/15/60)",
+  offenders.length === 0, { offenders });
 
 console.log("\n" + "=".repeat(72));
 if (failures === 0) {

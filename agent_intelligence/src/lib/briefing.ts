@@ -127,12 +127,17 @@ type StateBriefingConfig = {
   thresholdAgency?: string;
   // State runs signature employer programs → add the state_programs section.
   programsLabel?: string;
+  // Employee-count line on a state program (retirement mandates etc.).
+  programsSizeGate?: SectionSizeGate;
   // State has a real state leave mandate (sick leave / PFML premium program)
   // → the leave section keeps the generic size note visible unless a
   // specific gate replaces it. Federal-FMLA-only states hide it.
   hasStateLeave?: boolean;
   leaveLabel?: string;
   leaveSizeGate?: SectionSizeGate;
+  // Employee-count line on the state's wage/overtime rules (WV's 6-per-
+  // location minimum-wage line, AK's 4-employee daily-overtime line).
+  wageSizeGate?: SectionSizeGate;
   // Montana: the ONLY non-at-will state (WDEA good-cause standard).
   notAtWill?: boolean;
 };
@@ -150,6 +155,8 @@ const STATE_CONFIG: Record<string, StateBriefingConfig> = {
     thresholdAgency: "the Alaska Department of Labor",
     hasStateLeave: true,
     leaveLabel: "Paid sick leave",
+    wageSizeGate: gate(4, n =>
+      `Alaska's daily overtime rule (over 8 hours/day) applies at 4+ employees; under 4, only the weekly 40-hour trigger applies. You have ${emp(n)} — ${sit(n, 4)} the 4-employee line. Counting rules vary — verify your obligation.`),
   },
   CA: {
     thresholdAgency: "the California DIR",
@@ -159,6 +166,8 @@ const STATE_CONFIG: Record<string, StateBriefingConfig> = {
   CO: {
     thresholdAgency: "the Colorado CDLE",
     programsLabel: "FAMLI & Colorado SecureSavings",
+    programsSizeGate: gate(5, n =>
+      `Colorado SecureSavings registration applies at 5+ employees without a qualified retirement plan; FAMLI withholding applies regardless of size. You have ${emp(n)} — ${sit(n, 5)} the 5-employee line. Counting rules vary — verify your obligation.`),
     hasStateLeave: true,
     leaveLabel: "Paid sick leave & FAMLI",
     leaveSizeGate: gate(10, n =>
@@ -180,6 +189,8 @@ const STATE_CONFIG: Record<string, StateBriefingConfig> = {
   NY: {
     thresholdAgency: "the New York DOL",
     programsLabel: "DBL, Paid Family Leave & NY Secure Choice",
+    programsSizeGate: gate(10, n =>
+      `NY Secure Choice retirement registration applies at 10+ employees (in business 2+ years, no qualified plan); DBL and Paid Family Leave apply from the first employee. You have ${emp(n)} — ${sit(n, 10)} the 10-employee line. Counting rules vary — verify your obligation.`),
     hasStateLeave: true,
   },
 
@@ -192,17 +203,25 @@ const STATE_CONFIG: Record<string, StateBriefingConfig> = {
   },
   CT: {
     programsLabel: "CT Paid Leave & MyCTSavings",
+    programsSizeGate: gate(5, n =>
+      `MyCTSavings registration applies at 5+ employees without a qualified retirement plan; CT Paid Leave applies regardless of size. You have ${emp(n)} — ${sit(n, 5)} the 5-employee line. Counting rules vary — verify your obligation.`),
     hasStateLeave: true,
     leaveLabel: "Paid sick leave & CT Paid Leave",
+    leaveSizeGate: gate(11, n =>
+      `Connecticut's paid-sick-leave mandate applies at 11+ employees (expanding to all employers January 1, 2027); CT Paid Leave withholding applies regardless of size. You have ${emp(n)} — ${sit(n, 11)} the 11-employee line. Counting rules vary — verify your obligation.`),
   },
   DE: {
-    programsLabel: "Delaware Paid Leave",
+    programsLabel: "Delaware Paid Leave & EARNS",
+    programsSizeGate: gate(5, n =>
+      `Delaware EARNS retirement registration applies at 5+ employees without a qualified plan. You have ${emp(n)} — ${sit(n, 5)} the 5-employee line. Counting rules vary — verify your obligation.`),
     hasStateLeave: true,
     leaveSizeGate: gate(10, n =>
-      `Delaware Paid Leave participation is generally mandatory at 10+ employees working in Delaware. You have ${emp(n)} — ${sit(n, 10)} the 10-employee line. Counting rules vary — verify your obligation.`),
+      `Delaware Paid Leave is mandatory at 10+ employees working in Delaware (parental-only for 10–24; the full program at 25+). You have ${emp(n)} — ${sit(n, 10)} the 10-employee line. Counting rules vary — verify your obligation.`),
   },
   IL: {
     programsLabel: "Illinois Secure Choice",
+    programsSizeGate: gate(5, n =>
+      `Illinois Secure Choice registration applies at 5+ employees (in business 2+ years, no qualified retirement plan). You have ${emp(n)} — ${sit(n, 5)} the 5-employee line. Counting rules vary — verify your obligation.`),
     hasStateLeave: true,
     leaveLabel: "Paid Leave for All Workers (PLAWA)",
   },
@@ -227,13 +246,17 @@ const STATE_CONFIG: Record<string, StateBriefingConfig> = {
   },
   MN: {
     programsLabel: "Minnesota Paid Leave & Secure Choice",
+    programsSizeGate: gate(5, n =>
+      `Minnesota Secure Choice retirement registration applies at 5+ employees without a qualified plan; Minnesota Paid Leave applies regardless of size. You have ${emp(n)} — ${sit(n, 5)} the 5-employee line. Counting rules vary — verify your obligation.`),
     hasStateLeave: true,
     leaveLabel: "Earned Sick & Safe Time + Paid Leave",
     leaveSizeGate: gate(31, n =>
       `Minnesota Paid Leave's standard premium split applies above 30 employees; at 30 or fewer (with average wages under the statutory level), a reduced employer rate applies. You have ${emp(n)} — ${sit(n, 31)} the 30-employee line. Counting rules vary — verify your obligation.`),
   },
   NJ: {
-    programsLabel: "TDI, Family Leave Insurance & NJ Secure Choice",
+    programsLabel: "TDI, Family Leave Insurance & RetireReady NJ",
+    programsSizeGate: gate(10, n =>
+      `RetireReady NJ (Secure Choice) registration applies at 10+ employees (in business 2+ years, no qualified plan); TDI and FLI apply regardless of size. You have ${emp(n)} — ${sit(n, 10)} the 10-employee line. Counting rules vary — verify your obligation.`),
     hasStateLeave: true,
     leaveLabel: "Earned sick leave, TDI & FLI",
   },
@@ -256,6 +279,8 @@ const STATE_CONFIG: Record<string, StateBriefingConfig> = {
   },
   RI: {
     programsLabel: "TDI/TCI & RISavers",
+    programsSizeGate: gate(5, n =>
+      `RISavers retirement registration applies at 5+ employees without a qualifying plan (compliance deadlines are staggered by size through 2028); TDI/TCI applies regardless of size. You have ${emp(n)} — ${sit(n, 5)} the 5-employee line. Counting rules vary — verify your obligation.`),
     hasStateLeave: true,
     leaveLabel: "Paid sick leave & TDI/TCI",
     leaveSizeGate: gate(18, n =>
@@ -269,11 +294,19 @@ const STATE_CONFIG: Record<string, StateBriefingConfig> = {
   },
   VA: {
     programsLabel: "RetirePath Virginia & PFML (2028)",
+    programsSizeGate: gate(5, n =>
+      `RetirePath Virginia registration applies at 5+ employees as of July 1, 2026 (in business 2+ years, no qualified plan). You have ${emp(n)} — ${sit(n, 5)} the 5-employee line. Counting rules vary — verify your obligation.`),
   },
   VT: {
     programsLabel: "VT Saves",
+    programsSizeGate: gate(5, n =>
+      `VT Saves retirement registration applies at 5+ employees without a retirement plan. You have ${emp(n)} — ${sit(n, 5)} the 5-employee line. Counting rules vary — verify your obligation.`),
     hasStateLeave: true,
     leaveLabel: "Earned sick time",
+  },
+  WV: {
+    wageSizeGate: gate(7, n =>
+      `West Virginia's state minimum wage applies at locations with more than 6 employees; at or under 6 per location, the federal floor applies. You have ${emp(n)} — ${sit(n, 7)} that line. Counting is per location — verify your obligation.`),
   },
   // --- Montana: the one non-at-will state -----------------------------------
   MT: { notAtWill: true },
@@ -285,7 +318,12 @@ const STATE_CONFIG: Record<string, StateBriefingConfig> = {
 function buildSections(state: string): BriefingSectionDef[] {
   const cfg = STATE_CONFIG[state] ?? {};
   const sections: BriefingSectionDef[] = [
-    { key: "wage", label: "Minimum wage & overtime", topic: "wage_hour" },
+    {
+      key: "wage",
+      label: "Minimum wage & overtime",
+      topic: "wage_hour",
+      ...(cfg.wageSizeGate ? { sizeGate: cfg.wageSizeGate } : {}),
+    },
     { key: "salary", label: "Salary & exempt thresholds", topic: "salary_threshold", salaryRisk: true },
     {
       key: "leave",
@@ -298,7 +336,12 @@ function buildSections(state: string): BriefingSectionDef[] {
     },
   ];
   if (cfg.programsLabel) {
-    sections.push({ key: "programs", label: cfg.programsLabel, topic: "state_programs" });
+    sections.push({
+      key: "programs",
+      label: cfg.programsLabel,
+      topic: "state_programs",
+      ...(cfg.programsSizeGate ? { sizeGate: cfg.programsSizeGate } : {}),
+    });
   }
   sections.push(
     cfg.notAtWill
@@ -324,6 +367,87 @@ export function sectionsForState(state: string): BriefingSectionDef[] {
   const bespoke = SECTIONS_BY_STATE[state];
   if (bespoke) return bespoke;
   return buildSections(state);
+}
+
+// --- Per-state "worth reviewing" lines (office summary) ---------------------
+//
+// One line-set per employee state, derived from the SAME config that drives
+// the briefing sections — so the summary can never claim a gate the briefing
+// doesn't render. Same language discipline as size gates: state the rule's
+// line, the agent's N, the neutral above/below comparison, and defer the
+// conclusion. NEVER "this applies to you."
+export type StateReviewLine = {
+  key: string;
+  text: string;
+  // Briefing section key the line points at — the component links it only if
+  // that section actually renders for the state.
+  targetSection?: string;
+};
+
+export function stateReviewLines(state: string, n: number): StateReviewLine[] {
+  // WA is bespoke (not in STATE_CONFIG): surface its two signature gates.
+  if (state === "WA") {
+    const pfmlGate = WA_SECTIONS.find(s => s.key === "pfml")?.sizeGate;
+    return [
+      ...(pfmlGate
+        ? [{ key: "leave", text: pfmlGate.framing(n), targetSection: "pfml" }]
+        : []),
+      {
+        key: "programs",
+        text: "WA Cares long-term-care premiums are collected from employees' wages regardless of employer size — the WA Cares section covers the employer duties.",
+        targetSection: "wacares",
+      },
+    ];
+  }
+
+  const cfg = STATE_CONFIG[state];
+  if (!cfg) {
+    // Pure federal-default state: one honest line so every listed state
+    // appears, pointing at its briefing rather than implying nothing exists.
+    return [{
+      key: "default",
+      text: `${stateName(state)} largely follows the federal wage-and-hour floors, with no state paid-leave mandate or employer-mandate programs — its briefing below covers the specifics.`,
+      targetSection: "wage",
+    }];
+  }
+
+  const lines: StateReviewLine[] = [];
+  if (cfg.notAtWill) {
+    lines.push({
+      key: "atwill",
+      text: `${stateName(state)} is not an at-will state — after the probationary period, ending employment requires good cause under the WDEA. The termination section is the one to review before any separation.`,
+      targetSection: "atwill",
+    });
+  }
+  if (cfg.leaveSizeGate) {
+    lines.push({ key: "leave", text: cfg.leaveSizeGate.framing(n), targetSection: "leave" });
+  } else if (cfg.hasStateLeave) {
+    lines.push({
+      key: "leave",
+      text: `${stateName(state)} mandates paid leave regardless of employer size — the leave section covers the accrual rules.`,
+      targetSection: "leave",
+    });
+  }
+  if (cfg.programsSizeGate) {
+    lines.push({ key: "programs", text: cfg.programsSizeGate.framing(n), targetSection: "programs" });
+  } else if (cfg.programsLabel) {
+    lines.push({
+      key: "programs",
+      text: `${cfg.programsLabel} — state-run employer programs; the programs section covers who they reach and what they cost.`,
+      targetSection: "programs",
+    });
+  }
+  if (cfg.wageSizeGate) {
+    lines.push({ key: "wage", text: cfg.wageSizeGate.framing(n), targetSection: "wage" });
+  }
+  if (cfg.thresholdAgency) {
+    lines.push({
+      key: "salary",
+      text: `${stateName(state)} sets its own overtime-exempt salary threshold, above the federal floor — worth checking any exempt classification against the state figure in the salary section.`,
+      targetSection: "salary",
+    });
+  }
+  return lines;
 }
 
 // Which salary-misclassification warning a state's salary section carries.

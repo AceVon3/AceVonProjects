@@ -16,6 +16,8 @@ import {
   orderedBriefingStates,
   sectionsForState,
   stateName,
+  stateReviewLines,
+  StateReviewLine,
 } from "./briefing";
 import type { AgentProfile, PayType } from "./profile";
 
@@ -56,6 +58,30 @@ export function briefingCoverageLabel(employeeStates: string[]): string {
 // not optional.
 export function shouldFlagOutOfStateRemote(p: AgentProfile): boolean {
   return p.remote_count > 0 && outOfCoverageEmployeeStates(p.employee_states).length > 0;
+}
+
+// --- Per-state review blocks (50-state expansion, 2026-07) ------------------
+//
+// One block per employee state: the state's own gates and mandates read
+// against the agent's headcount, derived from the same config the briefing
+// sections use. Ordered like the briefing (primary state first) so the
+// summary and the briefing tell the same story in the same order.
+export type StateReview = {
+  state: string;
+  name: string;
+  lines: StateReviewLine[];
+};
+
+export function stateReviews(
+  employeeStates: string[],
+  homeState: string,
+  employeeCount: number,
+): StateReview[] {
+  return orderedBriefingStates(employeeStates, homeState).map(s => ({
+    state: s,
+    name: stateName(s),
+    lines: stateReviewLines(s, employeeCount),
+  }));
 }
 
 // The state whose briefing sections actually render (first ready state in

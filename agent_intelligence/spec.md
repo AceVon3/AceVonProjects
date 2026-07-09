@@ -1222,6 +1222,11 @@ Only two sections are size-gated in WA; the framing surfaces the threshold and w
 
 Rule: state the threshold, state N, state the neutral above/below comparison, then defer the determination ("verify"). **Never** "you are exempt / you are subject." (The federal FMLA 50+/75-mile gate is federal, out of this state-scoped briefing — at most a one-line aside.)
 
+#### 50-state expansion (2026-07): gates + per-state review blocks
+
+- Size gates are no longer WA-only. Every state with a verified employee-count line carries a gate on the matching briefing section, all following the same threshold/N/above-below/defer rule: leave mandates (OR 25, MA 25, CO 10, ME 15, MD 15, MN 30, DE 10 [parental 10–24 / full 25+], NV 50, AZ 15, MI 10, RI 18, NE 11, CT 11), state programs / retirement mandates (NY 10, NJ 10, CT 5, IL 5, MN 5, VT 5, RI 5, VA 5, DE 5, CO 5), and wage/overtime quirks (WV >6-per-location minimum-wage line, AK 4-employee daily-overtime line). Thresholds live in `STATE_CONFIG` (`briefing.ts`) as verified product copy — when a state moves a line (e.g. VA's 25→5 retirement drop), the config is the single place to update.
+- **Per-state review blocks** (`stateReviews` / `stateReviewLines`): the office summary's "Worth reviewing for your office" panel renders one block per employee state, ordered like the briefing (primary first). Lines derive from the SAME `STATE_CONFIG` that renders the sections — the summary can never claim a gate the briefing doesn't show. Line types: not-at-will (MT/WDEA), leave gate or size-independent leave mandate, programs gate or program pointer, wage gate, own-salary-threshold pointer; pure federal-default states get exactly one honest fallback line. Each line links (expand-then-scroll) into that state's own briefing section when it renders. Same determination-language blocklist applies; `verify_office_summary` asserts it across all 50 states at N=1/15/60.
+
 ### Layout
 
 - The briefing sits **at the top of `/compliance`**; the existing 8-topic card grid stays **below** as the comprehensive source-linked reference (one source of truth — the briefing reuses those summaries).
