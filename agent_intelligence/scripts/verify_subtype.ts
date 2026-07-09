@@ -17,6 +17,7 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-07-09 when CT moved interim->scraped (+29 active = 712; per-sub_type deltas exactly CT's: PPA +13, HO-Comb +10, Auto-Comb +4, Other +1, Condo +1; distinct still 11 — CT's 5 active sub_types are a subset). Prior 2026-07-08 DE baseline 683. Earlier note:
 // Re-keyed 2026-07-08 when DE moved interim->scraped (+20 active: PPA +10, HO-Comb +4, Auto-Comb +3, Motorcycle +2, Condo +1) AND the rda-gate correction added IL's rate-neutral LBPM-134651724 (HO-Comb +1) = 683. Prior 2026-07-08 SD baseline 662. Earlier note:
 // Re-keyed 2026-07-08 when SD moved interim->scraped (+28 active = 662; per-sub_type deltas exactly SD's: PPA +11, HO-Comb +7, Motorcycle +3, Auto-Comb +2, Owner-Occ +2, Tenant +1, RV +1, Other +1; distinct still 11 — SD's 8 active sub_types are a subset). Prior 2026-07-08 ME baseline 634. Earlier note:
 // Re-keyed 2026-07-08 when ME moved interim->scraped (+20 active = 634; per-sub_type deltas exactly ME's: PPA +8, Auto-Comb +6, HO-Comb +3, Motorcycle +2, RV +1; distinct still 11 — ME's 5 active sub_types are a subset). Prior 2026-07-07 RI baseline 614. Earlier note:
@@ -32,14 +33,14 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 290,
-  "19.0000 Personal Auto Combinations": 100,
+  "19.0001 Private Passenger Auto (PPA)": 303,
+  "19.0000 Personal Auto Combinations": 104,
   "19.0002 Motorcycle": 37,
   "19.0003 Recreational Vehicle (RV)": 16,
-  "19.0004 Other": 6,
+  "19.0004 Other": 7,
   "04.0003 Owner Occupied Homeowners": 51,
-  "04.0000 Homeowners Sub-TOI Combinations": 136,
-  "04.0001 Condominium Homeowners": 17,
+  "04.0000 Homeowners Sub-TOI Combinations": 146,
+  "04.0001 Condominium Homeowners": 18,
   "04.0005 Other Homeowners": 12,
   "04.0004 Tenant Homeowners": 8,
   "04.0002 Mobile Homeowners": 10,
@@ -63,7 +64,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 683", rows.length, 683);
+check("active rolled filings = 712", rows.length, 712);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 

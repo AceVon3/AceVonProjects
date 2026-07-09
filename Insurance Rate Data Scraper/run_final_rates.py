@@ -317,10 +317,15 @@ def _is_rate_filing_type(ft) -> bool:
     but GA labels its rate filings "Rate/Rule PPA-Prior Approval", "Rate/Rule
     PPA- File and Use" and "Rate/Rule other than PPA" (found 2026-06-10 when the
     exact-membership check excluded ALL 247 GA rate filings as form_or_rule ->
-    0-row deliverable). Exact "Rate" or a "Rate/Rule" prefix counts; nothing
-    else ("Form", "Reporting", ...) does."""
+    0-row deliverable). CT (a flex-rating state) adds "Flex Rate" (found
+    2026-07-09, B14: the CT cross-check flagged GEICO +6.0%/89,618ph +
+    Progressive Direct +6.0%/182,485ph LIVE PPA signals silently dropped as
+    form_or_rule; all-state audit proved the class is CT-only — every other
+    non-matching type across 26 universes parses to 0 material rows). Exact
+    "Rate"/"Flex Rate" or a "Rate/Rule" prefix counts; nothing else ("Form",
+    "Reporting", "Predictive Model", ...) does."""
     ft = (ft or "").strip()
-    return ft == "Rate" or ft.startswith("Rate/Rule")
+    return ft == "Rate" or ft.startswith("Rate/Rule") or ft == "Flex Rate"
 PDF_FILING_TYPE_RE = re.compile(r"Filing Type:\s*([A-Za-z/ \-]+)\s*$", re.MULTILINE)
 
 # Per-company rate-table rows for these subsidiary names are dropped at emission
