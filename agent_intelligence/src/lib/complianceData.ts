@@ -22,10 +22,11 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "AK",
     "topic": "at_will",
-    "title": null,
-    "summary": null,
+    "title": "Alaska At-Will Termination Rules and Key Exceptions",
+    "summary": "In Alaska, an employer does not need to give a reason to fire an employee. However, termination based on race, creed, color, age, religion, sex, or similar protected characteristics may violate state law. Employees who believe they were discriminated against may contact the Alaska Human Rights Commission. Retaliation against an employee for opposing discriminatory practices or filing a complaint is also prohibited under the Alaska Human Rights Law.",
     "sources": [
-      "https://labor.alaska.gov/lss/whfaq.htm"
+      "https://labor.alaska.gov/lss/whfaq.htm",
+      "https://humanrights.alaska.gov/services/complaints/"
     ],
     "last_checked": "2026-07-09"
   },
@@ -120,6 +121,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "sources": [
       "https://labor.alaska.gov/wc/er-profit.html",
       "https://labor.alaska.gov/wc/"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "AL",
+    "topic": "at_will",
+    "title": "Alabama At-Will Termination and Federal Anti-Discrimination Protections",
+    "summary": "Alabama has no state termination laws, meaning employment termination is governed by federal law rather than state statute. Federal law, enforced by the Equal Employment Opportunity Commission, prohibits termination and other employment decisions based on race, color, religion, sex, national origin, age (40 or older), disability, or genetic information. Retaliation against employees who complain about discrimination or participate in discrimination investigations is also prohibited. Employers with termination questions beyond discrimination are directed to seek legal counsel.",
+    "sources": [
+      "https://www2.labor.alabama.gov/Information/job_termination_laws.aspx",
+      "https://www.eeoc.gov/prohibited-employment-policiespractices"
     ],
     "last_checked": "2026-07-09"
   },
@@ -271,6 +283,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "last_checked": "2026-07-09"
   },
   {
+    "state": "AR",
+    "topic": "wage_hour",
+    "title": "Arkansas Minimum Wage and Overtime Rules for Employers",
+    "summary": "Arkansas's minimum wage is $11 per hour, a rate that has not changed since 2021 and will remain unchanged without legislative action or a new ballot issue. Tipped workers receive a base pay of $2.63 per hour in Arkansas; if tips do not bring total pay to $11 per hour, employers must cover the difference. Arkansas minimum wage requirements apply to employers with four or more employees in non-exempt industries. The source pages do not provide information on Arkansas overtime rules.",
+    "sources": [
+      "https://adecm.ade.arkansas.gov/ViewApprovedMemo.aspx?id=4419",
+      "https://www.uaex.uada.edu/business-communities/ced-blog/posts/2023/january/what-is-the-minimum-wage-in-arkansas.aspx"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
     "state": "AZ",
     "topic": "at_will",
     "title": "Arizona At-Will Employment and Retaliatory Discharge Protections",
@@ -376,10 +399,11 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "CA",
     "topic": "at_will",
-    "title": null,
-    "summary": null,
+    "title": "California At-Will Termination and Employment Discrimination Exceptions",
+    "summary": "Under California Labor Code 2922, employment with no specified term may be terminated at will by either party with notice. However, employers cannot terminate employees based on protected characteristics such as race, sex, age, disability, religion, or national origin under the Fair Employment and Housing Act. Retaliation against employees for asserting rights under FEHA is also prohibited. Employers of 5 or more employees are additionally barred from firing employees for pregnancy-related reasons or for taking protected leave under the California Family Rights Act.",
     "sources": [
-      "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=LAB&sectionNum=2922"
+      "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=LAB&sectionNum=2922",
+      "https://calcivilrights.ca.gov/employment/"
     ],
     "last_checked": "2026-07-09"
   },
@@ -501,6 +525,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "CO",
+    "topic": "at_will",
+    "title": null,
+    "summary": null,
+    "sources": [
+      "https://ccrd.colorado.gov/common-civil-rights-questions",
+      "https://ccrd.colorado.gov/discrimination"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "CO",
     "topic": "business_tax",
     "title": "Colorado Business Income Tax Filing Requirements and Due Dates",
     "summary": "Colorado requires any corporation, partnership, LLC, joint venture, or similar entity that must file a federal income tax return to also file a Colorado Income Tax Return. Organizations doing business only in Colorado compute tax on 100% of Colorado taxable income; those operating in multiple states must apportion income. Returns are due by the fifteenth day of the fourth month after the tax year ends, or April 15 for calendar-year filers. The source does not state specific rates or minimums; insurance agencies should consult a tax professional for their specific situation.",
@@ -559,16 +594,6 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "summary": "Employers with workers performing work in Colorado are subject to the state's labor standards, which are investigated and enforced by the Division of Labor Standards and Statistics. Covered areas include wages and hours (minimum wage, overtime, deductions), health-related leave, whistleblower protections, pay and promotion transparency, and limits on screening applicants. Colorado's 2026 statewide minimum wage is $15.16 per hour, or $12.14 per hour for tipped employees. Local minimums may be higher depending on where the employee works.",
     "sources": [
       "https://cdle.colorado.gov/dlss"
-    ],
-    "last_checked": "2026-07-09"
-  },
-  {
-    "state": "CO",
-    "topic": "salary_threshold",
-    "title": null,
-    "summary": null,
-    "sources": [
-      "https://cdle.colorado.gov/sites/cdle/files/adopted_2026_pay_calc_order_7_ccr_1103-14_12.8.25.pdf"
     ],
     "last_checked": "2026-07-09"
   },
@@ -745,6 +770,18 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "DE",
+    "topic": "at_will",
+    "title": "Delaware At-Will Employment and Wrongful Termination Protections",
+    "summary": "Delaware generally follows the employment at-will doctrine, meaning an employer may terminate a working relationship with or without just cause in the absence of a contract setting terms, conditions, or duration of employment. However, employers may not terminate employees based on protected characteristics such as race, color, sex, age, religion, disability, sexual orientation, gender identity, or other protected classes under Delaware law. Retaliation against employees for reporting discrimination or participating in an investigation is also prohibited. The Delaware Office of Anti-Discrimination enforces these protections and investigates complaints of unlawful termination.",
+    "sources": [
+      "https://legis.delaware.gov/json/BillDetail/GetHtmlDocument?fileAttachmentId=21856",
+      "https://delcode.delaware.gov/title19/c007/sc02/index.html",
+      "https://industrialaffairs.delaware.gov/anti-discrimination"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "DE",
     "topic": "business_tax",
     "title": "Delaware Corporate Income Tax and Franchise Tax Structure",
     "summary": "Delaware corporations conducting business in the state pay corporate income tax at 8.7% of federal taxable income allocated to Delaware. Domestic corporations also owe an annual franchise tax ranging from a $175 minimum (Authorized Shares method) to a $200,000 maximum, or $250,000 for Large Corporate Filers. LLCs, LPs, and general partnerships do not file an annual report but owe an annual tax of $300.00 due by June 1. An agency's specific tax obligations should be confirmed with a qualified tax professional.",
@@ -842,10 +879,12 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "DE",
     "topic": "wage_hour",
-    "title": null,
-    "summary": null,
+    "title": "Delaware Minimum Wage, Overtime, and Wage Payment Rules",
+    "summary": "Delaware's minimum wage is $15.00 per hour as of January 1, 2025. Tipped employees must receive a minimum cash wage of $2.23 per hour, with total earnings required to meet the minimum wage. The source pages do not state a state-specific overtime rule or multiplier; employers should consult federal FLSA requirements for overtime. Wages must be paid at least once per calendar month and within 7 days of the close of the pay period.",
     "sources": [
-      "https://industrialaffairs.delaware.gov/wage-hour"
+      "https://industrialaffairs.delaware.gov/wage-hour",
+      "https://delcode.delaware.gov/title19/c009/index.html",
+      "https://delcode.delaware.gov/title19/c011/index.html"
     ],
     "last_checked": "2026-07-09"
   },
@@ -857,6 +896,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "sources": [
       "https://industrialaffairs.delaware.gov/workers-compensation",
       "https://industrialaffairs.delaware.gov/en/knowledgebase-employer/when-is-an-employer-required-to-carry-workers-compensation-insurance"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "FL",
+    "topic": "at_will",
+    "title": "Florida At-Will Employment and Unlawful Termination Exceptions",
+    "summary": "Florida employers covered by the Florida Civil Rights Act may not discharge employees because of race, color, religion, sex, pregnancy, national origin, age, handicap, or marital status. Retaliation against employees who oppose unlawful employment practices or participate in related investigations is also prohibited. Employers with 15 or more employees are subject to these anti-discrimination requirements. Remedies for wrongful discharge can include lost wages, back pay, compensatory damages, attorney's fees, and punitive damages up to $100,000.",
+    "sources": [
+      "https://fchr.myflorida.com/faq-frequently-asked-questions",
+      "https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0760/Sections/0760.10.html"
     ],
     "last_checked": "2026-07-09"
   },
@@ -961,6 +1011,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "summary": "Florida employers must carry workers' compensation insurance based on industry type and employee count. Construction employers with one or more employees must have coverage; non-construction employers are required once they have four or more employees; agricultural employers must cover six or more regular employees or twelve or more seasonal workers meeting specified day thresholds. Out-of-state employers must notify their carrier or obtain a Florida-approved policy with Florida listed in Section 3A. Business owners may apply for an exemption to opt out of coverage protections for themselves.",
     "sources": [
       "https://www.myfloridacfo.com/division/wc/employer/coverage-requirements"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "GA",
+    "topic": "at_will",
+    "title": "Georgia At-Will Employment and Wrongful Termination Basics",
+    "summary": "In Georgia, either the employer or employee may end the employment relationship at any time, with or without cause and for any reason, unless there is a contract specifying a length of service. This is known as employment-at-will. An exception exists for illegal discrimination based on protected characteristics such as race, religion, color, age, sex, national origin, and disability. Employers also may not retaliate against employees who file a discrimination complaint with the Georgia Commission on Equal Opportunity.",
+    "sources": [
+      "https://dol.georgia.gov/faqs-individuals/individuals-faqs-fair-labor-standards-act",
+      "https://gceo.georgia.gov/faqs/employment-faq"
     ],
     "last_checked": "2026-07-09"
   },
@@ -1555,6 +1616,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "IN",
+    "topic": "at_will",
+    "title": "Indiana At-Will Employment: General Rule and Key Exceptions",
+    "summary": "Indiana employers may generally hire, fire, promote, demote, lay off, or suspend employees at their discretion without cause, unless a collective bargaining agreement or contract states otherwise. Employers may not discriminate based on age, sex, race, religion, national origin, or disability. Retaliation against employees who report discrimination, request accommodations, or participate in discrimination investigations is also prohibited under federal and Indiana civil rights laws. The Indiana Civil Rights Commission investigates complaints involving employment discrimination and retaliation.",
+    "sources": [
+      "https://faqs.in.gov/hc/en-us/articles/115005043967-Can-my-employer-terminate-me-for-no-reason",
+      "https://www.in.gov/icrc/enforcement/employment/retaliation-in-employment"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "IN",
     "topic": "business_tax",
     "title": "Indiana Business and Corporate Tax Structure Overview",
     "summary": "Indiana businesses must file and pay sales and withholding taxes electronically, and must file a return for each period even if no taxes were collected. Late returns are subject to a penalty of up to 20% and a minimum penalty of $5. The site lists corporate and partnership income tax, pass-through entity tax, and county income tax rates as distinct tax types, but specific rates and thresholds are not stated on this page. Insurance agencies should consult a tax professional to determine which rates and forms apply to their specific situation.",
@@ -1778,6 +1850,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "KY",
+    "topic": "at_will",
+    "title": "Kentucky At-Will Employment and Termination Protections",
+    "summary": "Kentucky is an at-will employment state, meaning an employer or employee may end employment at any time and for any reason. However, employers may not terminate employees based on race, color, religion, sex, national origin, ancestral origin, age, marital status, physical or mental condition, military service, or unfavorable military discharge. Wage discrimination based on sex is also prohibited under Kentucky law.",
+    "sources": [
+      "https://elc.ky.gov/workplace-standards/Pages/Wages-and-Hours.aspx",
+      "https://kchr.ky.gov/About/Pages/Kentucky-Civil-Rights-Act.aspx"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "KY",
     "topic": "business_tax",
     "title": "Kentucky Corporation Income Tax and Limited Liability Entity Tax Structure",
     "summary": "Kentucky imposes a flat 5% corporate income tax on C corporations and a Limited Liability Entity Tax (LLET) on all liability-protected entities, including LLCs, S-corporations, and limited partnerships. Businesses with total gross receipts or gross profits of $3 million or less pay a $175 minimum LLET. Those exceeding $6 million multiply Kentucky gross receipts by 0.095% and Kentucky gross profits by 0.75%, paying the smaller result. Insurance agencies should consult a tax professional to determine how these taxes apply to their specific situation.",
@@ -1877,6 +1960,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "summary": "Employers with one or more employees must carry workers' compensation insurance, including coverage for family members, temporary, and part-time workers. Coverage can be purchased from any authorized insurance carrier in Kentucky. Employers who go without coverage face fines of $100 to $1,000 per employee per day and lose the \"exclusive remedy\" protection. Employers may self-insure only with Commissioner authorization, which requires assets exceeding liabilities by $10,000,000, among other criteria.",
     "sources": [
       "https://elc.ky.gov/Workers-Compensation/Pages/Employer-Frequently-Asked-Questions.aspx"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "LA",
+    "topic": "at_will",
+    "title": "Louisiana At-Will Employment and Discrimination Exceptions",
+    "summary": "Louisiana law allows employers to dismiss a hired servant without assigning any reason, and employees may similarly depart without cause. However, the Louisiana Commission on Human Rights enforces laws prohibiting termination based on race, color, national origin, age (40 and older), sex, gender, pregnancy, religion, sickle cell trait, genetics, or disability. Employers whose decisions are motivated by these protected characteristics may face discrimination complaints filed with the Commission.",
+    "sources": [
+      "https://www.legis.la.gov/legis/Law.aspx?d=109812",
+      "https://humanrights.la.gov/"
     ],
     "last_checked": "2026-07-09"
   },
@@ -2065,10 +2159,12 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "MA",
     "topic": "salary_threshold",
-    "title": null,
-    "summary": null,
+    "title": "Massachusetts Overtime Exempt Salary Threshold and Federal FLSA Floor",
+    "summary": "Massachusetts does not appear to set its own separate exempt salary threshold in the sources provided; the sources reference the federal FLSA framework for white-collar exemptions. The federal salary threshold for executive, administrative, and professional exemptions is not less than $684 per week, as stated in 29 CFR 541.600. Employers should confirm the current federal threshold with the U.S. Department of Labor, as it has been subject to updates. Where both state and federal overtime laws apply, employees are entitled to the higher standard.",
     "sources": [
-      "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600"
+      "https://www.dol.gov/agencies/whd/overtime",
+      "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
+      "https://www.mass.gov/info-details/massachusetts-law-about-overtime"
     ],
     "last_checked": "2026-07-09"
   },
@@ -2741,10 +2837,22 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "MS",
-    "topic": "business_tax",
-    "title": null,
-    "summary": null,
+    "topic": "at_will",
+    "title": "Mississippi At-Will Employment and Termination Exceptions",
+    "summary": "Mississippi is an at-will state, meaning an employer can fire an employee for any reason or no reason. However, termination is illegal if it is based on discriminatory reasons. Federal law enforced by the EEOC also prohibits discharge based on race, color, religion, sex, national origin, age (40 or older), disability, or genetic information, and forbids retaliation against employees who complain about discrimination or participate in a discrimination investigation or lawsuit.",
     "sources": [
+      "https://mdes.ms.gov/job-searching-faqs/",
+      "https://www.eeoc.gov/prohibited-employment-policiespractices"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "MS",
+    "topic": "business_tax",
+    "title": "Mississippi Corporate Income and Franchise Tax Structure Overview",
+    "summary": "Mississippi imposes both a corporate income tax and a franchise tax on corporations, with pass-through entities such as S corporations and partnerships also subject to separate filing requirements. The sources reference combined filing procedures and an electing pass-through entity regime, but do not state specific rates, minimums, or thresholds for these taxes. Insurance agencies should consult a tax professional to determine how Mississippi's corporate income and franchise tax structure applies to their specific entity type and revenue.",
+    "sources": [
+      "https://www.dor.ms.gov/business/corporate-income-and-franchise-tax-faqs",
       "https://www.dor.ms.gov/business/corporate-income-and-franchise-tax"
     ],
     "last_checked": "2026-07-09"
@@ -3192,6 +3300,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "NE",
+    "topic": "at_will",
+    "title": "Nebraska At-Will Termination and Employment Discrimination Exceptions",
+    "summary": "Nebraska follows at-will employment, meaning an employer may discharge an employee whenever and for whatever cause it chooses without incurring liability when employment is not for a definite term and there are no contractual or statutory restrictions on discharge. However, terminations based on race, color, national origin, religion, sex, disability, marital status, military or veteran status, or age are prohibited under Nebraska law. Retaliation against employees who oppose unlawful practices or participate in enforcement proceedings is also prohibited. Employees who believe they have been unlawfully discharged must file within 300 days of the alleged harm under state law.",
+    "sources": [
+      "https://www.nebraska.gov/ncir/reporter_and_appeals_search/data/appeals/Nebraska%20Supreme%20Court/257%20Neb.%2050.htm",
+      "https://neoc.nebraska.gov/employment"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "NE",
     "topic": "business_tax",
     "title": "Nebraska Business Income Tax Structure for Corporations and Pass-Throughs",
     "summary": "Nebraska imposes a corporate income tax on corporations earning income from Nebraska sources, with 2023-and-beyond rates of 5.58% on taxable income up to $100,000 and $5,580 plus 7.25% on the excess over $100,000. S corporations, partnerships, and LLCs must file Nebraska returns but are not subject to corporate income tax; LLCs file the same return type as required federally. Financial institutions pay a separate franchise tax rather than corporate income tax. Insurance agencies should consult a tax professional to determine how these rules apply to their specific situation.",
@@ -3418,10 +3537,12 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "NJ",
     "topic": "at_will",
-    "title": null,
-    "summary": null,
+    "title": "New Jersey At-Will Termination and Retaliation Protections",
+    "summary": "The source pages do not explicitly establish New Jersey's at-will employment doctrine or define when termination without cause is lawful. However, the sources make clear that employers cannot retaliate against workers for asserting workplace rights, including wage and hour, anti-discrimination, family leave, and earned sick leave protections. Retaliation can include firing, demotions, pay changes, or other adverse employment actions. Workers who believe they have been wrongfully retaliated against may file a complaint with the NJ Division of Wage & Hour Compliance.",
     "sources": [
-      "https://www.nj.gov/labor/wageandhour/support/faqs/wageandhourworkerfaqs.shtml"
+      "https://www.nj.gov/labor/wageandhour/support/faqs/wageandhourworkerfaqs.shtml",
+      "https://nj.gov/csc/about/divisions/eeo/laws.shtml",
+      "https://www.nj.gov/labor/myworkrights/worker-protections/retaliation_protections/"
     ],
     "last_checked": "2026-07-09"
   },
@@ -3546,6 +3667,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "NM",
+    "topic": "at_will",
+    "title": "New Mexico Human Rights Act Protections Against Discriminatory Termination",
+    "summary": "New Mexico law makes it unlawful for an employer to discharge or discriminate in employment against any person because of race, age, religion, color, national origin, ancestry, sex, sexual orientation, gender identity, physical or mental handicap, or serious medical condition. Employers with fifty or more employees must also avoid discrimination based on spousal affiliation. Retaliation against any person who has opposed an unlawful discriminatory practice or participated in a complaint proceeding is also prohibited. The sources address anti-discrimination protections but do not establish the state's general at-will termination doctrine.",
+    "sources": [
+      "https://www.srca.nm.gov/parts/title09/09.001.0001.html",
+      "https://www.nmlegis.gov/sessions/03%20Regular/FinalVersions/SB0028.html"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "NM",
     "topic": "business_tax",
     "title": "New Mexico Gross Receipts Tax and Corporate Income & Franchise Tax Overview",
     "summary": "New Mexico imposes a Gross Receipts Tax (GRT) on businesses for selling property, leasing property, or performing services in the state; businesses without a physical presence are subject if they have at least $100,000 of taxable gross receipts in the prior calendar year. GRT rates vary by location, combining state, county, and municipal rates. Corporations with New Mexico income or franchise activity file form CIT-1; the annual Franchise Tax is $50. Insurance companies paying a premium tax to the state are exempt from Corporate Income Tax and Franchise Tax. Agencies should consult a tax professional for their specific situation.",
@@ -3623,9 +3755,10 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "NM",
     "topic": "wage_hour",
-    "title": null,
-    "summary": null,
+    "title": "New Mexico and Albuquerque Minimum Wage and Wage & Hour Rules",
+    "summary": "The State of New Mexico's minimum wage is $12.00 per hour, which supersedes the City of Albuquerque's local rate and serves as the prevailing wage. For tipped employees in Albuquerque, the minimum wage is $7.20 per hour. New Mexico's Labor Relations Division enforces wage and hour rules, including wage claims filed on behalf of employees. Employers making deductions from employee pay generally require written authorization, and must still pay at least minimum wages times hours worked.",
     "sources": [
+      "https://www.cabq.gov/legal/albuquerque-minimum-wage-information",
       "https://www.srca.nm.gov/parts/title11/11.001.0004.html"
     ],
     "last_checked": "2026-07-09"
@@ -3637,6 +3770,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "summary": "All employers with three or more workers must carry workers' compensation coverage. Employers engaged in activities licensed under the Construction Industries Licensing Act must have coverage regardless of employee count. Family members and part-time or seasonal workers who are paid wages count toward the three-employee threshold. Business owners who are executive employees owning 10% or more of a corporation or LLC are counted in the threshold but may elect to be excluded from coverage.",
     "sources": [
       "https://www.workerscomp.nm.gov/faqs/"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "NV",
+    "topic": "at_will",
+    "title": null,
+    "summary": null,
+    "sources": [
+      "https://www.leg.state.nv.us/nrs/nrs-613.html",
+      "https://detr.nv.gov/Page/Equal_Rights_Commision"
     ],
     "last_checked": "2026-07-09"
   },
@@ -3873,6 +4017,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "OH",
+    "topic": "at_will",
+    "title": "Ohio At-Will Termination and Unlawful Discharge Protections",
+    "summary": "Ohio law prohibits employers from discharging an employee because of race, color, religion, sex, military status, national origin, disability, age, or ancestry. Employers subject to Ohio's anti-discrimination laws include the state, its political subdivisions, and any person employing four or more people within Ohio. Employees who believe they were fired for discriminatory reasons may file a charge with the Ohio Civil Rights Commission within six months of the alleged discriminatory act. Retaliation against an employee for filing a discrimination charge is also prohibited.",
+    "sources": [
+      "https://codes.ohio.gov/ohio-revised-code/section-4112.02",
+      "https://www.ohioattorneygeneral.gov/FAQ/Civil-rights-FAQs"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "OH",
     "topic": "business_tax",
     "title": "Ohio Commercial Activity Tax Structure for Businesses",
     "summary": "Ohio imposes a Commercial Activity Tax (CAT) on the privilege of doing business in Ohio, based on total Ohio taxable gross receipts (TGR), applying to all business structures including LLCs, partnerships, and corporations. For tax years 2025 and forward, businesses with more than $6 million in Ohio TGR must pay CAT at a rate of .26% (.0026). The $6 million exclusion applies annually before the rate is assessed. Insurance companies paying the insurance premiums tax are excluded from CAT. Insurance agencies should consult a tax professional regarding their specific situation.",
@@ -3980,6 +4135,18 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "OK",
+    "topic": "at_will",
+    "title": "Oklahoma At-Will Termination and Public Policy Exceptions",
+    "summary": "Oklahoma follows the at-will employment doctrine, meaning an employment contract of indefinite duration may be terminated without cause at any time without incurring liability for breach of contract. However, Oklahoma courts recognize a public policy exception when a discharge is contrary to a clear mandate of public policy as articulated by constitutional, statutory, or decisional law. Actionable claims include dismissals for refusing to participate in illegal activity, performing an important public obligation, exercising a legal right, or exposing employer wrongdoing. The Oklahoma Anti-Discrimination Act also prohibits discrimination in employment, and the state's civil rights office enforces these protections.",
+    "sources": [
+      "https://www.oscn.net/applications/oscn/DeliverDocument.asp?CiteID=15328",
+      "https://oklahoma.gov/oag/about/divisions/civil-rights-enforcement.html",
+      "https://oklahoma.gov/oag/about/divisions/civil-rights-enforcement/faqs.html"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "OK",
     "topic": "business_tax",
     "title": "Oklahoma Business Tax Structure and Franchise Tax Elimination",
     "summary": "Oklahoma's franchise tax has been eliminated as part of a comprehensive tax reform plan, with tax year 2023 being the last year returns were required. Late penalties apply to business taxes at 10% of tax due, with interest at 1.25% per month from the due date until paid. The Oklahoma Tax Commission accepts payment via ACH Debit, ACH Credit, credit card, cash, check, or money order. Insurance agencies should consult a tax professional to determine how these rules apply to their specific situation.",
@@ -4079,6 +4246,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "summary": "Most Oklahoma businesses must cover employees with workers' compensation insurance, per Oklahoma Workers Compensation Commission (WCC) regulations. The program provides disability, medical, and rehabilitation benefits for employees injured on the job. Employers may purchase coverage from a private insurance company, or from CompSource Mutual Insurance Company, Oklahoma's state-owned insurer, reachable at 405-232-7663 or 800-347-3863. The source does not specify any employee-count thresholds or industry exemptions.",
     "sources": [
       "https://oklahoma.gov/business/launch/filings-for-businesses-with-employees.html"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "OR",
+    "topic": "at_will",
+    "title": "Oregon At-Will Employment Rules and Key Exceptions",
+    "summary": "Oregon law allows employers or employees to end an employment relationship at any time, with or without cause and without notice. However, employers may not terminate workers for discriminatory reasons based on protected characteristics such as race, sex, age, religion, disability, or other classes protected under Oregon law. Employers are also prohibited from retaliating against employees who make a good-faith complaint that the employer is breaking the law. To preserve at-will status, employers should include clear at-will language in personnel policies and specify that policies are guidelines, not contracts.",
+    "sources": [
+      "https://www.oregon.gov/boli/employers/pages/employment-at-will.aspx",
+      "https://www.oregon.gov/boli/workers/Pages/discrimination-at-work.aspx"
     ],
     "last_checked": "2026-07-09"
   },
@@ -4315,6 +4493,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "sources": [
       "https://www.pa.gov/agencies/dli/resources/for-employers-and-educators/workers--compensation-for-employers/workers--compensation-compliance",
       "https://www.pa.gov/agencies/dli/resources/for-employers-and-educators/workers--compensation-for-employers/libc-200-employer-information"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "RI",
+    "topic": "at_will",
+    "title": "Rhode Island At-Will Termination and Discrimination Exceptions",
+    "summary": "The source pages do not explicitly establish Rhode Island's at-will employment doctrine. However, they indicate that employers cannot fire employees based on protected characteristics such as race, color, sex, disability, religion, sexual orientation, gender identity or expression, age, or ancestral origin under Rhode Island's Fair Employment Practices Act. The Rhode Island Commission for Human Rights enforces these antidiscrimination laws through investigation, hearings, and remedies. Employees who believe they were fired unlawfully may file a charge with the Commission.",
+    "sources": [
+      "https://dlt.ri.gov/regulation-and-safety/labor-standards/labor-standards-faq",
+      "https://richr.ri.gov/about/index.php"
     ],
     "last_checked": "2026-07-09"
   },
@@ -4831,16 +5020,6 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "TX",
-    "topic": "payroll",
-    "title": null,
-    "summary": null,
-    "sources": [
-      "https://statutes.capitol.texas.gov/Docs/LA/htm/LA.201.htm"
-    ],
-    "last_checked": "2026-07-09"
-  },
-  {
-    "state": "TX",
     "topic": "remote",
     "title": null,
     "summary": null,
@@ -4863,21 +5042,21 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "TX",
     "topic": "termination",
-    "title": "Texas Final Pay Timing Rules for Voluntary and Involuntary Separations",
-    "summary": "Under the Texas Payday Law, employers must issue final pay within 6 calendar days of discharge for involuntarily separated employees. Employees who quit, retire, or resign must receive their final paycheck by the next regularly-scheduled payday after the resignation's effective date. Final pay includes regular wages, fringe benefits under a written policy, commissions, and bonuses, though different payout schedules may apply if specified in a written agreement. The sources contain no information about a state WARN-style mass-layoff notice requirement.",
+    "title": "Texas Final Pay Timing Rules for Voluntary and Involuntary Separation",
+    "summary": "Under the Texas Payday Law, employees who are involuntarily separated must receive their final paycheck within 6 calendar days of discharge. Employees who resign voluntarily are owed their final pay on the next regularly-scheduled payday following their resignation. Employers cannot withhold a final paycheck past these deadlines for reasons such as unreturned property or unsigned timesheets. The source does not cover any state WARN-style mass-layoff notice requirement.",
     "sources": [
-      "https://efte.twc.texas.gov/final_pay.html",
-      "https://statutes.capitol.texas.gov/Docs/LA/htm/LA.61.htm"
+      "https://efte.twc.texas.gov/final_pay.html"
     ],
     "last_checked": "2026-07-09"
   },
   {
     "state": "TX",
     "topic": "wage_hour",
-    "title": null,
-    "summary": null,
+    "title": "Texas Minimum Wage, Overtime, and Pay Agreement Rules",
+    "summary": "Texas sets its minimum wage at the same level as the federal minimum wage, $7.25 per hour. The minimum cash wage for tipped employees is $2.13 per hour, and the minimum salary level for salaried exempt employees is $684 per week under the FLSA, which Texas follows. Overtime is generally paid at time-and-a-half for all hours worked in excess of 40 in a seven-day workweek. Where a wage agreement exceeds statutory minimums, that agreement takes precedence and is enforceable under the Texas Payday Law.",
     "sources": [
-      "https://www.dol.gov/agencies/whd/fact-sheets/23-flsa-overtime-pay"
+      "https://efte.twc.texas.gov/priority_agreements_statutes.html",
+      "https://efte.twc.texas.gov/flsa_does_and_doesnt_do.html"
     ],
     "last_checked": "2026-07-09"
   },
@@ -4888,6 +5067,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "summary": "In Texas, private employers can choose to carry workers' compensation insurance but it is not required in most cases. Employers without coverage, called non-subscribers, must report to the state that they lack coverage and must report work-related injuries resulting in more than one day of lost time, illnesses, and deaths to DWC. Employers with coverage must report the same types of incidents to their insurance carrier. Coverage options include a standard insurance policy or certified self-insurance.",
     "sources": [
       "https://www.tdi.texas.gov/wc/employer/index.html"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "UT",
+    "topic": "at_will",
+    "title": null,
+    "summary": null,
+    "sources": [
+      "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/employment-discrimination/",
+      "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/"
     ],
     "last_checked": "2026-07-09"
   },
@@ -5120,6 +5310,17 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "summary": "Most employers with more than two employees are required to carry workers' compensation insurance, including part-time, seasonal, temporary, and family workers. Subcontractors' employees count toward the total when determining if coverage is required. Employers may obtain coverage through a commercial insurer, self-insurance, a group self-insurance association, or a professional employer organization. Executive officers may reject coverage with proper notice to the employer and the Commission.",
     "sources": [
       "https://workcomp.virginia.gov/content/employers"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "VT",
+    "topic": "at_will",
+    "title": "Vermont At-Will Termination and Unlawful Discharge Exceptions",
+    "summary": "Vermont law does not prohibit employers from discharging employees for good cause shown, preserving at-will termination rights. However, employers may not discharge or discriminate against employees because they opposed a prohibited act, filed or participated in a complaint investigation, disclosed or discussed wages, or are believed to have done any of these things. Discrimination in discharge based on race, color, religion, sex, sexual orientation, gender identity, age, national origin, ancestry, disability, or other protected characteristics is also unlawful.",
+    "sources": [
+      "https://legislature.vermont.gov/statutes/section/21/005/00495",
+      "https://hrc.vermont.gov/"
     ],
     "last_checked": "2026-07-09"
   },

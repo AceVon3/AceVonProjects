@@ -291,6 +291,11 @@ export const RESOURCE_URLS: Record<
     remote: [
       "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/",
     ],
+    // EXCEPTIONS ONLY — UT doctrine is common law (Berube); le.utah.gov serves an SPA, court opinions are PDF. May refuse; links useful.
+    at_will: [
+      "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/employment-discrimination/",
+      "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/",
+    ],
   },
 
   // ============================================================
@@ -332,8 +337,10 @@ export const RESOURCE_URLS: Record<
       "https://labor.alaska.gov/news/2025/news25-11.htm",
       "https://labor.alaska.gov/lss/whact.htm",
     ],
+    // Doctrine (whfaq Q17 no-reason firing) + ASCHR exceptions (bases + retaliation).
     at_will: [
       "https://labor.alaska.gov/lss/whfaq.htm",
+      "https://humanrights.alaska.gov/services/complaints/",
     ],
     business_tax: [
       "https://tax.alaska.gov/programs/programs/index.aspx?60380",
@@ -372,7 +379,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — No clean official page stating the at-will doctrine and its exceptions — coming-soon. Closest is the job-termination-laws LMI page used for the termination topic.
+    // ADOL termination page (doctrine implicit) + EEOC (AL has no state FEP agency — federal law governs exceptions). Model may refuse the implicit doctrine.
+    at_will: [
+      "https://www2.labor.alabama.gov/Information/job_termination_laws.aspx",
+      "https://www.eeoc.gov/prohibited-employment-policiespractices",
+    ],
     business_tax: [
       "https://www.revenue.alabama.gov/division/individual-corporate/",
       "https://www.revenue.alabama.gov/tax-types/business-privilege-tax/",
@@ -380,8 +391,11 @@ export const RESOURCE_URLS: Record<
   },
   // own state minimum wage ($11.00) but otherwise federal-default on leave/threshold; no employer-mandate programs
   AR: {
+    // labor.arkansas.gov is fetcher-blocked (kept as the user-facing link); grounding via ADE Commissioner's Memo ($11.00 rate, Issue 5) + UA Cooperative Extension (state land-grant institution).
     wage_hour: [
       "https://labor.arkansas.gov/labor/labor-standards/minimum-wage-and-overtime/",
+      "https://adecm.ade.arkansas.gov/ViewApprovedMemo.aspx?id=4419",
+      "https://www.uaex.uada.edu/business-communities/ced-blog/posts/2023/january/what-is-the-minimum-wage-in-arkansas.aspx",
     ],
     leave: [
       "https://labor.arkansas.gov/labor/labor-standards/",
@@ -501,8 +515,10 @@ export const RESOURCE_URLS: Record<
       "https://www.dir.ca.gov/dlse/faq_overtimeexemptions.htm",
       "https://www.dir.ca.gov/dlse/faq_minimumwage.htm",
     ],
+    // Labor Code 2922 doctrine + CRD employment page exceptions (15 protected categories, retaliation).
     at_will: [
       "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=LAB&sectionNum=2922",
+      "https://calcivilrights.ca.gov/employment/",
     ],
     business_tax: [
       "https://www.ftb.ca.gov/file/business/types/corporations/index.html",
@@ -542,10 +558,15 @@ export const RESOURCE_URLS: Record<
     remote: [
       "https://cdle.colorado.gov/dlss",
     ],
+    // LINK-ONLY: the 2026 PAY CALC order exists ONLY as PDF/DOCX and CDLE's COMPS HTML pages hard-403. The generator's PDF guard fails it cleanly -> coming-soon card with the authoritative link.
     salary_threshold: [
       "https://cdle.colorado.gov/sites/cdle/files/adopted_2026_pay_calc_order_7_ccr_1103-14_12.8.25.pdf",
     ],
-    // at_will: intentionally unmapped (coming-soon) — no clean official source stating the at-will doctrine — coming-soon
+    // EXCEPTIONS ONLY — cdle.colorado.gov/termination (the doctrine page) hard-403s all fetchers; may refuse until a doctrine source exists.
+    at_will: [
+      "https://ccrd.colorado.gov/common-civil-rights-questions",
+      "https://ccrd.colorado.gov/discrimination",
+    ],
     business_tax: [
       "https://tax.colorado.gov/business-income-tax",
     ],
@@ -604,8 +625,11 @@ export const RESOURCE_URLS: Record<
   },
   // program-state — federal FLSA salary thresholds but state $15/hr minimum wage; runs mandatory employer programs: Delaware Paid Leave (live Jan 2026) and Delaware EARNS retirement mandate (5+ employees), plus the incorporation-based franchise tax quirk.
   DE: {
+    // Statute text added: Title 19 Ch.9 carries the rate schedule ($15.00 from 2025-01-01); Ch.11 wage payment.
     wage_hour: [
       "https://industrialaffairs.delaware.gov/wage-hour",
+      "https://delcode.delaware.gov/title19/c009/index.html",
+      "https://delcode.delaware.gov/title19/c011/index.html",
     ],
     leave: [
       "https://labor.delaware.gov/delaware-paid-leave/",
@@ -636,7 +660,12 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — No clean official DE page states the at-will doctrine and its exceptions — coming-soon.
+    // Doctrine via SB292 preamble (states current DE at-will law; the bill's just-cause scheme was NEVER enacted) + Title 19 Ch.7 subch. II + DDOL anti-discrimination.
+    at_will: [
+      "https://legis.delaware.gov/json/BillDetail/GetHtmlDocument?fileAttachmentId=21856",
+      "https://delcode.delaware.gov/title19/c007/sc02/index.html",
+      "https://industrialaffairs.delaware.gov/anti-discrimination",
+    ],
     business_tax: [
       "https://revenue.delaware.gov/business-tax-forms/filing-corporate-income-tax/",
       "https://corp.delaware.gov/frtax/",
@@ -679,7 +708,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — No official FL government page stating the at-will doctrine and its exceptions — coming-soon.
+    // EXCEPTIONS ONLY — FL at-will is pure common law with no official HTML statement; expect refusal, links still useful.
+    at_will: [
+      "https://fchr.myflorida.com/faq-frequently-asked-questions",
+      "https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0760/Sections/0760.10.html",
+    ],
     business_tax: [
       "https://floridarevenue.com/taxes/taxesfees/Pages/corporate.aspx",
     ],
@@ -719,7 +752,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — No clean official GA government page stating the at-will doctrine and its exceptions — coming-soon.
+    // GDOL FAQ states the doctrine verbatim (O.C.G.A. is Lexis-hosted) + GCEO exceptions.
+    at_will: [
+      "https://dol.georgia.gov/faqs-individuals/individuals-faqs-fair-labor-standards-act",
+      "https://gceo.georgia.gov/faqs/employment-faq",
+    ],
     business_tax: [
       "https://dor.georgia.gov/taxes/business-taxes/corporate-income-and-net-worth-tax",
     ],
@@ -895,7 +932,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — no clean official source — only incidental PDFs (state library manual chapter, SEAC appeal orders) state the doctrine; coming-soon
+    // IN.gov FAQ covers both halves; ICRC retaliation page reinforces exceptions.
+    at_will: [
+      "https://faqs.in.gov/hc/en-us/articles/115005043967-Can-my-employer-terminate-me-for-no-reason",
+      "https://www.in.gov/icrc/enforcement/employment/retaliation-in-employment",
+    ],
     business_tax: [
       "https://www.in.gov/dor/i-am-a/business-corp/",
     ],
@@ -974,7 +1015,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — No clean official KY government page stating the at-will doctrine and its exceptions (only law-firm/aggregator sources) — coming-soon.
+    // ELC page states the doctrine + KCHR KRS 344 exceptions.
+    at_will: [
+      "https://elc.ky.gov/workplace-standards/Pages/Wages-and-Hours.aspx",
+      "https://kchr.ky.gov/About/Pages/Kentucky-Civil-Rights-Act.aspx",
+    ],
     business_tax: [
       "https://revenue.ky.gov/Business/Corporation-Income-and-Limited-Liability-Entity-Tax/Pages/default.aspx",
     ],
@@ -1013,7 +1058,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — No clean official page stating the at-will doctrine and its exceptions (the doctrine rests on Civil Code art. 2747, which does not enumerate exceptions) — coming-soon.
+    // Civil Code art. 2747 doctrine + LCHR exceptions.
+    at_will: [
+      "https://www.legis.la.gov/legis/Law.aspx?d=109812",
+      "https://humanrights.la.gov/",
+    ],
     business_tax: [
       "https://revenue.louisiana.gov/businesses/widely-used-tax-types/corporate-income-franchise-tax/",
       "https://revenue.louisiana.gov/tax-education-and-faqs/faqs/income-tax-reform/is-the-corporation-franchise-tax-repealed/",
@@ -1056,8 +1105,11 @@ export const RESOURCE_URLS: Record<
       "https://www.mass.gov/orgs/the-attorney-generals-fair-labor-division",
       "https://www.mass.gov/orgs/department-of-labor-standards",
     ],
+    // dol.gov + mass.gov both fetch fine locally (datacenter 403s only); mass.gov page states MA parallels the federal exemptions.
     salary_threshold: [
+      "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
+      "https://www.mass.gov/info-details/massachusetts-law-about-overtime",
     ],
     at_will: [
       "https://www.mass.gov/info-details/massachusetts-law-about-employment-termination",
@@ -1336,8 +1388,14 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — No clean official source stating the at-will doctrine and exceptions — coming-soon.
+    // MDES FAQ states doctrine + discrimination limit; EEOC is MS's actual exceptions enforcement (no state FEP agency).
+    at_will: [
+      "https://mdes.ms.gov/job-searching-faqs/",
+      "https://www.eeoc.gov/prohibited-employment-policiespractices",
+    ],
+    // FAQ page carries rates/brackets/franchise phase-out; dor.ms.gov needs the curl fallback (Node TLS).
     business_tax: [
+      "https://www.dor.ms.gov/business/corporate-income-and-franchise-tax-faqs",
       "https://www.dor.ms.gov/business/corporate-income-and-franchise-tax",
     ],
   },
@@ -1500,7 +1558,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — No clean official source - coming-soon. NDOL's former Labor Standards general FAQ (which discussed employment relationships) now returns 404; no other official NE page states the at-will doctrine and exceptions.
+    // NE Supreme Court opinion (257 Neb. 50) states the rule verbatim + NEOC exceptions. NDOL's FAQ 404s post-restructure.
+    at_will: [
+      "https://www.nebraska.gov/ncir/reporter_and_appeals_search/data/appeals/Nebraska%20Supreme%20Court/257%20Neb.%2050.htm",
+      "https://neoc.nebraska.gov/employment",
+    ],
     business_tax: [
       "https://revenue.nebraska.gov/about/frequently-asked-questions/business-income-tax-faqs",
     ],
@@ -1585,8 +1647,11 @@ export const RESOURCE_URLS: Record<
     salary_threshold: [
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
+    // NJDOL FAQ doctrine + CSC LAD description + NJDOL retaliation/CEPA page (njoag.gov blocks fetchers).
     at_will: [
       "https://www.nj.gov/labor/wageandhour/support/faqs/wageandhourworkerfaqs.shtml",
+      "https://nj.gov/csc/about/divisions/eeo/laws.shtml",
+      "https://www.nj.gov/labor/myworkrights/worker-protections/retaliation_protections/",
     ],
     business_tax: [
       "https://www.nj.gov/treasury/taxation/cbt/index.shtml",
@@ -1600,7 +1665,9 @@ export const RESOURCE_URLS: Record<
   },
   // federal-default on exempt salary threshold; sets own minimum wage ($12.00/hr, NMSA 50-4-22) and a mandatory paid-sick-leave mandate (Healthy Workplaces Act); distinctive gross receipts tax instead of a sales tax; no PFML/SDI and no retirement mandate (Work and Save is voluntary and currently inactive).
   NM: {
+    // cabq.gov (official city gov) states the prevailing STATE $12.00 rate; NMAC 11.1.4 carries the wage-hour rules (DWS is WAF-blocked).
     wage_hour: [
+      "https://www.cabq.gov/legal/albuquerque-minimum-wage-information",
       "https://www.srca.nm.gov/parts/title11/11.001.0004.html",
     ],
     leave: [
@@ -1630,7 +1697,11 @@ export const RESOURCE_URLS: Record<
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
       "https://www.govinfo.gov/link/cfr/29/541?link-type=pdf&sectionnum=600&year=mostrecent",
     ],
-    // at_will: intentionally unmapped (coming-soon) — no clean official NM government page states the at-will doctrine and its exceptions (searched nmcourts.gov, nmag.gov, nmlegis.gov) — coming-soon.
+    // EXCEPTIONS ONLY (HRB rules + NMSA 28-1-7 session-law text); doctrine sources are WAF-blocked/PDF — may refuse.
+    at_will: [
+      "https://www.srca.nm.gov/parts/title09/09.001.0001.html",
+      "https://www.nmlegis.gov/sessions/03%20Regular/FinalVersions/SB0028.html",
+    ],
     business_tax: [
       "https://www.tax.newmexico.gov/businesses/gross-receipts-overview/",
       "https://www.tax.newmexico.gov/businesses/corporate-income-franchise-tax-overview/",
@@ -1669,7 +1740,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — no clean official source stating the at-will doctrine — coming-soon
+    // EXCEPTIONS STRONG (NRS 613.330/.340 + NERC); doctrine exists only in Labor Commissioner PDFs — may refuse.
+    at_will: [
+      "https://www.leg.state.nv.us/nrs/nrs-613.html",
+      "https://detr.nv.gov/Page/Equal_Rights_Commision",
+    ],
     business_tax: [
       "https://tax.nv.gov/tax-types/modified-business-tax/",
       "https://tax.nv.gov/tax-types/commerce-tax/",
@@ -1756,8 +1831,10 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
+    // EXCEPTIONS ONLY — OH doctrine is common law; the only HTML statement is scoped to one college (rejected); LSC brief is PDF. May refuse.
     at_will: [
-      "https://www.lsc.ohio.gov/assets/organizations/legislative-service-commission/files/employment-at-will-and-wrongful-discharge-in-ohio.pdf",
+      "https://codes.ohio.gov/ohio-revised-code/section-4112.02",
+      "https://www.ohioattorneygeneral.gov/FAQ/Civil-rights-FAQs",
     ],
     business_tax: [
       "https://tax.ohio.gov/business/commercial-activity-tax",
@@ -1797,7 +1874,12 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — No clean official state page stating the at-will doctrine and its exceptions (only third-party/bar-association sources found) — coming-soon.
+    // OSCN (official state courts network) opinion states doctrine + Burk public-policy framework; OAG OCRE exceptions.
+    at_will: [
+      "https://www.oscn.net/applications/oscn/DeliverDocument.asp?CiteID=15328",
+      "https://oklahoma.gov/oag/about/divisions/civil-rights-enforcement.html",
+      "https://oklahoma.gov/oag/about/divisions/civil-rights-enforcement/faqs.html",
+    ],
     business_tax: [
       "https://oklahoma.gov/tax/helpcenter/businesses.html",
       "https://oklahoma.gov/tax/newsroom/2023/07-26-23.html",
@@ -1837,7 +1919,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — no clean official source stating the at-will doctrine — coming-soon
+    // BOLI's own Employment-at-will page + BOLI discrimination page — the cleanest pair.
+    at_will: [
+      "https://www.oregon.gov/boli/employers/pages/employment-at-will.aspx",
+      "https://www.oregon.gov/boli/workers/Pages/discrimination-at-work.aspx",
+    ],
     business_tax: [
       "https://www.oregon.gov/dor/programs/businesses/pages/corp-requirements.aspx",
       "https://www.oregon.gov/dor/programs/businesses/pages/corporate-activity-tax.aspx",
@@ -1927,7 +2013,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — no clean official RI government page stating the at-will doctrine and its exceptions — only law-firm/aggregator sources rank; coming-soon
+    // EXCEPTIONS ONLY — no official RI page states the doctrine (rilegislature hits are unenacted bills). May refuse.
+    at_will: [
+      "https://dlt.ri.gov/regulation-and-safety/labor-standards/labor-standards-faq",
+      "https://richr.ri.gov/about/index.php",
+    ],
     business_tax: [
       "https://tax.ri.gov/tax-sections/corporate-tax",
     ],
@@ -2060,9 +2150,11 @@ export const RESOURCE_URLS: Record<
   },
   // federal-default with distinctive quirks: federal $7.25 minimum wage and federal FLSA thresholds, no state leave programs or employer-mandate programs, OPTIONAL workers' comp, no income tax (franchise/margin tax instead).
   TX: {
+    // efte pages state the $7.25 rate and FLSA scope; www.twc is challenge-walled (kept as user-facing link).
     wage_hour: [
       "https://www.twc.texas.gov/programs/wage-and-hour/texas-minimum-wage-law",
-      "https://www.dol.gov/agencies/whd/fact-sheets/23-flsa-overtime-pay",
+      "https://efte.twc.texas.gov/priority_agreements_statutes.html",
+      "https://efte.twc.texas.gov/flsa_does_and_doesnt_do.html",
     ],
     leave: [
       "https://www.twc.texas.gov/programs/wage-and-hour",
@@ -2071,17 +2163,17 @@ export const RESOURCE_URLS: Record<
     // NOTE (2026-07 retry): www.twc.texas.gov serves a challenge page (202)
     // to the generator's fetch, so the statute site + the TWC employer
     // handbook subdomain (both probe-verified) carry the grounding.
+    // statutes.capitol LA.201 removed (SPA shell). twc is challenge-walled — stays coming-soon until a fetchable source exists.
     payroll: [
       "https://www.twc.texas.gov/programs/unemployment-tax",
-      "https://statutes.capitol.texas.gov/Docs/LA/htm/LA.201.htm",
     ],
     workers_comp: [
       "https://www.tdi.texas.gov/wc/employer/index.html",
     ],
+    // statutes.capitol.texas.gov REMOVED — the site now serves an Angular SPA shell (junk text) for /Docs paths.
     termination: [
       "https://www.twc.texas.gov/programs/wage-and-hour/texas-payday-law",
       "https://efte.twc.texas.gov/final_pay.html",
-      "https://statutes.capitol.texas.gov/Docs/LA/htm/LA.61.htm",
     ],
     nexus: [
       "https://www.tdi.texas.gov/agent/index.html",
@@ -2186,7 +2278,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // at_will: intentionally unmapped (coming-soon) — no clean official source stating the at-will doctrine and its exceptions (AGO employment-law page covers discrimination only) — coming-soon
+    // EXCEPTIONS ONLY (21 V.S.A. 495 via the curl fallback — Node TLS fails on legislature.vermont.gov — plus VT HRC). May refuse.
+    at_will: [
+      "https://legislature.vermont.gov/statutes/section/21/005/00495",
+      "https://hrc.vermont.gov/",
+    ],
     business_tax: [
       "https://tax.vermont.gov/business/corporate-income-tax",
       "https://tax.vermont.gov/business/business-entity-income-tax",

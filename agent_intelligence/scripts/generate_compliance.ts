@@ -209,6 +209,16 @@ const GUIDANCE_BY_STATE: Partial<Record<StateCode, Partial<Record<ResourceKey, s
   WA: WA_EXTRA_GUIDANCE,
   ID: FEDERAL_DEFAULT_GUIDANCE,
   UT: { ...FEDERAL_DEFAULT_GUIDANCE, business_tax: UT_BUSINESS_TAX_GUIDANCE },
+  // NM: the state's own wage-hour pages are WAF-blocked; the fetchable
+  // official sources (a city page stating the prevailing STATE rate + the
+  // NMAC wage-claim rules) don't cover overtime. Unlike the universal
+  // guidance's both-halves requirement, allow a grounded rate-plus-
+  // enforcement summary and simply omit the overtime half rather than
+  // refusing — the absolute grounding rules still bind.
+  NM: {
+    wage_hour:
+      "INCLUDE the current New Mexico state minimum wage dollar amount exactly as a source states it (a source may state it as the prevailing state minimum wage). Summarize the wage-claim/enforcement rules the sources cover. If the sources do NOT state the overtime rule, OMIT overtime entirely — do not guess it, and do not refuse solely because overtime is absent. Every figure verbatim from the sources.",
+  },
 };
 
 // --- 50-state expansion (2026-07): universal per-topic guidance -------------
@@ -317,7 +327,19 @@ async function fetchPageText(url: string): Promise<string | null> {
       console.error(`  fail  ${url}  HTTP ${resp.status}`);
       return null;
     }
+    // PDF guard (main path — mirrors the curl fallback's): stripHtml on PDF
+    // binary would feed garbage to the model. Link-only PDF sources (e.g.
+    // CO's PAY CALC order) fail cleanly to coming-soon instead.
+    const ctype = resp.headers.get("content-type") ?? "";
+    if (ctype.includes("pdf")) {
+      console.error(`  fail  ${url}  PDF content (no text extraction)`);
+      return null;
+    }
     const html = await resp.text();
+    if (html.slice(0, 8).includes("%PDF")) {
+      console.error(`  fail  ${url}  PDF content (no text extraction)`);
+      return null;
+    }
     const text = stripHtml(html);
     if (text.length < 100) {
       console.error(`  fail  ${url}  stripped text <100 chars (likely JS-rendered)`);
