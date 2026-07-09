@@ -269,6 +269,32 @@ function stripHtml(html: string): string {
     .trim();
 }
 
+// Fallback for hosts Node's fetch stack can't negotiate with (some state
+// sites — cga.ct.gov, dor.ms.gov — serve fine to curl/browsers but fail
+// undici's TLS/HTTP2 handshake). Same URL, same content, different client.
+// PDFs are rejected: stripHtml on binary would feed garbage to the model.
+async function fetchViaCurl(url: string): Promise<string | null> {
+  const { execFile } = await import("node:child_process");
+  return new Promise(resolve => {
+    execFile(
+      "curl.exe",
+      ["-s", "-L", "--max-time", "20", "-A",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+        url],
+      { maxBuffer: 10 * 1024 * 1024 },
+      (err, stdout) => {
+        if (err || !stdout) return resolve(null);
+        if (stdout.slice(0, 8).includes("%PDF")) {
+          console.error(`  fail  ${url}  PDF content (no text extraction)`);
+          return resolve(null);
+        }
+        const text = stripHtml(stdout);
+        resolve(text.length >= 100 ? text.slice(0, MAX_TEXT_CHARS_PER_SOURCE) : null);
+      },
+    );
+  });
+}
+
 async function fetchPageText(url: string): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -299,6 +325,13 @@ async function fetchPageText(url: string): Promise<string | null> {
     }
     return text.slice(0, MAX_TEXT_CHARS_PER_SOURCE);
   } catch (e) {
+    // Connection-level failure (not an HTTP status): retry once via curl —
+    // several official hosts reject Node's TLS handshake but serve curl.
+    const viaCurl = await fetchViaCurl(url);
+    if (viaCurl) {
+      console.error(`  note  ${url}  fetched via curl fallback`);
+      return viaCurl;
+    }
     console.error(`  fail  ${url}  ${(e as Error)?.message ?? e}`);
     return null;
   } finally {

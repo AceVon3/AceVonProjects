@@ -292,6 +292,47 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "AZ",
+    "topic": "hiring",
+    "title": "Arizona New Hire Reporting Requirements for Employers",
+    "summary": "Arizona employers must report all new hires and rehires to the Department of Economic Security within twenty days of the employee's start date. Reports are submitted using a W-4 or equivalent form, and may be sent magnetically, electronically, by mail, or fax. Electronic or magnetic filers must submit two monthly transmissions no more than sixteen days apart. Reports must include the employee's name, address, social security number, the employer's name, address, federal tax ID, and the employee's first date of paid service.",
+    "sources": [
+      "https://www.azleg.gov/ars/23/00722-01.htm"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "AZ",
+    "topic": "leave",
+    "title": "Arizona Earned Paid Sick Time Accrual and Employer Requirements",
+    "summary": "Arizona requires employers to provide earned paid sick time, accruing at one hour for every 30 hours worked. Employers with 15 or more employees must allow up to 40 hours per year; those with fewer than 15 employees must allow up to 24 hours per year. Accrual begins at the start of employment, and unused time carries over to the following year, though employers may pay out unused time instead. Employers with existing paid leave policies that meet these requirements are not required to provide additional sick time.",
+    "sources": [
+      "https://www.azleg.gov/ars/23/00371.htm",
+      "https://www.azleg.gov/ars/23/00372.htm"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "AZ",
+    "topic": "nexus",
+    "title": "Arizona Insurance Producer Licensing Key Definitions",
+    "summary": "Arizona law defines an insurance producer as any person required to be licensed to sell, solicit, or negotiate insurance. \"Sell\" means exchanging a contract of insurance for money on behalf of an insurer, \"solicit\" means attempting to sell or urging application, and \"negotiate\" means conferring directly with a purchaser about a contract's substantive benefits or terms. Business entities must designate a specific individual producer responsible for the entity's compliance with Arizona insurance laws. The source page covers definitions only and does not detail licensing procedures or continuing-education requirements.",
+    "sources": [
+      "https://www.azleg.gov/ars/20/00281.htm"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "AZ",
+    "topic": "payroll",
+    "title": "Arizona Employer Income Tax Withholding Obligations",
+    "summary": "Employers must withhold Arizona income tax from employees performing services in Arizona, calculated as a percentage of gross taxable wages. Employees elect a withholding rate using Form A-4 within five days of hire; if they fail to do so, employers must withhold at 2.0%. Withholding rates available range from 0.5% to 3.5%. Employers register for a withholding account by completing the JT-1 application on AZTaxes.gov.",
+    "sources": [
+      "https://azdor.gov/business/withholding-tax"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "AZ",
     "topic": "salary_threshold",
     "title": "Arizona Salary Threshold for Overtime Exempt Employees",
     "summary": "Arizona follows the federal FLSA threshold for executive, administrative, and professional overtime exemptions. Under federal rules stated in 29 CFR 541.600, the required salary is not less than $684 per week, which may also be expressed as $1,368 biweekly, $1,482 semimonthly, or $2,964 monthly. Computer employees may alternatively qualify at not less than $27.63 per hour. Employers should confirm the current applicable figure with the U.S. Department of Labor, as the federal threshold has been subject to change.",
@@ -314,10 +355,21 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "AZ",
     "topic": "wage_hour",
-    "title": null,
-    "summary": null,
+    "title": "Arizona Minimum Wage and Overtime Rules for Employers",
+    "summary": "Arizona employers must pay at least the minimum wage, which was set at $12 on and after January 1, 2020, with annual cost-of-living increases each January 1 thereafter. Tipped employees may be paid up to $3.00 per hour less than the minimum wage, provided tips bring total compensation to at least the minimum wage. For overtime, Arizona follows the federal FLSA: employers must pay time and one-half the regular rate for hours worked beyond 40 in a workweek. Overtime cannot be waived by agreement between employer and employee.",
     "sources": [
+      "https://www.azleg.gov/ars/23/00363.htm",
       "https://www.dol.gov/agencies/whd/fact-sheets/23-flsa-overtime-pay"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "AZ",
+    "topic": "workers_comp",
+    "title": "Arizona Workers' Compensation Coverage Requirements for Employers",
+    "summary": "Arizona employers must secure workers' compensation coverage through one of two methods: purchasing insurance from a carrier authorized by the director of the Department of Insurance and Financial Institutions, or self-insuring by proving financial ability to pay compensation directly or through a commission-approved workers' compensation pool. Self-insuring employers must provide a deposit of no less than $100,000 for workers' compensation liabilities. Sole proprietors performing work as independent contractors may waive their rights to coverage by signing a waiver with the employer's insurance carrier.",
+    "sources": [
+      "https://www.azleg.gov/ars/23/00961.htm"
     ],
     "last_checked": "2026-07-09"
   },
@@ -559,6 +611,16 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
     "summary": "Colorado employers with one or more employees must carry workers' compensation insurance at all times, regardless of whether employees are part-time, full-time, or family members. Coverage is obtained through a commercial insurance carrier or, if qualified, through self-insurance; employers cannot deduct any portion of the premium from employee wages. Failure to carry coverage can result in fines of up to $500 per day uninsured, potential business shutdown, and an additional penalty of 25% of an injured worker's benefits. Construction industry employers face additional requirements regarding contractors.",
     "sources": [
       "https://cdle.colorado.gov/dwc/employers/insurance-coverage"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "CT",
+    "topic": "at_will",
+    "title": "Connecticut At-Will Employment Rules and Recognized Exceptions",
+    "summary": "In Connecticut, private-sector employment is generally at-will, meaning either party may end the relationship at any time without giving a reason. However, Connecticut courts recognize two major exceptions: terminations that violate a clear mandate of public policy, and terminations that breach an implied employment contract established through words, conduct, or employer handbooks. The public policy exception covers actions such as discharging an employee for filing unemployment, workers' compensation, or wage enforcement claims, or for exercising constitutional rights.",
+    "sources": [
+      "https://www.cga.ct.gov/2001/rpt/2001-R-0246.htm"
     ],
     "last_checked": "2026-07-09"
   },
@@ -2679,6 +2741,16 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "MS",
+    "topic": "business_tax",
+    "title": null,
+    "summary": null,
+    "sources": [
+      "https://www.dor.ms.gov/business/corporate-income-and-franchise-tax"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "MS",
     "topic": "hiring",
     "title": "Mississippi Employer New Hire Reporting and Child Support Obligations",
     "summary": "Mississippi employers must report newly hired and re-hired employees to the State Directory of New Hires within 15 business days of the worker's first day. Required information includes the employee's name, address, Social Security number, date of hire, date of birth, gender, salary, payment frequency, and medical insurance eligibility. Employers must also withhold child support from employee wages per court orders and remit funds to the State Disbursement Unit. Lump-sum payments over $500 to employees subject to a withholding order must be reported at least 45 days before payment.",
@@ -4759,12 +4831,43 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   },
   {
     "state": "TX",
+    "topic": "payroll",
+    "title": null,
+    "summary": null,
+    "sources": [
+      "https://statutes.capitol.texas.gov/Docs/LA/htm/LA.201.htm"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "TX",
+    "topic": "remote",
+    "title": null,
+    "summary": null,
+    "sources": [
+      "https://efte.twc.texas.gov/"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "TX",
     "topic": "salary_threshold",
     "title": "Texas Overtime Exempt Salary Threshold Follows Federal FLSA",
     "summary": "Texas does not set its own overtime-exempt salary threshold, so the federal FLSA standard applies. Under 29 CFR 541.600, employees must be paid on a salary basis of not less than $684 per week to qualify for the executive, administrative, or professional exemption. Computer employees may alternatively qualify via an hourly rate of not less than $27.63 per hour. Employers should confirm the current federal figure with the U.S. Department of Labor, as the threshold has been subject to regulatory updates.",
     "sources": [
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600"
+    ],
+    "last_checked": "2026-07-09"
+  },
+  {
+    "state": "TX",
+    "topic": "termination",
+    "title": "Texas Final Pay Timing Rules for Voluntary and Involuntary Separations",
+    "summary": "Under the Texas Payday Law, employers must issue final pay within 6 calendar days of discharge for involuntarily separated employees. Employees who quit, retire, or resign must receive their final paycheck by the next regularly-scheduled payday after the resignation's effective date. Final pay includes regular wages, fringe benefits under a written policy, commissions, and bonuses, though different payout schedules may apply if specified in a written agreement. The sources contain no information about a state WARN-style mass-layoff notice requirement.",
+    "sources": [
+      "https://efte.twc.texas.gov/final_pay.html",
+      "https://statutes.capitol.texas.gov/Docs/LA/htm/LA.61.htm"
     ],
     "last_checked": "2026-07-09"
   },

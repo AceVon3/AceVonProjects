@@ -417,19 +417,29 @@ export const RESOURCE_URLS: Record<
     ],
   },
   // federal-default: no state overtime law or own exempt threshold; distinctive: Prop 206 earned paid sick time mandate (24/40 hrs by employer size) and voter-protected minimum wage indexing.
+  // NOTE (2026-07 retry): azica.gov / des.az.gov / difi.az.gov hard-block the
+  // generator's fetch (TLS fingerprinting — browser headers don't help), so
+  // azleg.gov statute pages (probe-verified 200 with full section text) carry
+  // the grounding; the agency URLs stay listed as the better user-facing
+  // links if their WAFs ever open up.
   AZ: {
     wage_hour: [
       "https://www.azica.gov/labor-minimum-wage-main-page",
+      "https://www.azleg.gov/ars/23/00363.htm",
       "https://www.dol.gov/agencies/whd/fact-sheets/23-flsa-overtime-pay",
     ],
     leave: [
       "https://www.azica.gov/frequently-asked-questions-about-wage-and-earned-paid-sick-time-laws",
+      "https://www.azleg.gov/ars/23/00371.htm",
+      "https://www.azleg.gov/ars/23/00372.htm",
     ],
     payroll: [
       "https://des.az.gov/services/employment/unemployment-employer",
+      "https://azdor.gov/business/withholding-tax",
     ],
     workers_comp: [
       "https://www.azica.gov/obtaining-workers-compensation-coverage-information",
+      "https://www.azleg.gov/ars/23/00961.htm",
     ],
     termination: [
       "https://www.azleg.gov/ars/23/00353.htm",
@@ -437,9 +447,11 @@ export const RESOURCE_URLS: Record<
     ],
     nexus: [
       "https://difi.az.gov/licensing/insurance-professionals",
+      "https://www.azleg.gov/ars/20/00281.htm",
     ],
     hiring: [
       "https://des.az.gov/services/child-and-family/child-support/employers",
+      "https://www.azleg.gov/ars/23/00722-01.htm",
     ],
     remote: [
       "https://www.azica.gov/labor-department",
@@ -2056,15 +2068,20 @@ export const RESOURCE_URLS: Record<
       "https://www.twc.texas.gov/programs/wage-and-hour",
       "https://www.dol.gov/agencies/whd/fmla",
     ],
+    // NOTE (2026-07 retry): www.twc.texas.gov serves a challenge page (202)
+    // to the generator's fetch, so the statute site + the TWC employer
+    // handbook subdomain (both probe-verified) carry the grounding.
     payroll: [
       "https://www.twc.texas.gov/programs/unemployment-tax",
+      "https://statutes.capitol.texas.gov/Docs/LA/htm/LA.201.htm",
     ],
     workers_comp: [
       "https://www.tdi.texas.gov/wc/employer/index.html",
     ],
     termination: [
       "https://www.twc.texas.gov/programs/wage-and-hour/texas-payday-law",
-      "https://www.twc.texas.gov/data-reports/warn-notice",
+      "https://efte.twc.texas.gov/final_pay.html",
+      "https://statutes.capitol.texas.gov/Docs/LA/htm/LA.61.htm",
     ],
     nexus: [
       "https://www.tdi.texas.gov/agent/index.html",
@@ -2075,6 +2092,7 @@ export const RESOURCE_URLS: Record<
     ],
     remote: [
       "https://www.twc.texas.gov/programs/wage-and-hour",
+      "https://efte.twc.texas.gov/",
     ],
     salary_threshold: [
       "https://www.dol.gov/agencies/whd/overtime",
