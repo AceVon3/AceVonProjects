@@ -1,3 +1,54 @@
+# Session checkpoint — 2026-07-08 (DE + rda-gate)  ·  DE IMPORTED (24th state) + THE 3rd SILENT-DROP CLASS CORRECTED (None-conflation, multi-state)
+
+DE's 133-row scrape imported AND the class it surfaced corrected in ONE gated
+pass. db **`2b9316cf`** (supersedes post-SD `bd36ba67`). **NEW BASELINE: 24
+states, raw 3,684 / rolled 2,247 / active@2026-06-11 683.**
+
+- **THE 3rd MATERIAL SILENT-DROP CLASS (after B6 comma, B9 mapping):** a
+  three-valued-logic bug — the funnel's `if not fs.rate_data_applies`
+  conflated None (the variant "Rate Information for Multiple Company
+  Filings" layout OMITS the rate-data sentence) with explicit
+  does-NOT-apply → fully-parseable rate filings silently dropped. **Fixed:**
+  only explicit False excludes; None falls through to the row decision;
+  value-less summaries classify loudly. FULL B6 PROTOCOL: 6,471-PDF
+  all-state scan → 11 candidates → funnel-gate adjudication.
+- **DAMAGE PROFILE:** DE (unshipped) held ALL the live damage — SF
+  **−1.5%/244,139ph ACTIVE** (renders in My Carriers), Encompass **+8.6%**
+  + Allstate **+17.5%** (both LIVE Prospect rows now), the Nationwide
+  24,671ph trio, + a bonus Travelers +6.7%/15,911 back-ext — caught
+  PRE-SHIP by the cross-check. Shipped damage NON-LIVE: OH +16.1%/7,236 +
+  ME +7.0%/15,427 (both back-ext) + 7 immaterial (MT/WV/IL). The funnel's
+  OTHER gates caught the would-be-live cases (MT's 17.9% = out-of-window;
+  OH's USAA block = Rule+new-product).
+- **MULTI-STATE GATE ALL PASS:** exactly 5 states changed by exact deltas
+  (MT +2/+1/0 via SURGICAL APPEND — the diff-gate caught MT's enrichment
+  fields and auto-restored, the B6 lesson working; WV +2/+2/0; IL +1/+1/**+1
+  active** — a rate-neutral row, count+1/signal+0 verified; OH +4/+2/0;
+  ME +1/+1/0); 18 unaffected scraped states byte-identical; CA/NY/TX
+  intact; as-of pinned. DE flip exact (190 interim → 133/67/20).
+- **DE cross-check (14th point, post-fix):** value-agreement 64/64 (100%),
+  interim 57/57, PPA 98.3% / HO all-recency → in-window 100%/100%.
+  validated:{auto:true, home:true}; methodology 24 rows DE ✓✓. Gates: tsc,
+  8/8 verify, build 12/12, 13/13 e2e; localhost checklist verified (the 4
+  recovered signals render; IL count+1/signal+0; OH/ME pre-window; ND/SD
+  identical).
+- **★ B13 OPENED — THE IMMEDIATE NEXT SESSION (before CT, before the large
+  tier): DELIVERABLE DRIFT.** MT's diff-gate exposed 5 filings CACHED AFTER
+  MT SHIPPED that a re-finalize would now include — one LIVE-MATERIAL:
+  **Allstate +20.1%/642ph eff 04/06/2026** (in a shipped state's cache, not
+  its deliverable). Mechanism: post-ship sweeps/backfills cache new PDFs;
+  deliverables never fold them in. NEXT: drift-scan the original-10 (or all
+  shipped) states — per drifted filing MATERIAL+LIVE (recover) vs back-ext/
+  immaterial; full B6 protocol; HOLD for scope review.
+- **HEADs (post-deploy):** insurancewebscraper `ac8b5e5`→…→**`3f34590`**
+  (DE arc + the correction; HEAD==origin, 0 deletions). agent-intel/master
+  `df4c2ee`→**`6f9873c`** (subtree-FF, 0 deletions; Vercel LIVE — DE ✓✓,
+  methodology 24, recovered signals serve from PROD). Monorepo
+  `0ba260f`+docs. `filings.db` **`2b9316cf`**. CT swept + parked (22/27,
+  retry pending — AFTER B13).
+
+---
+
 # Session checkpoint — 2026-07-08 (SD)  ·  SD INTERIM→REAL IMPORT SHIPPED + VALIDATED (23rd scraped state; THE COVERAGE THESIS SEALED)
 
 SD's 121-row SERFF scrape (250/250 in-target, 0 download misses — 13-state

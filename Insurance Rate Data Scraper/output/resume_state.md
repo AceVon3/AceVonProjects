@@ -1,5 +1,36 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-08 (cont.2) — DE IMPORTED (24th state) + THE 3rd SILENT-DROP
+> CLASS CORRECTED (None≡False conflation in the rate_data_applies gate).**
+> DE's cross-check flagged 4 material AM-Best-only clusters → root cause: the
+> variant "Rate Information for Multiple Company Filings" summary layout
+> omits the rate-data sentence → rate_data_applies=None → the gate's `if not`
+> conflated None with explicit does-NOT-apply → parseable rate filings
+> silently dropped. FIX: explicit-False-only excludes; None → row decision.
+> FULL B6 PROTOCOL: 6,471-PDF all-state scan → 11 candidates → gate
+> adjudication → **shipped damage NON-LIVE** (OH +16.1%/7,236 + ME
+> +7.0%/15,427 back-ext + 7 immaterial); **DE (unshipped) held the live
+> damage** (SF −1.5%/244,139 ACTIVE, Encompass +8.6% + Allstate +17.5% LIVE
+> Prospect, Nationwide 24,671ph) — caught pre-ship. ONE GATED PASS: DE flip
+> exact + 5 states corrected by exact deltas (MT via SURGICAL APPEND — the
+> diff-gate caught enrichment fields + auto-restored); 18 states
+> byte-identical; CA/NY/TX intact; active moved ONLY IL +1 (rate-neutral,
+> count+1/signal+0 verified) + DE +20. **NEW BASELINE (SUPERSEDES post-SD
+> 3,541/2,173/662/`bd36ba67`): 24 states, raw 3,684 / rolled 2,247 /
+> active@2026-06-11 683 / db `2b9316cf`.** DE validated {true,true} (14th
+> point: 64/64 + 57/57, in-window 100%/100%).
+> - **★ B13 OPENED — IMMEDIATE NEXT (before CT retry, before large tier):
+>   DELIVERABLE DRIFT.** MT's diff-gate exposed 5 post-ship-cached filings a
+>   re-finalize would include — one LIVE-MATERIAL: Allstate +20.1%/642ph eff
+>   04/06/2026 in a shipped state's cache but not its deliverable. Drift-scan
+>   all shipped states (esp. the original 10), materiality-adjudicate, full
+>   B6 protocol, HOLD for scope review.
+> - **HEADs (post-deploy):** insurancewebscraper →**`3f34590`**;
+>   agent-intel/master `df4c2ee`→**`6f9873c`** (Vercel LIVE — DE ✓✓,
+>   methodology 24, recovered signals on PROD). Monorepo `0ba260f`+docs.
+>   `filings.db` **`2b9316cf`**. CT swept+parked (22/27; 5-term retry
+>   pending — run AFTER B13).
+
 > **2026-07-08 (cont.) — SD INTERIM→REAL IMPORT SHIPPED + VALIDATED (23rd
 > scraped state). THE COVERAGE THESIS SEALED: AK definitively the lone thin
 > case (13 states).**
