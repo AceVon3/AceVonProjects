@@ -2955,12 +2955,12 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "MS",
     "topic": "workers_comp",
-    "title": null,
-    "summary": null,
+    "title": "Mississippi Workers' Compensation Coverage Requirements for Employers",
+    "summary": "Mississippi employers with 5 or more regularly employed workers must carry workers' compensation insurance. Coverage can be obtained through a private insurance company or by Commission-approved self-insurance. Employers with fewer than 5 employees are not required to carry coverage but may do so voluntarily. Domestic and farm laborers, employees of certain non-profit organizations, federal employees, and independent contractors are generally excluded from coverage.",
     "sources": [
       "https://mwcc.ms.gov/pdf/WCFacts2013.pdf"
     ],
-    "last_checked": "2026-07-09"
+    "last_checked": "2026-07-10"
   },
   {
     "state": "MT",
@@ -5585,12 +5585,12 @@ export const COMPLIANCE_SUMMARIES: ComplianceSummary[] = [
   {
     "state": "WI",
     "topic": "at_will",
-    "title": null,
-    "summary": null,
+    "title": "Wisconsin At-Will Employment and Public Policy Wrongful Discharge",
+    "summary": "Wisconsin follows the employment-at-will doctrine, allowing employers to discharge an employee for good reason, no reason, or even a morally wrong reason without committing a legal wrong. However, a narrow public policy exception applies: an employee cannot be discharged for refusing an employer's command that would violate a fundamental and well-defined public policy evidenced by a constitutional, statutory, or administrative provision. Other exceptions include employment contracts specifying a term of employment and statutory provisions governing the employment agreement. Remedies for wrongful discharge are limited to reinstatement and back pay; punitive damages are not available.",
     "sources": [
       "https://wilawlibrary.gov/jury/files/civil/2750.pdf"
     ],
-    "last_checked": "2026-07-09"
+    "last_checked": "2026-07-10"
   },
   {
     "state": "WI",
