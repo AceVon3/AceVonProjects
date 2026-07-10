@@ -9,6 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import TopBar from "@/components/TopBar";
 import {
   ACTIVE_RATE_ACTIVITIES,
   AMBEST_PERMANENT_STATES,
@@ -60,12 +61,13 @@ function readLastUpdated(): string {
 }
 
 // Reusable className strings — keeps the JSX legible while sharing tokens.
+// Design 3f: 17px/650 section headings, 13px/1.6 body, single white card.
 const sectionCls = "mb-8";
-const h2Cls = "text-14 font-medium uppercase tracking-wider06 text-ink-2 mt-0 mb-3";
-const pCls = "text-14 leading-[1.6] text-ink mt-0 mb-2";
-const liCls = "text-14 leading-[1.6] text-ink mb-1.5";
+const h2Cls = "text-17 font-[650] text-ink mt-0 mb-3";
+const pCls = "text-13 leading-[1.6] text-ink-2 mt-0 mb-2";
+const liCls = "text-13 leading-[1.6] text-ink-2 mb-1.5";
 const codeCls =
-  "font-mono text-13 bg-surface-2 px-1.5 py-px rounded";
+  "font-mono text-12 bg-soft px-1.5 py-px rounded";
 
 export default function MethodologyPage(): React.JSX.Element {
   const lastUpdated = readLastUpdated();
@@ -92,15 +94,17 @@ export default function MethodologyPage(): React.JSX.Element {
 
   return (
     <main className="min-h-screen bg-canvas">
-      <div className="max-w-[820px] mx-auto px-4 py-10">
+      <TopBar
+        title="Methodology"
+        asOf={lastUpdated !== "unknown" ? lastUpdated : undefined}
+      />
+      <div className="max-w-[760px] mx-auto px-4 md:px-0 py-[30px]">
+        <div className="bg-surface border border-card-line rounded-card shadow-card px-6 md:px-9 py-[30px]">
         <header className="mb-7">
-          <h1
-            data-testid="page-title"
-            className="text-22 font-medium text-ink mt-0 mb-1"
-          >
+          <h1 className="text-19 font-[650] tracking-tight02 text-ink mt-0 mb-1.5">
             Methodology
           </h1>
-          <p className="text-13 text-ink-2 m-0">
+          <p className="text-13 leading-[1.6] text-ink-2 m-0">
             What this product covers, what it excludes, and how to read the numbers.
             Last updated: <span data-testid="last-updated" className={codeCls}>{lastUpdated}</span>{" "}
             (the freshness of the source SERFF dataset; the active 12-month window
@@ -166,13 +170,15 @@ export default function MethodologyPage(): React.JSX.Element {
           </p>
           <ul className="m-0 pl-[18px]">
             <li className={liCls}>
-              <strong className="text-red-text">Raising (Prospect):</strong>{" "}
-              <span className={codeCls}>overall_rate_impact ≥ +{PROSPECT_THRESHOLD}%</span>.
+              {/* Category colors per the refresh: Prospect = brand red,
+                  Defend = blue. Threshold values bolded (design 3f). */}
+              <strong className="text-brand-red">Raising (Prospect):</strong>{" "}
+              <strong><span className={codeCls}>overall_rate_impact ≥ +{PROSPECT_THRESHOLD}%</span></strong>.
               A meaningful increase a competitor’s customers are likely to feel.
             </li>
             <li className={liCls}>
-              <strong className="text-green-text">Lowering (Defend):</strong>{" "}
-              <span className={codeCls}>overall_rate_impact ≤ {DEFEND_THRESHOLD}%</span>.
+              <strong className="text-blue-text">Lowering (Defend):</strong>{" "}
+              <strong><span className={codeCls}>overall_rate_impact ≤ {DEFEND_THRESHOLD}%</span></strong>.
               A cut deep enough that your customers may start shopping.
             </li>
             <li className={liCls}>
@@ -205,7 +211,7 @@ export default function MethodologyPage(): React.JSX.Element {
           </p>
 
           {/* Load-bearing frame — the same callout the feature itself carries. */}
-          <div className="bg-amber-fill text-amber-text border border-hairline border-line rounded-md px-4 py-3 text-13 leading-[1.5] mt-3 mb-3">
+          <div className="bg-amber-fill text-amber-band border border-amber-border rounded-tile px-[18px] py-3 text-13 leading-[1.5] mt-3 mb-3">
             <strong>These are rate changes, not prices.</strong> Every figure is the
             average percentage a carrier <em>changed</em> its filed rates — not how
             cheap it is. A favorable comparison means a competitor is raising rates
@@ -306,14 +312,14 @@ export default function MethodologyPage(): React.JSX.Element {
             AM Best industry data and are not cross-checked, so they do
             not appear in this table.)
           </p>
-          <div className="border border-hairline border-line rounded-lg overflow-hidden mt-3">
+          <div className="border border-card-line rounded-tile overflow-hidden mt-3">
             <table
               data-testid="validation-table"
               className="w-full text-13 bg-surface"
               style={{ borderCollapse: "collapse" }}
             >
               <thead>
-                <tr className="border-b border-hairline border-line-2 bg-surface-2">
+                <tr className="border-b border-line bg-surface-2">
                   <th className="text-left px-3 py-2.5 text-ink-2 font-medium">
                     State
                   </th>
@@ -331,7 +337,7 @@ export default function MethodologyPage(): React.JSX.Element {
                     key={r.code}
                     data-testid="validation-row"
                     data-state={r.code}
-                    className="border-b border-hairline border-line"
+                    className="border-b border-line last:border-b-0"
                   >
                     <td className="px-3 py-2.5 text-ink">
                       {r.name} <span className="text-ink-3">({r.code})</span>
@@ -399,12 +405,13 @@ export default function MethodologyPage(): React.JSX.Element {
           </ul>
         </section>
 
-        <footer className="border-t border-hairline border-line pt-4 mt-2">
+        <footer className="border-t border-line pt-4 mt-2">
           <p className="text-12 text-ink-3 m-0">
             None of this is legal or financial advice. Verify on the official
             SERFF filing and the issuing carrier’s rate schedule before acting.
           </p>
         </footer>
+        </div>
       </div>
     </main>
   );

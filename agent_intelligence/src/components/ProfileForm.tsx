@@ -109,7 +109,7 @@ function errorsByField(errs: ValidationError[]): Record<string, string> {
 // Input + select shared class — kept here so the visual feel of every form
 // field is consistent and gets updated in one place.
 const INPUT_CLS =
-  "w-full rounded-md px-2.5 py-2 text-13 outline-none border border-hairline border-line-2";
+  "w-full rounded-lg px-3 py-2 text-13 outline-none border border-line-2 bg-surface text-ink focus:border-ink-3";
 
 export default function ProfileForm(): React.JSX.Element {
   const router = useRouter();
@@ -238,11 +238,12 @@ export default function ProfileForm(): React.JSX.Element {
   // ----- presentational primitives ------------------------------------------
 
   const ReqStar = () => (
-    <span className="ml-0.5 text-red-text">*</span>
+    <span className="ml-0.5 text-brand-red">*</span>
   );
 
+  // Field-group kicker (design 3g: 12px/600 uppercase).
   const SecLabel = ({ children }: { children: React.ReactNode }) => (
-    <div className="text-11 uppercase tracking-wider04 mb-2 text-ink-2">
+    <div className="text-12 font-semibold uppercase tracking-wider04 mb-2 text-ink-2">
       {children}
     </div>
   );
@@ -257,16 +258,17 @@ export default function ProfileForm(): React.JSX.Element {
   // ----- render --------------------------------------------------------------
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4 lg:grid-cols-[1.7fr_1fr]" noValidate>
+    // Single 680px column (design 3g) — the old empty right rail is gone.
+    <form onSubmit={onSubmit} className="grid gap-4" noValidate>
       {/* MAIN CARD */}
-      <div className="rounded-xl p-[18px] bg-surface border border-hairline border-line">
+      <div className="rounded-card p-6 bg-surface border border-card-line shadow-card">
         {/* Upgrade prompt — shown when an older saved profile is missing the
             new required fields. We don't wipe or block their data; we ask them
             to fill the two new questions (highlighted below). */}
         {needsUpgrade && (
           <div
             data-testid="profile-upgrade-banner"
-            className="mb-4 rounded-md bg-amber-fill text-amber-text border border-hairline border-line px-3 py-2.5 text-12 leading-[1.45]"
+            className="mb-4 rounded-tile bg-amber-fill text-amber-band border border-amber-border px-3.5 py-2.5 text-12 leading-[1.45]"
           >
             <span className="font-medium">Two new questions.</span> We added{" "}
             <span className="font-medium">how you pay staff</span> and{" "}
@@ -277,8 +279,8 @@ export default function ProfileForm(): React.JSX.Element {
         )}
 
         {/* Card title */}
-        <div className="flex items-center gap-2 mb-4 font-medium text-sm">
-          <span aria-hidden className="text-red-text text-17">⌂</span>
+        <div className="flex items-center gap-2 mb-4 font-[650] text-15 text-ink">
+          <i aria-hidden className="ti ti-building text-17 text-brand-red" />
           <span>Agency details</span>
         </div>
 
@@ -355,7 +357,7 @@ export default function ProfileForm(): React.JSX.Element {
             <div
               key={i}
               data-testid={`office-${i}`}
-              className="rounded-lg border border-hairline border-line-2 bg-surface-2 p-3"
+              className="rounded-tile border border-line-2 bg-surface-2 p-3.5"
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-11 uppercase tracking-wider04 text-ink-2">
@@ -449,27 +451,34 @@ export default function ProfileForm(): React.JSX.Element {
           type="button"
           onClick={addOffice}
           data-testid="office-add"
-          className="mt-2 mb-1 text-12 font-medium text-blue-text hover:underline cursor-pointer bg-transparent"
+          className="mt-2 mb-1 text-12 font-medium text-ink-2 hover:text-ink cursor-pointer bg-transparent
+                     border border-dashed border-line-2 rounded-full px-3 py-1"
         >
           + Add another office
         </button>
         <FieldErr msg={errors.offices} />
 
-        <div className="my-4 border-t border-hairline border-line" />
+        <div className="my-5 border-t border-line" />
 
         {/* Pay type — drives the Compliance office summary's relevance
             pointing (hourly → min wage/overtime; salary → exempt threshold). */}
         <SecLabel>
           How do you pay staff? <ReqStar />
         </SecLabel>
-        <div className="flex gap-2 mb-1" role="radiogroup" aria-label="Pay type">
+        {/* Segmented control (design 3g): bordered 10px-radius group, selected
+            cell = navy bg + white text. */}
+        <div
+          className="grid grid-cols-3 border border-line-2 rounded-tile overflow-hidden mb-1"
+          role="radiogroup"
+          aria-label="Pay type"
+        >
           {(
             [
               { value: "hourly", title: "Hourly" },
               { value: "salary", title: "Salary" },
               { value: "both",   title: "Both" },
             ] as const
-          ).map(opt => {
+          ).map((opt, i) => {
             const sel = state.pay_type === opt.value;
             return (
               <button
@@ -478,10 +487,11 @@ export default function ProfileForm(): React.JSX.Element {
                 onClick={() => update("pay_type", opt.value)}
                 data-testid={`pay-type-${opt.value}`}
                 className={[
-                  "flex-1 rounded-lg text-center px-[11px] py-[9px] cursor-pointer font-medium text-13",
+                  "text-center px-[11px] py-[9px] cursor-pointer font-medium text-13 border-none transition-colors",
+                  i > 0 ? "border-l border-l-line-2" : "",
                   sel
-                    ? "border-2 border-blue-border bg-blue-fill text-blue-text"
-                    : "border border-hairline border-line-2 bg-surface text-ink",
+                    ? "bg-brand-navy text-white"
+                    : "bg-surface text-ink hover:bg-soft",
                 ].join(" ")}
                 role="radio"
                 aria-checked={sel}
@@ -493,19 +503,20 @@ export default function ProfileForm(): React.JSX.Element {
         </div>
         <FieldErr msg={errors.pay_type} />
 
-        <div className="my-4 border-t border-hairline border-line" />
+        <div className="my-5 border-t border-line" />
 
         {/* Agent type */}
         <SecLabel>
           Agent type <ReqStar />
         </SecLabel>
-        <div className="flex gap-2 mb-4">
+        {/* Segmented control (design 3g): 2 cells, selected = navy/white. */}
+        <div className="grid grid-cols-2 border border-line-2 rounded-tile overflow-hidden mb-4">
           {(
             [
               { value: "independent", title: "Independent", sub: "I sell multiple carriers" },
               { value: "captive",     title: "Captive",     sub: "I sell one carrier" },
             ] as const
-          ).map(opt => {
+          ).map((opt, i) => {
             const sel = state.agent_type === opt.value;
             return (
               <button
@@ -513,17 +524,16 @@ export default function ProfileForm(): React.JSX.Element {
                 type="button"
                 onClick={() => setAgentType(opt.value)}
                 className={[
-                  "flex-1 rounded-lg text-left px-[11px] py-[9px] cursor-pointer",
-                  sel
-                    ? "border-2 border-blue-border bg-blue-fill"
-                    : "border border-hairline border-line-2 bg-surface",
+                  "text-left px-3.5 py-[9px] cursor-pointer border-none transition-colors",
+                  i > 0 ? "border-l border-l-line-2" : "",
+                  sel ? "bg-brand-navy" : "bg-surface hover:bg-soft",
                 ].join(" ")}
                 aria-pressed={sel}
               >
                 <div
                   className={[
                     "font-medium text-13",
-                    sel ? "text-blue-text" : "text-ink",
+                    sel ? "text-white" : "text-ink",
                   ].join(" ")}
                 >
                   {opt.title}
@@ -531,7 +541,7 @@ export default function ProfileForm(): React.JSX.Element {
                 <div
                   className={[
                     "text-11",
-                    sel ? "text-blue-text" : "text-ink-2",
+                    sel ? "text-white/70" : "text-ink-2",
                   ].join(" ")}
                 >
                   {opt.sub}
@@ -555,10 +565,10 @@ export default function ProfileForm(): React.JSX.Element {
                 type="button"
                 onClick={() => toggleBrand(b)}
                 className={[
-                  "rounded-md px-[9px] py-[7px] text-12 text-left flex justify-between items-center cursor-pointer",
+                  "rounded-lg px-[9px] py-[7px] text-12 text-left flex justify-between items-center cursor-pointer transition-colors",
                   sel
-                    ? "border border-blue-border bg-blue-fill text-blue-text font-medium"
-                    : "border border-hairline border-line-2 bg-surface text-ink font-normal",
+                    ? "border border-line-2 bg-soft text-ink font-medium"
+                    : "border border-line-2 bg-surface text-ink-2 font-normal hover:text-ink",
                 ].join(" ")}
                 aria-pressed={sel}
                 role={state.agent_type === "captive" ? "radio" : "checkbox"}
@@ -583,6 +593,7 @@ export default function ProfileForm(): React.JSX.Element {
         <StateChipRow
           selected={state.licensed_states}
           onRemove={code => toggleState("licensed_states", code)}
+          tone="red"
         />
         <SearchBox
           value={licSearch}
@@ -608,6 +619,7 @@ export default function ProfileForm(): React.JSX.Element {
           <StateChipRow
             selected={state.employee_states}
             onRemove={code => toggleState("employee_states", code)}
+            tone="neutral"
           />
           <SearchBox
             value={empSearch}
@@ -627,7 +639,8 @@ export default function ProfileForm(): React.JSX.Element {
         <div className="flex justify-end mt-5">
           <button
             type="submit"
-            className="rounded-md px-[18px] py-[9px] text-13 font-medium cursor-pointer bg-ink text-surface"
+            className="rounded-tile px-6 py-2.5 text-13 font-semibold cursor-pointer bg-brand-red text-white
+                       hover:bg-[#A81B21] transition-colors border-none"
           >
             Save changes
           </button>
@@ -643,14 +656,23 @@ export default function ProfileForm(): React.JSX.Element {
 
 // --- presentational sub-components -----------------------------------------
 
+// Selected-value pills (design 3g): licensed states wear the red chip
+// variant; employee states stay neutral. ✕ removes.
 function StateChipRow({
   selected,
   onRemove,
+  tone,
 }: {
   selected: string[];
   onRemove: (code: string) => void;
+  tone: "red" | "neutral";
 }) {
   if (selected.length === 0) return null;
+  const chipCls =
+    tone === "red"
+      ? "bg-red-fill border border-red-border text-brand-red"
+      : "bg-soft border border-line-2 text-ink-mid";
+  const xCls = tone === "red" ? "text-brand-red/70" : "text-ink-3";
   return (
     <div className="flex gap-1.5 mb-2 flex-wrap">
       {selected.map(code => (
@@ -658,10 +680,10 @@ function StateChipRow({
           key={code}
           type="button"
           onClick={() => onRemove(code)}
-          className="text-12 rounded-md px-2 py-[3px] bg-surface-2 text-ink"
+          className={`text-12 font-medium rounded-full px-2.5 py-[3px] cursor-pointer ${chipCls}`}
           aria-label={`Remove ${code}`}
         >
-          {code} <span aria-hidden className="text-ink-2">×</span>
+          {code} <span aria-hidden className={xCls}>✕</span>
         </button>
       ))}
     </div>
@@ -683,7 +705,7 @@ function SearchBox({
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full rounded-md px-2.5 py-2 text-12 mb-2 outline-none border border-hairline border-line-2 text-ink"
+      className="w-full rounded-lg px-3 py-2 text-12 mb-2 outline-none border border-line-2 bg-surface text-ink focus:border-ink-3"
     />
   );
 }
@@ -702,7 +724,7 @@ function StateList({
   const sel = new Set(selected);
   return (
     <div
-      className="rounded-md overflow-hidden overflow-y-auto border border-hairline border-line"
+      className="rounded-lg overflow-hidden overflow-y-auto border border-line-2"
       style={{ maxHeight: 220 }}
     >
       {items.length === 0 ? (
@@ -722,17 +744,23 @@ function StateList({
               onClick={() => !disabled && onToggle(s.code)}
               disabled={disabled}
               className={[
-                "w-full flex justify-between items-center text-12 px-2.5 py-[7px] text-left border-b border-hairline border-line bg-transparent",
-                disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer",
-                isSel ? "text-blue-text font-medium" : "text-ink font-normal",
+                "w-full flex justify-between items-center text-12 px-2.5 py-[7px] text-left border-b border-line last:border-b-0 transition-colors",
+                disabled ? "opacity-40 cursor-not-allowed bg-transparent" : "cursor-pointer",
+                isSel
+                  ? "bg-red-fill/60 text-brand-red font-medium"
+                  : "bg-transparent text-ink font-normal hover:bg-soft",
               ].join(" ")}
               aria-checked={isSel}
               role="checkbox"
             >
-              <span>
-                <span aria-hidden>{isSel ? "☑" : "☐"}</span> {s.name}
+              <span className="inline-flex items-center gap-1.5">
+                <i
+                  aria-hidden
+                  className={`ti ti-check text-12 ${isSel ? "text-brand-red" : "invisible"}`}
+                />
+                {s.name}
                 {disabled && (
-                  <span className="text-[9px] ml-1 rounded-full px-[5px] py-px bg-surface-2 text-ink-3">
+                  <span className="text-[9px] rounded-full px-[5px] py-px bg-soft text-ink-3">
                     Soon
                   </span>
                 )}
