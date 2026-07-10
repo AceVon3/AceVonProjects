@@ -1,3 +1,21 @@
+# Session checkpoint — 2026-07-10 (mega pass)  ·  KS/NJ/MS IMPORTED (26th-28th) + B16 12-STATE CORRECTION SHIPPED
+
+One gated pass: 3 interim->real imports + the B16 filing-type-vocabulary
+correction (35 filings / 12 shipped states, all full-surface-proven drift-0,
+incl. VA Nationwide -4.0%/12,784ph live Defend). db **`3f3d1bc9`** (supersedes
+post-CT `03f2ad5e`). **NEW BASELINE: 28 states, raw 4,383 / rolled 2,703 /
+active@2026-06-11 858.** Scope: Drive NJ + ASI -> Progressive (13 interim
+states consciously enriched); Metropolitan P&C excluded (legacy-MetLife).
+Gates: import ALL PASS, tsc, 8/8 verify (subtype + positioning re-keyed with
+adjudication), build, **13/13 e2e in a clean git worktree** — the deploy was
+PATHSPEC-COMMITTED around the user's uncommitted landing-page WIP
+(Overview -> /overview pending; e2e route expectations will need updating
+when that ships). agent-intel/master **`073890e`** (Vercel LIVE, prod
+verified). B15 shipped; B17 opened (CRI-section bounding). IA/SC collection
+in flight via the self-pacing overnight runner.
+
+---
+
 # Session checkpoint — 2026-07-09 (CT + B14)  ·  CT IMPORTED (25th state) + B14 FLEX-RATE GATE FIXED + B13/B14 AUDITS CLOSED EMPTY
 
 CT's 137-row scrape imported; the Flex Rate filing-type class it surfaced

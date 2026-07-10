@@ -1,5 +1,49 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-10 — THE MEGA PASS SHIPPED: KS/NJ/MS IMPORTED (26th-28th states) +
+> B16 12-STATE CORRECTION + B15/B17 + IA/SC IN FLIGHT.**
+> One gated import carried: KS 170 (value-agr 68/68; COUNTRY richness-only —
+> AK-thinness does NOT reproduce, 14th confirmation; Metropolitan P&C EXCLUDED
+> new doctrine entry, legacy-MetLife family) + NJ 182 (**B16 FOUND HERE**: NJ
+> files Prior/Expedited/Limited Prior Approval + Form/Rate(/Rule) — 5th/6th
+> filing-type vocabularies; live GEICO +13.0%/198,263ph + Allstate book
+> recovered pre-ship; post-fix value-agr 65/66, HO 55->95%; ALSE-133980775 =
+> a 222-page summary embedding actuarial exhibits -> 44 junk rows cleaned,
+> the 1 genuine CRI row verified at source p.7 +19.0%/168,460ph — **B17
+> OPENED: bound CRI scan to its section**) + MS 159 (value-agr 84/84, 3rd
+> perfect; 2 SERFF-invisible AM-Best clusters documented as watch items —
+> USAA 04/16/26 + Nationwide 04/06/26 left the app at import per
+> replace-in-place doctrine) + the **B16 correction: 109 shipped-state
+> gate-disagreements adjudicated (74 gate-contained / 26 neutral / 5
+> back-ext / 4 LIVE incl. VA Nationwide -4.0%/12,784ph Defend), 35 filings
+> surgically appended across 12 states (backups + prefix-identity + FULL-
+> SURFACE PROOFS: drift 0 x12; VA folds its 2 B13 rows -> 291)**. Scope:
+> Drive New Jersey + ASI -> Progressive (13 interim states consciously
+> enriched by exactly those rows); B15 shipped (page-head type detect:
+> 2,421-page Rule PDF ~1h -> 1.1s). Import gate ALL PASS (14 untouched
+> byte-identical, CA/NY/TX intact, exact deltas everywhere, as-of pinned).
+> **NEW BASELINE (SUPERSEDES post-CT 3,821/2,342/712/`03f2ad5e`): 28 states,
+> raw 4,383 / rolled 2,703 / active@2026-06-11 858 / db `3f3d1bc9`.**
+> Gates: tsc + 8/8 verify (subtype 858 re-keyed exact; positioning 42/19/24/66
+> re-keyed = the B16 rows in the original-8) + build + **13/13 e2e in a CLEAN
+> GIT WORKTREE** (the user's landing-page WIP lives uncommitted in the main
+> tree — Overview moves /->/overview when they ship it; deploy was PATHSPEC-
+> COMMITTED to exclude it). PROD verified (routes 200, methodology 28,
+> KS/NJ/MS + VA Defend serve).
+> - **IA/SC OVERNIGHT RUNNER in flight:** IA universe 1,184 / **429 targets
+>   (biggest yet)**, sweep 27/27 (13-term retry round 13/13 clean after a
+>   hung-sweep kill+resume), bursts running (82/429 at last check). SC queues
+>   after. Cross-checks + imports = next session's holds (comparators to
+>   write: compare_ia_ambest / compare_sc_ambest from the template chain).
+> - **Backlog:** B17 (CRI-section bounding — the deliberate parser fix);
+>   NEW_PRODUCT_RE migration-language refinement (LBPM-134129954); B12
+>   unchanged (kills persisted all night — detached+runner pattern now
+>   standard; harness timer notifications dropped twice -> self-pacing
+>   runners own all cadence).
+> - **HEADs (post-deploy):** monorepo `0e4a4a5`+`a75b9c0` (pathspec commits;
+>   user WIP untouched/staged). agent-intel/master `073890e` (Vercel LIVE).
+>   insurancewebscraper `c491d23`+ this checkpoint. `filings.db` **`3f3d1bc9`**.
+
 > **2026-07-09 — CT IMPORTED (25th state) + B14 FLEX-RATE CLASS FIXED + B13/B14
 > AUDITS CLOSED EMPTY + KS IN FLIGHT.**
 > Overnight arc: B13 deliverable-drift scan (all 25 shipped states, offline
