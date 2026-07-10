@@ -17,6 +17,9 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-07-10 (2nd): IA/SC interim->scraped (+76 active = 934;
+// deltas exactly IA+SC: PPA +25, HO-Comb +23, Auto-Comb +12, Owner-Occ +3,
+// Motorcycle +4, RV +4, Other-HO +2, Mobile +2, Other +1). Prior 858 note:
 // Re-keyed 2026-07-10: THE MEGA PASS — KS/NJ/MS interim->scraped (+124 active)
 // + the B16 12-state correction (+22 active incl. VA Nationwide Defend) = 858.
 // Prior 2026-07-09 CT baseline 712. Earlier note:
@@ -36,17 +39,17 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 362,
-  "19.0000 Personal Auto Combinations": 128,
-  "19.0002 Motorcycle": 42,
-  "19.0003 Recreational Vehicle (RV)": 23,
-  "19.0004 Other": 8,
-  "04.0003 Owner Occupied Homeowners": 64,
-  "04.0000 Homeowners Sub-TOI Combinations": 183,
+  "19.0001 Private Passenger Auto (PPA)": 387,
+  "19.0000 Personal Auto Combinations": 140,
+  "19.0002 Motorcycle": 46,
+  "19.0003 Recreational Vehicle (RV)": 27,
+  "19.0004 Other": 9,
+  "04.0003 Owner Occupied Homeowners": 67,
+  "04.0000 Homeowners Sub-TOI Combinations": 206,
   "04.0001 Condominium Homeowners": 18,
-  "04.0005 Other Homeowners": 12,
+  "04.0005 Other Homeowners": 14,
   "04.0004 Tenant Homeowners": 8,
-  "04.0002 Mobile Homeowners": 10,
+  "04.0002 Mobile Homeowners": 12,
 };
 
 console.log("=".repeat(72));
@@ -67,7 +70,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 858", rows.length, 858);
+check("active rolled filings = 934", rows.length, 934);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 
