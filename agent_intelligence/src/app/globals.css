@@ -17,35 +17,41 @@
    config; these are co-maintained but consumed via Tailwind classes
    (bg-canvas, text-ink-2, border-line-2, etc.) in components. */
 :root {
-  --canvas:          #fafaf9;
+  --canvas:          #F7F8FB;
   --surface:         #ffffff;
-  --surface-2:       #F4F2EC;
-  --soft:            #F1EFE8;
-  --ink:             #1c1c1b;
-  --ink-2:           #5F5E5A;
-  --ink-3:           #888780;
-  --line:            rgba(0,0,0,0.08);
-  --line-2:          rgba(0,0,0,0.15);
-  --blue-fill:       #E6F1FB;
-  --blue-text:       #0C447C;
-  --blue-border:     #185FA5;
-  --green-fill:      #EAF3DE;
-  --green-text:      #27500A;
-  --amber-fill:      #FAEEDA;
-  --amber-text:      #633806;
-  --red-fill:        #FCEBEB;
-  --red-text:        #A32D2D;
-  --gray-fill:       #F1EFE8;
-  --gray-text:       #444441;
-  --mine-bg:         rgba(255, 230, 200, 0.18);
-  --skeleton:        #E8E6E0;
-  --skeleton-strong: #DCD9D2;
+  --surface-2:       #FAFBFD;
+  --soft:            #F1F2F7;
+  --ink:             #14142B;
+  --ink-2:           #6B7080;
+  --ink-3:           #9AA0B0;
+  --ink-mid:         #4A4E63;
+  --card-line:       #E5E8F0;
+  --line:            #EDEFF4;
+  --line-2:          #DDE1EA;
+  --blue-fill:       #E5F0FA;
+  --blue-text:       #1B6CA8;
+  --blue-soft:       #7EB3DC;
+  --green-fill:      #E7F3EC;
+  --green-text:      #1B7F4B;
+  --amber-fill:      #FCF1E3;
+  --amber-text:      #8A5A10;
+  --amber-dot:       #B07818;
+  --amber-band:      #6B4A10;
+  --amber-border:    #EBD8B8;
+  --red-fill:        #FBEAEB;
+  --red-text:        #8A1B1F;
+  --red-border:      #F0C8CA;
+  --gray-fill:       #F1F2F7;
+  --gray-text:       #4A4E63;
+  --mine-bg:         rgba(196,33,39,0.03);
+  --skeleton:        #E9EBF2;
+  --skeleton-strong: #DDE1EA;
 }
 
 body {
   color: var(--ink);
   background: var(--canvas);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

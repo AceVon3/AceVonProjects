@@ -9,8 +9,8 @@ export default function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Sidebar + content. flex-col on mobile (nav becomes a top bar),
-    // flex-row on md+ (nav is a left sidebar). min-w-0 on the content
+    // Icon rail + content. flex-col on mobile (rail becomes a top bar),
+    // flex-row on md+ (rail is a slim left column). min-w-0 on the content
     // column lets the inner overflow-x-auto tables scroll instead of
     // stretching the flex item.
     <div className="flex flex-col md:flex-row min-h-screen">

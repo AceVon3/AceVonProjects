@@ -14,10 +14,47 @@ type Props = {
   todayLabel: string;
 };
 
-// Cards are flex columns so every "View all →" link can be pushed to the
-// bottom (mt-auto) and line up across the row regardless of body height.
+// Three summary cards (design frame 2a). Cards are flex columns so pinned
+// bottom links (mt-auto) line up across the row regardless of body height.
 const CARD =
-  "flex flex-col border border-hairline border-line rounded-xl p-4 bg-surface";
+  "flex flex-col bg-surface border border-card-line rounded-card p-5 shadow-card";
+
+const KICKER =
+  "text-11 uppercase tracking-wider06 text-ink-3 mb-3";
+
+// One big-number stat line. The number goes muted (ink-3) at zero — a zero
+// count isn't a signal, so it shouldn't wear the signal color.
+function StatLine({
+  count,
+  colorClass,
+  label,
+  href,
+  countTestId,
+  linkTestId,
+}: {
+  count: number;
+  colorClass: string;
+  label: string;
+  href: string;
+  countTestId: string;
+  linkTestId?: string;
+}): React.JSX.Element {
+  return (
+    <Link
+      href={href}
+      data-testid={linkTestId}
+      className="flex items-baseline gap-2.5 no-underline group [&+&]:mt-2"
+    >
+      <span
+        className={`text-30 font-bold leading-none tabular-nums ${count > 0 ? colorClass : "text-ink-3"}`}
+        data-testid={countTestId}
+      >
+        {count}
+      </span>
+      <span className="text-13 text-ink-2 group-hover:underline">{label}</span>
+    </Link>
+  );
+}
 
 export default function OverviewCards({
   prospectCount,
@@ -30,106 +67,68 @@ export default function OverviewCards({
   return (
     <div
       data-testid="ov-cards"
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5"
+      className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-7"
     >
-      {/* Prospect */}
+      {/* Signal counts. The design's kicker reads "This quarter", but these
+          counts are the 12-month Prospect/Defend query results and MUST
+          reconcile with the table pages (CLAUDE.md verification numbers) —
+          so the label states the real window. */}
       <div className={CARD} data-testid="ov-card-prospect">
-        <div className="flex items-start gap-2.5 mb-2.5">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-surface-2">
-            <i className="ti ti-target-arrow text-17 text-ink-2" />
-          </div>
-          <div className="text-13 text-ink-2 pt-0.5">Prospect opportunities</div>
-        </div>
-        <div className="text-26 font-medium mb-2 text-ink" data-testid="ov-prospect-count">
-          {prospectCount}
-        </div>
-        {/* Prospect = your opportunity → green link */}
-        <Link href="/prospect" className="mt-auto text-12 text-green-text font-medium no-underline">
-          View all →
-        </Link>
-      </div>
-
-      {/* Defend */}
-      <div className={CARD} data-testid="ov-card-defend">
-        <div className="flex items-start gap-2.5 mb-2.5">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-amber-fill">
-            <i className="ti ti-shield-half text-17 text-amber-text" />
-          </div>
-          <div className="text-13 text-ink-2 pt-0.5">Defend risks</div>
-        </div>
-        <div className="text-26 font-medium mb-2 text-ink" data-testid="ov-defend-count">
-          {defendCount}
-        </div>
-        {/* Defend = your risk → red link */}
-        <Link href="/defend" className="mt-auto text-12 text-red-text font-medium no-underline">
-          View all →
-        </Link>
+        <div className={KICKER}>Last 12 months</div>
+        <StatLine
+          count={prospectCount}
+          colorClass="text-brand-red"
+          label={`prospect signal${prospectCount === 1 ? "" : "s"}`}
+          href="/prospect"
+          countTestId="ov-prospect-count"
+        />
+        <StatLine
+          count={defendCount}
+          colorClass="text-blue-text"
+          label={`defend risk${defendCount === 1 ? "" : "s"}`}
+          href="/defend"
+          countTestId="ov-defend-count"
+        />
       </div>
 
       {/* My Carrier — two-direction own-carrier alert summary (last 6 months).
           Retention risk = your carrier RAISED (>= +5%); Opportunity = your
-          carrier CUT (<= -2%). Both reconcile with the /my-carriers tab via the
-          shared retention.ts helpers. Replaces the old competitor-only "Most
-          urgent" card. */}
+          carrier CUT (<= -2%). Both reconcile with the /my-carriers tab via
+          the shared retention.ts helpers. */}
       <div className={CARD} data-testid="ov-card-my-carrier">
-        <div className="flex items-start gap-2.5 mb-2.5">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-surface-2">
-            <i className="ti ti-arrows-left-right text-17 text-ink-2" />
-          </div>
-          <div className="text-13 text-ink-2 pt-0.5">My Carrier</div>
-        </div>
-        <Link
+        <div className={KICKER}>My carriers</div>
+        <StatLine
+          count={retentionCount}
+          colorClass="text-brand-red"
+          label={`retention risk alert${retentionCount === 1 ? "" : "s"}`}
           href="/my-carriers"
-          data-testid="ov-retention-link"
-          className="flex items-baseline gap-2 mb-1.5 no-underline group"
-        >
-          <span
-            className={`text-18 font-medium ${retentionCount > 0 ? "text-red-text" : "text-ink-3"}`}
-            data-testid="ov-retention-count"
-          >
-            {retentionCount}
-          </span>
-          <span className="text-12 text-ink-2 group-hover:underline">
-            retention risk alert{retentionCount === 1 ? "" : "s"}
-          </span>
-        </Link>
-        <Link
+          countTestId="ov-retention-count"
+          linkTestId="ov-retention-link"
+        />
+        <StatLine
+          count={opportunityCount}
+          colorClass="text-green-text"
+          label={`opportunity alert${opportunityCount === 1 ? "" : "s"}`}
           href="/my-carriers"
-          data-testid="ov-opportunity-link"
-          className="flex items-baseline gap-2 no-underline group"
-        >
-          <span
-            className={`text-18 font-medium ${opportunityCount > 0 ? "text-green-text" : "text-ink-3"}`}
-            data-testid="ov-opportunity-count"
-          >
-            {opportunityCount}
-          </span>
-          <span className="text-12 text-ink-2 group-hover:underline">
-            opportunity alert{opportunityCount === 1 ? "" : "s"}
-          </span>
-        </Link>
+          countTestId="ov-opportunity-count"
+          linkTestId="ov-opportunity-link"
+        />
       </div>
 
       {/* Compliance — lightweight v1 (no change-detection claims) */}
       <div className={CARD} data-testid="ov-card-compliance">
-        <div className="flex items-start gap-2.5 mb-2.5">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-surface-2">
-            <i className="ti ti-gavel text-17 text-ink-2" />
-          </div>
-          <div className="text-13 text-ink-2 pt-0.5">Compliance</div>
-        </div>
+        <div className={KICKER}>Compliance</div>
         <div
-          className="text-15 font-medium mb-1 text-ink"
+          className="text-18 font-[650] text-ink mb-1"
           data-testid="ov-compliance-states"
         >
           {employeeStatesCount} {employeeStatesCount === 1 ? "state" : "states"} tracked
         </div>
-        <div className="text-11 text-ink-3 mb-2">
-          Last checked {todayLabel}
-        </div>
-        {/* Compliance is neutral (not an opportunity/risk signal) → keep the
-            existing neutral link color. */}
-        <Link href="/compliance" className="mt-auto text-12 text-blue-text font-medium no-underline">
+        <div className="text-12 text-ink-3">Last checked {todayLabel}</div>
+        <Link
+          href="/compliance"
+          className="mt-auto pt-3 text-12 font-semibold text-brand-red no-underline hover:underline"
+        >
           View resources →
         </Link>
       </div>

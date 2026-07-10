@@ -1,12 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { AgentType, loadProfile } from "@/lib/profile";
 
-type NavItem = { label: string; href: string; icon: string };
+type NavItem = { label: string; href: string; icon: string; pinBottom?: boolean };
 
 // Build the nav list per spec §Navigation:
 //   Captive:     Overview · Prospect · Defend · My Carrier  · Competitive Positioning · Compliance · Methodology · Profile
@@ -15,8 +16,8 @@ type NavItem = { label: string; href: string; icon: string };
 //
 // My Carrier(s) shows for BOTH agent types — a captive wants to see their own
 // carrier's filings too (they field the calls when rates move). The label is
-// singular ("My Carrier") for captives, who sell exactly one carrier. Icons
-// are presentational only (Tabler webfont).
+// singular ("My Carrier") for captives, who sell exactly one carrier. The rail
+// is icon-only (Tabler webfont); labels surface as hover tooltips.
 function buildItems(agentType: AgentType | null): NavItem[] {
   if (agentType === null) {
     return [
@@ -38,7 +39,8 @@ function buildItems(agentType: AgentType | null): NavItem[] {
     { label: "Competitive Positioning", href: "/positioning", icon: "ti-arrows-left-right" },
     { label: "Compliance", href: "/compliance", icon: "ti-gavel" },
     { label: "Methodology", href: "/methodology", icon: "ti-book-2" },
-    { label: "Profile", href: "/setup", icon: "ti-settings" },
+    // Settings tile pinned to the rail's bottom (mt-auto on md+).
+    { label: "Profile", href: "/setup", icon: "ti-settings", pinBottom: true },
   ];
   return items;
 }
@@ -65,35 +67,36 @@ export default function NavBar(): React.JSX.Element {
     <aside
       data-testid="navbar"
       data-agent-type={agentType ?? "none"}
-      // Dark fill. On md+ it's a fixed-width vertical sidebar that sticks
-      // while content scrolls; below md it collapses to a dark horizontal
-      // bar whose nav row scrolls sideways (keeps small screens legible).
-      className="bg-ink text-white shrink-0 flex flex-col
-                 md:w-[224px] md:min-h-screen md:sticky md:top-0 md:self-start"
+      // Navy icon rail ("Command Rail"). On md+ it's a fixed 68px-wide
+      // vertical rail that sticks while content scrolls; below md it
+      // collapses to a horizontal icon bar whose nav row scrolls sideways.
+      className="bg-brand-navy shrink-0 flex flex-row md:flex-col items-center
+                 md:w-[68px] md:min-h-screen md:sticky md:top-0 md:self-start
+                 px-3 md:px-0 py-0 md:py-[18px]"
     >
-      {/* Brand — stays inside the app ("/" is the marketing landing) */}
+      {/* Brand mark — stays inside the app ("/" is the marketing landing) */}
       <Link
         href="/overview"
-        className="flex items-center gap-2.5 no-underline text-white shrink-0
-                   px-4 h-[56px] md:h-auto md:pt-5 md:pb-4"
+        aria-label="AgencyMan.ai — Overview"
+        className="shrink-0 flex items-center justify-center
+                   h-[56px] md:h-auto mr-2 md:mr-0 md:mb-[18px]"
       >
-        <div className="w-[26px] h-[26px] bg-white rounded-md flex items-center justify-center">
-          <i className="ti ti-radar-2 text-ink text-15" />
-        </div>
-        <span className="font-medium text-14">Agent Intelligence</span>
+        <Image
+          src="/brand/agencyman-mark-white.svg"
+          alt="AgencyMan.ai"
+          width={28}
+          height={28}
+        />
       </Link>
 
-      {/* Section header — desktop only (reads oddly in the mobile bar) */}
-      <div className="hidden md:block px-4 mt-2 mb-1 text-10 uppercase tracking-wider06 text-white/40">
-        Platform
-      </div>
-
-      {/* Nav items as icon + label rows. Horizontal scroll row on mobile,
-          stacked column on md+. shrink-0 on each item keeps the mobile row
-          from compressing, so it overflows (scrolls) rather than squishing. */}
+      {/* Nav items as 44×44 icon tiles. Horizontal scroll row on mobile,
+          stacked column on md+ (settings pinned to the bottom via mt-auto).
+          shrink-0 on each tile keeps the mobile row from compressing, so it
+          overflows (scrolls) rather than squishing. */}
       <nav
-        className="flex flex-row md:flex-col gap-1 px-2 pb-2 md:pb-4
-                   overflow-x-auto md:overflow-x-visible whitespace-nowrap md:whitespace-normal"
+        className="flex flex-row md:flex-col items-center gap-1.5 flex-1 md:w-full
+                   md:min-h-0 self-stretch md:self-auto
+                   overflow-x-auto md:overflow-x-visible py-1.5 md:py-0"
       >
         {items.map(item => {
           const active = isActive(item.href, pathname);
@@ -104,16 +107,28 @@ export default function NavBar(): React.JSX.Element {
               data-testid="nav-link"
               data-label={item.label}
               data-active={active ? "true" : "false"}
+              aria-label={item.label}
               className={[
-                "shrink-0 flex items-center gap-2.5 no-underline rounded-md",
-                "px-3 py-2 text-13 transition-colors",
+                "group relative shrink-0 flex items-center justify-center",
+                "w-11 h-11 rounded-tile no-underline transition-colors",
+                item.pinBottom ? "md:mt-auto" : "",
+                "mx-auto md:mx-0",
                 active
-                  ? "bg-white/10 text-white font-medium"
-                  : "text-white/55 font-normal hover:bg-white/5 hover:text-white/80",
+                  ? "bg-brand-red text-white"
+                  : "text-white/50 hover:text-white/80 hover:bg-white/5",
               ].join(" ")}
             >
-              <i className={`ti ${item.icon} text-15 shrink-0`} aria-hidden />
-              <span>{item.label}</span>
+              <i className={`ti ${item.icon} text-[19px]`} aria-hidden />
+              {/* Label tooltip — the rail is icon-only */}
+              <span
+                className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1
+                           md:left-full md:translate-x-0 md:top-1/2 md:-translate-y-1/2 md:ml-3 md:mt-0
+                           whitespace-nowrap rounded-md bg-ink text-white text-11 font-medium
+                           px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-50"
+                role="tooltip"
+              >
+                {item.label}
+              </span>
             </Link>
           );
         })}

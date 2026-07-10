@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import OverviewCards from "@/components/OverviewCards";
 import PageSkeleton from "@/components/PageSkeleton";
 import RecentChanges from "@/components/RecentChanges";
+import TopBar, { ScopeChip } from "@/components/TopBar";
 import type { Filing } from "@/lib/filings";
 import { computeRecentChanges } from "@/lib/overview";
 import { AgentProfile, loadProfile } from "@/lib/profile";
@@ -95,13 +96,18 @@ export default function OverviewPage(): React.JSX.Element {
     [myCarriers, asOf],
   );
 
-  const subtitle = useMemo(() => {
-    if (!profile) return "";
-    if (profile.agent_type === "captive") {
-      return `${profile.authorized_brands[0]} · ${profile.licensed_states.join(", ")}`;
-    }
-    const n = profile.authorized_brands.length;
-    return `${profile.licensed_states.join(", ")} · ${n} ${n === 1 ? "carrier" : "carriers"}`;
+  // Scope chips for the top bar — same profile facts the old subtitle showed:
+  // licensed states, plus the brand (captive) or carrier count (independent).
+  const chips = useMemo<ScopeChip[]>(() => {
+    if (!profile) return [];
+    const carrierLabel =
+      profile.agent_type === "captive"
+        ? profile.authorized_brands[0]
+        : `${profile.authorized_brands.length} ${profile.authorized_brands.length === 1 ? "carrier" : "carriers"}`;
+    return [
+      { icon: "map-pin", label: profile.licensed_states.join(", ") },
+      { icon: "briefcase", label: carrierLabel },
+    ];
   }, [profile]);
 
   if (phase === "loading") {
@@ -111,11 +117,9 @@ export default function OverviewPage(): React.JSX.Element {
   if (phase === "error") {
     return (
       <main className="min-h-screen bg-canvas">
-        <div className="max-w-[1100px] mx-auto px-4 py-10">
-          <h1 className="text-18 font-medium m-0 text-ink">
-            Overview of Rate Change Activity
-          </h1>
-          <p className="text-13 mt-3 p-3 rounded-md text-red-text bg-red-fill border border-hairline border-line">
+        <TopBar title="Overview" />
+        <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+          <p className="text-13 m-0 p-3 rounded-md text-red-text bg-red-fill border border-red-border">
             Couldn’t load Overview: {error}
           </p>
         </div>
@@ -125,22 +129,8 @@ export default function OverviewPage(): React.JSX.Element {
 
   return (
     <main className="min-h-screen bg-canvas">
-      <div className="max-w-[1100px] mx-auto px-4 py-8">
-        <div className="mb-5">
-          <h1
-            className="text-18 font-medium m-0 text-ink"
-            data-testid="page-title"
-          >
-            Overview of Rate Change Activity
-          </h1>
-          <p
-            className="text-13 mt-1 m-0 text-ink-2"
-            data-testid="page-subtitle"
-          >
-            {subtitle}
-          </p>
-        </div>
-
+      <TopBar title="Overview" chips={chips} asOf={asOf} />
+      <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
         <OverviewCards
           prospectCount={prospect.length}
           defendCount={defend.length}
