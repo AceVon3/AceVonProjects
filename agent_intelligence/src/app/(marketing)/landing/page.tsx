@@ -131,8 +131,9 @@ export default function LandingPage(): React.JSX.Element {
                 <Link className="hub-link" href="/compliance">
                   50-state HR &amp; Compliance Hub
                 </Link>{" "}
-                — labor, tax, and workers&apos;-comp answers, grounded in the
-                official source pages.
+                built for running an agency: at-will and hiring rules, wage
+                and overtime thresholds, workers&apos; comp, and state tax
+                registration for every state where your team works.
               </p>
               <div className="hero-ctas">
                 <Link className="btn btn-primary lg" href="/setup">
@@ -276,8 +277,9 @@ export default function LandingPage(): React.JSX.Element {
                 </div>
                 <h3>Compliance</h3>
                 <p>
-                  50-state HR and insurance regulatory resources, with AI
-                  summaries grounded in the official source pages.
+                  The employer questions agency owners actually hit — hiring,
+                  wages, workers&apos; comp, taxes — answered per state your
+                  employees live and work in, grounded in official sources.
                 </p>
               </div>
               <div className="card reveal">
