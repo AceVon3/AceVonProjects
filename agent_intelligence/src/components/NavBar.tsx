@@ -60,7 +60,8 @@ export default function NavBar(): React.JSX.Element {
   // expand to the full nav once useEffect resolves the profile. This causes
   // a one-frame re-render but no hydration mismatch.
   const [agentType, setAgentType] = useState<AgentType | null>(null);
-  const [expanded, setExpanded] = useState(false);
+  // Expanded by default; collapsing is the opt-in compact mode.
+  const [expanded, setExpanded] = useState(true);
 
   // Re-read the profile on EVERY route change, not just on mount: saving the
   // profile on /setup routes client-side to /overview without remounting this
@@ -71,12 +72,13 @@ export default function NavBar(): React.JSX.Element {
     setAgentType(p?.agent_type ?? null);
   }, [pathname]);
 
-  // Restore the expansion preference after hydration.
+  // Restore the expansion preference after hydration (default: expanded —
+  // only an explicit collapse is remembered as "false").
   useEffect(() => {
     try {
-      setExpanded(window.localStorage.getItem(NAV_EXPANDED_KEY) === "true");
+      setExpanded(window.localStorage.getItem(NAV_EXPANDED_KEY) !== "false");
     } catch {
-      /* storage unavailable — stay collapsed */
+      /* storage unavailable — stay expanded */
     }
   }, []);
 
@@ -107,7 +109,7 @@ export default function NavBar(): React.JSX.Element {
         "bg-brand-navy shrink-0 flex flex-row md:flex-col items-center",
         "md:min-h-screen md:sticky md:top-0 md:self-start",
         "px-3 py-0 md:py-[18px] transition-[width] duration-150",
-        expanded ? "md:w-[224px] md:px-3 md:items-stretch" : "md:w-[68px] md:px-0",
+        expanded ? "md:w-[248px] md:px-3 md:items-stretch" : "md:w-[68px] md:px-0",
       ].join(" ")}
     >
       {/* Brand — mark only when collapsed, full lockup when expanded.
@@ -120,22 +122,20 @@ export default function NavBar(): React.JSX.Element {
           expanded ? "md:px-2" : "md:justify-center",
         ].join(" ")}
       >
-        {expanded ? (
-          <Image
-            src="/brand/agencyman-lockup-dark.svg"
-            alt="AgencyMan.ai"
-            width={151}
-            height={32}
-            className="hidden md:block"
-          />
-        ) : null}
         <Image
           src="/brand/agencyman-mark-white.svg"
-          alt="AgencyMan.ai"
+          alt=""
           width={28}
           height={28}
-          className={expanded ? "md:hidden" : ""}
         />
+        {/* Wordmark as real text (the lockup SVG's <text> has no font-size,
+            so it scales down illegibly). ".ai" wears the on-dark accent red
+            per the brand rules. */}
+        {expanded && (
+          <span className="hidden md:inline text-16 font-semibold text-white ml-2.5 whitespace-nowrap">
+            AgencyMan<span className="text-brand-red-soft">.ai</span>
+          </span>
+        )}
       </Link>
 
       {/* Nav items. Horizontal scroll row on mobile, stacked column on md+
@@ -173,7 +173,7 @@ export default function NavBar(): React.JSX.Element {
               {expanded && (
                 <span
                   className={[
-                    "hidden md:block text-13 whitespace-nowrap overflow-hidden text-ellipsis",
+                    "hidden md:block text-14 whitespace-nowrap overflow-hidden text-ellipsis",
                     active ? "text-white font-medium" : "text-white/70 group-hover:text-white/90",
                   ].join(" ")}
                 >
@@ -216,7 +216,7 @@ export default function NavBar(): React.JSX.Element {
           aria-hidden
         />
         {expanded ? (
-          <span className="text-13 whitespace-nowrap">Collapse</span>
+          <span className="text-14 whitespace-nowrap">Collapse</span>
         ) : (
           <span
             className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3
