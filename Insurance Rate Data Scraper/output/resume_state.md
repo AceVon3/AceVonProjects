@@ -1,5 +1,26 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-10 (cont.) — IA + SC IMPORTED (29th/30th states). 30-STATE BASELINE.**
+> The overnight runner's two arcs imported in one gated pass: IA 195 rows
+> (429/429, biggest state 1,184 universe; 17th cross-check point: value-agr
+> 107/108 = 99.1%, the differ = AM Best's impossible -158.0% vs our source-true
+> -15.000% — 5th AM-Best-side error corrected at source; SD source-blank family
+> x20 adjudicated) + SC 196 rows (354/354; 18th point: value-agr 56/58;
+> ENRICHMENT x2 AM Best lacks incl. GEICO -2.3%/9,390ph LIVE Defend;
+> ALSE-134554203 amendment-stage watch row documented). 20-state 0-miss
+> collection streak. Import gate ALL PASS (40 other states byte-identical,
+> permanents intact, flips exact +46/+30 active). **NEW BASELINE (SUPERSEDES
+> 28-state 4,383/2,703/858/`3f3d1bc9`): 30 states, raw 4,774 / rolled 2,954 /
+> active@2026-06-11 934 / db `9ad92946`.** Gates: tsc + 8/8 verify + build +
+> the 7 route-stable e2e in a clean worktree (methodology 30, IA/SC ✓✓).
+> **PROD verified.** NOTE: the user shipped their UI refresh themselves
+> (`f77f6cc`: landing at /, Overview -> /overview, nav rail) — the 6
+> route-dependent e2e (overview/filters/nav/mobile/setup/skeleton) are STALE
+> vs the new routes and need a re-key in the next UI session. AMBEST interim
+> now 15 states (12 scrapeable + CA/NY/TX permanent). Remaining interim by
+> size: NE 193, MD 205, OK 211, AR 218, KY 220, WI 225, PA 236, MI 245, IN
+> 256, MN 274, MO 305, TN 323. B17 + NEW_PRODUCT_RE refinement carried.
+
 > **2026-07-10 — THE MEGA PASS SHIPPED: KS/NJ/MS IMPORTED (26th-28th states) +
 > B16 12-STATE CORRECTION + B15/B17 + IA/SC IN FLIGHT.**
 > One gated import carried: KS 170 (value-agr 68/68; COUNTRY richness-only —
