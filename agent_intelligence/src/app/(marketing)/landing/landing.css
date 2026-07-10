@@ -1,0 +1,738 @@
+/* =========================================================
+   AgencyMan.ai landing page — self-contained design system.
+
+   DESIGN SOURCE: the logo (public/brand/*.svg). Brand hexes
+   must stay in sync with the brand-* tokens in
+   tailwind.config.ts:
+     #C42127  brand red   (mark + ".ai" on light)
+     #E8555B  soft red    (the red the logo uses on dark navy)
+     #14142B  brand navy  (wordmark / dark-lockup background)
+   Neutrals are tints of the navy. Deliberately does NOT
+   reuse the app's tokens — the page derives from the logo,
+   and its layout rhythm mirrors the sibling site
+   marketingman.ai.
+
+   Everything is scoped under .lp; theming is driven by
+   html[data-lp-theme], set before paint by the layout's
+   inline script.
+   ========================================================= */
+
+.lp {
+  /* neutrals — tints of the brand navy */
+  --bg: #ffffff;
+  --bg-alt: #f7f7fa;
+  --card: #ffffff;
+  --ink: #14142b;
+  --ink-soft: #45455e;
+  --ink-mute: #6b6b82;
+  --line: #e7e7ee;
+  --line-strong: #d8d8e3;
+
+  /* brand — from the logo */
+  --brand: #c42127;
+  --brand-hover: #a81b21;
+  --brand-tint: #faeced;
+  --brand-ring: rgba(196, 33, 39, 0.28);
+
+  /* feature-chip accents (minor, functional) */
+  --ic-red: #c42127;
+  --ic-sky: #0369a1;
+  --ic-violet: #6d28d9;
+  --ic-emerald: #047857;
+  --ic-amber: #b45309;
+
+  --navy: #14142b;
+
+  --shadow-sm: 0 1px 2px rgba(20, 20, 43, 0.05), 0 1px 3px rgba(20, 20, 43, 0.05);
+  --shadow-card: 0 1px 3px rgba(20, 20, 43, 0.05), 0 14px 32px -18px rgba(20, 20, 43, 0.22);
+
+  --maxw: 1120px;
+  --radius-card: 16px;
+  --radius-btn: 11px;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html[data-lp-theme="dark"] .lp {
+  --bg: #101021;
+  --bg-alt: #14142b; /* the brand navy itself */
+  --card: #1d1d38;
+  --ink: #f2f2f7;
+  --ink-soft: #c0c0d2;
+  --ink-mute: #9090a8;
+  --line: #2a2a47;
+  --line-strong: #34345a;
+
+  --brand: #e8555b; /* the logo's own dark-background red */
+  --brand-hover: #ed6b70;
+  --brand-tint: rgba(232, 85, 91, 0.12);
+  --brand-ring: rgba(232, 85, 91, 0.34);
+
+  --ic-red: #e8555b;
+  --ic-sky: #38bdf8;
+  --ic-violet: #a78bfa;
+  --ic-emerald: #34d399;
+  --ic-amber: #fbbf24;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 18px 40px -22px rgba(0, 0, 0, 0.7);
+}
+
+/* No-JS / pre-script fallback: honor the OS preference. */
+@media (prefers-color-scheme: dark) {
+  html:not([data-lp-theme]) .lp {
+    --bg: #101021;
+    --bg-alt: #14142b;
+    --card: #1d1d38;
+    --ink: #f2f2f7;
+    --ink-soft: #c0c0d2;
+    --ink-mute: #9090a8;
+    --line: #2a2a47;
+    --line-strong: #34345a;
+    --brand: #e8555b;
+    --brand-hover: #ed6b70;
+    --brand-tint: rgba(232, 85, 91, 0.12);
+    --brand-ring: rgba(232, 85, 91, 0.34);
+    --ic-red: #e8555b;
+    --ic-sky: #38bdf8;
+    --ic-violet: #a78bfa;
+    --ic-emerald: #34d399;
+    --ic-amber: #fbbf24;
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 18px 40px -22px rgba(0, 0, 0, 0.7);
+  }
+}
+
+.lp .wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.lp a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- Nav ---------- */
+.lp .nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(160%) blur(12px);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.lp .nav.scrolled {
+  border-bottom-color: var(--line);
+  box-shadow: 0 1px 0 rgba(20, 20, 43, 0.02);
+}
+.lp .nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+}
+
+.lp .brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.lp .brand-lockup .mark {
+  width: 30px;
+  height: 30px;
+  display: block;
+  overflow: visible;
+}
+.lp .brand-lockup b {
+  font-weight: 800;
+}
+.lp .brand-lockup .dot {
+  color: var(--brand);
+}
+
+.lp .nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lp .link-quiet {
+  color: var(--ink-soft);
+  font-weight: 550;
+  font-size: 0.92rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+}
+.lp .link-quiet:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+/* theme toggle */
+.lp .theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  background: var(--card);
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+.lp .theme-btn:hover {
+  color: var(--brand);
+  border-color: var(--brand);
+}
+.lp .theme-btn svg {
+  display: block;
+}
+.lp .theme-btn .sun {
+  display: none;
+}
+.lp .theme-btn .moon {
+  display: inline-block;
+}
+html[data-lp-theme="dark"] .lp .theme-btn .sun {
+  display: inline-block;
+}
+html[data-lp-theme="dark"] .lp .theme-btn .moon {
+  display: none;
+}
+
+/* ---------- Buttons ---------- */
+.lp .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 650;
+  font-family: inherit;
+  cursor: pointer;
+  border: 0;
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.lp .btn:active {
+  transform: translateY(1px);
+}
+.lp .btn-primary {
+  background: var(--brand);
+  color: #fff;
+  border-radius: var(--radius-btn);
+  padding: 11px 18px;
+  font-size: 0.92rem;
+  box-shadow: var(--shadow-sm);
+}
+.lp .btn-primary:hover {
+  background: var(--brand-hover);
+}
+.lp .btn-primary.lg {
+  padding: 15px 26px;
+  font-size: 1rem;
+  border-radius: 13px;
+}
+.lp .btn-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-btn);
+  padding: 11px 18px;
+  font-size: 0.92rem;
+}
+.lp .btn-ghost.lg {
+  padding: 15px 26px;
+  font-size: 1rem;
+  border-radius: 13px;
+}
+.lp .btn-ghost:hover {
+  background: var(--bg-alt);
+  color: var(--ink);
+}
+
+/* ---------- Section scaffolding ---------- */
+.lp section {
+  padding: 92px 0;
+}
+.lp .band-alt {
+  background: var(--bg-alt);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.lp .eyebrow {
+  display: block;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ink-mute);
+  margin-bottom: 14px;
+}
+.lp .sec-title {
+  text-align: center;
+  font-size: clamp(1.7rem, 3.4vw, 2.35rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  text-wrap: balance;
+  margin: 0 auto 8px;
+  max-width: 22ch;
+  color: var(--ink);
+}
+.lp .sec-sub {
+  text-align: center;
+  color: var(--ink-mute);
+  max-width: 52ch;
+  margin: 0 auto;
+  font-size: 1.02rem;
+}
+.lp .mt-sections {
+  margin-top: 56px;
+}
+
+/* ---------- Hero ---------- */
+.lp .hero {
+  position: relative;
+  padding: 104px 0 96px;
+  text-align: center;
+  overflow: hidden;
+}
+.lp .hero-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+      60% 55% at 50% -8%,
+      color-mix(in srgb, var(--brand) 16%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      40% 40% at 85% 8%,
+      color-mix(in srgb, var(--ic-sky) 10%, transparent),
+      transparent 70%
+    );
+}
+.lp .hero .wrap {
+  position: relative;
+  z-index: 1;
+}
+.lp .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--brand-tint);
+  color: var(--brand);
+  font-weight: 650;
+  font-size: 0.82rem;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--brand) 22%, transparent);
+}
+.lp .pill .ping {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 0 var(--brand-ring);
+  animation: lp-ping 2.4s ease-out infinite;
+}
+@keyframes lp-ping {
+  0% {
+    box-shadow: 0 0 0 0 var(--brand-ring);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 9px transparent;
+  }
+}
+
+.lp h1 {
+  font-size: clamp(2.3rem, 5.4vw, 3.7rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  text-wrap: balance;
+  margin: 26px auto 20px;
+  max-width: 17ch;
+  color: var(--ink);
+}
+.lp h1 .accent {
+  color: var(--brand);
+}
+.lp .lead {
+  font-size: clamp(1.05rem, 1.6vw, 1.24rem);
+  color: var(--ink-soft);
+  max-width: 50ch;
+  margin: 0 auto 34px;
+  line-height: 1.6;
+}
+.lp .hero-ctas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.lp .microcopy {
+  margin: 16px 0 0;
+  font-size: 0.84rem;
+  color: var(--ink-mute);
+}
+.lp .microcopy b {
+  color: var(--ink-soft);
+  font-weight: 650;
+}
+
+/* ---------- Cards grid ---------- */
+.lp .grid {
+  display: grid;
+  gap: 22px;
+}
+.lp .grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.lp .grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.lp .card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 26px;
+  box-shadow: var(--shadow-card);
+}
+.lp .card h3 {
+  margin: 0 0 8px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.lp .card p {
+  margin: 0;
+  color: var(--ink-mute);
+  font-size: 0.95rem;
+  line-height: 1.62;
+}
+
+.lp .chip {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+}
+.lp .chip svg {
+  width: 21px;
+  height: 21px;
+}
+.lp .chip.neutral {
+  background: color-mix(in srgb, var(--ink) 7%, var(--card));
+  color: var(--ink-soft);
+}
+.lp .chip.c-red {
+  background: color-mix(in srgb, var(--ic-red) 14%, var(--card));
+  color: var(--ic-red);
+}
+.lp .chip.c-sky {
+  background: color-mix(in srgb, var(--ic-sky) 14%, var(--card));
+  color: var(--ic-sky);
+}
+.lp .chip.c-violet {
+  background: color-mix(in srgb, var(--ic-violet) 14%, var(--card));
+  color: var(--ic-violet);
+}
+.lp .chip.c-emerald {
+  background: color-mix(in srgb, var(--ic-emerald) 14%, var(--card));
+  color: var(--ic-emerald);
+}
+.lp .chip.c-amber {
+  background: color-mix(in srgb, var(--ic-amber) 14%, var(--card));
+  color: var(--ic-amber);
+}
+
+/* ---------- Steps ---------- */
+.lp .steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+.lp .step {
+  text-align: center;
+}
+.lp .step .num {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.2rem;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  box-shadow: var(--shadow-sm);
+}
+.lp .step h3 {
+  margin: 0 0 8px;
+  font-size: 1.06rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.lp .step p {
+  margin: 0 auto;
+  max-width: 34ch;
+  color: var(--ink-mute);
+  font-size: 0.95rem;
+}
+
+/* ---------- Coverage stats ---------- */
+.lp .stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  text-align: center;
+}
+.lp .stat .num {
+  font-size: clamp(1.9rem, 3.4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--brand);
+  line-height: 1.1;
+}
+.lp .stat .label {
+  margin-top: 6px;
+  color: var(--ink-mute);
+  font-size: 0.92rem;
+}
+
+/* ---------- Plans (free vs coming) ---------- */
+.lp .plan-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.lp .plan-head h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.lp .tag {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.lp .tag.live {
+  background: color-mix(in srgb, var(--ic-emerald) 14%, var(--card));
+  color: var(--ic-emerald);
+}
+.lp .tag.soon {
+  background: color-mix(in srgb, var(--ink) 7%, var(--card));
+  color: var(--ink-mute);
+}
+.lp .plan-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.lp .plan-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.lp .plan-list svg {
+  flex: 0 0 auto;
+  margin-top: 3px;
+}
+.lp .plan-list .check {
+  color: var(--ic-emerald);
+}
+.lp .plan-list .dot-soon {
+  color: var(--ink-mute);
+}
+.lp .card.muted {
+  background: color-mix(in srgb, var(--card) 60%, var(--bg-alt));
+}
+.lp .card .plan-cta {
+  margin-top: 20px;
+}
+
+/* ---------- CTA band ---------- */
+.lp .cta-band {
+  background: linear-gradient(
+    135deg,
+    var(--brand),
+    color-mix(in srgb, var(--brand) 78%, #000)
+  );
+  text-align: center;
+}
+.lp .cta-band h2 {
+  color: #fff;
+  font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 14px;
+  text-wrap: balance;
+}
+.lp .cta-band p {
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 52ch;
+  margin: 0 auto 30px;
+  font-size: 1.05rem;
+}
+.lp .cta-band .btn-primary {
+  background: #fff;
+  color: var(--brand);
+}
+.lp .cta-band .btn-primary:hover {
+  background: #f3f4f6;
+}
+.lp .cta-band .microcopy {
+  color: rgba(255, 255, 255, 0.82);
+}
+.lp .cta-band .microcopy b {
+  color: #fff;
+}
+
+/* ---------- Footer ---------- */
+/* Always the brand navy — the dark lockup's own background. */
+.lp footer {
+  background: var(--navy);
+  color: #a9a9c0;
+  padding: 40px 0;
+}
+.lp .foot-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.lp .foot-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #ededf5;
+  font-weight: 700;
+}
+.lp .foot-brand img {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+.lp .foot-brand .dot {
+  color: #e8555b; /* soft red — legible on the navy */
+}
+.lp .foot-links {
+  display: flex;
+  gap: 22px;
+  font-size: 0.9rem;
+}
+.lp .foot-links a {
+  color: #a9a9c0;
+}
+.lp .foot-links a:hover {
+  color: #ededf5;
+}
+.lp .foot-copy {
+  font-size: 0.84rem;
+  color: #8484a0;
+  max-width: 72ch;
+}
+
+/* ---------- Reveal animation ---------- */
+html.lp-js .lp .reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+html.lp-js .lp .reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.lp-js .lp .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .lp .pill .ping {
+    animation: none;
+  }
+  .lp .btn:active {
+    transform: none;
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .lp .grid-3,
+  .lp .grid-2,
+  .lp .steps {
+    grid-template-columns: 1fr;
+  }
+  .lp .steps {
+    gap: 34px;
+  }
+  .lp section {
+    padding: 72px 0;
+  }
+  .lp .hero {
+    padding: 80px 0 76px;
+  }
+  .lp .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+}
+@media (max-width: 560px) {
+  .lp .nav .link-quiet {
+    display: none;
+  }
+  .lp .hero-ctas .btn {
+    width: 100%;
+  }
+  .lp .foot-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+.lp :focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

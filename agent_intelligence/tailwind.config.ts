@@ -26,6 +26,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // AgencyMan.ai brand — extracted from public/brand/*.svg (the logo
+        // is the source of truth). The landing page's themed CSS variables
+        // in src/app/(marketing)/landing/landing.css must stay in sync.
+        //   brand-red      = mark + ".ai" on light backgrounds
+        //   brand-red-soft = the red the logo uses on dark navy
+        //   brand-navy     = wordmark color / dark-lockup background
+        "brand-red":      "#C42127",
+        "brand-red-soft": "#E8555B",
+        "brand-navy":     "#14142B",
+
         // Surfaces
         canvas: "#fafaf9",
         surface: "#ffffff",

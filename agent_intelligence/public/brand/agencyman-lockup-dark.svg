@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 72">
+  <defs></defs>
+  <rect width="340" height="72" fill="#14142B"></rect>
+  <g transform="translate(8,7) scale(1.208)">
+    <circle cx="24" cy="7.5" r="5.5" fill="#E8555B"></circle>
+    <path d="M 24 16 L 8 46 L 15.5 46 L 24 29.5 L 32.5 46 L 40 46 Z" fill="#E8555B"></path>
+  </g>
+  <text x="74" y="49" fill="#FFFFFF">AgencyMan<tspan fill="#E8555B">.ai</tspan></text>
+</svg>
