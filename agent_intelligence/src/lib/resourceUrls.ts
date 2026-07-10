@@ -291,8 +291,11 @@ export const RESOURCE_URLS: Record<
     remote: [
       "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/",
     ],
-    // EXCEPTIONS ONLY — UT doctrine is common law (Berube); le.utah.gov serves an SPA, court opinions are PDF. May refuse; links useful.
+    // Doctrine via Hansen v. America Online (Utah Supreme Court opinion in
+    // static HTML on the official courts site — states the at-will
+    // presumption + the public-policy exception) + UALD exceptions pages.
     at_will: [
+      "https://legacy.utcourts.gov/opinions/supopin/hansen072004.htm",
       "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/employment-discrimination/",
       "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/",
     ],
@@ -1740,8 +1743,11 @@ export const RESOURCE_URLS: Record<
       "https://www.dol.gov/agencies/whd/overtime",
       "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600",
     ],
-    // EXCEPTIONS STRONG (NRS 613.330/.340 + NERC); doctrine exists only in Labor Commissioner PDFs — may refuse.
+    // Doctrine via the Labor Commissioner's official FAQ PDF (extracted —
+    // 2026-07 PDF support; the Rules PDF lacked the doctrine statement) +
+    // NRS 613 / NERC exceptions.
     at_will: [
+      "https://labor.nv.gov/uploadedFiles/labornvgov/content/About/Frequently_Asked_Questions/Frequently%20Asked%20Questions.pdf",
       "https://www.leg.state.nv.us/nrs/nrs-613.html",
       "https://detr.nv.gov/Page/Equal_Rights_Commision",
     ],

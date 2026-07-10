@@ -42,6 +42,26 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { writeFileSync } from "node:fs";
 import path from "node:path";
+import { PDFParse } from "pdf-parse";
+
+// PDF text extraction (2026-07): several states publish load-bearing
+// figures ONLY as PDFs (CO's PAY CALC order, NV's Labor Commissioner
+// rules, court opinions). pdf-parse v2 wraps pdfjs-dist.
+async function extractPdfText(buf: Buffer, url: string): Promise<string | null> {
+  try {
+    const parser = new PDFParse({ data: new Uint8Array(buf) });
+    const { text } = await parser.getText();
+    const clean = text.replace(/\s+/g, " ").trim();
+    if (clean.length < 100) {
+      console.error(`  fail  ${url}  PDF extracted <100 chars`);
+      return null;
+    }
+    return clean.slice(0, MAX_TEXT_CHARS_PER_SOURCE);
+  } catch (e) {
+    console.error(`  fail  ${url}  PDF extraction error: ${(e as Error)?.message ?? e}`);
+    return null;
+  }
+}
 
 import {
   RESOURCE_URLS,
@@ -280,9 +300,9 @@ function stripHtml(html: string): string {
 }
 
 // Fallback for hosts Node's fetch stack can't negotiate with (some state
-// sites — cga.ct.gov, dor.ms.gov — serve fine to curl/browsers but fail
-// undici's TLS/HTTP2 handshake). Same URL, same content, different client.
-// PDFs are rejected: stripHtml on binary would feed garbage to the model.
+// sites — cga.ct.gov, dor.ms.gov, legislature.vermont.gov — serve fine to
+// curl/browsers but fail undici's TLS/HTTP2 handshake). Same URL, same
+// content, different client. PDFs are extracted via pdf-parse.
 async function fetchViaCurl(url: string): Promise<string | null> {
   const { execFile } = await import("node:child_process");
   return new Promise(resolve => {
@@ -291,14 +311,15 @@ async function fetchViaCurl(url: string): Promise<string | null> {
       ["-s", "-L", "--max-time", "20", "-A",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
         url],
-      { maxBuffer: 10 * 1024 * 1024 },
+      { maxBuffer: 10 * 1024 * 1024, encoding: "buffer" },
       (err, stdout) => {
-        if (err || !stdout) return resolve(null);
-        if (stdout.slice(0, 8).includes("%PDF")) {
-          console.error(`  fail  ${url}  PDF content (no text extraction)`);
-          return resolve(null);
+        if (err || !stdout || stdout.length === 0) return resolve(null);
+        const buf = stdout as unknown as Buffer;
+        if (buf.subarray(0, 8).includes("%PDF")) {
+          extractPdfText(buf, url).then(resolve);
+          return;
         }
-        const text = stripHtml(stdout);
+        const text = stripHtml(buf.toString("utf-8"));
         resolve(text.length >= 100 ? text.slice(0, MAX_TEXT_CHARS_PER_SOURCE) : null);
       },
     );
@@ -327,19 +348,15 @@ async function fetchPageText(url: string): Promise<string | null> {
       console.error(`  fail  ${url}  HTTP ${resp.status}`);
       return null;
     }
-    // PDF guard (main path — mirrors the curl fallback's): stripHtml on PDF
-    // binary would feed garbage to the model. Link-only PDF sources (e.g.
-    // CO's PAY CALC order) fail cleanly to coming-soon instead.
+    // PDFs are extracted, not stripped — stripHtml on binary is garbage.
     const ctype = resp.headers.get("content-type") ?? "";
-    if (ctype.includes("pdf")) {
-      console.error(`  fail  ${url}  PDF content (no text extraction)`);
-      return null;
+    const raw = Buffer.from(await resp.arrayBuffer());
+    if (ctype.includes("pdf") || raw.subarray(0, 8).includes("%PDF")) {
+      const pdfText = await extractPdfText(raw, url);
+      if (pdfText) console.error(`  note  ${url}  PDF extracted (${pdfText.length} chars)`);
+      return pdfText;
     }
-    const html = await resp.text();
-    if (html.slice(0, 8).includes("%PDF")) {
-      console.error(`  fail  ${url}  PDF content (no text extraction)`);
-      return null;
-    }
+    const html = raw.toString("utf-8");
     const text = stripHtml(html);
     if (text.length < 100) {
       console.error(`  fail  ${url}  stripped text <100 chars (likely JS-rendered)`);

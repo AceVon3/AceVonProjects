@@ -557,17 +557,18 @@ async function main(): Promise<void> {
   const utKeys = await sectionKeysFor("UT");
   check("UT sections = wage/salary/leave/atwill/btax (5, no wacares)",
     JSON.stringify(utKeys) === JSON.stringify(["wage", "salary", "leave", "atwill", "btax"]), { utKeys });
-  check("UT at-will is present but COMING-SOON (not grounded — we didn't map it)",
-    (await utBlock.locator('[data-testid="briefing-section"][data-section="atwill"]').getAttribute("data-grounded")) === "false");
-  // Expand UT at-will and confirm it shows the coming-soon copy, not content.
+  // GAP-FILL (2026-07): UT at-will is now GROUNDED — doctrine via Hansen v.
+  // America Online (official Utah courts HTML opinion) + UALD exception
+  // pages. The section must render real content with both halves, replacing
+  // the old coming-soon expectation.
+  check("UT at-will is GROUNDED (gap-fill: Hansen opinion + UALD pages)",
+    (await utBlock.locator('[data-testid="briefing-section"][data-section="atwill"]').getAttribute("data-grounded")) === "true");
   await utBlock.locator('[data-testid="briefing-section"][data-section="atwill"] [data-testid="briefing-section-toggle"]').click();
   await page.waitForTimeout(120);
   const utAtwillContent = (await utBlock.locator('[data-testid="briefing-section"][data-section="atwill"] [data-testid="briefing-section-content"]').textContent()) ?? "";
-  check("UT at-will expanded shows 'coming soon'", /coming soon/i.test(utAtwillContent), { utAtwillContent });
-  // A coming-soon section must NOT carry the generic size-applicability note —
-  // it hasn't grounded that claim. (Suppressed on ungrounded sections.)
-  check("UT at-will (coming-soon) shows NO 'applies regardless of company size' note",
-    !/applies regardless of company size/i.test(utAtwillContent), { utAtwillContent });
+  check("UT at-will states the at-will presumption", /at-will/i.test(utAtwillContent), { sample: utAtwillContent.slice(0, 120) });
+  check("UT at-will carries the exceptions (discrimination/retaliation/public policy)",
+    /(discriminat|retaliat|public policy)/i.test(utAtwillContent));
   check("UT has NO WA Cares section",
     (await utBlock.locator('[data-testid="briefing-section"][data-section="wacares"]').count()) === 0);
 
