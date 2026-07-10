@@ -30,7 +30,7 @@ function fmtSpread(d: number): string {
 
 function FilingsAudit({ filings }: { filings: BrandStat["filings"] }): React.JSX.Element {
   return (
-    <div className="mt-2 mb-1 rounded-md bg-surface-2 px-3 py-2">
+    <div className="mt-2 mb-1 rounded-lg bg-surface-2 border border-line px-3.5 py-2.5">
       <div className="text-10 uppercase tracking-wider04 text-ink-3 mb-1.5">
         change filed, not price · {filings.length} filing{filings.length === 1 ? "" : "s"}
       </div>
@@ -74,7 +74,7 @@ function ExpandableRow({
   const [open, setOpen] = useState(false);
   return (
     <div
-      className="border-b border-hairline border-line last:border-b-0 py-2"
+      className="border-b border-line last:border-b-0 py-3"
       data-testid={testid}
       data-tier={tier}
       data-spread={hasSpread ? "true" : "false"}
@@ -107,7 +107,9 @@ function ComparisonRow({ cmp }: { cmp: Comparison }): React.JSX.Element {
         <span className={`text-13 ${thin ? "text-ink-2" : "text-ink"}`}>
           {cmp.competitor.brand}
           {thin && (
-            <span className="ml-1.5 text-10 uppercase tracking-wider04 text-ink-3">thin</span>
+            <span className="ml-1.5 inline-block bg-soft text-ink-3 text-10 font-semibold uppercase tracking-wider04 px-1.5 py-px rounded-full align-[1px]">
+              thin
+            </span>
           )}
         </span>
       }
@@ -128,11 +130,11 @@ function ComparisonRow({ cmp }: { cmp: Comparison }): React.JSX.Element {
 
 function Anchor({ anchor, withDivider }: { anchor: AnchorBlock; withDivider: boolean }): React.JSX.Element {
   return (
-    <div className={withDivider ? "border-t border-hairline border-line-2 mt-1 pt-1" : ""}>
+    <div className={withDivider ? "border-t border-line-2 mt-1 pt-1" : ""}>
       <ExpandableRow
         testid="anchor-row"
         left={
-          <span className="text-14 font-medium text-ink">
+          <span className="text-14 font-[650] text-ink">
             {anchor.agent.brand}{" "}
             <span className="text-11 text-ink-3 font-normal">your carrier</span>
           </span>
@@ -164,15 +166,15 @@ export default function PositioningCard({ cell }: { cell: PositioningCell }): Re
   return (
     <div
       data-testid="positioning-cell"
-      className="rounded-lg border border-hairline border-line overflow-hidden"
+      className="bg-surface border border-card-line rounded-card shadow-card overflow-hidden"
     >
-      <div className="bg-surface-2 border-b border-hairline border-line-2 px-4 py-2.5 flex items-center justify-between">
-        <h3 className="text-13 font-medium m-0 text-ink">
+      <div className="bg-surface-2 border-b border-line px-[18px] py-3 flex items-center justify-between">
+        <h3 className="text-14 font-[650] m-0 text-ink">
           {cell.line} · {cell.state}
         </h3>
-        <span className="text-10 uppercase tracking-wider04 text-ink-3">avg rate change</span>
+        <span className="text-10 uppercase tracking-wider06 text-ink-3">avg rate change</span>
       </div>
-      <div className="px-4">
+      <div className="px-[18px]">
         {cell.anchors.map((a, i) => (
           <Anchor key={a.agent.brand} anchor={a} withDivider={i > 0} />
         ))}

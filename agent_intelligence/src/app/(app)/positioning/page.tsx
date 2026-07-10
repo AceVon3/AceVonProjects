@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import PageSkeleton from "@/components/PageSkeleton";
 import PositioningCard from "@/components/PositioningCard";
-import ScopeStrip from "@/components/ScopeStrip";
+import TopBar from "@/components/TopBar";
 import type { PositioningResult } from "@/lib/positioning";
 import { buildExplainer, dateRangeNote } from "@/lib/positioningExplainer";
 import { AgentProfile, loadProfile } from "@/lib/profile";
@@ -60,9 +60,9 @@ export default function PositioningPage(): React.JSX.Element {
     if (phase === "error") {
       return (
         <main className="min-h-screen bg-canvas">
-          <div className="max-w-[1100px] mx-auto px-4 py-10">
-            <h1 className="text-18 font-medium m-0 text-ink">Rate positioning</h1>
-            <p className="text-13 mt-3 p-3 rounded-md text-red-text bg-red-fill border border-hairline border-line">
+          <TopBar title="Competitive Positioning" />
+          <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+            <p className="text-13 m-0 p-3 rounded-md text-red-text bg-red-fill border border-red-border">
               Couldn’t load positioning data: {error}
             </p>
           </div>
@@ -86,46 +86,38 @@ export default function PositioningPage(): React.JSX.Element {
 
   return (
     <main className="min-h-screen bg-canvas">
-      <ScopeStrip
-        states={profile.licensed_states}
-        captiveBrand={isCaptive ? brand : undefined}
+      <TopBar
+        title="Competitive Positioning"
+        chips={[{ icon: "map-pin", label: profile.licensed_states.join(", ") }]}
+        asOf={asOf}
       />
 
-      <div className="max-w-[1100px] mx-auto px-4 py-6">
-        <div className="mb-3">
-          <h1 className="text-18 font-medium m-0 text-ink">Rate positioning</h1>
-          <p className="text-13 mt-1 m-0 text-ink-2">{subtitle}</p>
-          {/* States what the query actually covers: the rolling 12-month
-              effective-date window (DEFAULT_WINDOW) — NOT the full dataset. */}
-          {asOf && (
-            <p className="text-12 mt-1 m-0 text-ink-3" data-testid="date-range-note">
-              {dateRangeNote(asOf)}
-            </p>
-          )}
-        </div>
+      <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+        <p className="text-13 text-ink-2 max-w-[640px] mt-0 mb-4 leading-relaxed">
+          {subtitle}
+        </p>
 
         {/* LOAD-BEARING framing — rate change, not price. Persistent + sticky;
-            not dismissible, not fine print. */}
+            not dismissible, not fine print. Red band per design 3d. */}
         <div
           data-testid="rate-change-frame"
-          className="sticky top-0 z-10 mb-4 rounded-md bg-amber-fill text-amber-text border border-hairline border-line px-4 py-3 text-13"
+          className="sticky top-0 z-10 mb-4 rounded-tile bg-red-fill text-red-text border border-red-border px-[18px] py-3 text-13 leading-normal"
         >
-          <span className="font-medium">These are rate changes, not prices.</span>{" "}
-          Every figure is the average percentage a carrier <em>changed</em> its filed rates — not how cheap it is.
-          A carrier raising less or cutting more is moving more favorably for shoppers; it says nothing about whose premium is lower today.
+          <span className="font-bold">These are rate changes, not price levels.</span>{" "}
+          A carrier filing a smaller increase than yours isn’t necessarily cheaper — it moved less, recently.
         </div>
 
         {sellsEverything ? (
           <div
             data-testid="positioning-empty"
-            className="text-13 px-4 py-6 text-center text-ink-3 border border-hairline border-line rounded-lg"
+            className="text-13 px-5 py-8 text-center text-ink-2 bg-surface border border-card-line rounded-card shadow-card"
           >
             You sell every covered carrier — there’s no competitor set to compare against.
           </div>
         ) : nothingAnchored ? (
           <div
             data-testid="positioning-empty"
-            className="text-13 px-4 py-6 text-center text-ink-3 border border-hairline border-line rounded-lg"
+            className="text-13 px-5 py-8 text-center text-ink-2 bg-surface border border-card-line rounded-card shadow-card"
           >
             None of your carriers have filed in your states in the last 12 months, so there’s nothing to compare yet. Data refreshes monthly.
           </div>
@@ -134,14 +126,31 @@ export default function PositioningPage(): React.JSX.Element {
             {explainer && (
               <div
                 data-testid="positioning-explainer"
-                className="mb-4 rounded-lg border border-hairline border-line px-4 py-3 text-13 text-ink-2"
+                className="mb-5 bg-surface border border-card-line rounded-card shadow-card px-5 py-4"
               >
-                <span className="font-medium text-ink">How to read this: </span>
-                {explainer}
+                <div className="text-11 uppercase tracking-wider06 text-ink-3 mb-2">
+                  Example — what this means
+                </div>
+                <p className="m-0 text-13 text-ink-2 leading-relaxed">{explainer}</p>
+                {/* States what the query actually covers: the rolling 12-month
+                    effective-date window (DEFAULT_WINDOW) — NOT the full dataset. */}
+                {asOf && (
+                  <p className="text-12 mt-2 m-0 text-ink-3" data-testid="date-range-note">
+                    {dateRangeNote(asOf)}
+                  </p>
+                )}
               </div>
             )}
 
-            <div className="flex flex-col gap-3">
+            {/* No higher-confidence comparison to narrate → no example card,
+                but the window note must still be stated somewhere. */}
+            {!explainer && asOf && (
+              <p className="text-12 mt-0 mb-4 text-ink-3" data-testid="date-range-note">
+                {dateRangeNote(asOf)}
+              </p>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
               {result.anchoredCells.map(cell => (
                 <PositioningCard key={`${cell.line}@@${cell.state}`} cell={cell} />
               ))}
@@ -150,9 +159,9 @@ export default function PositioningPage(): React.JSX.Element {
             {result.unanchoredCells.length > 0 && (
               <div
                 data-testid="unanchored-section"
-                className="mt-5 rounded-lg border border-hairline border-line px-4 py-3"
+                className="mt-5 bg-surface border border-card-line rounded-card shadow-card px-5 py-4"
               >
-                <div className="text-11 uppercase tracking-wider04 text-ink-3 mb-1.5">
+                <div className="text-11 uppercase tracking-wider06 text-ink-3 mb-1.5">
                   No filings from your carrier{isCaptive ? "" : "s"} here
                 </div>
                 <div className="text-12 text-ink-2 flex flex-wrap gap-x-3 gap-y-1">
