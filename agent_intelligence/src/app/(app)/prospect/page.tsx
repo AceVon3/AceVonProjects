@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import FilingsTable from "@/components/FilingsTable";
 import FilterBar from "@/components/FilterBar";
 import PageSkeleton from "@/components/PageSkeleton";
-import ScopeStrip from "@/components/ScopeStrip";
+import TopBar from "@/components/TopBar";
 import type { Filing } from "@/lib/filings";
+import { formatRateImpact } from "@/lib/format";
 import { Coverage, coverageGapNote } from "@/lib/coverage";
 import {
   FilterState,
@@ -113,11 +114,9 @@ export default function ProspectPage(): React.JSX.Element {
   if (phase === "error") {
     return (
       <main className="min-h-screen bg-canvas">
-        <div className="max-w-[1100px] mx-auto px-4 py-10">
-          <h1 className="text-18 font-medium m-0 text-ink">
-            Prospect
-          </h1>
-          <p className="text-13 mt-3 p-3 rounded-md text-red-text bg-red-fill border border-hairline border-line">
+        <TopBar title="Prospect" />
+        <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+          <p className="text-13 m-0 p-3 rounded-md text-red-text bg-red-fill border border-red-border">
             Couldn’t load filings: {error}
           </p>
         </div>
@@ -127,65 +126,44 @@ export default function ProspectPage(): React.JSX.Element {
 
   return (
     <main className="min-h-screen bg-canvas">
-      <ScopeStrip
-        states={profile.licensed_states}
-        captiveBrand={
-          profile.agent_type === "captive" ? profile.authorized_brands[0] : undefined
-        }
+      <TopBar
+        title="Prospect"
+        chips={[{ icon: "map-pin", label: profile.licensed_states.join(", ") }]}
+        asOf={asOf}
       />
 
-      <div className="max-w-[1100px] mx-auto px-4 py-6">
-        <div className="mb-4">
-          <h1 className="text-18 font-medium m-0 text-ink">
-            Prospect
-          </h1>
-          {/* Captive Prospect excludes the agent's own brand, so "competitors"
-              is literally true; independent Prospect includes carriers the
-              agent sells (spec §Important framing change), so it can't say
-              that — the wording differs per agent type. */}
-          <p className="text-13 mt-1 m-0 text-ink-2">
-            {profile.agent_type === "captive"
-              ? `Rate increases filed by ${profile.authorized_brands[0]}'s competitors in your states — opportunities to attack and decisions to make.`
-              : "Rate increases in your states from competitors and carriers you sell — opportunities to attack and decisions to make."}
-          </p>
-        </div>
+      <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+        {/* Captive Prospect excludes the agent's own brand, so "competitors"
+            is literally true; independent Prospect includes carriers the
+            agent sells (spec §Important framing change), so it can't say
+            that — the wording differs per agent type. */}
+        <p className="text-13 text-ink-2 max-w-[640px] mt-0 mb-4 leading-relaxed">
+          {profile.agent_type === "captive"
+            ? `Rate increases filed by ${profile.authorized_brands[0]}'s competitors in your states — opportunities to attack and decisions to make.`
+            : "Rate increases in your states from competitors and carriers you sell — opportunities to attack and decisions to make."}
+        </p>
 
         <FilterBar
           mode="prospect"
           filters={filters}
           onChange={setFilters}
           licensedStates={profile.licensed_states}
-        />
-
-        {headerCard && (
-          <div className="rounded-lg mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 bg-surface-2 px-4 py-2.5">
-            <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-3">
-                Filings in your states
-              </div>
-              <div
-                className="text-18 font-medium text-ink"
-                data-testid="header-count"
-              >
-                {headerCard.count}
-              </div>
-            </div>
-            <div className="w-px self-stretch bg-line-2 hidden sm:block" />
-            <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-3">
-                Largest move
-              </div>
-              <div className="text-14 text-ink">
-                {/* Prospect = your opportunity → green (category color) */}
-                <span className="font-medium text-green-text">
-                  {headerCard.largest.overall_rate_impact >= 0 ? "+" : "−"}
-                  {Math.abs(headerCard.largest.overall_rate_impact).toFixed(1)}%
-                </span>{" "}
+          summary={
+            headerCard && (
+              <>
+                <strong className="text-ink font-semibold" data-testid="header-count">
+                  {headerCard.count}
+                </strong>{" "}
+                {headerCard.count === 1 ? "filing" : "filings"} · largest{" "}
+                {/* Prospect = red category color (design 3a) */}
+                <strong className="font-bold text-brand-red tabular-nums">
+                  {formatRateImpact(headerCard.largest.overall_rate_impact)}
+                </strong>{" "}
                 by {headerCard.largest.brand} in {headerCard.largest.state}
-              </div>
-            </div>
-          </div>
-        )}
+              </>
+            )
+          }
+        />
 
         <FilingsTable
           mode="prospect"

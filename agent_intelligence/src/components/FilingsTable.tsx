@@ -42,36 +42,62 @@ type Props = {
   // the "no recent moves" copy on an unfiltered-empty result, so the empty
   // state never reads like a bug. Null when every brand has coverage.
   coverageGap?: string | null;
+  // My Carriers only: filing ids in the computeRetentionRisk /
+  // computeOpportunity alert sets. Drives the per-row RETENTION RISK /
+  // OPPORTUNITY pills (design 3c) so the pilled rows reconcile exactly with
+  // the page's alert-count cards (which use the same helpers).
+  alertIds?: { retention: Set<number>; opportunity: Set<number> };
 };
 
-// Map BadgeColor → Tailwind class pair (fill + text). All values come from
-// tailwind.config.ts which mirrors ui-reference.html's :root tokens.
-const BADGE_CLASS: Record<BadgeColor, string> = {
-  green: "bg-green-fill text-green-text",
+// Category color convention (design handoff, uniform across the app):
+// PROSPECT = brand red, DEFEND = blue; My Carriers rows are neutral (their
+// signal color comes from rateImpactColor per row). Drives the row's left
+// border accent, the impact number, and the active sort header.
+const MODE_ACCENT: Record<FilingsTableMode, string> = {
+  prospect:      "border-l-brand-red",
+  defend:        "border-l-blue-text",
+  "my-carriers": "",
+};
+const MODE_IMPACT_TEXT: Record<Exclude<FilingsTableMode, "my-carriers">, string> = {
+  prospect: "text-brand-red",
+  defend:   "text-blue-text",
+};
+const MODE_SORT_ACTIVE: Record<FilingsTableMode, string> = {
+  prospect:      "text-brand-red",
+  defend:        "text-blue-text",
+  "my-carriers": "text-brand-red",
+};
+
+// Window badge palette (design 3a–3c). computeWindowBadge's LOGIC (text +
+// semantic color family) is untouched — this maps its Badge.color onto the
+// refresh's per-mode presentation:
+//   Prospect:    future = red fill, "Effective this week" = amber,
+//                in-effect = gray
+//   Defend:      risk-window (red) = red, in-effect (amber) = amber
+//   My Carriers: neutral gray throughout (surveillance framing)
+const WINDOW_BADGE_STYLE: Record<"red" | "amber" | "gray", string> = {
+  red:   "bg-red-fill text-brand-red",
   amber: "bg-amber-fill text-amber-text",
-  blue:  "bg-blue-fill text-blue-text",
-  red:   "bg-red-fill text-red-text",
-  gray:  "bg-gray-fill text-gray-text",
+  gray:  "bg-soft text-ink-mid",
 };
-
-// Window badge: the text can be long ("Customers may already be shopping",
-// "Risk window opens in 3 weeks"), so it must wrap cleanly inside the
-// Effective column. A full pill (rounded-full) looks awkward on two lines,
-// so this variant uses an 8px radius with roomier vertical padding and a
-// tighter line-height — the wrap reads as intentional. Same family colors.
-function windowBadgeClass(color: BadgeColor): string {
-  return `${BADGE_CLASS[color]} inline-block px-2 py-1 text-11 rounded-md font-medium leading-[1.35] whitespace-normal`;
+function windowBadgeStyle(mode: FilingsTableMode, color: BadgeColor): string {
+  if (mode === "my-carriers") return WINDOW_BADGE_STYLE.gray;
+  const mapped: "red" | "amber" | "gray" =
+    color === "amber" ? "amber"
+    : mode === "prospect"
+      ? (color === "green" ? "red" : "gray")
+      : (color === "red" ? "red" : "gray");
+  return WINDOW_BADGE_STYLE[mapped];
 }
 
-// Compact status: a small colored dot + a muted label (no filled pill). The
-// dot color carries the status family (green = approved/in force, amber =
-// pending review), so it stays informative if a non-approved status appears.
+// Compact status: a small colored dot + a muted label. Green = approved
+// (in force), amber = pending review.
 const STATUS_DOT: Record<BadgeColor, string> = {
   green: "bg-green-text",
-  amber: "bg-amber-text",
+  amber: "bg-amber-dot",
   blue:  "bg-blue-text",
-  red:   "bg-red-text",
-  gray:  "bg-gray-text",
+  red:   "bg-brand-red",
+  gray:  "bg-ink-3",
 };
 
 // Static, Defend-only contextual framing for the Action column. This is
@@ -86,12 +112,6 @@ function firstColumnHeader(mode: FilingsTableMode, agentType: Props["agentType"]
   return agentType === "captive" ? "Competitor" : "Carrier";
 }
 
-function impactClass(c: "red" | "green" | "black"): string {
-  if (c === "red") return "text-red-text font-medium";
-  if (c === "green") return "text-green-text font-medium";
-  return "text-ink font-medium";
-}
-
 export default function FilingsTable({
   mode,
   filings,
@@ -102,11 +122,11 @@ export default function FilingsTable({
   onSortChange,
   filteredToEmpty,
   coverageGap,
+  alertIds,
 }: Props): React.JSX.Element {
   const firstHeader = firstColumnHeader(mode, agentType);
-  // Defend gets one extra trailing column: static contextual guidance.
-  // It is appended LAST so columns 1–7 keep their positions across all
-  // three modes (Prospect/My Carriers stay 7 columns).
+  // Defend swaps the trailing Policyholders column for static contextual
+  // guidance (design 3b); Prospect/My Carriers end on Policyholders.
   const showActionCol = mode === "defend";
 
   // Which column is the table currently sorted by, and in which direction.
@@ -145,7 +165,8 @@ export default function FilingsTable({
       <div
         data-testid="empty-state"
         data-variant={variant}
-        className="text-13 px-4 py-6 text-center text-ink-3 border border-hairline border-line rounded-lg"
+        className="text-13 px-5 py-8 text-center text-ink-2
+                   bg-surface border border-card-line rounded-card shadow-card"
       >
         {copy}
       </div>
@@ -153,210 +174,241 @@ export default function FilingsTable({
   }
 
   return (
-    // Rounded, hairline-bordered container (per the restyle). The wrapper
-    // still scrolls horizontally on narrow viewports; min-w keeps columns
-    // readable. The header card above carries the headline number so the
-    // punch line is visible without scrolling.
-    <div className="overflow-x-auto rounded-lg border border-hairline border-line">
-      <table
-        className={`w-full ${showActionCol ? "min-w-[1040px]" : "min-w-[900px]"} text-13`}
-        style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
-      >
-      {showActionCol ? (
-        // Defend: Carrier · Line · Impact · Effective · Status · Policyholders · Action
-        <colgroup>
-          <col style={{ width: "25%" }} />
-          <col style={{ width: "13%" }} />
-          <col style={{ width: "10%" }} />
-          <col style={{ width: "20%" }} />
-          <col style={{ width: "10%" }} />
-          <col style={{ width: "12%" }} />
-          <col style={{ width: "10%" }} />
-        </colgroup>
-      ) : (
-        // Prospect / My Carriers: Carrier · Line · Impact · Effective · Status · Policyholders
-        <colgroup>
-          <col style={{ width: "28%" }} />
-          <col style={{ width: "14%" }} />
-          <col style={{ width: "11%" }} />
-          <col style={{ width: "23%" }} />
-          <col style={{ width: "10%" }} />
-          <col style={{ width: "14%" }} />
-        </colgroup>
-      )}
-      <thead>
-        <tr className="bg-surface-2 border-b border-hairline border-line-2 text-left">
-          <Th>{firstHeader}</Th>
-          <Th>Line</Th>
-          <Th
-            sortId="impact"
-            active={sortCol === "impact"}
-            dir={sortDir}
-            onSort={sortHandler("impact")}
-            align="right"
-          >
-            Impact
-          </Th>
-          <Th
-            sortId="effective"
-            active={sortCol === "effective"}
-            dir={sortDir}
-            onSort={sortHandler("effective")}
-          >
-            Effective
-          </Th>
-          <Th>Status</Th>
-          <Th align="right">Policyholders affected</Th>
-          {showActionCol && <Th>Action</Th>}
-        </tr>
-      </thead>
-      <tbody>
-        {filings.map(f => {
-          // Mine pill + warm tint apply only to Prospect/Defend for
-          // independents — on /my-carriers every row is owned by
-          // definition, so the marker would be noise (see Screen 5).
-          const isMine =
-            mode !== "my-carriers"
-            && agentType === "independent"
-            && ownedBrands.has(f.brand);
-          // Impact is colored by CATEGORY (agent perspective), not raw rate
-          // direction: Prospect (competitor raised → your opening) reads green,
-          // Defend (competitor cut → your risk) reads red — so a row never
-          // clashes (uniform meaning across pill + number). My Carriers keeps
-          // its own-carrier mapping (increase = retention risk red, decrease =
-          // opportunity green) via rateImpactColor.
-          const impactC: "red" | "green" | "black" =
-            mode === "prospect" ? "green"
-            : mode === "defend" ? "red"
-            : rateImpactColor(f.overall_rate_impact, mode);
-          const showDot = shouldShowEntitySpreadDot(
-            f.entity_count, f.min_entity_impact, f.max_entity_impact,
-          );
-          const windowB = computeWindowBadge(f.effective_date, asOf, mode);
-          const statusB = computeStatusBadge(f.rate_activity);
-          const isAmBest = f.source === "ambest_sourced";
-
-          return (
-            <tr
-              key={f.id}
-              // AM Best provenance is BACKEND-ONLY — no visual marker. These rows
-              // have no SERFF tracking number (the surrogate key is never shown),
-              // so they simply omit the filing-number tooltip; everything else
-              // renders identically to scraped rows.
-              title={isAmBest ? undefined : `Filing: ${f.serff_tracking_number}`}
-              className={[
-                "border-b border-hairline border-line last:border-b-0 transition-colors",
-                isMine ? "bg-mine-bg" : "hover:bg-surface-2/60",
-              ].join(" ")}
-            >
-              {/* Carrier cell: carrier · state on the lead line; the sub-type
-                  (with its info bubble) sits on a muted secondary line below.
-                  Folding state in here frees the horizontal room the
-                  Policyholders column used to lose. */}
-              <Td>
-                <div className="flex items-center flex-wrap gap-x-1.5">
-                  <span data-testid="row-brand" className="font-medium text-ink">{f.brand}</span>
-                  <span className="text-ink-3" aria-hidden>·</span>
-                  <span data-testid="row-state" className="text-ink-2">{f.state}</span>
-                  {isMine && (
-                    <span
-                      data-testid="mine-pill"
-                      className="inline-block bg-blue-fill text-blue-text text-10 px-1.5 py-px rounded-full align-[1px] font-medium"
-                    >
-                      Mine
-                    </span>
-                  )}
-                </div>
-                <div className="text-12 text-ink-2 mt-0.5">
-                  <SubtypeCell raw={f.sub_type} />
-                </div>
-              </Td>
-              <Td>{f.line_of_business}</Td>
-              <Td align="right">
-                <span className={impactClass(impactC)}>
-                  {formatRateImpact(f.overall_rate_impact)}
-                </span>
-                {showDot && (
-                  <span
-                    title={entitySpreadTooltip(
-                      f.entity_count, f.min_entity_impact, f.max_entity_impact,
-                    )}
-                    aria-label="Multi-entity rollup details"
-                    data-testid="entity-spread-dot"
-                    className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-soft text-ink-2 text-10 italic ml-1 cursor-help"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  >
-                    i
-                  </span>
-                )}
-              </Td>
-              <Td>
-                <div className="text-12 mb-1">
-                  {formatEffectiveDate(f.effective_date)}
-                </div>
-                <span className={windowBadgeClass(windowB.color)}>
-                  {windowB.text}
-                </span>
-              </Td>
-              <Td>
-                <span className="inline-flex items-center gap-1.5 text-12 text-ink-2">
-                  <span
-                    className={`w-[6px] h-[6px] rounded-full shrink-0 ${STATUS_DOT[statusB.color]}`}
-                    aria-hidden
-                  />
-                  {statusB.text}
-                </span>
-              </Td>
-              <Td align="right">
-                <span className={f.total_policyholders == null ? "text-ink-2" : ""}>
-                  {formatPolicyholders(f.total_policyholders)}
-                </span>
-              </Td>
-              {showActionCol && (
-                <Td>
-                  <span className="text-12 text-ink-2">{DEFEND_ACTION_COPY}</span>
-                </Td>
+    // White list-card (design 3a–3c): 14px radius, card border + shadow,
+    // overflow hidden so the header band and footer strip stay clipped. The
+    // inner wrapper still scrolls horizontally on narrow viewports.
+    <div className="bg-surface border border-card-line rounded-card shadow-card overflow-hidden">
+      <div className="overflow-x-auto">
+        <table
+          className="w-full min-w-[900px] text-13"
+          style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
+        >
+          {showActionCol ? (
+            // Defend: Threat · Effective · Status · Impact · Action
+            <colgroup>
+              <col style={{ width: "34%" }} />
+              <col style={{ width: "19%" }} />
+              <col style={{ width: "11%" }} />
+              <col style={{ width: "12%" }} />
+              <col style={{ width: "24%" }} />
+            </colgroup>
+          ) : (
+            // Prospect / My Carriers: Carrier · Effective · Status · Impact · Policyholders
+            <colgroup>
+              <col style={{ width: "44%" }} />
+              <col style={{ width: "21%" }} />
+              <col style={{ width: "12%" }} />
+              <col style={{ width: "11%" }} />
+              <col style={{ width: "12%" }} />
+            </colgroup>
+          )}
+          <thead>
+            <tr className="bg-surface-2 border-b border-line text-left">
+              <Th first>{firstHeader}</Th>
+              <Th
+                sortId="effective"
+                active={sortCol === "effective"}
+                dir={sortDir}
+                onSort={sortHandler("effective")}
+                activeColor={MODE_SORT_ACTIVE[mode]}
+              >
+                Effective
+              </Th>
+              <Th>Status</Th>
+              <Th
+                sortId="impact"
+                active={sortCol === "impact"}
+                dir={sortDir}
+                onSort={sortHandler("impact")}
+                align="right"
+                activeColor={MODE_SORT_ACTIVE[mode]}
+              >
+                Impact
+              </Th>
+              {showActionCol ? (
+                <Th>Action</Th>
+              ) : (
+                <Th align="right">Policyholders</Th>
               )}
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
+          </thead>
+          <tbody>
+            {filings.map(f => {
+              // Mine pill + row tint apply only to Prospect/Defend for
+              // independents — on /my-carriers every row is owned by
+              // definition, so the marker would be noise (see Screen 5).
+              const isMine =
+                mode !== "my-carriers"
+                && agentType === "independent"
+                && ownedBrands.has(f.brand);
+              // Impact wears the CATEGORY color (agent perspective): Prospect
+              // rows are red signals, Defend rows blue. My Carriers keeps its
+              // own-carrier mapping (increase = retention-risk red, decrease =
+              // opportunity green, else neutral ink) via rateImpactColor.
+              const myCarriersColor =
+                mode === "my-carriers" ? rateImpactColor(f.overall_rate_impact, mode) : null;
+              const impactCls =
+                mode === "my-carriers"
+                  ? myCarriersColor === "red"
+                    ? "text-brand-red"
+                    : myCarriersColor === "green"
+                      ? "text-green-text"
+                      : "text-ink"
+                  : MODE_IMPACT_TEXT[mode];
+              const showDot = shouldShowEntitySpreadDot(
+                f.entity_count, f.min_entity_impact, f.max_entity_impact,
+              );
+              const windowB = computeWindowBadge(f.effective_date, asOf, mode);
+              const statusB = computeStatusBadge(f.rate_activity);
+              const isAmBest = f.source === "ambest_sourced";
+
+              return (
+                <tr
+                  key={f.id}
+                  // AM Best provenance is BACKEND-ONLY — no visual marker. These rows
+                  // have no SERFF tracking number (the surrogate key is never shown),
+                  // so they simply omit the filing-number tooltip; everything else
+                  // renders identically to scraped rows.
+                  title={isAmBest ? undefined : `Filing: ${f.serff_tracking_number}`}
+                  className={[
+                    "border-b border-line last:border-b-0 transition-colors",
+                    isMine ? "bg-mine-bg" : "hover:bg-surface-2",
+                  ].join(" ")}
+                >
+                  {/* Carrier cell: name (+ Mine / category pill) on the lead
+                      line; "Line · State · sub-type" on a muted secondary
+                      line (design row anatomy). */}
+                  <Td first accent={MODE_ACCENT[mode]}>
+                    <div className="flex items-center flex-wrap gap-x-2 gap-y-0.5">
+                      <span data-testid="row-brand" className="text-15 font-[650] text-ink">
+                        {f.brand}
+                      </span>
+                      {isMine && (
+                        <span
+                          data-testid="mine-pill"
+                          className="inline-block bg-blue-fill text-blue-text text-10 font-bold px-2 py-0.5 rounded-full"
+                        >
+                          Mine
+                        </span>
+                      )}
+                      {/* My Carriers: per-row signal pill for rows in the
+                          alert sets (same computeRetentionRisk /
+                          computeOpportunity results as the summary cards). */}
+                      {alertIds?.retention.has(f.id) && (
+                        <span
+                          data-testid="retention-pill"
+                          className="inline-block bg-red-fill text-brand-red text-10 font-bold uppercase tracking-wider04 px-2 py-0.5 rounded-full"
+                        >
+                          Retention risk
+                        </span>
+                      )}
+                      {alertIds?.opportunity.has(f.id) && (
+                        <span
+                          data-testid="opportunity-pill"
+                          className="inline-block bg-green-fill text-green-text text-10 font-bold uppercase tracking-wider04 px-2 py-0.5 rounded-full"
+                        >
+                          Opportunity
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-13 text-ink-2 mt-0.5">
+                      {f.line_of_business} · <span data-testid="row-state">{f.state}</span>
+                      <span className="text-ink-3"> · </span>
+                      <SubtypeCell raw={f.sub_type} />
+                    </div>
+                  </Td>
+                  <Td>
+                    <div className="text-12 text-ink mb-1.5">
+                      {formatEffectiveDate(f.effective_date)}
+                    </div>
+                    <span
+                      className={`${windowBadgeStyle(mode, windowB.color)} inline-block px-2 py-1 text-11 font-semibold rounded-badge leading-[1.35] whitespace-normal`}
+                    >
+                      {windowB.text}
+                    </span>
+                  </Td>
+                  <Td>
+                    <span className="inline-flex items-center gap-1.5 text-12 text-ink-2">
+                      <span
+                        className={`w-[6px] h-[6px] rounded-full shrink-0 ${STATUS_DOT[statusB.color]}`}
+                        aria-hidden
+                      />
+                      {statusB.text}
+                    </span>
+                  </Td>
+                  <Td align="right">
+                    <span className={`text-17 font-bold tabular-nums ${impactCls}`}>
+                      {formatRateImpact(f.overall_rate_impact)}
+                    </span>
+                    {showDot && (
+                      <span
+                        title={entitySpreadTooltip(
+                          f.entity_count, f.min_entity_impact, f.max_entity_impact,
+                        )}
+                        aria-label="Multi-entity rollup details"
+                        data-testid="entity-spread-dot"
+                        className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-soft text-ink-2 text-10 italic ml-1 cursor-help"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        i
+                      </span>
+                    )}
+                  </Td>
+                  {showActionCol ? (
+                    <Td>
+                      <span className="text-12 text-ink-2">{DEFEND_ACTION_COPY}</span>
+                    </Td>
+                  ) : (
+                    <Td align="right">
+                      <span className={f.total_policyholders == null ? "text-ink-3" : "text-ink"}>
+                        {formatPolicyholders(f.total_policyholders)}
+                      </span>
+                    </Td>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {/* Footer note strip inside the card (design 3a) */}
+      <div className="bg-surface-2 border-t border-line px-[22px] py-3 text-13 text-ink-3">
+        Premium-weighted, rolled up per filing — sourced from public state filing systems.
+      </div>
     </div>
   );
 }
 
-// Column header. Uniform 12px horizontal padding (the table now sits in a
-// bordered container, so the first cell is no longer flush to the page edge).
-//
-// When `onSort` is provided the header becomes a clickable (cursor-pointer)
-// sort control with a three-state affordance: the active column shows a solid
-// directional caret (▲/▼) and darker label; a sortable-but-inactive column
-// shows a muted ⇅ double-arrow signalling it's clickable; the <th> carries
-// aria-sort. Without `onSort` it's a plain, icon-free header.
+// Column header (11px uppercase kicker on the surface-2 band). When `onSort`
+// is provided the header becomes a clickable sort control with a three-state
+// affordance: the active column shows a solid directional caret (▲/▼) in the
+// mode's category color; a sortable-but-inactive column shows a muted ⇅
+// double-arrow signalling it's clickable; the <th> carries aria-sort.
 function Th({
   children,
   align,
+  first,
   active,
   dir,
   onSort,
   sortId,
+  activeColor,
 }: {
   children: React.ReactNode;
   align?: "right";
+  first?: boolean;
   active?: boolean;
   dir?: "asc" | "desc";
   onSort?: () => void;
   sortId?: string;
+  activeColor?: string;
 }) {
-  const padAlign = `py-2.5 px-3 ${align === "right" ? "text-right" : "text-left"}`;
-  // Lighter header (ink-3) so the data rows lead; the active sort column
-  // darkens to ink for a clear affordance.
-  const colorCls = active ? "text-ink" : "text-ink-3";
-  // Three-state sort affordance:
-  //   active sort column → solid directional caret (▲ asc / ▼ desc)
-  //   sortable, inactive → muted up/down double-arrow (⇅) "clickable" hint
-  //   non-sortable       → no icon (handled below: nothing rendered)
+  const padAlign = [
+    "py-3",
+    first ? "pl-[22px] pr-3" : "px-3",
+    align === "right" ? "text-right" : "text-left",
+  ].join(" ");
+  const colorCls = active ? (activeColor ?? "text-ink") : "text-ink-3";
   const activeCaret = (
     <i
       className={`ti ${dir === "asc" ? "ti-caret-up" : "ti-caret-down"} text-12`}
@@ -383,7 +435,7 @@ function Th({
           data-sort-active={active ? "true" : "false"}
           className={[
             "group inline-flex items-center gap-1 cursor-pointer select-none",
-            "border-none bg-transparent p-0 font-medium text-11 uppercase tracking-wider04",
+            "border-none bg-transparent p-0 font-semibold text-11 uppercase tracking-wider04",
             "hover:text-ink transition-colors",
             colorCls,
           ].join(" ")}
@@ -399,7 +451,7 @@ function Th({
   // onSort handler — sort prop wired but no onSortChange — fall back to the
   // presentational caret rather than nothing.)
   return (
-    <th className={`font-medium text-11 uppercase tracking-wider04 ${padAlign} ${colorCls}`}>
+    <th className={`font-semibold text-11 uppercase tracking-wider04 ${padAlign} ${colorCls}`}>
       <span className="inline-flex items-center gap-1 align-middle">
         {children}
         {active ? activeCaret : null}
@@ -408,23 +460,28 @@ function Th({
   );
 }
 
-// Body cell. 14px vertical / 12px horizontal for a more spacious feel;
-// top-aligned so the stacked Effective (date + badge) and the Action text
-// line up cleanly across a row.
+// Body cell. 15px vertical padding (design row spec); the first cell carries
+// the 22px lead padding plus the 3px category left-border accent. Top-aligned
+// so the stacked Effective (date + badge) and the Action text line up.
 function Td({
   children,
   align,
+  first,
+  accent,
 }: {
   children: React.ReactNode;
   align?: "right";
+  first?: boolean;
+  accent?: string;
 }) {
   return (
     <td
-      className={
-        align
-          ? "py-3.5 px-3 text-right align-top"
-          : "py-3.5 px-3 text-left align-top"
-      }
+      className={[
+        "py-[15px] align-top",
+        first ? "pl-[22px] pr-3" : "px-3",
+        first && accent ? `border-l-[3px] ${accent}` : "",
+        align === "right" ? "text-right" : "text-left",
+      ].join(" ")}
     >
       {children}
     </td>

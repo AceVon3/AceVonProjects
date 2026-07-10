@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation";
 import FilingsTable from "@/components/FilingsTable";
 import FilterBar from "@/components/FilterBar";
 import PageSkeleton from "@/components/PageSkeleton";
-import ScopeStrip from "@/components/ScopeStrip";
+import TopBar from "@/components/TopBar";
 import type { Filing } from "@/lib/filings";
 import { Coverage, coverageGapNote } from "@/lib/coverage";
 import { FilterState, applyFilters, defaultFilters } from "@/lib/filters";
+import { formatRateImpact } from "@/lib/format";
 import { AgentProfile, loadProfile } from "@/lib/profile";
 
 type Phase = "loading" | "ready" | "error";
@@ -100,11 +101,9 @@ export default function DefendPage(): React.JSX.Element {
   if (phase === "error") {
     return (
       <main className="min-h-screen bg-canvas">
-        <div className="max-w-[1100px] mx-auto px-4 py-10">
-          <h1 className="text-18 font-medium m-0 text-ink">
-            Defend
-          </h1>
-          <p className="text-13 mt-3 p-3 rounded-md text-red-text bg-red-fill border border-hairline border-line">
+        <TopBar title="Defend" />
+        <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+          <p className="text-13 m-0 p-3 rounded-md text-red-text bg-red-fill border border-red-border">
             Couldn’t load filings: {error}
           </p>
         </div>
@@ -114,61 +113,42 @@ export default function DefendPage(): React.JSX.Element {
 
   return (
     <main className="min-h-screen bg-canvas">
-      <ScopeStrip
-        states={profile.licensed_states}
-        captiveBrand={
-          profile.agent_type === "captive" ? profile.authorized_brands[0] : undefined
-        }
+      <TopBar
+        title="Defend"
+        chips={[{ icon: "map-pin", label: profile.licensed_states.join(", ") }]}
+        asOf={asOf}
       />
 
-      <div className="max-w-[1100px] mx-auto px-4 py-6">
-        <div className="mb-4">
-          <h1 className="text-18 font-medium m-0 text-ink">
-            Defend
-          </h1>
-          {/* Same per-agent-type split as Prospect: only captives see a pure
-              competitor set. */}
-          <p className="text-13 mt-1 m-0 text-ink-2">
-            {profile.agent_type === "captive"
-              ? `Rate decreases filed by ${profile.authorized_brands[0]}'s competitors in your states — your customers may shop.`
-              : "Rate decreases in your states from competitors and carriers you sell — your customers may shop."}
-          </p>
-        </div>
+      <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+        {/* Same per-agent-type split as Prospect: only captives see a pure
+            competitor set. Wording per design 3b. */}
+        <p className="text-13 text-ink-2 max-w-[640px] mt-0 mb-4 leading-relaxed">
+          {profile.agent_type === "captive"
+            ? `Rate cuts by ${profile.authorized_brands[0]}'s competitors in your states — your customers may be shopping. Lock in renewals before they do.`
+            : "Rate cuts in your states from competitors and carriers you sell — your customers may be shopping. Lock in renewals before they do."}
+        </p>
 
         <FilterBar
           mode="defend"
           filters={filters}
           onChange={setFilters}
           licensedStates={profile.licensed_states}
-        />
-
-        {headerCard && (
-          <div className="rounded-lg mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 bg-surface-2 px-4 py-2.5">
-            <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-3">
-                Carriers getting cheaper
-              </div>
-              <div
-                className="text-18 font-medium text-ink"
-                data-testid="header-count"
-              >
-                {headerCard.count}
-              </div>
-            </div>
-            <div className="w-px self-stretch bg-line-2 hidden sm:block" />
-            <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-3">
-                Biggest cut
-              </div>
-              <div className="text-14 text-ink">
-                <span className="font-medium text-red-text">
-                  −{Math.abs(headerCard.biggestCut.overall_rate_impact).toFixed(1)}%
-                </span>{" "}
+          summary={
+            headerCard && (
+              <>
+                <strong className="text-ink font-semibold" data-testid="header-count">
+                  {headerCard.count}
+                </strong>{" "}
+                {headerCard.count === 1 ? "filing" : "filings"} · biggest cut{" "}
+                {/* Defend = blue category color (design 3b) */}
+                <strong className="font-bold text-blue-text tabular-nums">
+                  {formatRateImpact(headerCard.biggestCut.overall_rate_impact)}
+                </strong>{" "}
                 by {headerCard.biggestCut.brand} in {headerCard.biggestCut.state}
-              </div>
-            </div>
-          </div>
-        )}
+              </>
+            )
+          }
+        />
 
         <FilingsTable
           mode="defend"

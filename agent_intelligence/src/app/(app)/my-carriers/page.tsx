@@ -6,13 +6,13 @@ import { useRouter } from "next/navigation";
 import FilingsTable from "@/components/FilingsTable";
 import FilterBar from "@/components/FilterBar";
 import PageSkeleton from "@/components/PageSkeleton";
-import ScopeStrip from "@/components/ScopeStrip";
+import TopBar from "@/components/TopBar";
 import type { Filing } from "@/lib/filings";
 import { Coverage, coverageGapNote } from "@/lib/coverage";
 import { FilterState, applyFilters, defaultFilters } from "@/lib/filters";
-import { formatEffectiveDate, formatRateImpact } from "@/lib/format";
+import { formatRateImpact } from "@/lib/format";
 import { AgentProfile, loadProfile } from "@/lib/profile";
-import { RETENTION_THRESHOLD, RETENTION_WINDOW_MONTHS, computeOpportunity, computeRetentionRisk } from "@/lib/retention";
+import { OPPORTUNITY_THRESHOLD, RETENTION_THRESHOLD, computeOpportunity, computeRetentionRisk } from "@/lib/retention";
 
 type Phase = "loading" | "ready" | "error";
 
@@ -127,6 +127,16 @@ export default function MyCarriersPage(): React.JSX.Element {
     [visibleFilings, asOf],
   );
 
+  // Row-pill membership (design 3c): the same alert sets the two summary
+  // cards count, keyed by filing id so the table pills reconcile exactly.
+  const alertIds = useMemo(
+    () => ({
+      retention: new Set(retention.filings.map(f => f.id)),
+      opportunity: new Set(opportunity.filings.map(f => f.id)),
+    }),
+    [retention, opportunity],
+  );
+
   if (phase === "loading" || !profile || !filters) {
     return <PageSkeleton variant="table" />;
   }
@@ -144,11 +154,9 @@ export default function MyCarriersPage(): React.JSX.Element {
   if (phase === "error") {
     return (
       <main className="min-h-screen bg-canvas">
-        <div className="max-w-[1100px] mx-auto px-4 py-10">
-          <h1 className="text-18 font-medium m-0 text-ink">
-            {pageTitle}
-          </h1>
-          <p className="text-13 mt-3 p-3 rounded-md text-red-text bg-red-fill border border-hairline border-line">
+        <TopBar title={pageTitle} />
+        <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+          <p className="text-13 m-0 p-3 rounded-md text-red-text bg-red-fill border border-red-border">
             Couldn’t load filings: {error}
           </p>
         </div>
@@ -158,18 +166,47 @@ export default function MyCarriersPage(): React.JSX.Element {
 
   return (
     <main className="min-h-screen bg-canvas">
-      {/* My Carriers shows the agent's OWN carrier(s), not competitors —
-          so no "vs competitors of {brand}" suffix even for captives. */}
-      <ScopeStrip states={profile.licensed_states} />
+      {/* My Carriers shows the agent's OWN carrier(s) — the scope chip lists
+          them (design 3c). No "vs competitors" framing even for captives. */}
+      <TopBar
+        title={pageTitle}
+        chips={[{ icon: "briefcase", label: profile.authorized_brands.join(", ") }]}
+        asOf={asOf}
+      />
 
-      <div className="max-w-[1100px] mx-auto px-4 py-6">
-        <div className="mb-4">
-          <h1 className="text-18 font-medium m-0 text-ink">
-            {pageTitle}
-          </h1>
-          <p className="text-13 mt-1 m-0 text-ink-2">
-            {pageSubtitle}
-          </p>
+      <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+        <p className="text-13 text-ink-2 max-w-[640px] mt-0 mb-4 leading-relaxed">
+          {pageSubtitle}
+        </p>
+
+        {/* Two own-carrier alert summary cards (design 3c). Same
+            computeRetentionRisk / computeOpportunity numbers the dashboard
+            card shows, over the FILTERED set — the counts stay reconciled. */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+          <div className="bg-surface border border-card-line rounded-card shadow-card px-5 py-4 flex items-baseline gap-3">
+            <span
+              className={`text-28 font-bold leading-none tabular-nums ${retention.count > 0 ? "text-brand-red" : "text-ink-3"}`}
+              data-testid="retention-count"
+            >
+              {retention.count}
+            </span>
+            <span className="text-13 text-ink-2">
+              retention risk alert{retention.count === 1 ? "" : "s"} — your{" "}
+              {isCaptive ? "carrier" : "carriers"} raised ≥ +{RETENTION_THRESHOLD}%
+            </span>
+          </div>
+          <div className="bg-surface border border-card-line rounded-card shadow-card px-5 py-4 flex items-baseline gap-3">
+            <span
+              className={`text-28 font-bold leading-none tabular-nums ${opportunity.count > 0 ? "text-green-text" : "text-ink-3"}`}
+              data-testid="opportunity-count"
+            >
+              {opportunity.count}
+            </span>
+            <span className="text-13 text-ink-2">
+              opportunity alert{opportunity.count === 1 ? "" : "s"} — your{" "}
+              {isCaptive ? "carrier" : "carriers"} cut ≤ {OPPORTUNITY_THRESHOLD}%
+            </span>
+          </div>
         </div>
 
         <FilterBar
@@ -178,144 +215,29 @@ export default function MyCarriersPage(): React.JSX.Element {
           onChange={setFilters}
           licensedStates={profile.licensed_states}
           authorizedBrands={profile.authorized_brands}
-        />
-
-        {headerCard && (
-          <div className="rounded-lg mb-4 flex flex-wrap items-center gap-x-6 gap-y-3 bg-surface-2 px-4 py-3.5">
-            <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
-                {isCaptive ? "Your carrier" : "Carriers tracked"}
-              </div>
-              {isCaptive ? (
-                <div className="text-17 font-medium text-ink">{carrierBrand}</div>
-              ) : (
-                <div className="text-22 font-medium text-ink">
-                  {headerCard.carriersTracked}
-                </div>
-              )}
-            </div>
-            <div className="w-px self-stretch bg-line-2 hidden sm:block" />
-            <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
-                Filings this period
-              </div>
-              <div
-                className="text-22 font-medium text-ink"
-                data-testid="header-count"
-              >
-                {headerCard.filingsCount}
-              </div>
-            </div>
-            <div className="w-px self-stretch bg-line-2 hidden sm:block" />
-            <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
-                Largest move
-              </div>
-              <div className="text-14 text-ink">
-                <span
-                  className={
-                    headerCard.largest.overall_rate_impact >= 0
-                      ? "font-medium text-red-text"
-                      : "font-medium text-green-text"
-                  }
-                >
-                  {headerCard.largest.overall_rate_impact >= 0 ? "+" : "−"}
-                  {Math.abs(headerCard.largest.overall_rate_impact).toFixed(1)}%
-                </span>{" "}
-                {headerCard.largest.brand} in {headerCard.largest.state}
-              </div>
-            </div>
-            <div className="w-px self-stretch bg-line-2 hidden sm:block" />
-            <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
-                Retention risk
-              </div>
-              {retention.count > 0 ? (
-                <div className="text-14 text-ink" data-testid="retention-count">
-                  <span className="text-22 font-medium text-red-text align-baseline">
-                    {retention.count}
-                  </span>{" "}
-                  book{retention.count === 1 ? "" : "s"}
-                  {retention.largest && (
-                    <span className="block text-11 text-ink-3">
-                      largest {formatRateImpact(retention.largest.overall_rate_impact)}{" "}
-                      {retention.largest.brand} in {retention.largest.state}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <div className="text-14 text-ink-3" data-testid="retention-count">None</div>
-              )}
-            </div>
-            <div className="w-px self-stretch bg-line-2 hidden sm:block" />
-            <div>
-              <div className="text-11 uppercase tracking-wider04 mb-0.5 text-ink-2">
-                Opportunity
-              </div>
-              {opportunity.count > 0 ? (
-                <div className="text-14 text-ink" data-testid="opportunity-count">
-                  <span className="text-22 font-medium text-green-text align-baseline">
-                    {opportunity.count}
-                  </span>{" "}
-                  book{opportunity.count === 1 ? "" : "s"}
-                  {opportunity.largest && (
-                    <span className="block text-11 text-ink-3">
-                      largest {formatRateImpact(opportunity.largest.overall_rate_impact)}{" "}
-                      {opportunity.largest.brand} in {opportunity.largest.state}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <div className="text-14 text-ink-3" data-testid="opportunity-count">None</div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Retention Risk — interpreted signal: the agent's OWN carrier(s)
-            raising rates >= +5% in the filtered set. The My-Carrier analog of
-            Defend (own book vulnerable), kept separate from the competitive
-            Prospect/Defend pages. The full all-moves table stays below. */}
-        {retention.count > 0 && (
-          <section
-            data-testid="retention-section"
-            className="rounded-lg border border-hairline border-line overflow-hidden mb-4"
-          >
-            <div className="bg-red-fill border-b border-hairline border-line px-4 py-2.5">
-              <h2 className="text-12 font-medium m-0 text-ink">
-                Retention risk — your recent rate increases ({RETENTION_THRESHOLD}% or
-                more, last {RETENTION_WINDOW_MONTHS} months)
-              </h2>
-              <p className="text-11 m-0 mt-0.5 text-ink-2">
-                Your own {isCaptive ? "carrier" : "carriers"} raised rates here
-                recently — these books are the most likely to shop now. Newest first.
-              </p>
-            </div>
-            <ul className="m-0 list-none p-0">
-              {retention.filings.map((f, i) => (
-                <li
-                  key={f.id}
-                  data-testid="retention-item"
-                  className={`flex flex-wrap items-baseline gap-x-3 px-4 py-2 text-12 ${
-                    i === retention.filings.length - 1
-                      ? ""
-                      : "border-b border-hairline border-line"
+          summary={
+            headerCard && (
+              <>
+                <strong className="text-ink font-semibold" data-testid="header-count">
+                  {headerCard.filingsCount}
+                </strong>{" "}
+                {headerCard.filingsCount === 1 ? "filing" : "filings"} · largest move{" "}
+                <strong
+                  className={`font-bold tabular-nums ${
+                    headerCard.largest.overall_rate_impact >= RETENTION_THRESHOLD
+                      ? "text-brand-red"
+                      : headerCard.largest.overall_rate_impact <= OPPORTUNITY_THRESHOLD
+                        ? "text-green-text"
+                        : "text-ink"
                   }`}
                 >
-                  <span className="font-medium text-red-text w-14 shrink-0">
-                    {formatRateImpact(f.overall_rate_impact)}
-                  </span>
-                  <span className="text-ink font-medium">{f.brand}</span>
-                  <span className="text-ink-2">{f.line_of_business}</span>
-                  <span className="text-ink-2">{f.state}</span>
-                  <span className="text-ink-3">
-                    eff {formatEffectiveDate(f.effective_date)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+                  {formatRateImpact(headerCard.largest.overall_rate_impact)}
+                </strong>{" "}
+                by {headerCard.largest.brand} in {headerCard.largest.state}
+              </>
+            )
+          }
+        />
 
         {/* Honest accounting for the rate-neutral suppression: explains why the
             visible count is lower than the agent's book might suggest. Shown
@@ -342,6 +264,7 @@ export default function MyCarriersPage(): React.JSX.Element {
           onSortChange={s => setFilters(f => (f ? { ...f, sort: s } : f))}
           filteredToEmpty={visibleFilings.length === 0 && filings.length > 0}
           coverageGap={coverageGap}
+          alertIds={alertIds}
         />
       </div>
     </main>

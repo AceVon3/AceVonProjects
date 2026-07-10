@@ -39,6 +39,9 @@ type Props = {
   onChange: (next: FilterState) => void;
   licensedStates: string[];          // bounds the State chip
   authorizedBrands?: string[];       // bounds the Carrier chip (my-carriers only)
+  // Right-aligned inline summary on the filter row (design 3a) — e.g.
+  // "14 filings · largest +50.9% by GEICO in NV". Pages own the content.
+  summary?: React.ReactNode;
 };
 
 export default function FilterBar({
@@ -47,6 +50,7 @@ export default function FilterBar({
   onChange,
   licensedStates,
   authorizedBrands,
+  summary,
 }: Props): React.JSX.Element {
   // Only one panel can be open at a time. null = all closed.
   const [openPanel, setOpenPanel] = useState<string | null>(null);
@@ -89,7 +93,7 @@ export default function FilterBar({
     <div
       ref={wrapperRef}
       data-testid="filter-bar"
-      className="flex gap-2 mb-3 flex-wrap items-center"
+      className="flex gap-2 mb-4 flex-wrap items-center"
     >
       <span className="text-ink-3 uppercase text-11 tracking-wider04 mr-1">
         Filters
@@ -101,6 +105,7 @@ export default function FilterBar({
         open={openPanel === "states"}
         onToggle={() => setOpenPanel(openPanel === "states" ? null : "states")}
         testid="chip-states"
+        narrowed={filters.states.length !== licensedStates.length}
       >
         <CheckboxList
           items={licensedStates.map(s => ({ value: s, label: s }))}
@@ -117,6 +122,7 @@ export default function FilterBar({
         open={openPanel === "lines"}
         onToggle={() => setOpenPanel(openPanel === "lines" ? null : "lines")}
         testid="chip-lines"
+        narrowed={filters.lines.length !== ALL_LINES.length}
       >
         <CheckboxList
           items={ALL_LINES.map(l => ({ value: l, label: l }))}
@@ -134,6 +140,7 @@ export default function FilterBar({
         open={openPanel === "time"}
         onToggle={() => setOpenPanel(openPanel === "time" ? null : "time")}
         testid="chip-time"
+        narrowed={filters.window !== "12m"}
       >
         <RadioList
           items={[
@@ -187,6 +194,7 @@ export default function FilterBar({
             setOpenPanel(openPanel === "carriers" ? null : "carriers")
           }
           testid="chip-carriers"
+          narrowed={filters.carriers.length !== authorizedBrands.length}
         >
           <CheckboxList
             items={authorizedBrands.map(b => ({ value: b, label: b }))}
@@ -197,6 +205,12 @@ export default function FilterBar({
             testidPrefix="opt-carrier"
           />
         </Chip>
+      )}
+
+      {summary && (
+        <span className="w-full md:w-auto md:ml-auto text-13 text-ink-2">
+          {summary}
+        </span>
       )}
     </div>
   );
@@ -209,12 +223,17 @@ function Chip({
   open,
   onToggle,
   testid,
+  narrowed,
   children,
 }: {
   label: string;
   open: boolean;
   onToggle: () => void;
   testid: string;
+  // True when this filter is narrowed from its default — the chip flips to
+  // the red active-filter variant (design frame 1b) so a narrowed view is
+  // visible at a glance.
+  narrowed?: boolean;
   children: React.ReactNode;
 }): React.JSX.Element {
   return (
@@ -224,17 +243,26 @@ function Chip({
         onClick={onToggle}
         data-testid={testid}
         data-open={open ? "true" : "false"}
-        className="inline-flex items-center gap-1 border border-hairline border-line-2 rounded-lg px-2.5 py-[5px] text-12 bg-surface text-ink cursor-pointer"
+        data-narrowed={narrowed ? "true" : "false"}
+        className={[
+          "inline-flex items-center gap-[5px] rounded-full px-3 py-[5px] text-12 cursor-pointer border",
+          narrowed
+            ? "bg-red-fill border-red-border text-brand-red font-medium"
+            : "bg-surface border-line-2 text-ink",
+        ].join(" ")}
       >
         {label}
-        <span aria-hidden className="text-[9px] text-ink-3 ml-0.5">
+        <span
+          aria-hidden
+          className={`text-[9px] ${narrowed ? "text-brand-red" : "text-ink-3"}`}
+        >
           {open ? "▲" : "▼"}
         </span>
       </button>
       {open && (
         <div
           data-testid={`${testid}-panel`}
-          className="absolute top-[calc(100%+4px)] left-0 z-10 min-w-[180px] bg-surface border border-hairline border-line-2 rounded-lg p-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
+          className="absolute top-[calc(100%+4px)] left-0 z-10 min-w-[200px] bg-surface border border-line-2 rounded-xl p-1.5 shadow-popover"
         >
           {children}
         </div>
@@ -266,9 +294,17 @@ function CheckboxList({
             onClick={() => onToggle(it.value)}
             data-testid={`${testidPrefix}-${it.value}`}
             data-checked={isChecked ? "true" : "false"}
-            className="flex items-center gap-1.5 px-2 py-[5px] text-12 bg-transparent border-none cursor-pointer text-left rounded text-ink"
+            className={[
+              "flex items-center gap-2 px-2.5 py-1.5 text-12 border-none cursor-pointer text-left rounded-lg transition-colors",
+              isChecked
+                ? "bg-red-fill text-brand-red font-medium"
+                : "bg-transparent text-ink hover:bg-soft",
+            ].join(" ")}
           >
-            <span aria-hidden>{isChecked ? "☑" : "☐"}</span>
+            <i
+              aria-hidden
+              className={`ti ti-check text-13 ${isChecked ? "text-brand-red" : "invisible"}`}
+            />
             {it.label}
           </button>
         );
@@ -300,11 +336,16 @@ function RadioList({
             data-testid={`${testidPrefix}-${it.value}`}
             data-selected={isSelected ? "true" : "false"}
             className={[
-              "flex items-center gap-1.5 px-2 py-[5px] text-12 bg-transparent border-none cursor-pointer text-left rounded",
-              isSelected ? "text-blue-text font-medium" : "text-ink font-normal",
+              "flex items-center gap-2 px-2.5 py-1.5 text-12 border-none cursor-pointer text-left rounded-lg transition-colors",
+              isSelected
+                ? "bg-red-fill text-brand-red font-medium"
+                : "bg-transparent text-ink font-normal hover:bg-soft",
             ].join(" ")}
           >
-            <span aria-hidden>{isSelected ? "●" : "○"}</span>
+            <i
+              aria-hidden
+              className={`ti ti-check text-13 ${isSelected ? "text-brand-red" : "invisible"}`}
+            />
             {it.label}
           </button>
         );
