@@ -414,59 +414,20 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   font-weight: 650;
 }
 
-/* compliance callout — hero-level shoutout, links to /compliance.
-   Styled as a navy strip (the dark lockup's treatment, echoing the
-   closing band) with the logo's soft red as the accent — deliberately
-   the only navy element in the light hero, so it carries weight. */
-.lp .hero-callout {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 30px;
-  max-width: 560px;
-  padding: 16px 18px;
-  border: 1px solid rgba(232, 85, 91, 0.38);
-  border-radius: 14px;
-  background: var(--navy);
-  box-shadow: var(--shadow-card);
-  transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s;
-}
-.lp .hero-callout:hover {
-  border-color: rgba(232, 85, 91, 0.75);
-  transform: translateY(-2px);
-}
-.lp .hc-chip {
-  flex: 0 0 auto;
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
-  display: grid;
-  place-items: center;
-  background: rgba(232, 85, 91, 0.16);
-  color: #e8555b;
-}
-.lp .hc-chip svg {
-  width: 20px;
-  height: 20px;
-}
-.lp .hc-text {
-  font-size: 0.88rem;
-  line-height: 1.5;
-  color: #a9a9c0;
-}
-.lp .hc-text b {
-  color: #ffffff;
+/* HR & Compliance Hub mention inside the hero lead — brand red,
+   underlined so it reads as a destination, links to /compliance. */
+.lp .hub-link {
+  color: var(--brand);
   font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--brand) 40%, transparent);
+  transition: text-decoration-color 0.15s, color 0.15s;
 }
-.lp .hc-arrow {
-  flex: 0 0 auto;
-  color: #e8555b;
-  font-weight: 700;
-  font-size: 1.05rem;
-  transition: transform 0.15s;
-}
-.lp .hero-callout:hover .hc-arrow {
-  transform: translateX(3px);
+.lp .hub-link:hover {
+  color: var(--brand-hover);
+  text-decoration-color: var(--brand);
 }
 
 /* signal panel — illustrative product tease, landing tokens only */

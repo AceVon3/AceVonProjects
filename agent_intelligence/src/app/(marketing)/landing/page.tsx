@@ -127,7 +127,12 @@ export default function LandingPage(): React.JSX.Element {
               <p className="lead">
                 AgencyMan.ai turns state rate filings into sales signals: which
                 carriers are raising rates in your states, which are cutting
-                them, and exactly where your carrier stands.
+                them, and exactly where your carrier stands. Plus a{" "}
+                <Link className="hub-link" href="/compliance">
+                  50-state HR &amp; Compliance Hub
+                </Link>{" "}
+                — labor, tax, and workers&apos;-comp answers, grounded in the
+                official source pages.
               </p>
               <div className="hero-ctas">
                 <Link className="btn btn-primary lg" href="/setup">
@@ -140,28 +145,13 @@ export default function LandingPage(): React.JSX.Element {
               <p className="microcopy">
                 <b>No account, no credit card.</b> Your profile lives in your browser.
               </p>
-
-              {/* Compliance is a headline capability, not a footnote —
-                  surface it in the hero. */}
-              <Link className="hero-callout" href="/compliance">
-                <span className="hc-chip" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z" /></svg>
-                </span>
-                <span className="hc-text">
-                  <b>Includes the 50-state Compliance Hub.</b> Labor, tax,
-                  insurance-department, and workers&apos;-comp answers for every
-                  state you operate in — AI-summarized and grounded in the
-                  official source pages.
-                </span>
-                <span className="hc-arrow" aria-hidden="true">→</span>
-              </Link>
             </div>
 
             {/* Product tease — sample signals, styled in landing tokens only */}
             <div className="signal-panel" aria-hidden="true">
               <LogoMark className="panel-mark" />
               <div className="panel-head">
-                <span className="t">This week&apos;s signals</span>
+                <span className="t">The past 3 months&apos; signals</span>
                 <span className="s">filtered to your states</span>
               </div>
               {SAMPLE_SIGNALS.map((s) => (
