@@ -137,7 +137,7 @@ export default function LandingPage(): React.JSX.Element {
               </p>
               <div className="hero-ctas">
                 <Link className="btn btn-primary lg" href="/setup">
-                  Set up your agency — free
+                  Set up your agency
                 </Link>
                 <Link className="btn btn-ghost lg" href="/methodology">
                   See the methodology
@@ -379,7 +379,7 @@ export default function LandingPage(): React.JSX.Element {
               in every market you work.
             </p>
             <Link className="btn btn-primary lg" href="/setup">
-              Open AgencyMan — free
+              Open AgencyMan
             </Link>
             <p className="microcopy">
               <b>Nothing to install, nothing to cancel.</b> It runs in your browser.
