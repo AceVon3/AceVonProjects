@@ -215,7 +215,10 @@ GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent g
     "Allstate":       ["allstate", "encompass", "integon", "north american insurance"],
     "Travelers":      ["travelers", "standard fire", "travco insurance", "the phoenix insurance"],
     "Liberty Mutual": ["liberty mutual", "liberty insurance corporation", "safeco", "first national insurance company of america", "general insurance company of america", "american states"],
-    "Progressive":    ["progressive", "artisan and truckers"],
+    "Progressive":    ["progressive", "artisan and truckers",
+                       # NJ consumer auto writer (distinct from retired Drive) +
+                       # ASI = Progressive Home (2026-07-10, NJ/KS imports):
+                       "drive new jersey", "american strategic"],
     # 13-brand expansion (2026-06-10, SCOPE.md). Anchors are tighter than the
     # search keywords where bare keywords risk stray matches (Farm-Bureau-
     # style names, Country-Wide); the bare forms remain at the END of each
@@ -325,7 +328,20 @@ def _is_rate_filing_type(ft) -> bool:
     "Rate"/"Flex Rate" or a "Rate/Rule" prefix counts; nothing else ("Form",
     "Reporting", "Predictive Model", ...) does."""
     ft = (ft or "").strip()
-    return ft == "Rate" or ft.startswith("Rate/Rule") or ft == "Flex Rate"
+    if ft == "Rate" or ft.startswith("Rate/Rule") or ft == "Flex Rate":
+        return True
+    # NJ (prior-approval regulation state, found 2026-07-09 at the NJ
+    # cross-check — 5th/6th vocabulary variants): rate filings labeled
+    # "Prior Approval" / "Expedited Prior Approval" / "Limited Prior
+    # Approval" (23 filings incl. GEICO +13.0%/198,263ph and Allstate NJ
+    # +3.5%/231,099ph LIVE signals), plus combined types whose slash
+    # components include Rate ("Form/Rate", "Form/Rate/Rule", 8 filings).
+    # Containment: even a false-include here still needs parseable
+    # Company Rate Information rows + rate_data_applies != False + the
+    # effective window to emit anything.
+    if ft.endswith("Prior Approval"):
+        return True
+    return "Rate" in (c.strip() for c in ft.split("/"))
 PDF_FILING_TYPE_RE = re.compile(r"Filing Type:\s*([A-Za-z/ \-]+)\s*$", re.MULTILINE)
 
 # Per-company rate-table rows for these subsidiary names are dropped at emission
@@ -381,6 +397,9 @@ EXCLUDED_SUBSIDIARY_PATTERNS = (
     "economy fire",
     "economy premier",
     "economy preferred",
+    # Metropolitan P&C — legacy-MetLife vehicle Farmers acquired (2021); same
+    # family as economy_*; renewal-book, no consumer channel (2026-07-10, KS).
+    "metropolitan property and casualty",
     # Nationwide: Allied brand retired ~2020 (Peerless precedent) + non-standard.
     "amco insurance",
     "allied property and casualty",
@@ -1250,6 +1269,19 @@ def _read_pdf_text(pdf_path: Path) -> str:
         return "\n".join((pg.extract_text() or "") for pg in pdf.pages)
 
 
+def _read_pdf_head_text(pdf_path: Path, n_pages: int = 3) -> str:
+    """Extract only the first `n_pages` (B15 fast path). The system Filing
+    Summary carries its "Filing Type:" header on PAGE 2 (measured across NJ
+    samples incl. the 2,421-page SFMA-133952134 Rule filing whose full-text
+    extraction cost ~1h for a filing the gate discards, 2026-07-09; page 1 is
+    the cover block). Callers MUST fall back to the full-text path when the
+    head yields no Filing Type match, so the fast path only fires when it is
+    equivalent by construction (head text is a prefix of the full text, and
+    PDF_FILING_TYPE_RE takes the first match either way)."""
+    with pdfplumber.open(str(pdf_path)) as pdf:
+        return "\n".join((pg.extract_text() or "") for pg in pdf.pages[:n_pages])
+
+
 def detect_filing_type_and_new_product(pdf_path: Path, text: str | None = None) -> tuple[Optional[str], bool]:
     """Return (filing_type, is_new_product) from the PDF text. `text`: optional
     pre-extracted full text so the caller can read the PDF once and share it with
@@ -1314,9 +1346,18 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
         pdf = Path(f"output/pdfs/{state}/{t.filing_id}/filing_summary.pdf")
         if not pdf.exists() or pdf.stat().st_size < 5000:
             stats["filings_excluded_no_pdf"] += 1; continue
-        # Read the PDF text ONCE and share it with both consumers (audit decision
-        # C, 2026-06-08) — previously detect_* and parse_* each opened + extracted
-        # the full PDF independently (two reads per filing per pass).
+        # B15 (2026-07-09): run the rate-type gate on PAGE 1 ONLY before paying
+        # for a full-text extract — a 2,421-page Rule filing (NJ SFMA-133952134)
+        # cost ~1h of extraction the gate then discarded. The fast path fires
+        # ONLY when page 1 yields a Filing Type match (equivalent by
+        # construction: page-1 text is a prefix of the full text and
+        # PDF_FILING_TYPE_RE takes the first match); otherwise fall through to
+        # the full read exactly as before (audit decision C, 2026-06-08: one
+        # full read shared by detect_* and parse_*).
+        head = _read_pdf_head_text(pdf)
+        ft_head = m.group(1).strip() if (m := PDF_FILING_TYPE_RE.search(head)) else None
+        if ft_head is not None and not _is_rate_filing_type(ft_head):
+            stats["filings_excluded_form_or_rule"] += 1; continue
         pdf_text = _read_pdf_text(pdf)
         ft_pdf, is_new = detect_filing_type_and_new_product(pdf, text=pdf_text)
         ft = ft_pdf or t.filing_type_xlsx

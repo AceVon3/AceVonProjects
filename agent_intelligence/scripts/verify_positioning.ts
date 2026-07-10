@@ -2,6 +2,10 @@
 // Node-only (no browser), like verify_queries.ts.
 //
 // Re-baselined for the 2026-06 expansion (data as-of 2026-06-11; 13 brands /
+// Re-keyed 2026-07-10 (B16 correction): +5 recovered rows in AZ/NV/OR/UT
+// moved one cell insufficient->comparable(thin) and +2 independent
+// comparisons — 42 comparable (23 high, 19 thin) / 24 insufficient / 66
+// independent. Prior note:
 // 10 states). The 8-state cell structure is unchanged (10 anchored / 6
 // unanchored / 41 comparable); the as-of shift moved one comparison from
 // higher-confidence to thin (24→23 / 17→18). "insufficient" dropped (29→25)
@@ -50,14 +54,14 @@ console.log("\nCaptive State Farm, all 8 states:");
 const c = getPositioning(captive).totals;
 check("anchored cells", c.anchoredCellCount, 10);
 check("unanchored cells", c.unanchoredCellCount, 6);
-check("comparable comparisons", c.comparable, 41);
+check("comparable comparisons", c.comparable, 42);
 check("  higher-confidence (>=2 each)", c.higherConfidence, 23);
-check("  thin", c.thin, 18);
-check("insufficient (covered competitor absent)", c.insufficient, 25);
+check("  thin", c.thin, 19);
+check("insufficient (covered competitor absent)", c.insufficient, 24);
 
 console.log("\nIndependent {State Farm, Travelers, Progressive}, all 8 states:");
 const i = getPositioning(independent).totals;
-check("comparable comparisons", i.comparable, 64);
+check("comparable comparisons", i.comparable, 66);
 check("  higher-confidence (>=2 each)", i.higherConfidence, 30);
 
 console.log("\n" + "=".repeat(72));
