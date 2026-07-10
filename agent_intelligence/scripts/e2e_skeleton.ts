@@ -80,7 +80,7 @@ async function main(): Promise<void> {
   // fast connection the skeleton flashes through before the API resolves.
   // We block on the skeleton render by intercepting before the API call.
   for (const [path, expectedVariant] of [
-    ["/", "overview"],
+    ["/overview", "overview"],
     ["/prospect", "table"],
     ["/defend", "table"],
     ["/my-carriers", "table"],

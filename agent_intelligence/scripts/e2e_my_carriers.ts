@@ -66,10 +66,10 @@ const CAPTIVE_SF: Profile = {
   licensed_states: ["AZ", "NV"],
 };
 
-// Neutral badge backgrounds for my-carriers (computed rgb):
-//   gray-fill  #F1EFE8 -> rgb(241, 239, 232)
-//   amber-fill #FAEEDA -> rgb(250, 238, 218)   (only for Pending review)
-const NEUTRAL_BG = ["rgb(241, 239, 232)", "rgb(250, 238, 218)"];
+// Neutral badge background for my-carriers (computed rgb): the AgencyMan
+// refresh renders EVERY window badge on this page in the neutral soft fill
+// (#F1F2F7), including the null-effective-date "Pending review" case.
+const NEUTRAL_BG = ["rgb(241, 242, 247)"];
 const NEUTRAL_TEXT_RE = /(^In \d+ weeks$|Effective this week|In effect \d+ weeks|Pending review)/;
 
 let failures = 0;
@@ -125,15 +125,15 @@ async function main(): Promise<void> {
   // agent_type — spec line 854.
   const firstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Carrier'", firstHeader === "Carrier", { firstHeader });
-  // State + Sub-type were folded into the carrier cell: Carrier · Line ·
-  // Impact · Effective · Status · Policyholders.
-  const col3Header = (await page.locator("table thead th").nth(2).textContent())?.trim();
-  check("column 3 header = 'Impact'", col3Header === "Impact", { col3Header });
+  // Line/State/Sub-type live inside the carrier cell (design 3c): the
+  // columns are Carrier · Effective · Status · Impact · Policyholders.
+  const col4Header = (await page.locator("table thead th").nth(3).textContent())?.trim();
+  check("column 4 header = 'Impact'", col4Header === "Impact", { col4Header });
 
   // (D) Surveillance behavior: at least one row's Impact cell shows a value
   // strictly between Defend's -2% and Prospect's +5% thresholds. Impact is
-  // now column 3. (handle U+2212 minus.)
-  const impactTexts = await page.$$eval("table tbody tr td:nth-child(3)", tds =>
+  // now column 4. (handle U+2212 minus.)
+  const impactTexts = await page.$$eval("table tbody tr td:nth-child(4)", tds =>
     tds.map(t => t.textContent?.trim() ?? ""),
   );
   function parseImpact(s: string): number | null {
@@ -152,15 +152,15 @@ async function main(): Promise<void> {
     zeroImpact.length >= 1,
     { count: zeroImpact.length });
 
-  // (E) Every Effective-column window badge is neutral (gray, or amber for
-  // Pending). Effective is now column 4.
-  const badges = await page.$$eval("table tbody tr td:nth-child(4) span", spans =>
+  // (E) Every Effective-column window badge is neutral gray. Effective is
+  // now column 2 (the date is a <div>, so the span is the badge).
+  const badges = await page.$$eval("table tbody tr td:nth-child(2) span", spans =>
     spans.map(s => ({
       text: s.textContent?.trim() ?? "",
       bg: window.getComputedStyle(s as HTMLElement).backgroundColor,
     })),
   );
-  check(`every Effective badge is neutral gray or amber (${badges.length} badges checked)`,
+  check(`every Effective badge is neutral gray (${badges.length} badges checked)`,
     badges.every(b => NEUTRAL_BG.includes(b.bg)),
     { offendingColors: Array.from(new Set(badges.filter(b => !NEUTRAL_BG.includes(b.bg)).map(b => b.bg))) });
   check("every badge text matches my-carriers neutral phrasing",
@@ -184,8 +184,8 @@ async function main(): Promise<void> {
     Array.from(new Set(tds.map(t => t.textContent?.trim() ?? ""))));
   check("every row is State Farm (no other brand leaks in)",
     capBrands.length === 1 && capBrands[0] === "State Farm", { capBrands });
-  // Singular framing: page title "My Carrier", header card shows the carrier name.
-  const capTitle = (await page.locator("h1").first().textContent())?.trim();
+  // Singular framing: top-bar title "My Carrier".
+  const capTitle = (await page.locator('[data-testid="page-title"]').textContent())?.trim();
   check("page title is singular 'My Carrier'", capTitle === "My Carrier", { capTitle });
   // Nav link is the singular "My Carrier".
   const navLabels = await page.$$eval('[data-testid="nav-link"]', els =>

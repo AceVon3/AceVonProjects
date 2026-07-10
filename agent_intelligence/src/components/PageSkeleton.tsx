@@ -3,10 +3,10 @@
 // no spinner, no text. Goal: register as "the page is loading" without
 // distracting the eye on fast connections.
 //
-// Two variants:
-//   - "overview" — header + 4 cards in a row + a feed card
-//   - "table"    — scope strip + header + filter chips + header card +
-//                  4 table-row stripes (used by /prospect, /defend,
+// Two variants (shapes match the refreshed layouts):
+//   - "overview" — top bar + 3 summary cards + a state-grouped feed card
+//   - "table"    — top bar + intro line + filter chips + list-card with
+//                  header band and row stripes (/prospect, /defend,
 //                  /my-carriers)
 
 type Props = { variant: "overview" | "table" };
@@ -20,20 +20,19 @@ export default function PageSkeleton({ variant }: Props): React.JSX.Element {
       aria-busy="true"
       aria-live="polite"
     >
-      {/* Scope strip placeholder — only the table variant has one */}
-      {variant === "table" && (
-        <div className="bg-surface-2 px-4 py-2 flex justify-between items-center">
-          <Bar w={180} h={14} />
-          <Bar w={30} h={14} />
-        </div>
-      )}
+      {/* Top header bar placeholder (title · chips · right meta) */}
+      <div className="bg-surface border-b border-card-line px-4 md:px-8 py-3.5 flex items-center gap-4">
+        <Bar w={80} h={15} strong />
+        <Bar w={110} h={22} radius={999} />
+        <span className="ml-auto">
+          <Bar w={200} h={12} />
+        </span>
+      </div>
 
-      <div className="max-w-[1100px] mx-auto px-4 py-8">
-        {/* Header (title + subtitle) */}
+      <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+        {/* Intro line */}
         <div className="mb-5">
-          <Bar w={140} h={20} strong />
-          <div className="h-1.5" />
-          <Bar w={280} h={13} />
+          <Bar w={340} h={13} />
         </div>
 
         {variant === "overview" ? <OverviewSkeleton /> : <TableSkeleton />}
@@ -45,42 +44,52 @@ export default function PageSkeleton({ variant }: Props): React.JSX.Element {
 function OverviewSkeleton(): React.JSX.Element {
   return (
     <>
-      {/* 4 cards across */}
-      <div className="grid grid-cols-4 gap-3 mb-5">
-        {[0, 1, 2, 3].map(i => (
+      {/* 3 summary cards across */}
+      <div className="grid grid-cols-3 gap-4 mb-7">
+        {[0, 1, 2].map(i => (
           <div
             key={i}
-            className="border border-hairline border-line rounded-xl p-4 bg-surface min-h-[110px]"
+            className="border border-card-line rounded-card p-5 bg-surface shadow-card min-h-[120px]"
           >
-            <div className="flex items-center gap-2.5 mb-3">
-              <Bar w={32} h={32} radius={8} />
-              <Bar w={90} h={12} />
+            <Bar w={90} h={11} />
+            <div className="h-3.5" />
+            <div className="flex items-baseline gap-2.5 mb-2">
+              <Bar w={36} h={26} strong />
+              <Bar w={100} h={12} />
             </div>
-            <Bar w={48} h={24} strong />
-            <div className="h-3" />
-            <Bar w={70} h={12} />
+            <div className="flex items-baseline gap-2.5">
+              <Bar w={36} h={26} strong />
+              <Bar w={80} h={12} />
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Feed card */}
-      <div className="border border-hairline border-line rounded-xl pt-[18px] px-[18px] pb-1.5 bg-surface">
-        <Bar w={140} h={16} strong />
-        <div className="h-3.5" />
+      {/* Feed heading + grouped feed card */}
+      <div className="flex justify-between items-baseline mb-3.5">
+        <Bar w={150} h={18} strong />
+        <Bar w={120} h={12} />
+      </div>
+      <Bar w={110} h={11} />
+      <div className="h-2" />
+      <div className="border border-card-line rounded-card bg-surface shadow-card overflow-hidden">
         {[0, 1, 2, 3, 4].map(i => (
           <div
             key={i}
             className={[
-              "flex justify-between items-center py-2.5",
-              i === 4 ? "" : "border-b border-hairline border-line",
+              "flex justify-between items-center px-[22px] py-4",
+              i === 4 ? "" : "border-b border-line",
             ].join(" ")}
           >
             <div>
-              <Bar w={90} h={14} />
-              <div className="h-1" />
-              <Bar w={150} h={12} />
+              <Bar w={90} h={14} strong />
+              <div className="h-1.5" />
+              <Bar w={170} h={12} />
             </div>
-            <Bar w={26} h={18} radius={999} />
+            <div className="flex items-center gap-3.5">
+              <Bar w={52} h={16} strong />
+              <Bar w={72} h={20} radius={999} />
+            </div>
           </div>
         ))}
       </div>
@@ -91,50 +100,48 @@ function OverviewSkeleton(): React.JSX.Element {
 function TableSkeleton(): React.JSX.Element {
   return (
     <>
-      {/* Filter chip row */}
-      <div className="flex gap-2 mb-3 items-center">
-        <Bar w={48} h={11} />
-        <Bar w={120} h={26} radius={8} />
-        <Bar w={92} h={26} radius={8} />
-        <Bar w={140} h={26} radius={8} />
-        <Bar w={130} h={26} radius={8} />
+      {/* Filter chip row + right summary */}
+      <div className="flex gap-2 mb-4 items-center">
+        <Bar w={44} h={11} />
+        <Bar w={120} h={26} radius={999} />
+        <Bar w={92} h={26} radius={999} />
+        <Bar w={140} h={26} radius={999} />
+        <Bar w={130} h={26} radius={999} />
+        <span className="ml-auto">
+          <Bar w={220} h={13} />
+        </span>
       </div>
 
-      {/* Header card */}
-      <div className="bg-surface-2 rounded-lg px-4 py-3.5 mb-4 flex gap-6 items-center">
-        <div>
-          <Bar w={130} h={11} />
-          <div className="h-1.5" />
-          <Bar w={40} h={24} strong />
+      {/* List-card: header band + row stripes + footer strip */}
+      <div className="border border-card-line rounded-card bg-surface shadow-card overflow-hidden">
+        <div className="bg-surface-2 border-b border-line px-[22px] py-3 flex justify-between">
+          {[70, 70, 50, 50, 90].map((w, i) => (
+            <Bar key={i} w={w} h={11} />
+          ))}
         </div>
-        <div className="w-px self-stretch bg-line-2" />
-        <div>
-          <Bar w={100} h={11} />
-          <div className="h-1.5" />
-          <Bar w={220} h={16} />
-        </div>
-      </div>
-
-      {/* Table header + 4 row stripes */}
-      <div className="flex justify-between py-2 border-b border-hairline border-line-2">
-        {[80, 30, 80, 50, 70, 50, 90].map((w, i) => (
-          <Bar key={i} w={w} h={11} />
+        {[0, 1, 2, 3].map(i => (
+          <div
+            key={i}
+            className={[
+              "flex justify-between items-center px-[22px] py-[15px]",
+              i === 3 ? "" : "border-b border-line",
+            ].join(" ")}
+          >
+            <div>
+              <Bar w={110} h={15} strong />
+              <div className="h-1.5" />
+              <Bar w={160} h={12} />
+            </div>
+            <Bar w={90} h={28} radius={7} />
+            <Bar w={70} h={12} />
+            <Bar w={56} h={16} strong />
+            <Bar w={42} h={13} />
+          </div>
         ))}
-      </div>
-      {[0, 1, 2, 3].map(i => (
-        <div
-          key={i}
-          className="flex justify-between items-center py-3.5 border-b border-hairline border-line"
-        >
-          <Bar w={110} h={14} />
-          <Bar w={22} h={14} />
-          <Bar w={100} h={14} />
-          <Bar w={56} h={14} />
-          <Bar w={150} h={28} radius={4} />
-          <Bar w={64} h={18} radius={999} />
-          <Bar w={42} h={14} />
+        <div className="bg-surface-2 border-t border-line px-[22px] py-3">
+          <Bar w={320} h={12} />
         </div>
-      ))}
+      </div>
     </>
   );
 }

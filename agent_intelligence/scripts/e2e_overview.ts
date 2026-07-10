@@ -75,13 +75,15 @@ async function main(): Promise<void> {
   console.log(`E2E: Overview (/) against ${BASE} — captive State Farm, AZ + NV`);
   console.log("=".repeat(72));
 
-  await setProfileAndOpen(page, CAPTIVE_SF, "/");
+  await setProfileAndOpen(page, CAPTIVE_SF, "/overview");
   await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
 
-  // Page header
-  const subtitle = (await page.locator('[data-testid="page-subtitle"]').textContent())?.trim();
-  check("page subtitle = 'State Farm · AZ, NV'",
-    subtitle === "State Farm · AZ, NV", { subtitle });
+  // Top-bar scope chips (replaced the page subtitle in the AgencyMan refresh)
+  const chips = await page.$$eval('[data-testid="scope-chip"]',
+    els => els.map(e => (e.textContent ?? "").trim()));
+  check("scope chips show states 'AZ, NV' and brand 'State Farm'",
+    chips.some(t => /AZ,\s*NV/.test(t)) && chips.some(t => t.includes("State Farm")),
+    { chips });
 
   // -- Counts ---------------------------------------------------------------
   const prospectCount = (await page.locator('[data-testid="ov-prospect-count"]').textContent())?.trim();
@@ -103,7 +105,7 @@ async function main(): Promise<void> {
   check("/defend renders the same 7 rows", defendRows === 7, { defendRows });
 
   // Back to Overview for the rest.
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/overview`, { waitUntil: "networkidle" });
   await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
 
   // -- My Carrier alert card (own-carrier, two directions) ------------------
@@ -125,11 +127,11 @@ async function main(): Promise<void> {
   // Reconciliation: the dashboard retention count equals the /my-carriers band.
   await page.goto(`${BASE}/my-carriers`, { waitUntil: "networkidle" });
   await page.waitForSelector('[data-testid="header-count"]', { timeout: 5000 });
+  // The /my-carriers summary card renders the bare count (design 3c).
   const bandRet = (await page.locator('[data-testid="retention-count"]').textContent())?.trim() ?? "";
-  check("dashboard retention count reconciles with /my-carriers band",
-    retText === "0" ? /None/i.test(bandRet) : bandRet.startsWith(retText),
-    { dashboard: retText, band: bandRet });
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+  check("dashboard retention count reconciles with /my-carriers card",
+    bandRet === retText, { dashboard: retText, card: bandRet });
+  await page.goto(`${BASE}/overview`, { waitUntil: "networkidle" });
   await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
 
   // -- Compliance card ------------------------------------------------------
@@ -159,7 +161,7 @@ async function main(): Promise<void> {
   // Captive Encompass in AZ has little/no own-carrier movement — confirms both
   // counts still render as clean integers (a 0 is honest, not broken).
   console.log("\nSparse case: captive Encompass in AZ (expect clean 0s)");
-  await setProfileAndOpen(page, CAPTIVE_ENCOMPASS_AZ, "/");
+  await setProfileAndOpen(page, CAPTIVE_ENCOMPASS_AZ, "/overview");
   await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
   const mc2 = page.locator('[data-testid="ov-card-my-carrier"]');
   check("My Carrier card present in sparse case", (await mc2.count()) === 1);

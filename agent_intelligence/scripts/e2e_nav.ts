@@ -108,7 +108,7 @@ async function main(): Promise<void> {
   // -- Captive --------------------------------------------------------------
   console.log("\n(B) Captive State Farm: nav shows singular 'My Carrier' + Compliance");
   await setProfile(page, CAPTIVE_SF);
-  await gotoWithNav(page, "/");
+  await gotoWithNav(page, "/overview");
   const captiveLabels = await navLabels(page);
   check("nav = Overview, Prospect, Defend, My Carrier, Competitive Positioning, Compliance, Methodology, Profile (8 items)",
     JSON.stringify(captiveLabels) ===
@@ -133,7 +133,7 @@ async function main(): Promise<void> {
   // -- Independent ----------------------------------------------------------
   console.log("\n(C) Independent: nav includes My Carriers in the right position");
   await setProfile(page, INDEPENDENT_SF_TRV);
-  await gotoWithNav(page, "/");
+  await gotoWithNav(page, "/overview");
   const indLabels = await navLabels(page);
   check("nav = Overview, Prospect, Defend, My Carriers, Competitive Positioning, Compliance, Methodology, Profile (8 items)",
     JSON.stringify(indLabels) ===
@@ -145,7 +145,7 @@ async function main(): Promise<void> {
   // -- Active state across routes ------------------------------------------
   console.log("\n(D) Active link tracks pathname (independent profile)");
   const routes: Array<[string, string]> = [
-    ["/", "Overview"],
+    ["/overview", "Overview"],
     ["/prospect", "Prospect"],
     ["/defend", "Defend"],
     ["/my-carriers", "My Carriers"],
@@ -160,47 +160,37 @@ async function main(): Promise<void> {
       active === expectedActive, { path, active });
   }
 
-  // -- ScopeStrip presence + content ---------------------------------------
-  console.log("\n(E) ScopeStrip — captive on /prospect");
+  // -- Top-bar scope chips (replaced ScopeStrip in the AgencyMan refresh) ----
+  console.log("\n(E) Top-bar scope chips — captive on /prospect");
   await setProfile(page, CAPTIVE_SF);
   await gotoWithNav(page, "/prospect");
-  const stripCount = await page.locator('[data-testid="scope-strip"]').count();
-  check("scope strip exists on /prospect", stripCount === 1);
-  const stripLabel = (await page.locator('[data-testid="scope-label"]').textContent())?.trim() ?? "";
-  check("captive label = 'Showing: AZ, NV · vs competitors of State Farm'",
-    /Showing:\s+AZ,\s+NV\s+·\s+vs competitors of State Farm/.test(stripLabel),
-    { stripLabel });
-  const editHref = await page.locator('[data-testid="scope-edit"]').getAttribute("href");
-  check("Edit link href = /setup", editHref === "/setup", { editHref });
+  const chipTexts = await page.$$eval('[data-testid="scope-chip"]',
+    els => els.map(e => (e.textContent ?? "").trim()));
+  check("states chip on /prospect shows 'AZ, NV'",
+    chipTexts.some(t => /AZ,\s*NV/.test(t)), { chipTexts });
+  const titleText = (await page.locator('[data-testid="page-title"]').textContent())?.trim();
+  check("top-bar title = 'Prospect'", titleText === "Prospect", { titleText });
 
-  console.log("\n(F) ScopeStrip — captive on /defend (same suffix)");
+  console.log("\n(F) Top-bar chips — captive on /defend (same states chip)");
   await gotoWithNav(page, "/defend");
-  const defendLabel = (await page.locator('[data-testid="scope-label"]').textContent())?.trim() ?? "";
-  check("captive label on /defend includes 'vs competitors of State Farm'",
-    defendLabel.includes("vs competitors of State Farm"), { defendLabel });
+  const defendChips = await page.$$eval('[data-testid="scope-chip"]',
+    els => els.map(e => (e.textContent ?? "").trim()));
+  check("states chip on /defend shows 'AZ, NV'",
+    defendChips.some(t => /AZ,\s*NV/.test(t)), { defendChips });
 
-  console.log("\n(G) ScopeStrip — independent: no carrier suffix");
+  console.log("\n(G) Top-bar chips — independent /my-carriers lists carriers");
   await setProfile(page, INDEPENDENT_SF_TRV);
-  await gotoWithNav(page, "/prospect");
-  const indStripLabel = (await page.locator('[data-testid="scope-label"]').textContent())?.trim() ?? "";
-  check("independent label = 'Showing: AZ, NV' (no 'vs competitors' suffix)",
-    /^Showing:\s+AZ,\s+NV$/.test(indStripLabel.replace(/^\s*/, "")),
-    { indStripLabel });
-  check("'vs competitors' does NOT appear for independent",
-    !indStripLabel.includes("vs competitors"), { indStripLabel });
-
-  console.log("\n(H) ScopeStrip — independent on /my-carriers (no suffix)");
   await gotoWithNav(page, "/my-carriers");
-  const myCarriersLabel = (await page.locator('[data-testid="scope-label"]').textContent())?.trim() ?? "";
-  check("/my-carriers label = 'Showing: AZ, NV' (no suffix — own carriers always)",
-    /^Showing:\s+AZ,\s+NV$/.test(myCarriersLabel.replace(/^\s*/, "")),
-    { myCarriersLabel });
+  const mcChips = await page.$$eval('[data-testid="scope-chip"]',
+    els => els.map(e => (e.textContent ?? "").trim()));
+  check("carriers chip lists the authorized brands",
+    mcChips.some(t => t.includes("State Farm") && t.includes("Travelers")), { mcChips });
 
-  console.log("\n(I) ScopeStrip absent on /, /setup, /compliance, /methodology");
-  for (const path of ["/", "/setup", "/compliance"]) {
+  console.log("\n(H) Top bar present on /overview, /setup, /compliance");
+  for (const path of ["/overview", "/setup", "/compliance"]) {
     await gotoWithNav(page, path);
-    const stripCount = await page.locator('[data-testid="scope-strip"]').count();
-    check(`no scope strip on ${path}`, stripCount === 0, { path, stripCount });
+    const barCount = await page.locator('[data-testid="top-bar"]').count();
+    check(`top bar on ${path}`, barCount === 1, { path, barCount });
   }
 
   await browser.close();

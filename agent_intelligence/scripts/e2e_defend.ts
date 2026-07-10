@@ -50,8 +50,9 @@ const INDEPENDENT_SF_TRV = {
 // already-in-effect rows now read "In effect N weeks" — the "your customers
 // may shop" framing lives once in the page header, not on every row.
 const DEFEND_BADGE_RE = /(Risk window opens in \d+ weeks|Risk window open now|In effect \d+ weeks|Pending review)/;
-// Defend badges only use red (#FCEBEB / #A32D2D) or amber (#FAEEDA / #633806).
-const DEFEND_BG_COLORS = ["rgb(252, 235, 235)", "rgb(250, 238, 218)"];
+// Defend badges only use red (#FBEAEB fill) or amber (#FCF1E3 fill) — the
+// AgencyMan refresh palette.
+const DEFEND_BG_COLORS = ["rgb(251, 234, 235)", "rgb(252, 241, 227)"];
 
 let failures = 0;
 function check(label: string, cond: boolean, detail?: unknown) {
@@ -87,12 +88,14 @@ async function main(): Promise<void> {
 
   const firstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Threat'", firstHeader === "Threat", { firstHeader });
-  // State + Sub-type were folded into the carrier cell, so the columns are now
-  // Threat · Line · Impact · Effective · Status · Policyholders · Action.
+  // Line/State/Sub-type live inside the Threat cell (design 3b), so the
+  // columns are Threat · Effective · Status · Impact · Action.
   const col2Header = (await page.locator("table thead th").nth(1).textContent())?.trim();
-  check("column 2 header = 'Line'", col2Header === "Line", { col2Header });
-  const col3Header = (await page.locator("table thead th").nth(2).textContent())?.trim();
-  check("column 3 header = 'Impact'", col3Header === "Impact", { col3Header });
+  check("column 2 header = 'Effective'", col2Header === "Effective", { col2Header });
+  const col4Header = (await page.locator("table thead th").nth(3).textContent())?.trim();
+  check("column 4 header = 'Impact'", col4Header === "Impact", { col4Header });
+  const col5Header = (await page.locator("table thead th").nth(4).textContent())?.trim();
+  check("column 5 header = 'Action'", col5Header === "Action", { col5Header });
 
   const brands = await page.$$eval('table tbody tr [data-testid="row-brand"]', cells =>
     cells.map(c => c.textContent?.trim() ?? ""),
@@ -100,9 +103,9 @@ async function main(): Promise<void> {
   check("no row's Threat carrier is 'State Farm'",
     brands.every(b => !b.includes("State Farm")), { brands });
 
-  // Window badges (the 2nd <span> inside the Effective cell — first child is
-  // the date <div>). Effective is now column 4.
-  const badges = await page.$$eval("table tbody tr td:nth-child(4) span", spans =>
+  // Window badges (the <span> inside the Effective cell — the date is a
+  // <div>). Effective is now column 2.
+  const badges = await page.$$eval("table tbody tr td:nth-child(2) span", spans =>
     spans.map(s => ({
       text: s.textContent?.trim() ?? "",
       bg: window.getComputedStyle(s as HTMLElement).backgroundColor,
@@ -163,8 +166,8 @@ async function main(): Promise<void> {
   check("no other-brand row shows the Mine pill",
     otherRows.every(r => !r.hasMine),
     { offending: otherRows.filter(r => r.hasMine).map(r => r.brand) });
-  check("owned rows carry warm tint background",
-    ownedRows.every(r => r.bg.includes("255, 230, 200")));
+  check("owned rows carry the mine tint background",
+    ownedRows.every(r => r.bg.includes("196, 33, 39")));
 
   await browser.close();
 

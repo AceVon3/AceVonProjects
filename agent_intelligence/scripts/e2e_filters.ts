@@ -175,11 +175,11 @@ async function main(): Promise<void> {
   console.log("\n  Narrow lines → Homeowners only");
   await setOnlyLines(page, "Homeowners");
   check("HO-only → 5 rows", (await rowCount(page)) === 5);
-  // Line is now column 2.
-  const lineCells = await page.$$eval("table tbody tr td:nth-child(2)", tds =>
+  // Line lives on the carrier cell secondary line (design 3a).
+  const lineCells = await page.$$eval("table tbody tr td:first-child", tds =>
     tds.map(t => t.textContent?.trim() ?? ""));
   check("every visible row is Homeowners",
-    lineCells.length > 0 && lineCells.every(s => s === "Homeowners"));
+    lineCells.length > 0 && lineCells.every(s => s.includes("Homeowners")));
 
   console.log("\n  Restore lines → both");
   await setOnlyLines(page, "Personal Auto", "Homeowners");
@@ -204,7 +204,7 @@ async function main(): Promise<void> {
   await setSort(page, "impact_desc");
   const firstBrand = await page.locator('table tbody tr [data-testid="row-brand"]').first().textContent();
   // Impact is now column 3.
-  const firstImpact = await page.locator("table tbody tr td:nth-child(3)").first().textContent();
+  const firstImpact = await page.locator("table tbody tr td:nth-child(4)").first().textContent();
   check("first row brand = GEICO",
     firstBrand?.trim() === "GEICO", { firstBrand });
   check("first row impact = +50.9%",
@@ -212,7 +212,7 @@ async function main(): Promise<void> {
 
   // -- Filter persistence: nav away + back resets to default --------------
   console.log("\n  Persistence: nav to / and back → filters reset");
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/overview`, { waitUntil: "networkidle" });
   await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
   await page.goto(`${BASE}/prospect`, { waitUntil: "networkidle" });
   await page.waitForSelector('[data-testid="filter-bar"]', { timeout: 5000 });

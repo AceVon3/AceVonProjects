@@ -22,7 +22,7 @@ const INDEPENDENT_AZ_NV = {
 };
 
 const ROUTES: Array<{ path: string; name: string; profile: unknown | null }> = [
-  { path: "/", name: "overview", profile: INDEPENDENT_AZ_NV },
+  { path: "/overview", name: "overview", profile: INDEPENDENT_AZ_NV },
   { path: "/prospect", name: "prospect", profile: INDEPENDENT_AZ_NV },
   { path: "/defend", name: "defend", profile: INDEPENDENT_AZ_NV },
   { path: "/my-carriers", name: "my-carriers", profile: INDEPENDENT_AZ_NV },

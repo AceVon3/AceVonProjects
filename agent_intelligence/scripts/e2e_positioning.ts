@@ -91,7 +91,7 @@ async function main(): Promise<void> {
   const frame = page.locator('[data-testid="rate-change-frame"]');
   check("rate-change framing band present", (await frame.count()) === 1);
   const frameText = (await frame.textContent()) ?? "";
-  check("framing says 'not prices'", /not prices/i.test(frameText));
+  check("framing says 'not price levels'", /not price levels/i.test(frameText));
 
   // At least one insufficient-data line is present (29 competitor absences).
   check("insufficient-data line(s) present", (await page.locator('[data-testid="insufficient-line"]').count()) >= 1);

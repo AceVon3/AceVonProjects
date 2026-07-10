@@ -32,14 +32,16 @@ async function main(): Promise<void> {
   console.log("=".repeat(72));
 
   // -- (1) Redirect when no profile -----------------------------------------
-  console.log("\n(1) empty localStorage -> visiting / should redirect to /setup");
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+  // "/" is the marketing landing since the route restructure — the app's
+  // profile-gated entry is /overview.
+  console.log("\n(1) empty localStorage -> visiting /overview should redirect to /setup");
+  await page.goto(`${BASE}/overview`, { waitUntil: "networkidle" });
   await page.waitForURL("**/setup", { timeout: 5000 }).catch(() => {});
-  check("URL is /setup after visiting /",
+  check("URL is /setup after visiting /overview",
     new URL(page.url()).pathname === "/setup",
     { url: page.url() });
-  check("page heading is 'Agency Profile'",
-    (await page.locator("h1").first().textContent())?.trim() === "Agency Profile");
+  check("page heading is 'Agent profile'",
+    (await page.locator("h1").first().textContent())?.trim() === "Agent profile");
 
   // -- (2) Fill form, save, route to / --------------------------------------
   console.log("\n(2) fill the form, click Save, expect routing to /");
@@ -108,9 +110,9 @@ async function main(): Promise<void> {
 
   await page.getByRole("button", { name: "Save changes" }).click();
 
-  await page.waitForURL(BASE + "/", { timeout: 5000 }).catch(() => {});
+  await page.waitForURL(BASE + "/overview", { timeout: 5000 }).catch(() => {});
   check("URL is / after Save",
-    new URL(page.url()).pathname === "/",
+    new URL(page.url()).pathname === "/overview",
     { url: page.url() });
 
   const stored = await page.evaluate(() =>
@@ -139,23 +141,23 @@ async function main(): Promise<void> {
   // Give the useEffect a chance to fire — if it redirected, URL would change.
   await page.waitForTimeout(500);
   check("URL is still / after reload",
-    new URL(page.url()).pathname === "/",
+    new URL(page.url()).pathname === "/overview",
     { url: page.url() });
   // The real Overview (shipped in step 8) renders the four OverviewCards
   // instead of the original step-4 placeholder; assert against the actual
   // landed page so this stays green as later steps build on /.
   await page.waitForSelector('[data-testid="ov-cards"]', { timeout: 5000 });
   const overviewHeading = (await page.locator('[data-testid="page-title"]').textContent())?.trim();
-  check("Overview heading present", overviewHeading === "Overview of Rate Change Activity", { overviewHeading });
+  check("Overview top-bar title present", overviewHeading === "Overview", { overviewHeading });
   const cardCount = await page.locator(
-    '[data-testid="ov-card-prospect"], [data-testid="ov-card-defend"], [data-testid="ov-card-my-carrier"], [data-testid="ov-card-compliance"]',
+    '[data-testid="ov-card-prospect"], [data-testid="ov-card-my-carrier"], [data-testid="ov-card-compliance"]',
   ).count();
-  check("Overview renders all four cards", cardCount === 4, { cardCount });
+  check("Overview renders all three summary cards", cardCount === 3, { cardCount });
 
   // -- (4) Clear profile, reload, expect bounce back to /setup --------------
   console.log("\n(4) clear localStorage and reload, expect redirect back to /setup");
   await page.evaluate(() => window.localStorage.clear());
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/overview`, { waitUntil: "networkidle" });
   await page.waitForURL("**/setup", { timeout: 5000 }).catch(() => {});
   check("URL is /setup after clearing profile",
     new URL(page.url()).pathname === "/setup",

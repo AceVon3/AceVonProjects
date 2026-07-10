@@ -87,10 +87,10 @@ async function main(): Promise<void> {
 
   const firstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Competitor'", firstHeader === "Competitor", { firstHeader });
-  // State + Sub-type now live inside the carrier cell, so the columns are
-  // Competitor · Line · Impact · Effective · Status · Policyholders.
-  const col3Header = (await page.locator("table thead th").nth(2).textContent())?.trim();
-  check("column 3 header = 'Impact'", col3Header === "Impact", { col3Header });
+  // Line/State/Sub-type live inside the carrier cell (design 3a), so the
+  // columns are Competitor · Effective · Status · Impact · Policyholders.
+  const col4Header = (await page.locator("table thead th").nth(3).textContent())?.trim();
+  check("column 4 header = 'Impact'", col4Header === "Impact", { col4Header });
 
   const brands = await rowBrands(page);
   check("no row contains 'State Farm' in the Carrier cell",
@@ -120,8 +120,8 @@ async function main(): Promise<void> {
   }
 
   // Policyholders cells: each is either "—" or matches the abbreviation
-  // regex. Policyholders is now column 6.
-  const polCells = await page.$$eval("table tbody tr td:nth-child(6)", tds =>
+  // regex. Policyholders is now column 5 (last).
+  const polCells = await page.$$eval("table tbody tr td:nth-child(5)", tds =>
     tds.map(t => t.textContent?.trim() ?? ""),
   );
   const polRe = /^(—|\d{1,3}(\.\d)?[kM]?)$/;
@@ -201,15 +201,15 @@ async function main(): Promise<void> {
   check("at least one Mine pill is present", expectedMine.some(r => r.hasMine),
     { count: expectedMine.length });
 
-  // Warm tint: the mine-bg color is rgba(255, 230, 200, 0.18). Browser
-  // computed style serializes the same way. Match on substring.
-  const mineRowsHaveTint = expectedMine.every(r => r.bg.includes("255, 230, 200"));
+  // Mine tint: the refresh's mine-bg is rgba(196, 33, 39, 0.03) (subtle red).
+  // Browser computed style serializes the same way. Match on substring.
+  const mineRowsHaveTint = expectedMine.every(r => r.bg.includes("196, 33, 39"));
   const nonMineRowsNoTint = rowsWithPill
     .filter(r => !owned.has(r.brand))
-    .every(r => !r.bg.includes("255, 230, 200"));
-  check("owned rows carry warm tint background", mineRowsHaveTint,
+    .every(r => !r.bg.includes("196, 33, 39"));
+  check("owned rows carry the mine tint background", mineRowsHaveTint,
     { sampleOwnedBg: expectedMine[0]?.bg });
-  check("non-owned rows do NOT carry warm tint", nonMineRowsNoTint);
+  check("non-owned rows do NOT carry the mine tint", nonMineRowsNoTint);
 
   await browser.close();
 
