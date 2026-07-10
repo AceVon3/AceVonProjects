@@ -79,9 +79,9 @@ async function main(): Promise<void> {
   check("10 anchor rows (one per captive cell)", anchors === 10, { anchors });
 
   const t = await tierCounts(page);
-  check("41 comparison rows", t.total === 41, { total: t.total });
+  check("42 comparison rows", t.total === 42, { total: t.total });  // re-keyed 2026-07-10 (B16: +1 comparable in the original-8)
   check("23 higher-confidence rows", t.high === 23, { high: t.high });
-  check("18 thin rows", t.thin === 18, { thin: t.thin });
+  check("19 thin rows", t.thin === 19, { thin: t.thin });  // re-keyed 2026-07-10 (B16)
   check("spread shown on exactly the 23 high rows (none on thin)", t.spread === 23, { spread: t.spread });
 
   const unanchored = await page.locator('[data-testid="unanchored-item"]').count();
@@ -131,7 +131,7 @@ async function main(): Promise<void> {
   console.log("\nIndependent {State Farm, Travelers, Progressive}, all 8 states");
   await open(page, INDEP);
   const ti = await tierCounts(page);
-  check("64 comparison rows", ti.total === 64, { total: ti.total });
+  check("66 comparison rows", ti.total === 66, { total: ti.total });  // re-keyed 2026-07-10 (B16: +2 independent)
   check("30 higher-confidence rows", ti.high === 30, { high: ti.high });
   check("spread shown on exactly the 30 high rows", ti.spread === 30, { spread: ti.spread });
 
