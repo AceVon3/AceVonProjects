@@ -20,12 +20,12 @@ type NavItem = { label: string; href: string; icon: string };
 function buildItems(agentType: AgentType | null): NavItem[] {
   if (agentType === null) {
     return [
-      { label: "Overview", href: "/", icon: "ti-layout-dashboard" },
+      { label: "Overview", href: "/overview", icon: "ti-layout-dashboard" },
       { label: "Methodology", href: "/methodology", icon: "ti-book-2" },
     ];
   }
   const items: NavItem[] = [
-    { label: "Overview", href: "/", icon: "ti-layout-dashboard" },
+    { label: "Overview", href: "/overview", icon: "ti-layout-dashboard" },
     { label: "Prospect", href: "/prospect", icon: "ti-target-arrow" },
     { label: "Defend", href: "/defend", icon: "ti-shield-half" },
     {
@@ -44,7 +44,6 @@ function buildItems(agentType: AgentType | null): NavItem[] {
 }
 
 function isActive(itemHref: string, pathname: string): boolean {
-  if (itemHref === "/") return pathname === "/";
   return pathname === itemHref || pathname.startsWith(`${itemHref}/`);
 }
 
@@ -72,9 +71,9 @@ export default function NavBar(): React.JSX.Element {
       className="bg-ink text-white shrink-0 flex flex-col
                  md:w-[224px] md:min-h-screen md:sticky md:top-0 md:self-start"
     >
-      {/* Brand */}
+      {/* Brand — stays inside the app ("/" is the marketing landing) */}
       <Link
-        href="/"
+        href="/overview"
         className="flex items-center gap-2.5 no-underline text-white shrink-0
                    px-4 h-[56px] md:h-auto md:pt-5 md:pb-4"
       >

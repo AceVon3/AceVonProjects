@@ -232,7 +232,7 @@ export default function ProfileForm(): React.JSX.Element {
       return;
     }
     setErrors({});
-    router.push("/");
+    router.push("/overview");
   }
 
   // ----- presentational primitives ------------------------------------------
