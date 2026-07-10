@@ -35,12 +35,21 @@ function Wordmark() {
   );
 }
 
+// Illustrative sample rows for the hero signal panel. The GEICO NV number is
+// a real premium-weighted rollup from the dataset; the others are
+// representative. Display only — nothing here feeds the app.
+const SAMPLE_SIGNALS = [
+  { brand: "GEICO", meta: "Personal Auto · NV", impact: "+50.9%", dir: "up", tag: "prospect" },
+  { brand: "Travelers", meta: "Homeowners · AZ", impact: "+12.4%", dir: "up", tag: "prospect" },
+  { brand: "Allstate", meta: "Personal Auto · CO", impact: "−4.1%", dir: "down", tag: "defend" },
+] as const;
+
 export default function LandingPage(): React.JSX.Element {
   const navRef = useRef<HTMLElement>(null);
 
-  // Nav border on scroll + reveal-on-scroll, mirroring the sibling
-  // marketingman.ai page. The lp-js <html> class (set by the layout script)
-  // gates the hidden initial state, so content is never lost without JS.
+  // Nav border on scroll + reveal-on-scroll. The lp-js <html> class (set by
+  // the layout script) gates the hidden initial state, so content is never
+  // lost without JS.
   useEffect(() => {
     const nav = navRef.current;
     const onScroll = () => nav?.classList.toggle("scrolled", window.scrollY > 8);
@@ -107,45 +116,71 @@ export default function LandingPage(): React.JSX.Element {
         <section className="hero">
           <div className="hero-glow" aria-hidden="true" />
           <div className="wrap">
-            <span className="pill">
-              <span className="ping" aria-hidden="true" /> Built for insurance agents
-            </span>
-            <h1>
-              Know every rate move in your market —{" "}
-              <span className="accent">before your competitors do.</span>
-            </h1>
-            <p className="lead">
-              AgencyMan.ai turns state rate filings into sales signals: which
-              carriers are raising rates in your states, which are cutting
-              them, and exactly where your carrier stands — filtered to the
-              markets you actually work.
-            </p>
-            <div className="hero-ctas">
-              <Link className="btn btn-primary lg" href="/setup">
-                Set up your agency — free
-              </Link>
-              <Link className="btn btn-ghost lg" href="/methodology">
-                See the methodology
-              </Link>
+            <div>
+              <span className="pill">
+                <span className="ping" aria-hidden="true" /> Built for insurance agents
+              </span>
+              <h1>
+                Know every rate move in your market —{" "}
+                <span className="accent">before your competitors do.</span>
+              </h1>
+              <p className="lead">
+                AgencyMan.ai turns state rate filings into sales signals: which
+                carriers are raising rates in your states, which are cutting
+                them, and exactly where your carrier stands.
+              </p>
+              <div className="hero-ctas">
+                <Link className="btn btn-primary lg" href="/setup">
+                  Set up your agency — free
+                </Link>
+                <Link className="btn btn-ghost lg" href="/methodology">
+                  See the methodology
+                </Link>
+              </div>
+              <p className="microcopy">
+                <b>No account, no credit card.</b> Your profile lives in your browser.
+              </p>
             </div>
-            <p className="microcopy">
-              <b>No account, no credit card.</b> Your profile lives in your browser.
-            </p>
+
+            {/* Product tease — sample signals, styled in landing tokens only */}
+            <div className="signal-panel" aria-hidden="true">
+              <LogoMark className="panel-mark" />
+              <div className="panel-head">
+                <span className="t">This week&apos;s signals</span>
+                <span className="s">filtered to your states</span>
+              </div>
+              {SAMPLE_SIGNALS.map((s) => (
+                <div className="sig-row" key={s.brand}>
+                  <div className="sig-who">
+                    <div className="b">{s.brand}</div>
+                    <div className="m">{s.meta}</div>
+                  </div>
+                  <div className="sig-right">
+                    <span className={`sig-impact ${s.dir}`}>{s.impact}</span>
+                    <span className={`badge ${s.tag}`}>{s.tag}</span>
+                  </div>
+                </div>
+              ))}
+              <div className="panel-foot">
+                Premium-weighted, rolled up per filing — sourced from public
+                state filing systems.
+              </div>
+            </div>
           </div>
         </section>
 
         {/* ===================== PROBLEM ===================== */}
         <section className="band-alt" id="problem">
           <div className="wrap">
-            <span className="eyebrow">The problem</span>
-            <h2 className="sec-title">
-              The rate story in your market is public. Reading it isn&apos;t.
-            </h2>
-            <div className="grid grid-3 mt-sections">
-              <div className="card reveal">
-                <div className="chip neutral">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
-                </div>
+            <div className="sec-head">
+              <span className="eyebrow">The problem</span>
+              <h2 className="sec-title">
+                The rate story in your market is public. Reading it isn&apos;t.
+              </h2>
+            </div>
+            <div className="prob-cols mt-sections">
+              <div className="prob-col reveal">
+                <div className="idx">01</div>
                 <h3>Rate hikes are invisible until the quote</h3>
                 <p>
                   Competitors file rate increases months before customers feel
@@ -153,10 +188,8 @@ export default function LandingPage(): React.JSX.Element {
                   after the window to prospect that book has closed.
                 </p>
               </div>
-              <div className="card reveal">
-                <div className="chip neutral">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
-                </div>
+              <div className="prob-col reveal">
+                <div className="idx">02</div>
                 <h3>Retention risk hides until the cancellation</h3>
                 <p>
                   When a competitor cuts rates in your state, your book gets
@@ -164,10 +197,8 @@ export default function LandingPage(): React.JSX.Element {
                   weeks after you could have called first.
                 </p>
               </div>
-              <div className="card reveal">
-                <div className="chip neutral">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m-18.432 0A8.959 8.959 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" /></svg>
-                </div>
+              <div className="prob-col reveal">
+                <div className="idx">03</div>
                 <h3>The answers are scattered across 50 sites</h3>
                 <p>
                   Filings sit in SERFF portals, comp answers sit in state labor
@@ -179,13 +210,19 @@ export default function LandingPage(): React.JSX.Element {
           </div>
         </section>
 
-        {/* ===================== FEATURES ===================== */}
+        {/* ===================== FEATURES (bento) ===================== */}
         <section id="features">
           <div className="wrap">
-            <span className="eyebrow">What you get</span>
-            <h2 className="sec-title">Six views of your market. One profile.</h2>
-            <div className="grid grid-3 mt-sections">
-              <div className="card reveal">
+            <div className="sec-head">
+              <span className="eyebrow">What you get</span>
+              <h2 className="sec-title">Six views of your market. One profile.</h2>
+              <p className="sec-sub">
+                Prospect and Defend are the core signals — the rest of the
+                platform exists to make them trustworthy and actionable.
+              </p>
+            </div>
+            <div className="bento mt-sections">
+              <div className="card wide reveal">
                 <div className="chip c-red">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
                 </div>
@@ -193,10 +230,11 @@ export default function LandingPage(): React.JSX.Element {
                 <p>
                   Every competitor raising rates {PROSPECT_THRESHOLD}%+ in your
                   licensed states. Those policyholders are about to get a
-                  renewal letter they won&apos;t like — be the call they get first.
+                  renewal letter they won&apos;t like — be the call they get
+                  first, with the filing to back it up.
                 </p>
               </div>
-              <div className="card reveal">
+              <div className="card wide reveal">
                 <div className="chip c-sky">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
                 </div>
@@ -204,7 +242,7 @@ export default function LandingPage(): React.JSX.Element {
                 <p>
                   Carriers cutting rates {DEFEND_THRESHOLD}% or more where you
                   work — the filings that put your book at risk. Get ahead of
-                  the quiet shopping before the cancellation notice.
+                  the quiet shopping before the cancellation notice shows up.
                 </p>
               </div>
               <div className="card reveal">
@@ -213,9 +251,8 @@ export default function LandingPage(): React.JSX.Element {
                 </div>
                 <h3>My Carriers</h3>
                 <p>
-                  Every recent filing from the brands you actually sell, in one
-                  table — so you&apos;re never surprised by your own carrier&apos;s
-                  rate action at an appointment.
+                  Every recent filing from the brands you sell — never be
+                  surprised by your own carrier&apos;s rate action.
                 </p>
               </div>
               <div className="card reveal">
@@ -225,8 +262,7 @@ export default function LandingPage(): React.JSX.Element {
                 <h3>Rate Positioning</h3>
                 <p>
                   Your carrier&apos;s premium-weighted rate change vs. each
-                  competitor, per line and state, with confidence tiers — a
-                  talking point you can actually use in a quote.
+                  competitor, per line and state, with confidence tiers.
                 </p>
               </div>
               <div className="card reveal">
@@ -235,9 +271,8 @@ export default function LandingPage(): React.JSX.Element {
                 </div>
                 <h3>Compliance</h3>
                 <p>
-                  Per-state HR and insurance regulatory resources — labor,
-                  tax, insurance department, workers&apos; comp — with AI summaries
-                  grounded in the official source pages.
+                  50-state HR and insurance regulatory resources, with AI
+                  summaries grounded in the official source pages.
                 </p>
               </div>
               <div className="card reveal">
@@ -246,23 +281,28 @@ export default function LandingPage(): React.JSX.Element {
                 </div>
                 <h3>Methodology</h3>
                 <p>
-                  Every number traces to a public filing. How we roll up
-                  multi-entity filings, weight by premium, and source each
-                  state is documented in the open.
+                  Every number traces to a public filing — rollups, weighting,
+                  and per-state sourcing documented in the open.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ===================== HOW IT WORKS ===================== */}
+        {/* ===================== HOW IT WORKS (timeline) ===================== */}
         <section className="band-alt" id="how">
-          <div className="wrap">
-            <span className="eyebrow">How it works</span>
-            <h2 className="sec-title">From setup to your first signal in minutes.</h2>
-            <div className="steps mt-sections">
-              <div className="step reveal">
-                <div className="num">1</div>
+          <div className="wrap how-grid">
+            <div className="sec-head">
+              <span className="eyebrow">How it works</span>
+              <h2 className="sec-title">From setup to your first signal in minutes.</h2>
+              <p className="sec-sub">
+                One short setup, then the platform does the reading for you —
+                every filing, every carrier, every state you work.
+              </p>
+            </div>
+            <div className="timeline">
+              <div className="tl-item reveal">
+                <div className="tl-num">1</div>
                 <h3>Set up your profile</h3>
                 <p>
                   Captive or independent, the states you&apos;re licensed in, the
@@ -270,17 +310,17 @@ export default function LandingPage(): React.JSX.Element {
                   account to create.
                 </p>
               </div>
-              <div className="step reveal">
-                <div className="num">2</div>
+              <div className="tl-item reveal">
+                <div className="tl-num">2</div>
                 <h3>We filter every filing</h3>
                 <p>
                   Rate filings from state systems and industry data, rolled up
-                  per filing and premium-weighted, then cut down to your
-                  states and your competitive landscape.
+                  per filing and premium-weighted, then cut down to your states
+                  and your competitive landscape.
                 </p>
               </div>
-              <div className="step reveal">
-                <div className="num">3</div>
+              <div className="tl-item reveal">
+                <div className="tl-num">3</div>
                 <h3>Act on the signals</h3>
                 <p>
                   Prospect the households facing hikes, call your at-risk book
@@ -295,9 +335,11 @@ export default function LandingPage(): React.JSX.Element {
         {/* ===================== COVERAGE ===================== */}
         <section id="coverage">
           <div className="wrap">
-            <span className="eyebrow">Coverage</span>
-            <h2 className="sec-title">Built on the public record, at scale.</h2>
-            <div className="stats mt-sections">
+            <div className="sec-head">
+              <span className="eyebrow">Coverage</span>
+              <h2 className="sec-title">Built on the public record, at scale.</h2>
+            </div>
+            <div className="stats-row mt-sections">
               <div className="stat reveal">
                 <div className="num">{COVERED_STATES.length}</div>
                 <div className="label">states with filing data</div>
@@ -318,61 +360,10 @@ export default function LandingPage(): React.JSX.Element {
           </div>
         </section>
 
-        {/* ===================== FREE / COMING ===================== */}
-        <section className="band-alt" id="pricing">
-          <div className="wrap">
-            <span className="eyebrow">Pricing</span>
-            <h2 className="sec-title">Free today. Sharper tomorrow.</h2>
-            <div className="grid grid-2 mt-sections">
-              <div className="card reveal">
-                <div className="plan-head">
-                  <h3>Free</h3>
-                  <span className="tag live">Available now</span>
-                </div>
-                <ul className="plan-list">
-                  {[
-                    "Prospect, Defend, and My Carriers signal tables",
-                    "Rate Positioning vs. every competitor",
-                    "50-state compliance resource hub",
-                    "Full methodology — every number sourced",
-                    "No account, no credit card, no spam",
-                  ].map((item) => (
-                    <li key={item}>
-                      <svg className="check" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="plan-cta">
-                  <Link className="btn btn-primary" href="/setup">Get started free</Link>
-                </div>
-              </div>
-              <div className="card muted reveal">
-                <div className="plan-head">
-                  <h3>Pro</h3>
-                  <span className="tag soon">Coming</span>
-                </div>
-                <ul className="plan-list">
-                  {[
-                    "AI lead optimization",
-                    "Lead vendor normalization",
-                    "Team routing",
-                    "Lifetime-value modeling",
-                    "ROI blueprint for your agency",
-                  ].map((item) => (
-                    <li key={item}>
-                      <svg className="dot-soon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="12" r="3.5" /></svg>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ===================== CTA BAND ===================== */}
+        {/* ===================== CLOSING BAND (navy) ===================== */}
         <section className="cta-band" id="get-started">
+          <div className="band-glow" aria-hidden="true" />
+          <LogoMark className="band-mark" fill="#E8555B" />
           <div className="wrap">
             <h2>Ready to stop guessing which households to call?</h2>
             <p>

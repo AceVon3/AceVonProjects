@@ -8,9 +8,12 @@
      #E8555B  soft red    (the red the logo uses on dark navy)
      #14142B  brand navy  (wordmark / dark-lockup background)
    Neutrals are tints of the navy. Deliberately does NOT
-   reuse the app's tokens — the page derives from the logo,
-   and its layout rhythm mirrors the sibling site
-   marketingman.ai.
+   reuse the app's tokens — the page derives from the logo.
+   Shares a family feel with marketingman.ai (tone, warmth,
+   red-as-signal) but its own skeleton: left-aligned editorial
+   headers, asymmetric hero with a signal panel, numbered
+   problem columns, bento feature grid, vertical timeline,
+   navy closing band.
 
    Everything is scoped under .lp; theming is driven by
    html[data-lp-theme], set before paint by the layout's
@@ -264,52 +267,61 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   color: var(--ink);
 }
 
-/* ---------- Section scaffolding ---------- */
+/* ---------- Section scaffolding ----------
+   Left-aligned editorial headers: red kicker rule + eyebrow,
+   title and sub left-aligned (deliberately not centered). */
 .lp section {
-  padding: 92px 0;
+  padding: 96px 0;
 }
 .lp .band-alt {
   background: var(--bg-alt);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
+.lp .sec-head {
+  max-width: 620px;
+}
 .lp .eyebrow {
-  display: block;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-size: 0.74rem;
   font-weight: 700;
-  color: var(--ink-mute);
-  margin-bottom: 14px;
+  color: var(--brand);
+  margin-bottom: 16px;
+}
+.lp .eyebrow::before {
+  content: "";
+  width: 26px;
+  height: 2px;
+  background: var(--brand);
+  border-radius: 2px;
 }
 .lp .sec-title {
-  text-align: center;
   font-size: clamp(1.7rem, 3.4vw, 2.35rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.12;
   text-wrap: balance;
-  margin: 0 auto 8px;
-  max-width: 22ch;
+  margin: 0 0 12px;
   color: var(--ink);
 }
 .lp .sec-sub {
-  text-align: center;
   color: var(--ink-mute);
-  max-width: 52ch;
-  margin: 0 auto;
+  margin: 0;
   font-size: 1.02rem;
+  max-width: 54ch;
 }
 .lp .mt-sections {
-  margin-top: 56px;
+  margin-top: 52px;
 }
 
-/* ---------- Hero ---------- */
+/* ---------- Hero (asymmetric two-column) ---------- */
 .lp .hero {
   position: relative;
-  padding: 104px 0 96px;
-  text-align: center;
+  padding: 96px 0 100px;
   overflow: hidden;
 }
 .lp .hero-glow {
@@ -318,20 +330,25 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   z-index: 0;
   pointer-events: none;
   background: radial-gradient(
-      60% 55% at 50% -8%,
-      color-mix(in srgb, var(--brand) 16%, transparent),
+      50% 60% at 12% 0%,
+      color-mix(in srgb, var(--brand) 14%, transparent),
       transparent 70%
     ),
     radial-gradient(
-      40% 40% at 85% 8%,
-      color-mix(in srgb, var(--ic-sky) 10%, transparent),
+      42% 48% at 96% 88%,
+      color-mix(in srgb, var(--ic-sky) 9%, transparent),
       transparent 70%
     );
 }
 .lp .hero .wrap {
   position: relative;
   z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: 56px;
+  align-items: center;
 }
+
 .lp .pill {
   display: inline-flex;
   align-items: center;
@@ -363,29 +380,27 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
 }
 
 .lp h1 {
-  font-size: clamp(2.3rem, 5.4vw, 3.7rem);
+  font-size: clamp(2.2rem, 4.6vw, 3.4rem);
   font-weight: 800;
   letter-spacing: -0.025em;
-  line-height: 1.06;
+  line-height: 1.07;
   text-wrap: balance;
-  margin: 26px auto 20px;
-  max-width: 17ch;
+  margin: 24px 0 18px;
   color: var(--ink);
 }
 .lp h1 .accent {
   color: var(--brand);
 }
 .lp .lead {
-  font-size: clamp(1.05rem, 1.6vw, 1.24rem);
+  font-size: clamp(1.02rem, 1.5vw, 1.18rem);
   color: var(--ink-soft);
-  max-width: 50ch;
-  margin: 0 auto 34px;
+  max-width: 46ch;
+  margin: 0 0 32px;
   line-height: 1.6;
 }
 .lp .hero-ctas {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
 }
@@ -399,18 +414,145 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   font-weight: 650;
 }
 
-/* ---------- Cards grid ---------- */
-.lp .grid {
-  display: grid;
-  gap: 22px;
+/* signal panel — illustrative product tease, landing tokens only */
+.lp .signal-panel {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-card);
+  padding: 18px;
+  transform: rotate(0.6deg);
 }
-.lp .grid-3 {
-  grid-template-columns: repeat(3, 1fr);
+.lp .signal-panel .panel-mark {
+  position: absolute;
+  right: -26px;
+  top: -34px;
+  width: 96px;
+  height: 96px;
+  opacity: 0.1;
+  pointer-events: none;
 }
-.lp .grid-2 {
-  grid-template-columns: repeat(2, 1fr);
+.lp .panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 6px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.lp .panel-head .t {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+.lp .panel-head .s {
+  font-size: 0.76rem;
+  color: var(--ink-mute);
+}
+.lp .sig-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 6px;
+  border-bottom: 1px solid var(--line);
+}
+.lp .sig-row:last-child {
+  border-bottom: 0;
+}
+.lp .sig-who {
+  min-width: 0;
+}
+.lp .sig-who .b {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.lp .sig-who .m {
+  font-size: 0.78rem;
+  color: var(--ink-mute);
+  margin-top: 1px;
+}
+.lp .sig-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+.lp .sig-impact {
+  font-weight: 800;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.lp .sig-impact.up {
+  color: var(--brand);
+}
+.lp .sig-impact.down {
+  color: var(--ic-sky);
+}
+.lp .badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+.lp .badge.prospect {
+  background: var(--brand-tint);
+  color: var(--brand);
+}
+.lp .badge.defend {
+  background: color-mix(in srgb, var(--ic-sky) 13%, var(--card));
+  color: var(--ic-sky);
+}
+.lp .panel-foot {
+  padding: 12px 6px 2px;
+  border-top: 1px solid var(--line);
+  font-size: 0.76rem;
+  color: var(--ink-mute);
 }
 
+/* ---------- Problem — numbered borderless columns ---------- */
+.lp .prob-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 44px;
+}
+.lp .prob-col {
+  border-top: 2px solid var(--line-strong);
+  padding-top: 22px;
+}
+.lp .prob-col .idx {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--brand);
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.lp .prob-col h3 {
+  margin: 0 0 8px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.lp .prob-col p {
+  margin: 0;
+  color: var(--ink-mute);
+  font-size: 0.95rem;
+  line-height: 1.62;
+}
+
+/* ---------- Features — bento grid ---------- */
+.lp .bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
 .lp .card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -418,12 +560,18 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   padding: 26px;
   box-shadow: var(--shadow-card);
 }
+.lp .bento .card.wide {
+  grid-column: span 2;
+}
 .lp .card h3 {
   margin: 0 0 8px;
   font-size: 1.08rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--ink);
+}
+.lp .bento .card.wide h3 {
+  font-size: 1.22rem;
 }
 .lp .card p {
   margin: 0;
@@ -469,54 +617,89 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   color: var(--ic-amber);
 }
 
-/* ---------- Steps ---------- */
-.lp .steps {
+/* ---------- How it works — vertical timeline ---------- */
+.lp .how-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 56px;
+  align-items: start;
 }
-.lp .step {
-  text-align: center;
+.lp .how-grid .sec-head {
+  position: sticky;
+  top: 108px;
 }
-.lp .step .num {
-  width: 52px;
-  height: 52px;
+.lp .timeline {
+  display: grid;
+  gap: 0;
+}
+.lp .tl-item {
+  position: relative;
+  padding: 0 0 36px 58px;
+}
+.lp .tl-item:last-child {
+  padding-bottom: 0;
+}
+/* connecting rail */
+.lp .tl-item::before {
+  content: "";
+  position: absolute;
+  left: 19px;
+  top: 42px;
+  bottom: 0;
+  width: 2px;
+  background: var(--line-strong);
+}
+.lp .tl-item:last-child::before {
+  display: none;
+}
+.lp .tl-num {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--brand);
   color: #fff;
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 1rem;
   display: grid;
   place-items: center;
-  margin: 0 auto 18px;
   box-shadow: var(--shadow-sm);
 }
-.lp .step h3 {
-  margin: 0 0 8px;
+.lp .tl-item h3 {
+  margin: 6px 0 8px;
   font-size: 1.06rem;
   font-weight: 700;
   color: var(--ink);
 }
-.lp .step p {
-  margin: 0 auto;
-  max-width: 34ch;
+.lp .tl-item p {
+  margin: 0;
   color: var(--ink-mute);
   font-size: 0.95rem;
+  max-width: 52ch;
 }
 
-/* ---------- Coverage stats ---------- */
-.lp .stats {
+/* ---------- Coverage — stats with hairline dividers ---------- */
+.lp .stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 22px;
-  text-align: center;
+}
+.lp .stat {
+  padding: 8px 28px;
+  border-left: 1px solid var(--line-strong);
+}
+.lp .stat:first-child {
+  border-left: 0;
+  padding-left: 0;
 }
 .lp .stat .num {
-  font-size: clamp(1.9rem, 3.4vw, 2.5rem);
+  font-size: clamp(2rem, 3.6vw, 2.7rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--brand);
   line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 .lp .stat .label {
   margin-top: 6px;
@@ -524,77 +707,36 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   font-size: 0.92rem;
 }
 
-/* ---------- Plans (free vs coming) ---------- */
-.lp .plan-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-.lp .plan-head h3 {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-}
-.lp .tag {
-  font-size: 0.74rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 4px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-.lp .tag.live {
-  background: color-mix(in srgb, var(--ic-emerald) 14%, var(--card));
-  color: var(--ic-emerald);
-}
-.lp .tag.soon {
-  background: color-mix(in srgb, var(--ink) 7%, var(--card));
-  color: var(--ink-mute);
-}
-.lp .plan-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-}
-.lp .plan-list li {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  color: var(--ink-soft);
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-.lp .plan-list svg {
-  flex: 0 0 auto;
-  margin-top: 3px;
-}
-.lp .plan-list .check {
-  color: var(--ic-emerald);
-}
-.lp .plan-list .dot-soon {
-  color: var(--ink-mute);
-}
-.lp .card.muted {
-  background: color-mix(in srgb, var(--card) 60%, var(--bg-alt));
-}
-.lp .card .plan-cta {
-  margin-top: 20px;
-}
-
-/* ---------- CTA band ---------- */
+/* ---------- Closing band — brand navy (the dark lockup) ---------- */
 .lp .cta-band {
-  background: linear-gradient(
-    135deg,
-    var(--brand),
-    color-mix(in srgb, var(--brand) 78%, #000)
+  position: relative;
+  background: var(--navy);
+  overflow: hidden;
+}
+.lp .cta-band .band-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    55% 70% at 85% 20%,
+    rgba(232, 85, 91, 0.16),
+    transparent 70%
   );
+}
+.lp .cta-band .band-mark {
+  position: absolute;
+  right: -70px;
+  bottom: -90px;
+  width: 340px;
+  height: 340px;
+  opacity: 0.07;
+  pointer-events: none;
+}
+.lp .cta-band .wrap {
+  position: relative;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
 }
 .lp .cta-band h2 {
@@ -606,29 +748,31 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   text-wrap: balance;
 }
 .lp .cta-band p {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(242, 242, 247, 0.85);
   max-width: 52ch;
   margin: 0 auto 30px;
   font-size: 1.05rem;
 }
+/* always the soft red on navy, both themes — straight from the dark lockup */
 .lp .cta-band .btn-primary {
-  background: #fff;
-  color: var(--brand);
+  background: #e8555b;
+  color: #fff;
 }
 .lp .cta-band .btn-primary:hover {
-  background: #f3f4f6;
+  background: #ed6b70;
 }
 .lp .cta-band .microcopy {
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(242, 242, 247, 0.62);
 }
 .lp .cta-band .microcopy b {
-  color: #fff;
+  color: rgba(242, 242, 247, 0.92);
 }
 
 /* ---------- Footer ---------- */
 /* Always the brand navy — the dark lockup's own background. */
 .lp footer {
   background: var(--navy);
+  border-top: 1px solid rgba(242, 242, 247, 0.1);
   color: #a9a9c0;
   padding: 40px 0;
 }
@@ -697,24 +841,50 @@ html.lp-js .lp .reveal.in {
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 860px) {
-  .lp .grid-3,
-  .lp .grid-2,
-  .lp .steps {
+@media (max-width: 960px) {
+  .lp .hero .wrap {
     grid-template-columns: 1fr;
+    gap: 44px;
   }
-  .lp .steps {
-    gap: 34px;
+  .lp .signal-panel {
+    max-width: 480px;
+    transform: none;
   }
+  .lp .how-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .lp .how-grid .sec-head {
+    position: static;
+  }
+}
+@media (max-width: 860px) {
   .lp section {
     padding: 72px 0;
   }
   .lp .hero {
-    padding: 80px 0 76px;
+    padding: 72px 0 76px;
   }
-  .lp .stats {
-    grid-template-columns: repeat(2, 1fr);
+  .lp .prob-cols {
+    grid-template-columns: 1fr;
     gap: 30px;
+  }
+  .lp .bento {
+    grid-template-columns: 1fr 1fr;
+  }
+  .lp .bento .card.wide {
+    grid-column: span 2;
+  }
+  .lp .stats-row {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 30px;
+  }
+  .lp .stat {
+    padding: 8px 22px;
+  }
+  .lp .stat:nth-child(3) {
+    border-left: 0;
+    padding-left: 0;
   }
 }
 @media (max-width: 560px) {
@@ -723,6 +893,12 @@ html.lp-js .lp .reveal.in {
   }
   .lp .hero-ctas .btn {
     width: 100%;
+  }
+  .lp .bento {
+    grid-template-columns: 1fr;
+  }
+  .lp .bento .card.wide {
+    grid-column: auto;
   }
   .lp .foot-inner {
     flex-direction: column;
