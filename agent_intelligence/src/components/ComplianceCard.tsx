@@ -80,16 +80,16 @@ export default function ComplianceCard({
       data-state={state}
       data-topic={topic}
       data-variant={isComingSoon ? "coming-soon" : "full"}
-      className="border border-hairline border-line rounded-xl p-4 flex flex-col bg-surface"
+      className="bg-surface border border-card-line rounded-card shadow-card p-5 flex flex-col"
     >
       {/* Header: topic tag (left) + state badge (right) */}
-      <div className="flex items-center justify-between mb-2.5">
+      <div className="flex items-center justify-between mb-3">
         <span
-          className={`${TOPIC_TAG_CLASS[topic]} text-11 px-2 py-0.5 rounded-full font-medium`}
+          className={`${TOPIC_TAG_CLASS[topic]} text-11 px-2.5 py-0.5 rounded-full font-semibold`}
         >
           {tagLabel}
         </span>
-        <span className="text-11 px-[7px] py-0.5 rounded-md border border-hairline border-line-2 text-ink-2">
+        <span className="text-11 px-[7px] py-0.5 rounded-md border border-line-2 text-ink-2">
           {state}
         </span>
       </div>
@@ -97,7 +97,7 @@ export default function ComplianceCard({
       {/* Title */}
       <h3
         className={[
-          "text-15 font-medium mt-0 mb-2 leading-[1.35]",
+          "text-15 font-[650] mt-0 mb-2 leading-[1.35]",
           isComingSoon ? "text-ink-3" : "text-ink",
         ].join(" ")}
       >
@@ -119,7 +119,7 @@ export default function ComplianceCard({
       {/* Sources block — always rendered when at least one URL is mapped */}
       {sources.length > 0 && (
         <>
-          <div className="text-11 text-ink-3 uppercase tracking-wider04 border-t border-hairline border-line pt-2.5 mb-1.5">
+          <div className="text-11 text-ink-3 uppercase tracking-wider06 border-t border-line pt-3 mb-1.5">
             Sources
           </div>
           {sources.map(url => (
@@ -130,8 +130,8 @@ export default function ComplianceCard({
               rel="noopener noreferrer"
               data-testid="source-link"
               className={[
-                "text-12 flex items-center gap-[5px] mb-[3px] no-underline",
-                isComingSoon ? "text-ink-3" : "text-blue-text",
+                "text-12 font-semibold flex items-center gap-[5px] mb-[3px] no-underline hover:underline",
+                isComingSoon ? "text-ink-3" : "text-brand-red",
               ].join(" ")}
             >
               <span aria-hidden className="text-11">↗</span>

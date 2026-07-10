@@ -120,16 +120,17 @@ function BriefingAccordionItem({
           aria-expanded={isOpen}
           aria-controls={contentId}
           onClick={() => onToggle(id)}
-          className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left cursor-pointer bg-transparent border-none hover:bg-surface-2/60 transition-colors"
+          className="w-full flex items-center justify-between gap-3 px-6 py-4 text-left cursor-pointer bg-transparent border-none hover:bg-surface-2 transition-colors"
         >
           <span className="flex items-center gap-2 flex-wrap">
-            <span className="text-13 font-medium text-ink">{sec.label}</span>
+            <span className="text-15 font-[650] text-ink">{sec.label}</span>
             {sec.salaryRisk && (
               <span
                 data-testid="salary-caution-pill"
-                className="inline-flex items-center gap-1 text-10 font-medium rounded-full px-2 py-px bg-amber-fill text-amber-text"
+                className="inline-flex items-center gap-1 text-10 font-semibold rounded-full px-2 py-0.5 bg-amber-fill text-amber-text"
               >
-                ⚠ affects exempt status
+                <i className="ti ti-alert-triangle text-11" aria-hidden />
+                affects exempt status
               </span>
             )}
           </span>
@@ -146,18 +147,18 @@ function BriefingAccordionItem({
         aria-labelledby={headerId}
         data-testid="briefing-section-content"
         hidden={!isOpen}
-        className="px-4 pb-3.5 pt-0"
+        className="px-6 pb-4 pt-0"
       >
         {grounded ? (
-          <p className="text-13 text-ink-2 m-0 leading-[1.5]">{s!.summary}</p>
+          <p className="text-[13.5px] text-ink-mid m-0 leading-[1.65]">{s!.summary}</p>
         ) : (
           <p className="text-12 text-ink-3 m-0">Summary coming soon for this topic.</p>
         )}
 
         {/* Prominent per-section "as of" so staleness is visible per number. */}
         {grounded && s!.last_checked && (
-          <div data-testid="section-asof" className="mt-1.5 text-11 text-ink-3">
-            <span className="font-medium text-ink-2">Figures as of {s!.last_checked}</span>
+          <div data-testid="section-asof" className="mt-2 text-12 text-ink-3">
+            <span className="font-bold text-ink-mid">Figures as of {s!.last_checked}</span>
             {" "}— confirm current numbers at the source.
           </div>
         )}
@@ -184,7 +185,7 @@ function BriefingAccordionItem({
         ) : null}
 
         {grounded && (
-          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-11 text-ink-3">
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-12 text-ink-3">
             {s!.sources.map(u => (
               <a
                 key={u}
@@ -193,7 +194,7 @@ function BriefingAccordionItem({
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="briefing-source"
-                className="text-blue-text no-underline hover:underline"
+                className="text-brand-red font-semibold no-underline hover:underline"
               >
                 {sourceLabel(u)}
               </a>
@@ -225,10 +226,10 @@ function ReadyBriefing({
       data-testid="briefing-state"
       data-state={state}
       data-ready="true"
-      className="rounded-lg border border-hairline border-line overflow-hidden mb-4"
+      className="bg-surface border border-card-line rounded-card shadow-card overflow-hidden mb-4"
     >
-      <div className="bg-surface-2 border-b border-hairline border-line-2 px-4 py-2.5">
-        <h2 className="text-13 font-medium m-0 text-ink">
+      <div className="bg-surface-2 border-b border-line px-6 py-3">
+        <h2 className="text-14 font-bold m-0 text-ink">
           {stateName(state)} <span className="text-ink-3 font-normal">· your office briefing</span>
         </h2>
       </div>
@@ -256,7 +257,7 @@ function ComingSoonBriefing({ state }: { state: string }): React.JSX.Element {
       data-testid="briefing-state"
       data-state={state}
       data-ready="false"
-      className="rounded-lg border border-hairline border-line px-4 py-3 mb-4"
+      className="bg-surface border border-card-line rounded-card shadow-card px-6 py-3.5 mb-4"
     >
       <h2 className="text-13 font-medium m-0 text-ink">{stateName(state)}</h2>
       <p className="text-12 text-ink-3 m-0 mt-1">
@@ -282,9 +283,9 @@ export default function ComplianceBriefing({
           prominent like Positioning's band; never collapsible, not dismissible. */}
       <div
         data-testid="briefing-disclaimer"
-        className="sticky top-0 z-10 mb-4 rounded-md bg-amber-fill text-amber-text border border-hairline border-line px-4 py-3 text-13 leading-[1.45]"
+        className="sticky top-0 z-10 mb-4 rounded-tile bg-amber-fill text-amber-band border border-amber-border px-[18px] py-3 text-13 leading-[1.5]"
       >
-        <span className="font-medium">This summarizes what the rules say — verify with a qualified professional.</span>{" "}
+        <span className="font-bold">This summarizes what the rules say — verify with a qualified professional.</span>{" "}
         Not legal or tax advice. Figures shown are as of the last update date on each section and may be outdated — confirm current numbers on the official source pages linked below before relying on them.
       </div>
 

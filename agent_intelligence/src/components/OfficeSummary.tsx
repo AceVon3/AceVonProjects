@@ -40,16 +40,16 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
       <section
         data-testid="office-summary"
         data-variant="upgrade"
-        className="rounded-lg border border-hairline border-line bg-surface px-4 py-4 mb-6"
+        className="bg-surface border border-card-line rounded-card shadow-card px-5 py-4 mb-6"
       >
-        <h2 className="text-13 font-medium m-0 text-ink">Finish your office profile</h2>
+        <h2 className="text-14 font-[650] m-0 text-ink">Finish your office profile</h2>
         <p className="text-13 text-ink-2 m-0 mt-1 leading-[1.5]">
           We added two quick questions — how you pay staff and how many work
           remotely — to tailor this page to your office.{" "}
           <Link
             href="/setup"
             data-testid="office-summary-upgrade-link"
-            className="text-blue-text hover:underline font-medium"
+            className="text-brand-red hover:underline font-semibold"
           >
             Add them in your profile →
           </Link>
@@ -70,16 +70,16 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
     <section
       data-testid="office-summary"
       data-variant="ready"
-      className="rounded-lg border border-hairline border-line overflow-hidden mb-6"
+      className="bg-surface border border-card-line rounded-card shadow-card overflow-hidden mb-6"
     >
-      <div className="bg-surface-2 border-b border-hairline border-line-2 px-4 py-2.5">
-        <h2 className="text-13 font-medium m-0 text-ink">Your office at a glance</h2>
+      <div className="bg-surface-2 border-b border-line px-6 py-3">
+        <h2 className="text-14 font-[650] m-0 text-ink">Your office at a glance</h2>
       </div>
 
       {/* Factual recap — the agent's own inputs read back. No legal claims. */}
       <div
         data-testid="office-summary-recap"
-        className="px-4 py-3.5 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3"
+        className="px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3"
       >
         <Fact label="Office location" value={stateName(primaryState)} />
         <Fact
@@ -110,7 +110,7 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
           conclusion. */}
       <div
         data-testid="office-summary-relevance"
-        className="border-t border-hairline border-line px-4 py-3.5"
+        className="border-t border-line px-6 py-4"
       >
         <h3 className="text-11 uppercase tracking-wider04 text-ink-2 m-0 mb-2">
           Worth reviewing for your office
@@ -148,7 +148,7 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
                         onJump(anchorId);
                       }
                     }}
-                    className="text-blue-text hover:underline"
+                    className="text-brand-red hover:underline"
                   >
                     {pt.text}
                   </a>
@@ -199,7 +199,7 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
                               onJump(anchorId);
                             }
                           }}
-                          className="text-blue-text hover:underline"
+                          className="text-brand-red hover:underline"
                         >
                           {line.text}
                         </a>
@@ -226,7 +226,7 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
       {flag && (
         <div
           data-testid="remote-out-of-state-flag"
-          className="m-4 mt-0 rounded-md bg-amber-fill text-amber-text border-2 border-amber-text px-4 py-3 text-13 leading-[1.5]"
+          className="m-6 mt-0 rounded-tile bg-amber-fill text-amber-band border-2 border-amber-text px-4 py-3 text-13 leading-[1.5]"
         >
           <div className="font-medium mb-1">⚠ Out-of-state remote workers</div>
           You have remote employees in{" "}

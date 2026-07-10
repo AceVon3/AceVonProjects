@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import ComplianceBriefing from "@/components/ComplianceBriefing";
 import ComplianceCard from "@/components/ComplianceCard";
 import OfficeSummary from "@/components/OfficeSummary";
+import TopBar from "@/components/TopBar";
 import {
   COMPLIANCE_SUMMARIES,
   ComplianceSummary,
@@ -98,7 +99,8 @@ export default function CompliancePage(): React.JSX.Element {
   if (phase === "loading") {
     return (
       <main className="min-h-screen bg-canvas">
-        <div className="max-w-[1100px] mx-auto px-4 py-10 text-13 text-ink-3">
+        <TopBar title="Compliance" />
+        <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px] text-13 text-ink-3">
           Loading…
         </div>
       </main>
@@ -107,16 +109,20 @@ export default function CompliancePage(): React.JSX.Element {
 
   return (
     <main className="min-h-screen bg-canvas">
-      <div className="max-w-[1100px] mx-auto px-4 py-8">
-        <div className="mb-3">
-          <h1 className="text-18 font-medium m-0 text-ink" data-testid="page-title">
-            Compliance
-          </h1>
-          <p className="text-13 mt-1 m-0 text-ink-2">
-            HR & insurance regulations for the states your team works in:{" "}
-            {renderedStates.join(", ") || "—"}.
-          </p>
-        </div>
+      <TopBar
+        title="Compliance"
+        chips={
+          renderedStates.length > 0
+            ? [{ icon: "map-pin", label: renderedStates.join(", ") }]
+            : []
+        }
+      />
+
+      <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+        <p className="text-13 text-ink-2 max-w-[640px] mt-0 mb-5 leading-relaxed">
+          HR & insurance regulations for the states your team works in:{" "}
+          {renderedStates.join(", ") || "—"}.
+        </p>
 
         {/* Office summary — at the very top: a factual recap of the agent's
             own inputs, relevance-pointing (never a determination), and the
@@ -139,11 +145,11 @@ export default function CompliancePage(): React.JSX.Element {
         )}
 
         {/* All topics — the comprehensive source-linked reference grid. */}
-        <div className="mb-3">
-          <h2 className="text-13 uppercase tracking-wider04 font-medium m-0 text-ink-2">
+        <div className="mb-3.5">
+          <h2 className="text-19 font-[650] tracking-tight02 m-0 text-ink">
             All compliance topics
           </h2>
-          <p className="text-12 mt-1 m-0 text-ink-3">
+          <p className="text-13 mt-1 m-0 text-ink-3">
             Every tracked topic for your covered states:{" "}
             {renderedStates.join(", ") || "—"}.
           </p>
@@ -152,21 +158,21 @@ export default function CompliancePage(): React.JSX.Element {
         {/* Disclaimer banner — non-optional for a compliance feature. */}
         <div
           data-testid="disclaimer-banner"
-          className="bg-amber-fill text-amber-text text-12 px-3 py-[9px] rounded-lg mb-4"
+          className="bg-amber-fill text-amber-band border border-amber-border text-12 px-[18px] py-2.5 rounded-tile mb-4 leading-normal"
         >
           AI-generated summaries of official sources, which may be incomplete or out
           of date. Always verify on the official site. This is not legal advice.
         </div>
 
         {renderedStates.length === 0 ? (
-          <div className="text-13 text-ink-3 px-4 py-6 text-center border border-hairline border-line rounded-lg">
+          <div className="text-13 text-ink-2 px-5 py-8 text-center bg-surface border border-card-line rounded-card shadow-card">
             None of your employee work/live states are currently covered by our
             data. Coverage is expanding — check back as more states come online.
           </div>
         ) : (
           <div
             data-testid="compliance-grid"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             {renderedStates.flatMap(state =>
               TOPIC_ORDER.map(topic => {
