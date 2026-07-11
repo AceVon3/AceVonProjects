@@ -1,5 +1,22 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-11 — NE + MD IMPORTED (31st/32nd). 32-STATE BASELINE. OK IN FLIGHT.**
+> NE 193 rows (327/327; CLEANEST CROSS-CHECK YET — 19th point: value-agr 83/83
+> = 100% 4th-perfect, 0 material flags, first nothing-to-adjudicate state; B9
+> tripwire home state 0 leaks) + MD 206 rows (546/546, BIGGEST state 1,441
+> universe; 20th point: value-agr 69/69 = 100% 5th-perfect, 0 flags). Import
+> gate ALL PASS (40 others byte-identical; permanents intact; +45/+35 active).
+> **NEW BASELINE (SUPERSEDES 30-state 4,774/2,954/934/`9ad92946`): 32 states,
+> raw 5,173 / rolled 3,211 / active@2026-06-11 1,014 / db `cb6b4314`.** Gates:
+> tsc + 8/8 verify + worktree build + 7 route-stable e2e. PROD verified.
+> The 6 route-dependent e2e remain stale vs the user's UI refresh (carried).
+> - **OK (33rd arc) IN FLIGHT via runner:** universe 1,200 / 415 targets
+>   (sweep 22/27 + 5-term retry 5/5); bursts on the RESTORED 15-min cadence
+>   (user call after MD's late-night depression oscillation on 5-min).
+> - Remaining interim after OK: AR 218, KY 220, WI 225, PA 236, MI 245,
+>   IN 256, MN 274, MO 305, TN 323 (+ CA/NY/TX permanent).
+> - Backlog carried: B17, NEW_PRODUCT_RE refinement, route-e2e re-key.
+
 > **2026-07-10 (cont.) — IA + SC IMPORTED (29th/30th states). 30-STATE BASELINE.**
 > The overnight runner's two arcs imported in one gated pass: IA 195 rows
 > (429/429, biggest state 1,184 universe; 17th cross-check point: value-agr
