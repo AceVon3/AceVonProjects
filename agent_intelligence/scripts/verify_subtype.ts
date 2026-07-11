@@ -17,6 +17,8 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-07-11 (2nd): OK interim->scraped (+56 active = 1070; incl.
+// the B18-recovered Safeco +8.0%/7,566 Prospect). Prior 1014 note:
 // Re-keyed 2026-07-11: NE/MD interim->scraped (+80 active = 1014; deltas
 // exactly NE+MD). Prior 934 note:
 // Re-keyed 2026-07-10 (2nd): IA/SC interim->scraped (+76 active = 934;
@@ -41,17 +43,17 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 420,
-  "19.0000 Personal Auto Combinations": 154,
-  "19.0002 Motorcycle": 51,
-  "19.0003 Recreational Vehicle (RV)": 30,
+  "19.0001 Private Passenger Auto (PPA)": 443,
+  "19.0000 Personal Auto Combinations": 160,
+  "19.0002 Motorcycle": 52,
+  "19.0003 Recreational Vehicle (RV)": 31,
   "19.0004 Other": 10,
-  "04.0003 Owner Occupied Homeowners": 71,
-  "04.0000 Homeowners Sub-TOI Combinations": 223,
+  "04.0003 Owner Occupied Homeowners": 76,
+  "04.0000 Homeowners Sub-TOI Combinations": 241,
   "04.0001 Condominium Homeowners": 19,
   "04.0005 Other Homeowners": 14,
-  "04.0004 Tenant Homeowners": 9,
-  "04.0002 Mobile Homeowners": 13,
+  "04.0004 Tenant Homeowners": 10,
+  "04.0002 Mobile Homeowners": 14,
 };
 
 console.log("=".repeat(72));
@@ -72,7 +74,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1014", rows.length, 1014);
+check("active rolled filings = 1070", rows.length, 1070);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 
