@@ -24,6 +24,7 @@ import {
   NO_WAGE_INCOME_TAX_STATES,
   REGISTRATION_LINKS,
 } from "../src/lib/stateRegistration";
+import { ECONOMIC_NEXUS } from "../src/lib/economicNexus";
 import type { AgentProfile } from "../src/lib/profile";
 
 let failures = 0;
@@ -205,6 +206,22 @@ check("registration links are well-formed (https; no-tax states have no withhold
 check("registration links cover all 50 states",
   Object.keys(REGISTRATION_LINKS).length === 50,
   { n: Object.keys(REGISTRATION_LINKS).length });
+
+console.log("\nEconomic-nexus threshold data (setup panel):");
+const nexusProblems: string[] = [];
+const BASES = new Set(["factor-presence", "gross-receipts", "doing-business", "no-income-tax"]);
+for (const [code, info] of Object.entries(ECONOMIC_NEXUS)) {
+  if (!BASES.has(info.basis)) nexusProblems.push(`${code}: bad basis`);
+  if (!/^https:\/\//.test(info.source)) nexusProblems.push(`${code}: bad source`);
+  if (/justia|cornell|findlaw|nolo/i.test(info.source)) nexusProblems.push(`${code}: aggregator source`);
+  if (info.basis === "factor-presence" && !info.threshold_usd) nexusProblems.push(`${code}: factor-presence without threshold`);
+  if (info.basis === "no-income-tax" && info.threshold_usd != null) nexusProblems.push(`${code}: no-income-tax with threshold`);
+  if (/200 transactions.*sales tax|wayfair/i.test(info.label)) nexusProblems.push(`${code}: label smells like sales tax`);
+}
+check("nexus data well-formed (bases, official https sources, threshold consistency)",
+  nexusProblems.length === 0, { nexusProblems });
+check("nexus data covers all 50 states",
+  Object.keys(ECONOMIC_NEXUS).length === 50, { n: Object.keys(ECONOMIC_NEXUS).length });
 
 console.log("\n" + "=".repeat(72));
 if (failures === 0) {
