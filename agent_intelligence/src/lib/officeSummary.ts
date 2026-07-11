@@ -84,6 +84,32 @@ export function stateReviews(
   }));
 }
 
+// --- Out-of-state remote registration guide (2026-07) ------------------------
+//
+// Employee work/live states beyond the primary office state — the states
+// whose payroll registrations (withholding account + unemployment account)
+// an agency with remote workers typically needs BEFORE the first paycheck.
+// Sorted for stable copy.
+export function outOfStateEmployeeStates(
+  employeeStates: string[],
+  primaryState: string,
+): string[] {
+  return employeeStates.filter(s => s !== primaryState).sort();
+}
+
+// The guide renders when the agent reported remote workers AND at least one
+// employee state beyond the office state — the exact setup answer that
+// makes out-of-state payroll registration a live question.
+export function shouldShowRegistrationGuide(
+  p: AgentProfile,
+  primaryState: string,
+): boolean {
+  return (
+    p.remote_count > 0 &&
+    outOfStateEmployeeStates(p.employee_states, primaryState).length > 0
+  );
+}
+
 // The state whose briefing sections actually render (first ready state in
 // display order). null when no employee state is briefing-ready, i.e. the
 // briefing shows only coming-soon blocks and there are NO sections to jump to.

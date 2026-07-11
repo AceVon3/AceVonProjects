@@ -13,11 +13,17 @@
 import {
   briefingCoverageLabel,
   outOfCoverageEmployeeStates,
+  outOfStateEmployeeStates,
   payTypeLabel,
   relevancePointers,
   shouldFlagOutOfStateRemote,
+  shouldShowRegistrationGuide,
   stateReviews,
 } from "../src/lib/officeSummary";
+import {
+  NO_WAGE_INCOME_TAX_STATES,
+  REGISTRATION_LINKS,
+} from "../src/lib/stateRegistration";
 import type { AgentProfile } from "../src/lib/profile";
 
 let failures = 0;
@@ -171,6 +177,34 @@ for (const n of [1, 15, 60]) {
 }
 check("NO review line uses determination language (50 states × N=1/15/60)",
   offenders.length === 0, { offenders });
+
+console.log("\nOut-of-state remote registration guide (gating + link data):");
+check("guide shows: remote workers + a second employee state",
+  shouldShowRegistrationGuide({ ...BASE, remote_count: 2, employee_states: ["WA", "OR"] }, "WA") === true);
+check("guide hidden when no remote workers",
+  shouldShowRegistrationGuide({ ...BASE, remote_count: 0, employee_states: ["WA", "OR"] }, "WA") === false);
+check("guide hidden for a single-state office (no out-of-state states)",
+  shouldShowRegistrationGuide({ ...BASE, remote_count: 3, employee_states: ["WA"] }, "WA") === false);
+check("out-of-state list excludes the primary state and sorts",
+  JSON.stringify(outOfStateEmployeeStates(["OR", "WA", "AZ"], "WA")) === JSON.stringify(["AZ", "OR"]),
+  { got: outOfStateEmployeeStates(["OR", "WA", "AZ"], "WA") });
+// Registration-link data integrity: every entry https; no-income-tax states
+// carry no withholding URL; every entry has an unemployment URL.
+const regProblems: string[] = [];
+for (const [code, info] of Object.entries(REGISTRATION_LINKS)) {
+  for (const k of ["withholding", "unemployment", "combined"] as const) {
+    const u = info[k];
+    if (u && !/^https:\/\//.test(u)) regProblems.push(`${code}/${k}: non-https`);
+  }
+  if (NO_WAGE_INCOME_TAX_STATES.has(code) && info.withholding) regProblems.push(`${code}: no-tax state with withholding URL`);
+  if (!NO_WAGE_INCOME_TAX_STATES.has(code) && !info.withholding) regProblems.push(`${code}: missing withholding URL`);
+  if (!info.unemployment) regProblems.push(`${code}: missing unemployment URL`);
+}
+check("registration links are well-formed (https; no-tax states have no withholding link)",
+  regProblems.length === 0, { regProblems });
+check("registration links cover all 50 states",
+  Object.keys(REGISTRATION_LINKS).length === 50,
+  { n: Object.keys(REGISTRATION_LINKS).length });
 
 console.log("\n" + "=".repeat(72));
 if (failures === 0) {

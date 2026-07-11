@@ -7,11 +7,17 @@ import {
   briefingCoverageLabel,
   briefingSectionAnchorId,
   outOfCoverageEmployeeStates,
+  outOfStateEmployeeStates,
   payTypeLabel,
   relevancePointers,
   shouldFlagOutOfStateRemote,
+  shouldShowRegistrationGuide,
   stateReviews,
 } from "@/lib/officeSummary";
+import {
+  NO_WAGE_INCOME_TAX_STATES,
+  registrationInfo,
+} from "@/lib/stateRegistration";
 import { AgentProfile, needsProfileUpgrade, primaryOffice } from "@/lib/profile";
 
 type Props = {
@@ -219,6 +225,117 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
           confirm with a qualified professional before acting.
         </p>
       </div>
+
+      {/* Out-of-state remote registration guide (2026-07): renders when the
+          agent reported remote workers AND employee states beyond the office
+          state. Explains the payroll-registration step software doesn't do,
+          with each state's official registration links. Copy stays on the
+          pointer side of the determination line ("typically", "generally"). */}
+      {shouldShowRegistrationGuide(profile, primaryState) && (
+        <div
+          data-testid="remote-registration-guide"
+          className="border-t border-line px-6 py-4"
+        >
+          <h3 className="text-11 uppercase tracking-wider04 text-ink-2 m-0 mb-2">
+            Remote employees out of state — registrations to have in place
+          </h3>
+          <p className="text-13 text-ink-2 m-0 leading-[1.55]">
+            An employee regularly working from another state generally brings
+            that state&rsquo;s payroll obligations with them — income-tax
+            withholding, unemployment insurance, and workers&rsquo; comp under
+            that state&rsquo;s rules — no matter how small the agency.
+          </p>
+          <p className="text-13 text-ink-2 mt-2 mb-0 leading-[1.55]">
+            <strong className="text-ink">
+              The step payroll software does not do for you:
+            </strong>{" "}
+            programs like QuickBooks can calculate and file another
+            state&rsquo;s taxes only <em>after</em> you obtain that
+            state&rsquo;s withholding account number and unemployment account
+            number from its agencies. Registering is the employer&rsquo;s job,
+            typically before the first paycheck from that state — the step
+            small employers most often miss. Registration pages for your
+            states:
+          </p>
+          <ul className="m-0 mt-3 pl-0 list-none flex flex-col gap-2">
+            {outOfStateEmployeeStates(profile.employee_states, primaryState).map(s => {
+              const info = registrationInfo(s);
+              const noTax = NO_WAGE_INCOME_TAX_STATES.has(s);
+              return (
+                <li
+                  key={s}
+                  data-testid="reg-state-row"
+                  data-state={s}
+                  className="text-13 leading-[1.5]"
+                >
+                  <span className="font-semibold text-ink">{stateName(s)} ({s})</span>
+                  <span className="text-ink-2">
+                    {" — "}
+                    {noTax ? (
+                      <span data-testid="reg-no-withholding">
+                        no state income tax on wages (no withholding account)
+                      </span>
+                    ) : info?.withholding ? (
+                      <a
+                        href={info.withholding}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-testid="reg-link"
+                        data-kind="withholding"
+                        className="text-brand-red font-semibold hover:underline"
+                      >
+                        withholding account ↗
+                      </a>
+                    ) : (
+                      "withholding account: see the state revenue department"
+                    )}
+                    {" · "}
+                    {info?.unemployment ? (
+                      <a
+                        href={info.unemployment}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-testid="reg-link"
+                        data-kind="unemployment"
+                        className="text-brand-red font-semibold hover:underline"
+                      >
+                        unemployment account ↗
+                      </a>
+                    ) : (
+                      "unemployment account: see the state workforce agency"
+                    )}
+                    {info?.combined && (
+                      <>
+                        {" · "}
+                        <a
+                          href={info.combined}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          data-testid="reg-link"
+                          data-kind="combined"
+                          className="text-brand-red font-semibold hover:underline"
+                        >
+                          one-stop registration portal ↗
+                        </a>
+                      </>
+                    )}
+                  </span>
+                  {info?.note && (
+                    <div className="text-11 text-ink-3 mt-0.5">{info.note}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          <p className="text-11 text-ink-3 m-0 mt-2.5">
+            Whether a specific worker triggers a specific registration depends
+            on the state&rsquo;s rules and your situation — confirm with your
+            payroll provider or a tax professional. Workers&rsquo; comp
+            coverage and any state retirement/paid-leave mandates are separate
+            from these two accounts.
+          </p>
+        </div>
+      )}
 
       {/* LOAD-BEARING out-of-state remote flag — the honesty safeguard. Made
           prominent (heavier amber border + ⚠ heading) so it can't read as fine

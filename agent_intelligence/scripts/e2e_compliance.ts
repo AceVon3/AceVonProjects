@@ -409,6 +409,27 @@ async function main(): Promise<void> {
   check("out-of-state remote flag ABSENT — all employee states are briefing-covered",
     (await oosFlag.count()) === 0);
 
+  // Out-of-state remote REGISTRATION GUIDE (2026-07): remote workers (2) +
+  // employee states beyond the office state (OR, AZ) → renders the payroll-
+  // registration explainer with per-state official links.
+  const regGuide = summary.locator('[data-testid="remote-registration-guide"]');
+  check("registration guide renders (remote workers + OR/AZ beyond WA)",
+    (await regGuide.count()) === 1);
+  const regText = (await regGuide.textContent()) ?? "";
+  check("guide carries the software-does-not-register warning",
+    /payroll software does not do for you/i.test(regText)
+      && /withholding account number/i.test(regText)
+      && /unemployment account number/i.test(regText));
+  const regRows = await regGuide.locator('[data-testid="reg-state-row"]').evaluateAll(
+    els => els.map(e => e.getAttribute("data-state")));
+  check("one row per out-of-state employee state, sorted (AZ, OR)",
+    JSON.stringify(regRows) === JSON.stringify(["AZ", "OR"]), { regRows });
+  check("AZ row links both the withholding and unemployment registrations",
+    (await regGuide.locator('[data-testid="reg-state-row"][data-state="AZ"] [data-testid="reg-link"][data-kind="withholding"]').count()) === 1
+      && (await regGuide.locator('[data-testid="reg-state-row"][data-state="AZ"] [data-testid="reg-link"][data-kind="unemployment"]').count()) === 1);
+  check("guide defers the determination (confirm with payroll provider / professional)",
+    /confirm with your payroll provider or a tax professional/i.test(regText));
+
   // -- Relevance pointers as in-page links to briefing sections ------------
   console.log("\nRelevance links (WA briefing renders → size/salary/hourly link; remote does not)");
   const linkFor = (key: string) =>
@@ -514,8 +535,14 @@ async function main(): Promise<void> {
     (await page.locator('[data-testid="compliance-briefing"]').count()) === 1);
 
   // -- Every employee state renders its own briefing (50-state expansion) --
-  console.log("\nSecond-state briefing rendering (employees WA + CA)");
-  await setProfileAndOpen(page, { ...PROFILE, employee_states: ["WA", "CA"] });
+  // TX included to exercise the registration guide's no-income-tax fallback.
+  console.log("\nSecond-state briefing rendering (employees WA + CA + TX)");
+  await setProfileAndOpen(page, { ...PROFILE, employee_states: ["WA", "CA", "TX"] });
+  const txRegRow = page.locator('[data-testid="remote-registration-guide"] [data-testid="reg-state-row"][data-state="TX"]');
+  check("TX registration row shows the no-withholding note (no state income tax)",
+    (await txRegRow.locator('[data-testid="reg-no-withholding"]').count()) === 1);
+  check("TX registration row still links the unemployment registration",
+    (await txRegRow.locator('[data-testid="reg-link"][data-kind="unemployment"]').count()) === 1);
   const caBlock = page.locator('[data-testid="briefing-state"][data-state="CA"]');
   check("CA is surfaced as a briefing block", (await caBlock.count()) === 1);
   check("CA briefing is ready (50-state expansion)",
