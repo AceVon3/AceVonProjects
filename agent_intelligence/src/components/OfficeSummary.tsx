@@ -234,16 +234,22 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
       {shouldShowRegistrationGuide(profile, primaryState) && (
         <div
           data-testid="remote-registration-guide"
-          className="border-t border-line px-6 py-4"
+          className="m-6 mt-0 rounded-tile bg-amber-fill border-2 border-amber-text px-4 py-3.5"
         >
-          <h3 className="text-11 uppercase tracking-wider04 text-ink-2 m-0 mb-2">
-            Remote employees out of state — registrations to have in place
+          <h3 className="text-13 font-semibold text-amber-band m-0 mb-2">
+            ⚠ Remote employees out of state — registrations to have in place
           </h3>
           <p className="text-13 text-ink-2 m-0 leading-[1.55]">
-            An employee regularly working from another state generally brings
-            that state&rsquo;s payroll obligations with them — income-tax
-            withholding, unemployment insurance, and workers&rsquo; comp under
-            that state&rsquo;s rules — no matter how small the agency.
+            <strong className="text-ink">What &ldquo;nexus&rdquo; means:</strong>{" "}
+            nexus is the legal term for having enough presence in a state that
+            its taxes and rules reach your business. An employee regularly
+            working from a state is one of the strongest ways to create it —
+            and <strong className="text-ink">one person is generally
+            enough, no matter how small the agency</strong>. Once a state has
+            nexus over your agency, it typically expects payroll registrations
+            and tax withholding right away, workers&rsquo; comp coverage under
+            its rules, and possibly business-tax filings and licensing down
+            the line.
           </p>
           <p className="text-13 text-ink-2 mt-2 mb-0 leading-[1.55]">
             <strong className="text-ink">
