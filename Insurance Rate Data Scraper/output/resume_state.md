@@ -1,5 +1,24 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-11 (cont.) — OK IMPORTED (33rd). B18 OPENED + FIRST RECOVERY. AR IN FLIGHT.**
+> OK 235 rows (415/415, 23-state streak; 21st cross-check point: value-agr
+> **101/101 = 100% 6th-perfect AFTER the B18 recovery** — NEW_PRODUCT_RE's
+> bare "new program" matched DOI OBJECTION CORRESPONDENCE quoting another
+> filing's tracking number, falsely dropping Safeco LBPM-134534930
+> **+8.000%/7,566ph LIVE Prospect**; adjudicated at source + surgically
+> appended per recover_ak_cfpc precedent). **B18 = the correspondence/
+> migration FP class** (2nd instance with KS LBPM-134129954): deliberate
+> regex fix + all-state new-product re-eval REQUIRED before it recurs.
+> SF eff-04/15/26 pair (982k-ph book at -0.2%) = SERFF-invisible watch.
+> Import gate ALL PASS (41 byte-identical; +56 active). **NEW BASELINE
+> (SUPERSEDES 32-state 5,173/3,211/1,014/`cb6b4314`): 33 states, raw 5,408 /
+> rolled 3,364 / active@2026-06-11 1,070 / db `afe66535`.** PROD verified.
+> - **AR (34th arc) IN FLIGHT:** universe 775 / 333 targets (sweep 23/27 —
+>   smallest wall family yet; retry 4/4); bursts on 15-min cadence.
+> - Remaining interim after AR: KY 220, WI 225, PA 236, MI 245, IN 256,
+>   MN 274, MO 305, TN 323 (+ CA/NY/TX permanent). Backlog: B17, B18,
+>   route-e2e re-key.
+
 > **2026-07-11 — NE + MD IMPORTED (31st/32nd). 32-STATE BASELINE. OK IN FLIGHT.**
 > NE 193 rows (327/327; CLEANEST CROSS-CHECK YET — 19th point: value-agr 83/83
 > = 100% 4th-perfect, 0 material flags, first nothing-to-adjudicate state; B9
