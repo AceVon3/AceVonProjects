@@ -1,5 +1,23 @@
 # Resume state — 2026-06-16 close-out (AM Best interim shipped; scrapers parked)
 
+> **2026-07-13 — AR + KY + WI TRIPLE IMPORT (34th-36th). 36-STATE BASELINE. THE
+> CHAIN IS EATING THE MAP: PA IN FLIGHT, THEN MI/IN/MN/MO/TN.**
+> One gated pass: AR 186 (22nd point; both flag clusters = AM-BEST-SIDE entity
+> transpositions, 6th/7th corrected at source — ours match the CRI tables
+> field-for-field) + KY 216 (23rd; value-agr 134/135, 0 flags) + WI 235 (24th;
+> value-agr 109/109 = 100% 7th-perfect; 3 signal-neutral B18-candidates folded
+> into the re-eval; FIG source-blank family x38). Import gate ALL PASS (39
+> byte-identical; +45/+42/+50 active). **NEW BASELINE (SUPERSEDES 33-state
+> 5,408/3,364/1,070/`afe66535`): 36 states, raw 6,045 / rolled 3,756 /
+> active@2026-06-11 1,207 / db `8ebaff5f`.** PROD verified.
+> - **CHAIN MODE (runner sequences autonomously, arc-skip guards, 15-min
+>   inter-state rests):** WI done -> **PA IN FLIGHT (1,234 universe / 495
+>   targets, 2nd-biggest)** -> MI -> IN -> MN -> MO -> TN. Machine-sleep
+>   stalls absorbed losslessly (12h doze mid-WI proved it).
+> - After TN: the scrapeable map is COMPLETE (39 scraped + CA/NY/TX
+>   permanent). Then: B17 + B18 deliberate passes, route-e2e re-key.
+> - 26-state 0-download-miss streak. Cross-check points: 24.
+
 > **2026-07-11 (cont.) — OK IMPORTED (33rd). B18 OPENED + FIRST RECOVERY. AR IN FLIGHT.**
 > OK 235 rows (415/415, 23-state streak; 21st cross-check point: value-agr
 > **101/101 = 100% 6th-perfect AFTER the B18 recovery** — NEW_PRODUCT_RE's
