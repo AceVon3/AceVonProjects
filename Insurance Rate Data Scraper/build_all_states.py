@@ -9,7 +9,7 @@ import csv
 import openpyxl
 from openpyxl.styles import Font, Alignment
 
-STATES = ["ID", "WA", "CO", "OR", "UT", "AZ", "MT", "WY", "NV", "NM", "GA", "VA", "OH", "IL", "WV", "NH", "VT", "HI", "AK", "MA", "ND", "RI", "ME", "SD", "DE", "CT", "KS", "NJ", "MS", "IA", "SC", "NE", "MD", "OK"]
+STATES = ["ID", "WA", "CO", "OR", "UT", "AZ", "MT", "WY", "NV", "NM", "GA", "VA", "OH", "IL", "WV", "NH", "VT", "HI", "AK", "MA", "ND", "RI", "ME", "SD", "DE", "CT", "KS", "NJ", "MS", "IA", "SC", "NE", "MD", "OK", "AR", "KY", "WI"]
 OUT_XLSX = Path("output/all_states_final_rates.xlsx")
 OUT_CSV = Path("output/all_states_final_rates.csv")
 
