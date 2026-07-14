@@ -147,6 +147,19 @@ const gate = (threshold: number, line: (n: number) => string): SectionSizeGate =
   framing: line,
 });
 
+// States with NO remote-work-specific law (product decision 2026-07-14, per
+// user): their Remote Work cards say so plainly instead of "coming soon".
+// These are the states whose labor-hub pages contain nothing remote-specific
+// (the generator honestly refused) — general employment rules still apply by
+// where the work is performed, which is what the card copy says. Product
+// copy, not a grounded summary: the card renders WITHOUT a last-checked
+// date or AI-summary framing. If a state ever enacts a remote-work law,
+// remove it here and map real sources in resourceUrls.ts.
+export const NO_REMOTE_LAW_STATES: ReadonlySet<string> = new Set([
+  "AK", "AL", "AR", "AZ", "DE", "FL", "GA", "IN", "KY", "LA", "MA",
+  "ME", "MN", "MO", "MS", "NC", "ND", "OR", "SC", "SD", "TX",
+]);
+
 // Size-gate framings follow WA's pattern: state the threshold, the agent's N,
 // the neutral above/below comparison, and ALWAYS defer to verification.
 const STATE_CONFIG: Record<string, StateBriefingConfig> = {

@@ -24,6 +24,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { Page, chromium } from "playwright";
 
+import { NO_REMOTE_LAW_STATES } from "../src/lib/briefing";
 import { COMPLIANCE_SUMMARIES } from "../src/lib/complianceData";
 
 const BASE = process.env.E2E_BASE ?? "http://localhost:3000";
@@ -164,16 +165,22 @@ async function main(): Promise<void> {
   // cell — refused, or never generated (fetch-blocked) — is coming-soon.
   const groundedGrid = (st: string) => TOPIC_KEYS.filter(t =>
     COMPLIANCE_SUMMARIES.some(e => e.state === st && e.topic === t && e.title && e.summary));
+  // Expected variant per ungrounded cell: remote in a NO_REMOTE_LAW state
+  // renders the "no-state-law" product-copy variant (2026-07-14 decision);
+  // everything else ungrounded renders coming-soon.
   for (const st of ["WA", "AZ", "OR"]) {
     const cards = cardMeta.filter(c => c.state === st);
     const expectFull = groundedGrid(st);
+    const expectNoLaw = !expectFull.includes("remote") && NO_REMOTE_LAW_STATES.has(st) ? 1 : 0;
     check(`${st}: 8 cards render (one per grid topic)`, cards.length === 8, { n: cards.length });
     check(`${st}: full cards match grounded data (${expectFull.length})`,
       cards.filter(c => c.variant === "full").length === expectFull.length
         && cards.filter(c => c.variant === "full").every(c => expectFull.includes((c.topic ?? "") as typeof TOPIC_KEYS[number])),
       { expectFull, got: cards.filter(c => c.variant === "full").map(c => c.topic) });
-    check(`${st}: remaining ${8 - expectFull.length} cards are coming-soon`,
-      cards.filter(c => c.variant === "coming-soon").length === 8 - expectFull.length);
+    check(`${st}: ${expectNoLaw} no-state-law card(s) (remote product copy)`,
+      cards.filter(c => c.variant === "no-state-law").length === expectNoLaw);
+    check(`${st}: remaining ${8 - expectFull.length - expectNoLaw} cards are coming-soon`,
+      cards.filter(c => c.variant === "coming-soon").length === 8 - expectFull.length - expectNoLaw);
   }
 
   console.log("\n(3a) WA seeded cards: source links as bare domains + last_checked");
@@ -201,23 +208,23 @@ async function main(): Promise<void> {
     { lastChecked });
 
   console.log("\n(3b) AZ coming-soon card: still renders topic tag + state badge");
-  // The coming-soon variant spot-check derives its target from the data:
-  // pick AZ's first UNGROUNDED grid topic (AZ/remote as of the 2026-07 retry
-  // — azica.gov is hard-blocked and no statute alternative exists). If a
-  // future regen grounds everything, the check is skipped rather than stale.
-  const azComingSoonTopic = TOPIC_KEYS.find(t => !groundedGrid("AZ").includes(t));
-  if (azComingSoonTopic) {
-    const azCsCard = page.locator(
-      `[data-testid="compliance-card"][data-state="AZ"][data-topic="${azComingSoonTopic}"]`,
-    );
-    check(`AZ ${azComingSoonTopic} exists as coming-soon`, (await azCsCard.count()) === 1);
-    const azBodyText = (await azCsCard.textContent()) ?? "";
-    check("AZ coming-soon card shows its state badge 'AZ'", azBodyText.includes("AZ"));
-    check("AZ coming-soon card says 'Summary coming soon'",
-      azBodyText.includes("Summary coming soon"));
-  } else {
-    console.log("  (AZ fully grounded — coming-soon variant spot-check skipped)");
-  }
+  // AZ/remote spot-check: AZ has no remote-work law (NO_REMOTE_LAW_STATES),
+  // so its remote card renders the no-state-law PRODUCT-COPY variant
+  // (2026-07-14 decision) — plain statement, source links kept, NO
+  // last-checked date (it is not a grounded summary).
+  const azRemoteCard = page.locator(
+    '[data-testid="compliance-card"][data-state="AZ"][data-topic="remote"]',
+  );
+  check("AZ remote renders the no-state-law variant",
+    (await azRemoteCard.getAttribute("data-variant")) === "no-state-law");
+  const azRemoteText = (await azRemoteCard.textContent()) ?? "";
+  check("AZ remote card says there are no remote-work laws in this state",
+    /No state remote-work law/.test(azRemoteText)
+      && /no remote-work laws in this state/i.test(azRemoteText), { sample: azRemoteText.slice(0, 140) });
+  check("AZ remote card keeps the general-rules-apply-where-work-is-performed framing",
+    /where the employee performs the work/i.test(azRemoteText));
+  check("AZ remote card shows NO last-checked date (product copy, not a summary)",
+    (await azRemoteCard.locator('[data-testid="last-checked"]').count()) === 0);
 
   // -- Feature 9: office briefing -----------------------------------------
   console.log("\nOffice briefing (home WA, employees WA+OR+AZ, N=5)");

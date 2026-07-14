@@ -1,5 +1,6 @@
 "use client";
 
+import { NO_REMOTE_LAW_STATES, stateName } from "@/lib/briefing";
 import type { ResourceKey } from "@/lib/resourceUrls";
 
 export type ComplianceCardProps = {
@@ -71,7 +72,14 @@ export default function ComplianceCard({
   sources,
   last_checked,
 }: ComplianceCardProps): React.JSX.Element {
-  const isComingSoon = !title || !summary;
+  const ungrounded = !title || !summary;
+  // Remote Work in a state with no remote-work-specific law: say so plainly
+  // (product decision 2026-07-14) instead of a perpetual "coming soon".
+  // Product copy, not a grounded summary — renders without a last-checked
+  // date; source links (the state's employment-standards hub) stay.
+  const isNoStateLaw =
+    ungrounded && topic === "remote" && NO_REMOTE_LAW_STATES.has(state);
+  const isComingSoon = ungrounded && !isNoStateLaw;
   const tagLabel = TOPIC_LABELS[topic];
 
   return (
@@ -79,7 +87,7 @@ export default function ComplianceCard({
       data-testid="compliance-card"
       data-state={state}
       data-topic={topic}
-      data-variant={isComingSoon ? "coming-soon" : "full"}
+      data-variant={isNoStateLaw ? "no-state-law" : isComingSoon ? "coming-soon" : "full"}
       className="bg-surface border border-card-line rounded-card shadow-card p-5 flex flex-col"
     >
       {/* Header: topic tag (left) + state badge (right) */}
@@ -101,7 +109,11 @@ export default function ComplianceCard({
           isComingSoon ? "text-ink-3" : "text-ink",
         ].join(" ")}
       >
-        {isComingSoon ? "Summary coming soon" : title}
+        {isNoStateLaw
+          ? "No state remote-work law"
+          : isComingSoon
+            ? "Summary coming soon"
+            : title}
       </h3>
 
       {/* Summary */}
@@ -111,9 +123,11 @@ export default function ComplianceCard({
           isComingSoon ? "text-ink-3" : "text-ink-2",
         ].join(" ")}
       >
-        {isComingSoon
-          ? "We’re preparing a grounded summary for this topic. The official source link is available below."
-          : summary}
+        {isNoStateLaw
+          ? `There are no remote-work laws in this state — ${stateName(state)} has no statute specific to remote work. Its general employment rules (wage and hour, leave, worker protections) apply based on where the employee performs the work.`
+          : isComingSoon
+            ? "We’re preparing a grounded summary for this topic. The official source link is available below."
+            : summary}
       </p>
 
       {/* Sources block — always rendered when at least one URL is mapped */}
@@ -138,7 +152,7 @@ export default function ComplianceCard({
               {bareDomain(url)}
             </a>
           ))}
-          {!isComingSoon && last_checked && (
+          {!isComingSoon && !isNoStateLaw && last_checked && (
             <div
               data-testid="last-checked"
               className="text-11 text-ink-3 mt-2"
