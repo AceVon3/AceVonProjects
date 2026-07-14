@@ -276,16 +276,20 @@ export const RESOURCE_URLS: Record<
     ],
     // Termination — UALD wage-claim page: on employer-initiated separation,
     // all wages due within 24 hours.
+    // Utah Code Ch. 34-28 via le.utah.gov's direct chapter PDF (the HTML site is an SPA, but /xcode PDFs extract cleanly): 34-28-5 incl. the 24-hour rule and 60-day penalty.
     termination: [
       "https://laborcommission.utah.gov/divisions/utah-antidiscrimination-and-labor-uald/wage-claim/",
+      "https://le.utah.gov/xcode/Title34/Chapter28/C34-28_1800010118000101.pdf",
     ],
     // Nexus — Utah Insurance Dept Producer Licensing Division.
     nexus: [
       "https://insurance.utah.gov/licensees/producers/",
     ],
     // Hiring — new-hire reporting via the same DWS employer portal hub.
+    // DWS New Hire Handbook (HTML + PDF): 20-day deadline, data elements, Utah Code 35A-7 basis, $25/$500 penalties.
     hiring: [
-      "https://jobs.utah.gov/ui/employer/Public/PublicPortal.aspx",
+      "https://jobs.utah.gov/ui/employer/public/NewHire/NewHireHandbook.aspx",
+      "https://jobs.utah.gov/ui/Employer/Public/NewHire/New%20Hire%20Handbook.pdf",
     ],
     // Remote — UALD division hub (rules apply where the employee works).
     remote: [
@@ -960,7 +964,9 @@ export const RESOURCE_URLS: Record<
     workers_comp: [
       "https://www.dol.ks.gov/workers-compensation/overview",
     ],
+    // K.S.A. 44-315 (statute HTML on kslegislature.gov — session-scoped path, recheck at regen) carries the next-regular-payday rule; KDOL pages kept as user-facing links.
     termination: [
+      "https://www.kslegislature.gov/li/b2025_26/statute/044_000_0000_chapter/044_003_0000_article/044_003_0015_section/044_003_0015_k/",
       "https://www.dol.ks.gov/employers/workplace-laws/workplace-laws-faqs",
       "https://www.dol.ks.gov/employers/workplace-laws/wage-claims",
     ],
@@ -1047,9 +1053,13 @@ export const RESOURCE_URLS: Record<
       "https://www.legis.la.gov/legis/Law.aspx?d=83945",
       "https://www.laworks.net/laborlawinfo.asp",
     ],
+    // La. R.S. 22:1546 (producer lines of authority / licensing, statute
+    // viewer HTML — hunt-3 straggler fix) carries grounding; LDI page kept
+    // as the user-facing link.
     nexus: [
       "https://www.ldi.la.gov/industry/producer-adjuster/license-application",
-      "https://geauxbiz.sos.la.gov/",
+      "https://www.legis.la.gov/legis/Law.aspx?d=508528",
+      "https://legis.la.gov/Legis/LawPrint.aspx?d=508521",
     ],
     hiring: [
       "https://www.dcfs.louisiana.gov/page/164",
@@ -1243,8 +1253,10 @@ export const RESOURCE_URLS: Record<
       "https://www.michigan.gov/difs/industry/licensing-ins/agncy-ins",
       "https://www.michigan.gov/taxes/business-taxes/new-business-registration",
     ],
+    // Michigan has no state new-hire statute (rides federal 42 USC 653a); the official Treasury Form 3281 PDF carries the concrete 20-day rule + data elements.
     hiring: [
       "https://www.michigan.gov/mdhhs/adult-child-serv/child-sup/resources/employers/new-hire-reporting",
+      "https://www.michigan.gov/-/media/Project/Websites/taxes/Forms/SUW/3281.pdf?rev=c83f1103db1f4d01a4fb3ab6d9221102",
     ],
     remote: [
       "https://www.michigan.gov/leo/bureaus-agencies/ber/wage-and-hour",
@@ -1509,8 +1521,10 @@ export const RESOURCE_URLS: Record<
     nexus: [
       "https://www.insurance.nd.gov/producers",
     ],
+    // HHS reporting-requirements page (20 days, data elements) + full NDCC ch. 34-15 statute PDF.
     hiring: [
-      "https://www.hhs.nd.gov/childsupport/employers/new-hire-reporting",
+      "https://www.hhs.nd.gov/childsupport/employers/new-hire-reporting/reporting-requirements",
+      "https://ndlegis.gov/cencode/t34c15.pdf",
     ],
     remote: [
       "https://www.nd.gov/labor/",
@@ -1544,8 +1558,9 @@ export const RESOURCE_URLS: Record<
       "https://www.newcc.gov/employers/employer-frequently-asked-questions",
       "https://www.newcc.gov/employers",
     ],
+    // Neb. Rev. Stat. 48-1230(4): next regular payday or within two weeks, whichever is sooner.
     termination: [
-      "https://dol.nebraska.gov/webdocs/Resources/Items/Wages.pdf",
+      "https://nebraskalegislature.gov/laws/statutes.php?statute=48-1230",
       "https://dol.nebraska.gov/LaborStandards/wages/WageComplaint",
     ],
     nexus: [
@@ -1723,8 +1738,11 @@ export const RESOURCE_URLS: Record<
     payroll: [
       "https://detr.nv.gov/Page/UI_Information_for_Employers",
     ],
+    // NRS 616B (616B.612/.633 coverage mandate from one employee) + 616D (616D.200 penalties: 6yr back premiums, misdemeanor->felony) carry grounding.
     workers_comp: [
       "https://dir.nv.gov/WCS/Employers/",
+      "https://www.leg.state.nv.us/NRS/NRS-616B.html",
+      "https://www.leg.state.nv.us/NRS/NRS-616D.html",
     ],
     termination: [
       "https://www.leg.state.nv.us/nrs/nrs-608.html",
@@ -1812,23 +1830,31 @@ export const RESOURCE_URLS: Record<
       "https://com.ohio.gov/divisions-and-programs/industrial-compliance/wage-and-hour/wage-and-hour",
       "https://www.dol.gov/agencies/whd/fmla",
     ],
+    // ORC 4141.20: quarterly reports due last day of first month after quarter; 0.25% forfeiture ($50 min/$1,000 max).
     payroll: [
-      "https://jfs.ohio.gov/unemployment-services/for-employers",
+      "https://codes.ohio.gov/ohio-revised-code/section-4141.20",
       "https://jfs.ohio.gov/unemployment-services/for-employers/register-as-an-employer",
     ],
+    // ORC 4123.35 (every private employer pays into the state fund — OH is monopolistic) carries grounding; BWC page kept as user link.
     workers_comp: [
+      "https://codes.ohio.gov/ohio-revised-code/section-4123.35",
       "https://info.bwc.ohio.gov/for-employers/workers-compensation-coverage/getting-coverage",
     ],
     termination: [
       "https://codes.ohio.gov/ohio-revised-code/section-4113.15",
       "https://jfs.ohio.gov/job-workforce-services/job-programs-and-services/submit-a-warn-notice",
     ],
+    // ORC 3905.02 (license mandate) + 3905.06 (resident-producer qualifications) carry grounding; ODI page kept as user link.
     nexus: [
       "https://insurance.ohio.gov/agents-and-agencies/agent-licensing/agent-licensing",
-      "https://www.ohiosos.gov/business/ohio-business-roadmap/starting-a-business",
+      "https://codes.ohio.gov/ohio-revised-code/section-3905.02",
+      "https://codes.ohio.gov/ohio-revised-code/section-3905.06",
     ],
+    // ORC new-hire trio: 3121.891 mandate, 3121.893 the 20-day employer deadline + methods, 3121.8910 penalties ($25/$500).
     hiring: [
-      "https://jfs.ohio.gov/child-support/employer-information/report-new-hire-changes-in-status",
+      "https://codes.ohio.gov/ohio-revised-code/section-3121.891",
+      "https://codes.ohio.gov/ohio-revised-code/section-3121.893",
+      "https://codes.ohio.gov/ohio-revised-code/section-3121.8910",
     ],
     remote: [
       "https://com.ohio.gov/divisions-and-programs/industrial-compliance/wage-and-hour/wage-and-hour",
@@ -2002,7 +2028,9 @@ export const RESOURCE_URLS: Record<
       "https://dlt.ri.gov/workers-compensation/employers",
       "https://dlt.ri.gov/workers-compensation/frequently-asked-questions",
     ],
+    // RI Gen. Laws 28-14-4: next regular payday; 24 hours on liquidation/merger/relocation; vacation payout after one year.
     termination: [
+      "https://webserver.rilegislature.gov/Statutes/TITLE28/28-14/28-14-4.htm",
       "https://dlt.ri.gov/regulation-and-safety/labor-standards/labor-standards-faq",
     ],
     nexus: [
@@ -2049,9 +2077,10 @@ export const RESOURCE_URLS: Record<
     workers_comp: [
       "https://wcc.sc.gov/employer-faqs",
     ],
+    // SC Code 41-10-50 (full chapter HTML on scstatehouse.gov): within 48 hours or next regular payday not exceeding 30 days.
     termination: [
+      "https://www.scstatehouse.gov/code/t41c010.php",
       "https://llr.sc.gov/wage/paymentofwages.aspx",
-      "https://llr.sc.gov/wage/pdf/payment.pdf",
     ],
     nexus: [
       "https://doi.sc.gov/481/Producer",
@@ -2221,7 +2250,9 @@ export const RESOURCE_URLS: Record<
     workers_comp: [
       "https://workcomp.virginia.gov/content/employers",
     ],
+    // Va. Code 40.1-29(B) on law.lis.virginia.gov: final wages due on or before the next scheduled payday.
     termination: [
+      "https://law.lis.virginia.gov/vacode/title40.1/section40.1-29/",
       "https://doli.virginia.gov/labor-law-claim-for-unpaid-wages-form/",
     ],
     nexus: [
@@ -2262,8 +2293,11 @@ export const RESOURCE_URLS: Record<
     payroll: [
       "https://labor.vermont.gov/unemployment-insurance/ui-employers",
     ],
+    // 21 V.S.A. 687 (secure-compensation mandate, personal liability of officers) + 692 (penalties) via the curl fallback; VT DOL employer fact-sheet PDF ('mandatory for all Vermont employers').
     workers_comp: [
-      "https://labor.vermont.gov/workers-compensation",
+      "https://legislature.vermont.gov/statutes/section/21/009/00687",
+      "https://legislature.vermont.gov/statutes/section/21/009/00692",
+      "https://labor.vermont.gov/sites/labor/files/doc_library/Fact%20Sheet%20For%20Employers.pdf",
     ],
     termination: [
       "https://legislature.vermont.gov/statutes/section/21/005/00342",
@@ -2360,8 +2394,9 @@ export const RESOURCE_URLS: Record<
     workers_comp: [
       "https://www.wvinsurance.gov/Employer-Coverage",
     ],
+    // W. Va. Code 21-5-4(b) on code.wvlegislature.gov: due on or before the next regular payday; liquidated damages.
     termination: [
-      "https://labor.wv.gov/wage-hour/wage-and-hour-fact-sheets",
+      "https://code.wvlegislature.gov/21-5-4/",
       "https://labor.wv.gov/wage-hour/wage-payment-and-collection",
     ],
     nexus: [
