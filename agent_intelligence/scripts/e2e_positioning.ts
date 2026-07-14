@@ -1,10 +1,13 @@
 // End-to-end check of /positioning against a running dev server.
 //
-// Captive State Farm, all 8 states (the recon answer key):
-//   10 anchored cells (cards), 10 anchor rows, 41 comparison rows
-//   (23 higher-confidence with a spread, 18 thin without), 6 unanchored items.
-// Independent {SF, Travelers, Progressive}, all 8:
-//   64 comparison rows, 30 higher-confidence.
+// The page shows PERSONAL AUTO ONLY (2026-07-14) — a display filter over the
+// per-line API cells; the computation is untouched. Expected counts below are
+// the Personal Auto subset, cross-derived from getPositioning() directly.
+// Captive State Farm, all 8 states (the recon answer key, auto-only):
+//   6 anchored cells (cards), 6 anchor rows, 28 comparison rows
+//   (18 higher-confidence with a spread, 10 thin without), 2 unanchored items.
+// Independent {SF, Travelers, Progressive}, all 8 (auto-only):
+//   42 comparison rows, 22 higher-confidence.
 // Plus: the persistent rate-change framing band is present; spread appears
 // only on higher-confidence rows; a row expands to its underlying filings;
 // the date-range note states the 12-month window; the plain-language
@@ -74,18 +77,19 @@ async function main(): Promise<void> {
   await open(page, CAPTIVE_SF);
 
   const cells = await page.locator('[data-testid="positioning-cell"]').count();
-  check("10 anchored cells (cards)", cells === 10, { cells });
+  check("6 anchored cells (cards, auto-only)", cells === 6, { cells });
   const anchors = await page.locator('[data-testid="anchor-row"]').count();
-  check("10 anchor rows (one per captive cell)", anchors === 10, { anchors });
+  check("6 anchor rows (one per captive cell)", anchors === 6, { anchors });
 
   const t = await tierCounts(page);
-  check("42 comparison rows", t.total === 42, { total: t.total });  // re-keyed 2026-07-10 (B16: +1 comparable in the original-8)
-  check("23 higher-confidence rows", t.high === 23, { high: t.high });
-  check("19 thin rows", t.thin === 19, { thin: t.thin });  // re-keyed 2026-07-10 (B16)
-  check("spread shown on exactly the 23 high rows (none on thin)", t.spread === 23, { spread: t.spread });
+  // re-keyed 2026-07-14: Personal Auto-only view (was 42/23/19 both-lines)
+  check("28 comparison rows", t.total === 28, { total: t.total });
+  check("18 higher-confidence rows", t.high === 18, { high: t.high });
+  check("10 thin rows", t.thin === 10, { thin: t.thin });
+  check("spread shown on exactly the 18 high rows (none on thin)", t.spread === 18, { spread: t.spread });
 
   const unanchored = await page.locator('[data-testid="unanchored-item"]').count();
-  check("6 unanchored (line·state) items", unanchored === 6, { unanchored });
+  check("2 unanchored (line·state) items (auto-only)", unanchored === 2, { unanchored });
 
   // Persistent framing band.
   const frame = page.locator('[data-testid="rate-change-frame"]');
@@ -131,9 +135,10 @@ async function main(): Promise<void> {
   console.log("\nIndependent {State Farm, Travelers, Progressive}, all 8 states");
   await open(page, INDEP);
   const ti = await tierCounts(page);
-  check("66 comparison rows", ti.total === 66, { total: ti.total });  // re-keyed 2026-07-10 (B16: +2 independent)
-  check("30 higher-confidence rows", ti.high === 30, { high: ti.high });
-  check("spread shown on exactly the 30 high rows", ti.spread === 30, { spread: ti.spread });
+  // re-keyed 2026-07-14: Personal Auto-only view (was 66/30 both-lines)
+  check("42 comparison rows", ti.total === 42, { total: ti.total });
+  check("22 higher-confidence rows", ti.high === 22, { high: ti.high });
+  check("spread shown on exactly the 22 high rows", ti.spread === 22, { spread: ti.spread });
 
   // Explainer renders for the independent view too, and stays determination-free.
   const explInd = (await page.locator('[data-testid="positioning-explainer"]').textContent()) ?? "";

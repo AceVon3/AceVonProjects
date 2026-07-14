@@ -75,14 +75,24 @@ export default function PositioningPage(): React.JSX.Element {
   const isCaptive = profile.agent_type === "captive";
   const brand = profile.authorized_brands[0];
   const subtitle = isCaptive
-    ? `How ${brand}'s recent rate changes compare to each competitor, by line and state.`
-    : "How your carriers' recent rate changes compare to the rest of the market.";
+    ? `How ${brand}'s recent Personal Auto rate changes compare to each competitor, by state.`
+    : "How your carriers' recent Personal Auto rate changes compare to the rest of the market.";
 
-  const sellsEverything = result.competitorBrands.length === 0;
-  const nothingAnchored = result.anchoredCells.length === 0;
+  // AUTO-ONLY VIEW: the page shows Personal Auto cells only. Pure display
+  // filter over the API result — the (line, state) cells arrive per line, so
+  // Homeowners cells are simply not rendered; the computation is untouched.
+  const view: PositioningResult = {
+    ...result,
+    anchoredCells: result.anchoredCells.filter(c => c.line === "Personal Auto"),
+    unanchoredCells: result.unanchoredCells.filter(c => c.line === "Personal Auto"),
+  };
+
+  const sellsEverything = view.competitorBrands.length === 0;
+  const nothingAnchored = view.anchoredCells.length === 0;
   // Interprets one real comparison from THIS agent's view; null when the view
   // has no higher-confidence comparison (thin ones carry no spread to explain).
-  const explainer = buildExplainer(result);
+  // Fed the filtered view so the narrated example is always an auto comparison.
+  const explainer = buildExplainer(view);
 
   return (
     <main className="min-h-screen bg-canvas">
@@ -119,7 +129,7 @@ export default function PositioningPage(): React.JSX.Element {
             data-testid="positioning-empty"
             className="text-13 px-5 py-8 text-center text-ink-2 bg-surface border border-card-line rounded-card shadow-card"
           >
-            None of your carriers have filed in your states in the last 12 months, so there’s nothing to compare yet. Data refreshes monthly.
+            None of your carriers have filed Personal Auto rates in your states in the last 12 months, so there’s nothing to compare yet. Data refreshes monthly.
           </div>
         ) : (
           <>
@@ -151,12 +161,12 @@ export default function PositioningPage(): React.JSX.Element {
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
-              {result.anchoredCells.map(cell => (
+              {view.anchoredCells.map(cell => (
                 <PositioningCard key={`${cell.line}@@${cell.state}`} cell={cell} />
               ))}
             </div>
 
-            {result.unanchoredCells.length > 0 && (
+            {view.unanchoredCells.length > 0 && (
               <div
                 data-testid="unanchored-section"
                 className="mt-5 bg-surface border border-card-line rounded-card shadow-card px-5 py-4"
@@ -165,7 +175,7 @@ export default function PositioningPage(): React.JSX.Element {
                   No filings from your carrier{isCaptive ? "" : "s"} here
                 </div>
                 <div className="text-12 text-ink-2 flex flex-wrap gap-x-3 gap-y-1">
-                  {result.unanchoredCells.map(c => (
+                  {view.unanchoredCells.map(c => (
                     <span key={`${c.line}@@${c.state}`} data-testid="unanchored-item">
                       {c.line} · {c.state}
                     </span>
