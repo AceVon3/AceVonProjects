@@ -311,7 +311,7 @@ export default function LandingPage(): React.JSX.Element {
                 </p>
               </div>
             </div>
-            <Link className="sec-cta reveal" href="/compliance">
+            <Link className="sec-cta reveal" href="/setup">
               Browse the Compliance Hub <span aria-hidden="true">→</span>
             </Link>
           </div>
