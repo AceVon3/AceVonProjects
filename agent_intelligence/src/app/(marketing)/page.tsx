@@ -264,8 +264,8 @@ export default function LandingPage(): React.JSX.Element {
                 </p>
               </div>
             </div>
-            <Link className="sec-cta reveal" href="/methodology">
-              Read the full methodology <span aria-hidden="true">→</span>
+            <Link className="sec-cta reveal" href="/setup">
+              Get started for free <span aria-hidden="true">→</span>
             </Link>
           </div>
         </section>
