@@ -108,28 +108,11 @@ async function main(): Promise<void> {
   const wyDisabled = await wyBtn.isDisabled();
   check("licensed list: Wyoming (non-covered) is disabled", wyDisabled);
 
-  // Income-tax nexus threshold panel (2026-07): renders once licensed/selling
-  // states are picked, one row per selected state (sorted), each with its
-  // revenue line and an official source link, plus the confirm hedge.
-  const nexusPanel = page.locator('[data-testid="nexus-threshold-panel"]');
-  check("nexus threshold panel renders once selling states are picked",
-    (await nexusPanel.count()) === 1);
-  const nexusRows = await nexusPanel.locator('[data-testid="nexus-threshold-row"]').evaluateAll(
-    els => els.map(e => e.getAttribute("data-state")));
-  check("one nexus row per selected licensed state, sorted (ID, OR, WA)",
-    JSON.stringify(nexusRows) === JSON.stringify(["ID", "OR", "WA"]), { nexusRows });
-  const waRow = (await nexusPanel.locator('[data-testid="nexus-threshold-row"][data-state="WA"]').textContent()) ?? "";
-  check("WA row carries its B&O $100,000 line",
-    /100,000/.test(waRow) && /B&O|gross[- ]receipts/i.test(waRow), { waRow: waRow.slice(0, 160) });
-  check("every nexus row has an official source link",
-    (await nexusPanel.locator('[data-testid="nexus-source-link"]').count()) === 3);
-  const nexusText = (await nexusPanel.textContent()) ?? "";
-  check("nexus panel defers the determination (confirm with a tax professional)",
-    /confirm with a tax professional/i.test(nexusText));
-  const NEXUS_DETERMINATION = [/\bapplies to you\b/i, /\byou owe\b/i, /\byou must file\b/i, /\byou are (subject|required|liable)\b/i];
-  check("nexus panel copy never uses determination language",
-    !NEXUS_DETERMINATION.some(re => re.test(nexusText)),
-    { matched: NEXUS_DETERMINATION.filter(re => re.test(nexusText)).map(String) });
+  // NexusThresholdPanel PARKED 2026-07-14 per user decision: the panel must
+  // NOT render in setup. Component + economicNexus.ts data stay in the
+  // codebase for reintroduction; this check pins the parked state.
+  check("nexus threshold panel does NOT render (parked 2026-07-14)",
+    (await page.locator('[data-testid="nexus-threshold-panel"]').count()) === 0);
 
   await page.getByRole("button", { name: "Save changes" }).click();
 

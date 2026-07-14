@@ -16,8 +16,6 @@ import {
 } from "@/lib/profile";
 import { STATES } from "@/lib/states";
 
-import NexusThresholdPanel from "./NexusThresholdPanel";
-
 // Each office is held as all-string fields for controlled inputs.
 type OfficeDraft = { label: string; street: string; city: string; state: string; zip: string };
 
@@ -609,9 +607,11 @@ export default function ProfileForm(): React.JSX.Element {
           mode="licensed"
         />
         <FieldErr msg={errors.licensed_states} />
-        {/* Income-tax nexus revenue lines for the selected selling states
-            (2026-07): informational, renders as states are picked. */}
-        <NexusThresholdPanel states={state.licensed_states} />
+        {/* NexusThresholdPanel (income-tax nexus revenue lines per selling
+            state) PARKED 2026-07-14 per user decision — not confident in the
+            section yet. The component and its verified 50-state data
+            (economicNexus.ts) remain in the codebase; re-render here to
+            bring it back. */}
 
         {/* Employee states */}
         <div className="mt-5">
