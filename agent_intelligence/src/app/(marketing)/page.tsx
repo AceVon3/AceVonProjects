@@ -132,12 +132,12 @@ export default function LandingPage(): React.JSX.Element {
                 registration for every state where your team works.
               </p>
               <div className="hero-ctas">
-                <Link className="btn btn-primary lg" href="/setup">
-                  Set up your agency
-                </Link>
-                <Link className="btn btn-ghost lg" href="/methodology">
-                  See the methodology
-                </Link>
+                <a className="btn btn-primary lg" href="#rate-data">
+                  Learn about our rate data
+                </a>
+                <a className="btn btn-ghost lg" href="#compliance-hub">
+                  Learn about HR &amp; compliance
+                </a>
               </div>
               <p className="microcopy">
                 <b>No account, no credit card.</b> Your profile lives in your browser.
@@ -217,6 +217,103 @@ export default function LandingPage(): React.JSX.Element {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ===================== RATE DATA (hero CTA target) ===================== */}
+        <section id="rate-data">
+          <div className="wrap">
+            <div className="sec-head">
+              <span className="eyebrow">Our rate data</span>
+              <h2 className="sec-title">
+                Every signal traces back to a public rate filing.
+              </h2>
+              <p className="sec-sub">
+                Before a carrier can change what your prospects pay, it has to
+                file that change with the state. We read those filings so you
+                don&apos;t have to.
+              </p>
+            </div>
+            <div className="prob-cols mt-sections">
+              <div className="prob-col reveal">
+                <h3>Straight from state filing systems</h3>
+                <p>
+                  Rate filings compiled from public state systems and industry
+                  sources across {COVERED_STATES.length} states,{" "}
+                  {BRANDS.length} major carrier brands, and two lines —
+                  Homeowners and Personal Auto — with new states added as
+                  coverage expands.
+                </p>
+              </div>
+              <div className="prob-col reveal">
+                <h3>Premium-weighted, rolled up per filing</h3>
+                <p>
+                  One filing often spans several writing entities. We roll them
+                  into a single number weighted by written premium, so a big
+                  swing on a tiny entity can&apos;t distort the signal you act
+                  on.
+                </p>
+              </div>
+              <div className="prob-col reveal">
+                <h3>Thresholds that mean something</h3>
+                <p>
+                  Prospect flags competitors raising rates{" "}
+                  {PROSPECT_THRESHOLD}%+ in your states; Defend flags cuts of{" "}
+                  {DEFEND_THRESHOLD}% or more — both over a 12-month window, so
+                  every signal is recent enough to call on.
+                </p>
+              </div>
+            </div>
+            <Link className="sec-cta reveal" href="/methodology">
+              Read the full methodology <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* ===================== COMPLIANCE HUB (hero CTA target) ===================== */}
+        <section className="band-alt" id="compliance-hub">
+          <div className="wrap">
+            <div className="sec-head">
+              <span className="eyebrow">HR &amp; Compliance Hub</span>
+              <h2 className="sec-title">
+                Run the employer side of your agency with the same confidence.
+              </h2>
+              <p className="sec-sub">
+                Selling policies is half the job — the other half is being an
+                employer. The Compliance Hub answers the questions that come
+                with a team, state by state.
+              </p>
+            </div>
+            <div className="prob-cols mt-sections">
+              <div className="prob-col reveal">
+                <h3>The questions owners actually hit</h3>
+                <p>
+                  At-will employment and hiring rules, minimum wage and
+                  overtime thresholds, workers&apos; comp requirements, and
+                  state tax registration — the things that come up the week you
+                  hire someone.
+                </p>
+              </div>
+              <div className="prob-col reveal">
+                <h3>Every state your team touches</h3>
+                <p>
+                  Answers are organized per state where your employees live and
+                  work — all 50 states, not just the ones with filing data. A
+                  remote CSR in another state is covered too.
+                </p>
+              </div>
+              <div className="prob-col reveal">
+                <h3>Grounded in official sources</h3>
+                <p>
+                  Every summary is built from state labor, revenue, and
+                  insurance department sources, with links to the originals.
+                  Informational, not legal advice — but always traceable.
+                </p>
+              </div>
+            </div>
+            <Link className="sec-cta reveal" href="/compliance">
+              Browse the Compliance Hub <span aria-hidden="true">→</span>
+            </Link>
           </div>
         </section>
 

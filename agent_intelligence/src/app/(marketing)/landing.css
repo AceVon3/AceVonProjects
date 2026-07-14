@@ -273,6 +273,16 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
 .lp section {
   padding: 96px 0;
 }
+/* Anchored sections land below the sticky nav; smooth-scroll only when
+   the OS allows motion. :has() keeps it off the app's own pages. */
+.lp section[id] {
+  scroll-margin-top: 72px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.lp) {
+    scroll-behavior: smooth;
+  }
+}
 .lp .band-alt {
   background: var(--bg-alt);
   border-top: 1px solid var(--line);
@@ -583,6 +593,23 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   color: var(--ink-mute);
   font-size: 0.95rem;
   line-height: 1.62;
+}
+
+/* Quiet arrow link closing the hero-CTA target sections */
+.lp .sec-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 40px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--brand);
+  text-decoration: none;
+}
+.lp .sec-cta:hover {
+  color: var(--brand-hover);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 /* ---------- Features — bento grid ---------- */
