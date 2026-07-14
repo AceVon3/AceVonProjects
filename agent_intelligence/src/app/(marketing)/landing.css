@@ -466,35 +466,72 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   font-size: 0.76rem;
   color: var(--ink-mute);
 }
-.lp .sig-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 13px 6px;
-  border-bottom: 1px solid var(--line);
+/* Mini Overview mock inside the hero panel. Stat cards echo the app's
+   Overview screen; the numbers in page.tsx are the real verification-set
+   counts, so keep them in sync with the dataset if it changes. */
+.lp .ov-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px 0 0;
 }
-.lp .sig-row:last-child {
-  border-bottom: 0;
-}
-.lp .sig-who {
+.lp .ov-stat {
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
   min-width: 0;
 }
-.lp .sig-who .b {
+.lp .ov-stat .lbl,
+.lp .ov-urgent .lbl {
+  font-size: 0.68rem;
   font-weight: 700;
-  font-size: 0.92rem;
-  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-mute);
 }
-.lp .sig-who .m {
+.lp .ov-stat .n {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.lp .ov-stat.prospect .n {
+  color: var(--brand);
+}
+.lp .ov-stat.defend .n {
+  color: var(--ic-sky);
+}
+.lp .ov-stat .sub {
+  font-size: 0.74rem;
+  color: var(--ink-mute);
+  line-height: 1.4;
+}
+.lp .ov-urgent {
+  margin-top: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.lp .ov-urgent .lbl {
+  color: var(--brand);
+}
+.lp .ov-urgent .row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+.lp .ov-urgent .row b {
+  font-size: 0.95rem;
+}
+.lp .ov-urgent .meta {
   font-size: 0.78rem;
   color: var(--ink-mute);
-  margin-top: 1px;
-}
-.lp .sig-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 0 0 auto;
 }
 .lp .sig-impact {
   font-weight: 800;
@@ -508,23 +545,8 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
 .lp .sig-impact.down {
   color: var(--ic-sky);
 }
-.lp .badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 4px 9px;
-  border-radius: 999px;
-}
-.lp .badge.prospect {
-  background: var(--brand-tint);
-  color: var(--brand);
-}
-.lp .badge.defend {
-  background: color-mix(in srgb, var(--ic-sky) 13%, var(--card));
-  color: var(--ic-sky);
-}
 .lp .panel-foot {
+  margin-top: 14px;
   padding: 12px 6px 2px;
   border-top: 1px solid var(--line);
   font-size: 0.76rem;

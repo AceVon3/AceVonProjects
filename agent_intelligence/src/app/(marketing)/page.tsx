@@ -35,14 +35,10 @@ function Wordmark() {
   );
 }
 
-// Illustrative sample rows for the hero signal panel. The GEICO NV number is
-// a real premium-weighted rollup from the dataset; the others are
-// representative. Display only — nothing here feeds the app.
-const SAMPLE_SIGNALS = [
-  { brand: "GEICO", meta: "Personal Auto · NV", impact: "+50.9%", dir: "up", tag: "prospect" },
-  { brand: "Travelers", meta: "Homeowners · AZ", impact: "+12.4%", dir: "up", tag: "prospect" },
-  { brand: "Allstate", meta: "Personal Auto · CO", impact: "−4.1%", dir: "down", tag: "defend" },
-] as const;
+// Illustrative numbers for the hero overview panel: the real Overview counts
+// for a captive State Farm agent licensed in AZ + NV (13 Prospect / 8 Defend,
+// per the verification set), and the real GEICO NV premium-weighted rollup.
+// Display only — nothing here feeds the app.
 
 export default function LandingPage(): React.JSX.Element {
   const navRef = useRef<HTMLElement>(null);
@@ -148,25 +144,33 @@ export default function LandingPage(): React.JSX.Element {
               </p>
             </div>
 
-            {/* Product tease — sample signals, styled in landing tokens only */}
+            {/* Product tease — mini Overview mock, styled in landing tokens only */}
             <div className="signal-panel" aria-hidden="true">
               <LogoMark className="panel-mark" />
               <div className="panel-head">
-                <span className="t">The past 3 months&apos; signals</span>
-                <span className="s">filtered to your states</span>
+                <span className="t">Your overview</span>
+                <span className="s">State Farm · AZ + NV</span>
               </div>
-              {SAMPLE_SIGNALS.map((s) => (
-                <div className="sig-row" key={s.brand}>
-                  <div className="sig-who">
-                    <div className="b">{s.brand}</div>
-                    <div className="m">{s.meta}</div>
-                  </div>
-                  <div className="sig-right">
-                    <span className={`sig-impact ${s.dir}`}>{s.impact}</span>
-                    <span className={`badge ${s.tag}`}>{s.tag}</span>
-                  </div>
+              <div className="ov-stats">
+                <div className="ov-stat prospect">
+                  <div className="lbl">Prospect</div>
+                  <div className="n">13</div>
+                  <div className="sub">carriers raising ≥ +5%</div>
                 </div>
-              ))}
+                <div className="ov-stat defend">
+                  <div className="lbl">Defend</div>
+                  <div className="n">8</div>
+                  <div className="sub">carriers cutting ≤ −2%</div>
+                </div>
+              </div>
+              <div className="ov-urgent">
+                <div className="lbl">Most urgent</div>
+                <div className="row">
+                  <b>GEICO</b>
+                  <span className="sig-impact up">+50.9%</span>
+                </div>
+                <div className="meta">Personal Auto · NV · 13.3k policyholders</div>
+              </div>
               <div className="panel-foot">
                 Premium-weighted, rolled up per filing — sourced from public
                 state filing systems.
