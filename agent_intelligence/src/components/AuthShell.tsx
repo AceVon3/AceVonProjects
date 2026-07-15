@@ -25,7 +25,16 @@ export default function AuthShell({ children }: { children: React.ReactNode }) {
         }}
       >
         {authConfigured ? (
-          children
+          <div style={{ display: "grid", gap: 14, justifyItems: "center" }}>
+            {children}
+            <p style={{ fontSize: "0.78rem", color: "var(--ink-mute)", margin: 0 }}>
+              By continuing you agree to our{" "}
+              <Link href="/privacy" style={{ color: "var(--brand)", fontWeight: 600 }}>
+                privacy policy
+              </Link>
+              .
+            </p>
+          </div>
         ) : (
           <div
             style={{

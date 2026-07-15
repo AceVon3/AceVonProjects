@@ -5,8 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+
 import { AgentType, loadProfile } from "@/lib/profile";
 import { syncProfile } from "@/lib/profileSync";
+
+const authConfigured = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 
 type NavItem = { label: string; href: string; icon: string; pinBottom?: boolean };
 
@@ -239,6 +243,42 @@ export default function NavBar(): React.JSX.Element {
           </span>
         )}
       </button>
+
+      {/* Account — avatar menu (profile, sign out) when signed in, a
+          sign-in tile while accounts are live but the visitor is signed
+          out (soft launch). Hidden entirely while auth is dormant. */}
+      {authConfigured && (
+        <div
+          className={[
+            "shrink-0 flex items-center justify-center",
+            "ml-2 md:ml-0 md:mt-3",
+            expanded ? "md:px-3 md:justify-start" : "md:mx-auto",
+          ].join(" ")}
+        >
+          <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
+          <SignedOut>
+            <Link
+              href="/sign-in"
+              aria-label="Sign in"
+              className="group relative flex w-11 h-11 items-center justify-center rounded-tile
+                         text-white/50 hover:text-white/80 hover:bg-white/5 transition-colors no-underline"
+            >
+              <i className="ti ti-login text-[19px]" aria-hidden />
+              <span
+                className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-1
+                           md:left-full md:translate-x-0 md:top-1/2 md:-translate-y-1/2 md:ml-3 md:mt-0
+                           whitespace-nowrap rounded-md bg-ink text-white text-11 font-medium
+                           px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-50"
+                role="tooltip"
+              >
+                Sign in
+              </span>
+            </Link>
+          </SignedOut>
+        </div>
+      )}
     </aside>
   );
 }

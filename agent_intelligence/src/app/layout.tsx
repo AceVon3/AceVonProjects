@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import SignOutCleanup from "@/components/SignOutCleanup";
 import "./globals.css";
+
+const authConfigured = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 
 export const metadata: Metadata = {
   title: "AgencyMan.ai",
@@ -20,6 +23,7 @@ export default function RootLayout({
       <body className="antialiased">
         {/* App chrome (sidebar NavBar) lives in (app)/layout.tsx so the
             marketing landing page can render without it. */}
+        {authConfigured && <SignOutCleanup />}
         {children}
       </body>
     </html>
@@ -27,7 +31,7 @@ export default function RootLayout({
 
   // Auth is dormant without a Clerk key (see src/middleware.ts): the tree
   // renders without ClerkProvider so no page may assume a session exists.
-  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) return page;
+  if (!authConfigured) return page;
   return <ClerkProvider>{page}</ClerkProvider>;
 }
 // Tabler icon webfont is now @imported in src/app/globals.css and
