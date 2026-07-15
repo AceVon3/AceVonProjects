@@ -408,21 +408,30 @@ export const RESOURCE_URLS: Record<
       "https://labor.arkansas.gov/labor/labor-standards/",
       "https://www.dol.gov/agencies/whd/fmla",
     ],
+    // PARTIAL by design: DFA withholding instructions PDF + branch page ground the withholding half; the UI-tax half stays ungroundable (DWS domains hard-block, A.C.A. 11-10 is Lexis-only). DWS page kept as the user link.
     payroll: [
       "https://dws.arkansas.gov/workforce-services/unemployment/employer-ui-information/",
+      "https://www.dfa.arkansas.gov/wp-content/uploads/withholdInstructions.pdf",
+      "https://www.dfa.arkansas.gov/office/taxes/income-tax-administration/withholding-tax-branch/",
     ],
+    // Act 796 of 1993 (enacted-act PDF on arkleg — the workers-comp reform law: 3+ employees mandate, exemptions, penalties) carries grounding; AWCC page kept as the user link. CAUTION: arkleg wrong paths return a 200 GIF placeholder — map exact verified paths only.
     workers_comp: [
       "https://labor.arkansas.gov/workers-comp/awcc-about-us/basic-facts/",
+      "https://arkleg.state.ar.us/Home/FTPDocument?path=/ACTS/1993/Public/796.pdf",
     ],
+    // Act 853 of 2019 Sec. 7 (amendatory PDF carrying A.C.A. 11-4-405 operative text: next-payday rule + double-wages penalty) carries grounding; blocked ADOL page kept as the user link.
     termination: [
       "https://labor.arkansas.gov/labor/labor-standards/wage-claims/",
+      "https://arkleg.state.ar.us/Home/FTPDocument?path=/ACTS/2019R/Public/ACT853.pdf",
     ],
     nexus: [
       "https://insurance.arkansas.gov/industry-regulation/licensing/",
       "https://www.sos.arkansas.gov/business-commercial-services-bcs/",
     ],
+    // Act 1276 of 1997 (New Hire Registry act PDF: mandate + 20-day deadline) carries grounding; portal page kept as the user link (fetcher-blocked).
     hiring: [
       "https://portal.arkansas.gov/service/report-new-hire-or-re-hire/",
+      "https://arkleg.state.ar.us/Home/FTPDocument?path=/ACTS/1997/Public/1276.pdf",
     ],
     remote: [
       "https://labor.arkansas.gov/labor/labor-standards/",
@@ -570,7 +579,9 @@ export const RESOURCE_URLS: Record<
       "https://cdle.colorado.gov/sites/cdle/files/adopted_2026_pay_calc_order_7_ccr_1103-14_12.8.25.pdf",
     ],
     // EXCEPTIONS ONLY — cdle.colorado.gov/termination (the doctrine page) hard-403s all fetchers; may refuse until a doctrine source exists.
+    // CJI-Civ Chapter 31 'Wrongful Discharge' (official Judicial Branch pattern jury instructions PDF: 31:5 at-will defined + implied-contract/promissory-estoppel/public-policy exceptions) carries the doctrine half; CCRD pages carry exceptions. The WI jury-instruction pattern, CO edition.
     at_will: [
+      "https://www.coloradojudicial.gov/sites/default/files/2024-04/Chapter%2031.pdf",
       "https://ccrd.colorado.gov/common-civil-rights-questions",
       "https://ccrd.colorado.gov/discrimination",
     ],
@@ -2071,8 +2082,13 @@ export const RESOURCE_URLS: Record<
       "https://llr.sc.gov/wage/",
       "https://www.dol.gov/agencies/whd/fmla",
     ],
+    // SC Code Title 41 Ch. 31 (UI contributions, full chapter HTML on
+    // scstatehouse.gov — hunt-4 straggler fix) carries grounding; DEW pages
+    // kept as user links.
     payroll: [
       "https://dew.sc.gov/employers/unemployment-tax-information",
+      "https://www.scstatehouse.gov/code/t41c031.php",
+      "https://uitax.dew.sc.gov/employers-page.html",
     ],
     workers_comp: [
       "https://wcc.sc.gov/employer-faqs",
@@ -2199,8 +2215,11 @@ export const RESOURCE_URLS: Record<
     // to the generator's fetch, so the statute site + the TWC employer
     // handbook subdomain (both probe-verified) carry the grounding.
     // statutes.capitol LA.201 removed (SPA shell). twc is challenge-walled — stays coming-soon until a fetchable source exists.
+    // efte employer-handbook pages (UI liability tests $1,500/quarter + 20 weeks; quarterly wage reports; tax on first $9,000/employee) carry grounding; challenge-walled twc page kept as the user link.
     payroll: [
       "https://www.twc.texas.gov/programs/unemployment-tax",
+      "https://efte.twc.texas.gov/ui_law_coverage_issues.html",
+      "https://efte.twc.texas.gov/how_ui_claims_affect_employers.html",
     ],
     workers_comp: [
       "https://www.tdi.texas.gov/wc/employer/index.html",

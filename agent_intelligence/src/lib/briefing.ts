@@ -160,6 +160,36 @@ export const NO_REMOTE_LAW_STATES: ReadonlySet<string> = new Set([
   "ME", "MN", "MO", "MS", "NC", "ND", "OR", "SC", "SD", "TX",
 ]);
 
+// Product-copy cards for (state, topic) cells where NO state law exists —
+// the honest content is the absence itself, which no official page states,
+// so it can't be grounded from a source. Same discipline as the remote
+// variant: renders WITHOUT a last-checked date or AI-summary framing, and
+// the official links stay on the card. Extend this map only for verified
+// absences (a hunt round confirmed nothing exists to find).
+export type NoStateLawCard = { title: string; body: string };
+
+const NO_STATE_LAW_CARDS: Record<string, NoStateLawCard> = {
+  // 2026-07-15: three hunt rounds confirmed MS has no final-paycheck
+  // statute and no state wage-and-hour agency (MDES handles UI only and
+  // routes wage matters to the US DOL).
+  "MS/termination": {
+    title: "No state final-paycheck law",
+    body: "Mississippi has no state law setting a final-paycheck deadline or other termination-pay rules, and no state wage-and-hour agency — pay timing after separation is governed by the federal FLSA's regular-payday requirements and the employer's own written policies. Federal wage disputes go to the U.S. Department of Labor.",
+  },
+};
+
+// The card content for a (state, topic) cell whose honest answer is "no
+// state law" — the remote-work set plus the explicit per-pair map above.
+export function noStateLawCard(state: string, topic: string): NoStateLawCard | null {
+  if (topic === "remote" && NO_REMOTE_LAW_STATES.has(state)) {
+    return {
+      title: "No state remote-work law",
+      body: `There are no remote-work laws in this state — ${stateName(state)} has no statute specific to remote work. Its general employment rules (wage and hour, leave, worker protections) apply based on where the employee performs the work.`,
+    };
+  }
+  return NO_STATE_LAW_CARDS[`${state}/${topic}`] ?? null;
+}
+
 // Size-gate framings follow WA's pattern: state the threshold, the agent's N,
 // the neutral above/below comparison, and ALWAYS defer to verification.
 const STATE_CONFIG: Record<string, StateBriefingConfig> = {

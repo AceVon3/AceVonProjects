@@ -1,6 +1,6 @@
 "use client";
 
-import { NO_REMOTE_LAW_STATES, stateName } from "@/lib/briefing";
+import { noStateLawCard } from "@/lib/briefing";
 import type { ResourceKey } from "@/lib/resourceUrls";
 
 export type ComplianceCardProps = {
@@ -73,12 +73,13 @@ export default function ComplianceCard({
   last_checked,
 }: ComplianceCardProps): React.JSX.Element {
   const ungrounded = !title || !summary;
-  // Remote Work in a state with no remote-work-specific law: say so plainly
-  // (product decision 2026-07-14) instead of a perpetual "coming soon".
-  // Product copy, not a grounded summary — renders without a last-checked
-  // date; source links (the state's employment-standards hub) stay.
-  const isNoStateLaw =
-    ungrounded && topic === "remote" && NO_REMOTE_LAW_STATES.has(state);
+  // Cells whose honest content is "no state law exists" (remote work in
+  // states without one; MS final pay): say so plainly (product decisions
+  // 2026-07-14/15) instead of a perpetual "coming soon". Product copy, not
+  // a grounded summary — renders without a last-checked date; the official
+  // source links stay.
+  const noLaw = ungrounded ? noStateLawCard(state, topic) : null;
+  const isNoStateLaw = noLaw !== null;
   const isComingSoon = ungrounded && !isNoStateLaw;
   const tagLabel = TOPIC_LABELS[topic];
 
@@ -109,11 +110,7 @@ export default function ComplianceCard({
           isComingSoon ? "text-ink-3" : "text-ink",
         ].join(" ")}
       >
-        {isNoStateLaw
-          ? "No state remote-work law"
-          : isComingSoon
-            ? "Summary coming soon"
-            : title}
+        {noLaw ? noLaw.title : isComingSoon ? "Summary coming soon" : title}
       </h3>
 
       {/* Summary */}
@@ -123,8 +120,8 @@ export default function ComplianceCard({
           isComingSoon ? "text-ink-3" : "text-ink-2",
         ].join(" ")}
       >
-        {isNoStateLaw
-          ? `There are no remote-work laws in this state — ${stateName(state)} has no statute specific to remote work. Its general employment rules (wage and hour, leave, worker protections) apply based on where the employee performs the work.`
+        {noLaw
+          ? noLaw.body
           : isComingSoon
             ? "We’re preparing a grounded summary for this topic. The official source link is available below."
             : summary}
