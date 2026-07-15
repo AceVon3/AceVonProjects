@@ -21,7 +21,9 @@ const isProtectedRoute = createRouteMatcher([
   "/my-carriers(.*)",
   "/compliance(.*)",
   "/positioning(.*)",
-  "/api/profile(.*)",
+  // /api/profile is NOT listed: the route does its own auth() check and
+  // answers a proper 401 JSON, where middleware protect() would 404
+  // non-browser requests.
 ]);
 
 export default authConfigured
