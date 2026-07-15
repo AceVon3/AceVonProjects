@@ -14,6 +14,7 @@ import {
   saveProfile,
   validateProfile,
 } from "@/lib/profile";
+import { pushProfile } from "@/lib/profileSync";
 import { STATES } from "@/lib/states";
 
 // Each office is held as all-string fields for controlled inputs.
@@ -206,7 +207,7 @@ export default function ProfileForm(): React.JSX.Element {
     );
   }, [empSearch]);
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const draft = toProfile(state);
     const errs = validateProfile(draft);
@@ -229,6 +230,14 @@ export default function ProfileForm(): React.JSX.Element {
     const saveErrs = saveProfile(profile);
     if (saveErrs.length > 0) {
       setErrors(errorsByField(saveErrs));
+      return;
+    }
+    // Local cache saved; now persist to the signed-in user's account.
+    // Signed-out / accounts-dormant resolve with no errors (local-only
+    // mode) — only a genuine server-side rejection blocks the redirect.
+    const serverErrs = await pushProfile(profile);
+    if (serverErrs.length > 0) {
+      setErrors(errorsByField(serverErrs));
       return;
     }
     setErrors({});

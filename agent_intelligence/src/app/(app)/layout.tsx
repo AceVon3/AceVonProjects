@@ -1,4 +1,5 @@
 import NavBar from "@/components/NavBar";
+import ProfileBootstrap from "@/components/ProfileBootstrap";
 
 // Layout for the application proper (Overview, Prospect, Defend, …).
 // The (app) route group exists so the marketing landing page at /landing
@@ -15,7 +16,11 @@ export default function AppLayout({
     // stretching the flex item.
     <div className="flex flex-col md:flex-row min-h-screen">
       <NavBar />
-      <div className="flex-1 min-w-0">{children}</div>
+      <div className="flex-1 min-w-0">
+        {/* Pages read the profile synchronously from localStorage; the
+            bootstrap refreshes that cache from the account first. */}
+        <ProfileBootstrap>{children}</ProfileBootstrap>
+      </div>
     </div>
   );
 }

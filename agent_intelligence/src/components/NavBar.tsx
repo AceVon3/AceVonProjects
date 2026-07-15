@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { AgentType, loadProfile } from "@/lib/profile";
+import { syncProfile } from "@/lib/profileSync";
 
 type NavItem = { label: string; href: string; icon: string; pinBottom?: boolean };
 
@@ -68,8 +69,18 @@ export default function NavBar(): React.JSX.Element {
   // layout, and the rail must pick the new profile up immediately (the stale
   // two-item rail after first save was a real bug).
   useEffect(() => {
-    const p = loadProfile();
-    setAgentType(p?.agent_type ?? null);
+    // Wait for the account sync (memoized — settled instantly after the
+    // first await) so a fresh device shows the full rail, not the
+    // no-profile minimal one, on first paint after sign-in.
+    let mounted = true;
+    syncProfile().then(() => {
+      if (!mounted) return;
+      const p = loadProfile();
+      setAgentType(p?.agent_type ?? null);
+    });
+    return () => {
+      mounted = false;
+    };
   }, [pathname]);
 
   // Restore the expansion preference after hydration (default: expanded —
