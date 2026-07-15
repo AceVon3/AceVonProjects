@@ -117,9 +117,11 @@ async function main(): Promise<void> {
   // Coverage copy (2026-07-15): derives live from states.ts — assert it
   // carries a real count and the stale "8 states" phrasing never returns.
   const covNote = (await page.locator('[data-testid="licensed-coverage-note"]').textContent()) ?? "";
-  check("licensed-states note states the live coverage count (not the stale '8 states')",
-    /rate-filing data for \d{2} states/.test(covNote) && !/for 8 states/.test(covNote),
-    { covNote: covNote.slice(0, 120) });
+  check("licensed-states note leads with all-50 coverage + live filing count",
+    /We cover all 50 states/.test(covNote)
+      && /live in \d{2} of them/.test(covNote)
+      && !/for 8 states/.test(covNote),
+    { covNote: covNote.slice(0, 140) });
   const empNote = (await page.locator('[data-testid="employee-states-note"]').textContent()) ?? "";
   check("employee-states note describes the live compliance briefing (not 'coming soon')",
     /Compliance briefing/i.test(empNote) && !/coming soon/i.test(empNote));

@@ -596,12 +596,15 @@ export default function ProfileForm(): React.JSX.Element {
           Licensed / doing business states <ReqStar />
         </SecLabel>
         {/* Coverage copy derives from states.ts so it can never go stale
-            again (it sat at "8 states" long after coverage hit 45). */}
+            again (it sat at "8 states" long after coverage hit 45). Leads
+            with the 50-state coverage (compliance spans every state); the
+            filing-data note explains why some states aren't selectable in
+            THIS picker, which gates on rate-filing coverage. */}
         <p className="text-11 mb-2 text-ink-3" data-testid="licensed-coverage-note">
-          We have rate-filing data for {STATES.filter(s => s.data_coverage).length} states
-          — every state except{" "}
+          We cover all 50 states. Rate-change signals (Prospect &amp; Defend)
+          are live in {STATES.filter(s => s.data_coverage).length} of them —{" "}
           {STATES.filter(s => !s.data_coverage).map(s => s.name).join(", ")}
-          {" "}(coming soon). You can only select states we cover today.
+          {" "}coming soon — and only those are selectable here.
         </p>
         <StateChipRow
           selected={state.licensed_states}
