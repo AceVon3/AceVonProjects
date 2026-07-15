@@ -595,9 +595,13 @@ export default function ProfileForm(): React.JSX.Element {
         <SecLabel>
           Licensed / doing business states <ReqStar />
         </SecLabel>
-        <p className="text-11 mb-2 text-ink-3">
-          We currently have data for 8 states, with all 50 coming soon. You can only
-          select states we cover today.
+        {/* Coverage copy derives from states.ts so it can never go stale
+            again (it sat at "8 states" long after coverage hit 45). */}
+        <p className="text-11 mb-2 text-ink-3" data-testid="licensed-coverage-note">
+          We have rate-filing data for {STATES.filter(s => s.data_coverage).length} states
+          — every state except{" "}
+          {STATES.filter(s => !s.data_coverage).map(s => s.name).join(", ")}
+          {" "}(coming soon). You can only select states we cover today.
         </p>
         <StateChipRow
           selected={state.licensed_states}
@@ -627,8 +631,10 @@ export default function ProfileForm(): React.JSX.Element {
           <SecLabel>
             Employee work / live states <ReqStar />
           </SecLabel>
-          <p className="text-11 mb-2 text-ink-3">
-            Used for compliance features coming soon. All states selectable.
+          <p className="text-11 mb-2 text-ink-3" data-testid="employee-states-note">
+            Drives your Compliance briefing — HR rules, payroll registrations,
+            and employee-count thresholds for every state your team works or
+            lives in. All 50 states covered and selectable.
           </p>
           <StateChipRow
             selected={state.employee_states}

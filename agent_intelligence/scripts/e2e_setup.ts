@@ -114,6 +114,16 @@ async function main(): Promise<void> {
   check("nexus threshold panel does NOT render (parked 2026-07-14)",
     (await page.locator('[data-testid="nexus-threshold-panel"]').count()) === 0);
 
+  // Coverage copy (2026-07-15): derives live from states.ts — assert it
+  // carries a real count and the stale "8 states" phrasing never returns.
+  const covNote = (await page.locator('[data-testid="licensed-coverage-note"]').textContent()) ?? "";
+  check("licensed-states note states the live coverage count (not the stale '8 states')",
+    /rate-filing data for \d{2} states/.test(covNote) && !/for 8 states/.test(covNote),
+    { covNote: covNote.slice(0, 120) });
+  const empNote = (await page.locator('[data-testid="employee-states-note"]').textContent()) ?? "";
+  check("employee-states note describes the live compliance briefing (not 'coming soon')",
+    /Compliance briefing/i.test(empNote) && !/coming soon/i.test(empNote));
+
   await page.getByRole("button", { name: "Save changes" }).click();
 
   await page.waitForURL(BASE + "/overview", { timeout: 5000 }).catch(() => {});
