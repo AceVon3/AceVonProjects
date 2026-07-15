@@ -24,8 +24,24 @@ export type ProfileSync = {
 let inflight: Promise<ProfileSync> | null = null;
 
 export function syncProfile(): Promise<ProfileSync> {
-  if (!inflight) inflight = doSync();
+  if (!inflight) {
+    inflight = doSync().then(result => {
+      // Never cache a signed-out / unavailable answer: Clerk swaps the
+      // session client-side (sign-in and sign-out happen with NO page
+      // reload), so the next caller must re-check or a user signing in
+      // would keep getting the stale "no profile" result and be bounced
+      // to an empty /setup.
+      if (!result.serverAvailable) inflight = null;
+      return result;
+    });
+  }
   return inflight;
+}
+
+// Drop the memoized result entirely — called on sign-out so a subsequent
+// same-page-load sign-in (possibly by a different user) starts clean.
+export function resetProfileSync(): void {
+  inflight = null;
 }
 
 async function doSync(): Promise<ProfileSync> {
