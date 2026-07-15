@@ -389,7 +389,9 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   }
 }
 
-.lp h1 {
+/* Scoped to the hero: .lp also wraps the Clerk auth cards (AuthShell),
+   whose internal <h1> must NOT inherit the display-size hero type. */
+.lp .hero h1 {
   font-size: clamp(2.2rem, 4.6vw, 3.4rem);
   font-weight: 800;
   letter-spacing: -0.025em;
@@ -398,7 +400,7 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   margin: 24px 0 18px;
   color: var(--ink);
 }
-.lp h1 .accent {
+.lp .hero h1 .accent {
   color: var(--brand);
 }
 .lp .lead {
