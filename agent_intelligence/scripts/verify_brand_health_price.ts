@@ -15,7 +15,13 @@ import Database from "better-sqlite3";
 import path from "node:path";
 
 import { BH_RANGE_KEYS } from "../src/lib/brandHealth";
-import { computePriceMetrics, rangeWindows, scoreNets } from "../src/lib/brandHealthPrice";
+import {
+  computePriceMetrics,
+  priceTrend,
+  priorRangeWindows,
+  rangeWindows,
+  scoreNets,
+} from "../src/lib/brandHealthPrice";
 import { getDataAsOf } from "../src/lib/db";
 import { BRANDS, type Brand } from "../src/lib/constants";
 
@@ -52,9 +58,30 @@ function independentNets(state: string, start: string, end: string): Map<Brand, 
 console.log("window resolution");
 {
   check("12m window ends at asOf", windows["12m"].end === asOf, windows["12m"]);
-  check("12m window starts 12 months back", windows["12m"].start === "2025-06-11", windows["12m"].start);
+  check("12m window starts 12 months back", windows["12m"].start === "2025-07-16", windows["12m"].start);
   check("ytd starts Jan 1 of asOf year", windows.ytd.start === "2026-01-01");
   check("q2 is calendar Q2 of asOf year", windows.q2.start === "2026-04-01" && windows.q2.end === "2026-06-30");
+}
+
+console.log("trend — prior windows + band");
+{
+  const priors = priorRangeWindows(asOf);
+  check("prior 12m window is the 12 months before",
+    priors["12m"].window.end === windows["12m"].start &&
+    priors["12m"].window.start === "2024-07-16", priors["12m"]);
+  // Month-shift semantics: q2 (Apr 1 - Jun 30) minus 3 months = Jan 1 -
+  // Mar 30 — one day short of calendar Q1 by design (uniform month shift).
+  check("prior quarter = q2 shifted back 3 months",
+    priors.q2.window.start === "2026-01-01" && priors.q2.window.end === "2026-03-30", priors.q2);
+  check("ytd compares to the same span last year",
+    priors.ytd.window.start === "2025-01-01" && priors.ytd.label === "same period last year", priors.ytd);
+  check("prior windows never precede the dataset (>= 2024-01-01)",
+    Object.values(priors).every(p => p.window.start >= "2024-01-01"),
+    Object.fromEntries(Object.entries(priors).map(([k, p]) => [k, p.window.start])));
+  check("+3pp -> growing (accelerating)", priceTrend(5, 2) === "growing");
+  check("-3pp -> declining (cooling)", priceTrend(0, 3) === "declining");
+  check("inside band -> stable", priceTrend(4, 2) === "stable" && priceTrend(2, 4) === "stable");
+  check("Encompass AZ case: +24 -> 0 reads cooling", priceTrend(0.0, 24.0) === "declining");
 }
 
 for (const state of ["AZ", "NV", "GA", "CA"]) {

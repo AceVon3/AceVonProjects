@@ -21,6 +21,7 @@ import {
   BH_RANGE_KEYS,
   type BhRangeKey,
   type SourceBackedMetric,
+  type TrendDirection,
 } from "./brandHealth";
 
 type WindowSpec = { start: string; end: string };
@@ -50,6 +51,49 @@ export function rangeWindows(asOf: string): Record<BhRangeKey, WindowSpec> {
     q4: { start: `${y}-10-01`, end: `${y}-12-31` },
   };
 }
+
+// Prior-period windows for the trend arrow: each range shifted back by its
+// own calendar length (quarters → the preceding quarter; ytd → the same
+// span one year earlier, so the comparison stays seasonal-like-for-like).
+// The pre-2025 filings (data reaches back to 2024-01) exist precisely to
+// serve as these baselines — they're outside every scoring window.
+export function priorRangeWindows(
+  asOf: string,
+): Record<BhRangeKey, { window: WindowSpec; label: string }> {
+  const w = rangeWindows(asOf);
+  const shift = (spec: WindowSpec, months: number): WindowSpec => ({
+    start: monthsBack(spec.start, months),
+    end: monthsBack(spec.end, months),
+  });
+  return {
+    "3m": { window: shift(w["3m"], 3), label: "prior 3 months" },
+    "6m": { window: shift(w["6m"], 6), label: "prior 6 months" },
+    "12m": { window: shift(w["12m"], 12), label: "prior 12 months" },
+    ytd: { window: shift(w.ytd, 12), label: "same period last year" },
+    q1: { window: shift(w.q1, 3), label: "prior quarter" },
+    q2: { window: shift(w.q2, 3), label: "prior quarter" },
+    q3: { window: shift(w.q3, 3), label: "prior quarter" },
+    q4: { window: shift(w.q4, 3), label: "prior quarter" },
+  };
+}
+
+// Momentum trend: net movement now vs the prior period, in percentage
+// points. Within ±TREND_BAND_PP the momentum reads steady. "growing" =
+// rate-taking accelerating (bad for policyholders — the UI colors it so).
+export const TREND_BAND_PP = 3;
+
+export function priceTrend(net: number, priorNet: number): TrendDirection {
+  const diff = net - priorNet;
+  if (diff >= TREND_BAND_PP) return "growing";
+  if (diff <= -TREND_BAND_PP) return "declining";
+  return "stable";
+}
+
+const TREND_WORD: Record<TrendDirection, string> = {
+  growing: "accelerating",
+  stable: "steady",
+  declining: "cooling",
+};
 
 type BrandNet = { brand: Brand; net: number; filings: number; hasScraped: boolean };
 
@@ -115,6 +159,7 @@ export function computePriceMetrics(state: string): PricePillarByBrand {
 
   const asOf = getDataAsOf();
   const windows = rangeWindows(asOf);
+  const priors = priorRangeWindows(asOf);
   const result: PricePillarByBrand = {};
 
   for (const range of BH_RANGE_KEYS) {
@@ -122,8 +167,18 @@ export function computePriceMetrics(state: string): PricePillarByBrand {
     if (nets.length === 0) continue;
     const netValues = nets.map(n => n.net);
     const peers = nets.length;
+    // Prior-period nets feed the trend arrow only — never the score.
+    const priorNets = new Map(
+      queryNets(state, priors[range].window).map(p => [p.brand, p.net]),
+    );
 
     for (const n of nets) {
+      const prior = priorNets.get(n.brand);
+      const trend = prior === undefined ? undefined : priceTrend(n.net, prior);
+      const trendNote =
+        trend === undefined
+          ? ""
+          : ` Momentum ${TREND_WORD[trend]}: ${fmtPct(n.net)} now vs ${fmtPct(prior!)} ${priors[range].label}.`;
       const metric: SourceBackedMetric = {
         value: scoreNets(netValues, n.net),
         sourceTier: n.hasScraped ? "official" : "licensed",
@@ -135,10 +190,12 @@ export function computePriceMetrics(state: string): PricePillarByBrand {
         confidence: peers >= 3 ? "medium" : "low",
         refreshCadence: "monthly",
         scope: "state",
+        trend,
         note:
           `Filed rate momentum: net ${fmtPct(n.net)} across ${n.filings} filing${n.filings === 1 ? "" : "s"} ` +
           `vs ${peers - 1} peer brand${peers - 1 === 1 ? "" : "s"} in this window. ` +
-          `Lower filed increases than peers score higher. Rate movement, not price levels.`,
+          `Lower filed increases than peers score higher.${trendNote} ` +
+          `Rate movement, not price levels.`,
       };
       (result[n.brand] ??= {})[range] = metric;
     }

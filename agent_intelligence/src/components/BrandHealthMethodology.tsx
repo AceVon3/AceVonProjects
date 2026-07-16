@@ -23,7 +23,7 @@ const SECTIONS: Array<{
       "Public premium context (clearly marked estimated, low confidence)",
     ],
     notes:
-      "This measures rate movement, not absolute price levels — a smaller increase than peers is not proof of a cheaper premium. Carrier-level premium data requires licensed feeds (Quadrant, S&P RateWatch) that are not part of v1.",
+      "This measures rate movement, not absolute price levels — a smaller increase than peers is not proof of a cheaper premium. Carrier-level premium data requires licensed feeds (Quadrant, S&P RateWatch) that are not part of v1. Cards also show momentum trend (▲ accelerating / → steady / ▼ cooling, ±3pp vs the preceding period, using filing history back to 2024) — informational only, it does not change the score.",
   },
   {
     title: "Customer Sentiment",

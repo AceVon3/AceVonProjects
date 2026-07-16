@@ -44,14 +44,24 @@ function sourceTag(m: SourceBackedMetric): string {
   return parts.join(" · ");
 }
 
-// Trend glyph for time-series pillars (Search). Distinct shapes per
-// direction so the signal never relies on color alone; the tooltip note
-// carries the exact delta.
-const TREND_GLYPHS = {
-  growing: { glyph: "▲", cls: "text-green-text", label: "demand growing" },
-  stable: { glyph: "→", cls: "text-ink-3", label: "demand stable" },
-  declining: { glyph: "▼", cls: "text-red-text", label: "demand declining" },
-} as const;
+// Trend glyphs for time-series pillars. Distinct shapes per direction so
+// the signal never relies on color alone; the tooltip note carries the
+// exact delta. Color encodes GOODNESS, which inverts per pillar: growing
+// search demand is good (green), growing rate-taking is bad (red).
+const TREND_GLYPHS: Partial<
+  Record<PillarKey, Record<NonNullable<SourceBackedMetric["trend"]>, { glyph: string; cls: string; label: string }>>
+> = {
+  search: {
+    growing: { glyph: "▲", cls: "text-green-text", label: "demand growing" },
+    stable: { glyph: "→", cls: "text-ink-3", label: "demand stable" },
+    declining: { glyph: "▼", cls: "text-red-text", label: "demand declining" },
+  },
+  price: {
+    growing: { glyph: "▲", cls: "text-red-text", label: "rate increases accelerating" },
+    stable: { glyph: "→", cls: "text-ink-3", label: "rate momentum steady" },
+    declining: { glyph: "▼", cls: "text-green-text", label: "rate increases cooling" },
+  },
+};
 
 function ScoreRing({
   score,
@@ -166,13 +176,13 @@ export default function BrandHealthCard({
                       {m.value}
                     </span>
                     <span className="w-3 shrink-0 text-10 text-center" data-testid="bh-trend">
-                      {m.trend && (
+                      {m.trend && TREND_GLYPHS[k] && (
                         <span
-                          className={TREND_GLYPHS[m.trend].cls}
-                          title={TREND_GLYPHS[m.trend].label}
-                          aria-label={TREND_GLYPHS[m.trend].label}
+                          className={TREND_GLYPHS[k]![m.trend].cls}
+                          title={TREND_GLYPHS[k]![m.trend].label}
+                          aria-label={TREND_GLYPHS[k]![m.trend].label}
                         >
-                          {TREND_GLYPHS[m.trend].glyph}
+                          {TREND_GLYPHS[k]![m.trend].glyph}
                         </span>
                       )}
                     </span>
