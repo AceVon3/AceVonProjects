@@ -9,6 +9,8 @@ import {
 } from "@/lib/brandHealth";
 import { BRAND_HEALTH_SNAPSHOT } from "@/lib/brandHealthData";
 import { computePriceMetrics } from "@/lib/brandHealthPrice";
+import { computeSearchMetrics } from "@/lib/brandHealthSearch";
+import { SEARCH_SNAPSHOT } from "@/lib/brandHealthSearchData";
 import { SENTIMENT_SNAPSHOT } from "@/lib/brandHealthSentimentData";
 import { WEBSITE_SNAPSHOT } from "@/lib/brandHealthWebsiteData";
 import { BRANDS, COVERED_STATES, type Brand } from "@/lib/constants";
@@ -36,13 +38,17 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   const snapshot = BRAND_HEALTH_SNAPSHOT;
   const price = computePriceMetrics(state);
+  // Search: sliced live from the generated DataForSEO snapshot (a state the
+  // snapshot omitted gets {} — the honest no-data path); seed until the
+  // first refresh run.
+  const search = SEARCH_SNAPSHOT ? computeSearchMetrics(state) : null;
 
   const brands = Object.fromEntries(
     BRANDS.map(brand => {
       const seeded = snapshot.states[state]?.[brand];
       const entry: BrandStateMetrics = {
         price: price[brand] ?? {},
-        search: seeded?.search ?? {},
+        search: search ? (search[brand] ?? {}) : (seeded?.search ?? {}),
       };
       return [brand, entry];
     }),

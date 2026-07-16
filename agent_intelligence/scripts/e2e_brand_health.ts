@@ -1,8 +1,9 @@
 // End-to-end check of /brand-health against a running dev server.
 //
-// Verifies (Phase 2 — seed snapshot):
+// Verifies (all four pillars live — Price/Sentiment/Website/Search):
 // - nav rail shows the Brand Health item; route renders for a profiled agent
-// - seed preview banner is present (snapshot is still tier "seed")
+// - seed preview banner is ABSENT (no pillar serves seed data anymore; it
+//   must reappear on its own if a generated snapshot is ever reverted)
 // - all 13 brand cards render, each with 4 pillar rows
 // - default weights formula reads 30/25/20/25
 // - moving a slider updates the formula, shows Customized + Reset, and
@@ -87,7 +88,7 @@ async function main() {
     (await navItem?.getAttribute("data-active")) === "true",
   );
 
-  check("seed preview banner shown", (await page.$('[data-testid="bh-seed-banner"]')) !== null);
+  check("seed preview banner absent (all pillars live)", (await page.$('[data-testid="bh-seed-banner"]')) === null);
 
   const cards = await page.$$('[data-testid="bh-card"]');
   check("13 brand cards render", cards.length === 13, cards.length);
