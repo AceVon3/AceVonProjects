@@ -15,6 +15,7 @@ import {
   computeSearchMetrics,
   rangeMonthIndexes,
   scoreSearchVolumes,
+  trendDirection,
 } from "../src/lib/brandHealthSearch";
 import { SEARCH_SNAPSHOT } from "../src/lib/brandHealthSearchData";
 import { BH_RANGE_KEYS, type BhRangeKey } from "../src/lib/brandHealth";
@@ -60,6 +61,36 @@ console.log("pure math — scoreSearchVolumes (log-scale peer rank)");
   check("monotonic", scoreSearchVolumes(vols, 1000) < scoreSearchVolumes(vols, 18100));
   check("all-equal -> neutral 60", scoreSearchVolumes([500, 500], 500) === 60);
   check("zero volume floors at 30 (with peers)", scoreSearchVolumes([0, 1000], 0) === 30);
+}
+
+console.log("pure math — trendDirection (display-only, ±10% band)");
+{
+  // 12-slot series; window = last 3 (indexes 9-11), prior period = 6-8.
+  const flat = [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100];
+  const t1 = trendDirection(flat, [9, 10, 11]);
+  check("flat series -> stable via prior period",
+    t1?.direction === "stable" && t1?.basis === "prior-period" && t1?.deltaPct === 0, t1);
+
+  const surge = [...flat.slice(0, 9), 150, 150, 150];
+  const t2 = trendDirection(surge, [9, 10, 11]);
+  check("+50% vs prior 3 months -> growing", t2?.direction === "growing" && Math.abs(t2.deltaPct - 50) < 1e-9, t2);
+
+  const drop = [...flat.slice(0, 9), 85, 85, 85];
+  const t3 = trendDirection(drop, [9, 10, 11]);
+  check("-15% -> declining", t3?.direction === "declining", t3);
+
+  const inBand = [...flat.slice(0, 9), 109, 109, 109];
+  check("+9% stays inside the stable band", trendDirection(inBand, [9, 10, 11])?.direction === "stable");
+
+  // Full 12m window has no prior period -> intra-window halves.
+  const ramp = [50, 50, 50, 50, 50, 50, 100, 100, 100, 100, 100, 100];
+  const t4 = trendDirection(ramp, ramp.map((_, i) => i));
+  check("12m window falls back to intra-window halves",
+    t4?.basis === "intra-window" && t4?.direction === "growing" && Math.abs(t4.deltaPct - 100) < 1e-9, t4);
+
+  check("all-null window -> null", trendDirection([null, null, null, null], [2, 3]) === null);
+  const zeroPrior = [0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 40, 40];
+  check("zero prior + demand now -> growing", trendDirection(zeroPrior, [9, 10, 11])?.direction === "growing");
 }
 
 console.log("keyword + state maps");
@@ -135,6 +166,16 @@ if (!SEARCH_SNAPSHOT) {
       check(`${state}/${range}: tier licensed, scope state, keyword cited`,
         sample?.sourceTier === "licensed" && sample?.scope === "state" &&
         /Branded search demand/.test(sample?.note ?? ""));
+      // Trend: every metric with >= 2 window months should carry a direction
+      // that matches an independent recomputation, disclosed in the note.
+      if (idxs.length >= 2 && sample) {
+        const series = stateData[sums[0][0]]!;
+        const indep = trendDirection(series, idxs);
+        check(`${state}/${range}: trend matches recomputation and is disclosed`,
+          sample.trend === indep?.direction &&
+          (indep === null || /Demand (growing|stable|declining)/.test(sample.note ?? "")),
+          { stored: sample.trend, expected: indep?.direction });
+      }
     }
   }
 }

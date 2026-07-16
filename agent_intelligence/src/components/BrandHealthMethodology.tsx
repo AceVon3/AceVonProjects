@@ -42,9 +42,9 @@ const SECTIONS: Array<{
     title: "Search Interest",
     scope: "State-scoped · varies with the date range",
     formula:
-      "Normalized brand search-interest score by state and period, from a stored monthly series sliced to the selected window.",
+      "Normalized brand search-interest score by state and period, from a stored monthly series sliced to the selected window. Cards also show demand trend direction (▲ growing / → stable / ▼ declining, ±10% band vs the prior period) — informational only, it does not change the score.",
     sources: [
-      "DataForSEO (Google Trends-equivalent, state-level)",
+      "DataForSEO (Google Ads search volume, state-level)",
       "Branded keyword demand",
     ],
   },

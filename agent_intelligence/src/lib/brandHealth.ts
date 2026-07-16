@@ -33,6 +33,11 @@ export type SourceTier =
 
 export type Confidence = "high" | "medium" | "low";
 
+// Direction of the underlying series across the selected window (only
+// time-series pillars can carry one — Search today). Vocabulary matches the
+// build manual's trend labels. Display-only: it never changes the score.
+export type TrendDirection = "growing" | "stable" | "declining";
+
 export type SourceBackedMetric = {
   value: number;              // pillar scores are always 0-100
   sourceTier: SourceTier;
@@ -49,6 +54,7 @@ export type SourceBackedMetric = {
   // state and the UI must say so rather than imply state precision.
   scope: "state" | "national";
   note?: string;
+  trend?: TrendDirection;
 };
 
 // ---------------------------------------------------------------------------

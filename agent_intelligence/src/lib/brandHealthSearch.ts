@@ -21,6 +21,7 @@ import {
   BH_RANGE_KEYS,
   type BhRangeKey,
   type SourceBackedMetric,
+  type TrendDirection,
 } from "./brandHealth";
 import { SEARCH_SNAPSHOT } from "./brandHealthSearchData";
 
@@ -121,6 +122,65 @@ export function scoreSearchVolumes(volumes: number[], mine: number): number {
   return Math.round(30 + 60 * ((Math.log10(mine + 1) - min) / (max - min)));
 }
 
+// ---------------------------------------------------------------------------
+// Trend direction (display-only — never changes the score)
+// ---------------------------------------------------------------------------
+
+export const TREND_THRESHOLD_PCT = 10;
+
+export type TrendResult = {
+  direction: TrendDirection;
+  deltaPct: number; // mean monthly volume change, current vs comparison period
+  basis: "prior-period" | "intra-window";
+};
+
+// Compare the window's mean monthly volume against the same-length period
+// immediately before it; when the prior period isn't (mostly) measured —
+// e.g. the 12m window spans the whole series — fall back to comparing the
+// window's first half vs second half. ±TREND_THRESHOLD_PCT% = stable band.
+// Returns null when there isn't enough measured data to say anything.
+export function trendDirection(
+  series: Array<number | null>,
+  idxs: number[],
+): TrendResult | null {
+  const mean = (ix: number[]): number | null => {
+    const vals = ix
+      .filter(i => i >= 0 && i < series.length)
+      .map(i => series[i])
+      .filter((v): v is number => v !== null);
+    return vals.length === 0 ? null : vals.reduce((a, b) => a + b, 0) / vals.length;
+  };
+
+  const cur = mean(idxs);
+  if (cur === null || idxs.length < 2) return null;
+
+  const len = idxs.length;
+  const priorIdxs = Array.from({ length: len }, (_, k) => idxs[0] - len + k).filter(i => i >= 0);
+  const priorMeasured = priorIdxs.filter(i => series[i] !== null).length;
+
+  let basis: TrendResult["basis"];
+  let before: number | null;
+  let after: number | null;
+  if (priorMeasured >= Math.ceil(len / 2)) {
+    basis = "prior-period";
+    before = mean(priorIdxs);
+    after = cur;
+  } else {
+    basis = "intra-window";
+    const mid = Math.floor(len / 2);
+    before = mean(idxs.slice(0, mid));
+    after = mean(idxs.slice(mid));
+  }
+  if (before === null || after === null) return null;
+
+  const deltaPct = before === 0 ? (after > 0 ? 100 : 0) : ((after - before) / before) * 100;
+  const direction: TrendDirection =
+    deltaPct >= TREND_THRESHOLD_PCT ? "growing"
+    : deltaPct <= -TREND_THRESHOLD_PCT ? "declining"
+    : "stable";
+  return { direction, deltaPct, basis };
+}
+
 export type SearchPillarByBrand = Partial<
   Record<Brand, Partial<Record<BhRangeKey, SourceBackedMetric>>>
 >;
@@ -165,6 +225,11 @@ export function computeSearchMetrics(state: string): SearchPillarByBrand {
     for (const s of sums) {
       const share = total === 0 ? 0 : (s.volume / total) * 100;
       const perMonth = Math.round(s.volume / monthsSpanned);
+      const trend = trendDirection(stateData[s.brand]!, idxs);
+      const trendNote = trend
+        ? ` Demand ${trend.direction} (${trend.deltaPct >= 0 ? "+" : ""}${trend.deltaPct.toFixed(0)}% ` +
+          `${trend.basis === "prior-period" ? "vs prior period" : "second half vs first half of window"}).`
+        : "";
       const metric: SourceBackedMetric = {
         value: scoreSearchVolumes(volumes, s.volume),
         sourceTier: "licensed",
@@ -175,10 +240,11 @@ export function computeSearchMetrics(state: string): SearchPillarByBrand {
         confidence: peers >= 3 ? "medium" : "low",
         refreshCadence: "monthly",
         scope: "state",
+        trend: trend?.direction,
         note:
           `Branded search demand: ~${perMonth.toLocaleString("en-US")}/mo ` +
           `("${BRAND_KEYWORDS[s.brand]}") — ${share.toFixed(1)}% of ${peers}-brand demand ` +
-          `in this window, ranked log-scale vs peers. ` +
+          `in this window, ranked log-scale vs peers.${trendNote} ` +
           `Series through ${latestMonth} (Google Ads data lags ~1 month).`,
       };
       (result[s.brand] ??= {})[range] = metric;

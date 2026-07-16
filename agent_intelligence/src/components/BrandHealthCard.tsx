@@ -44,6 +44,15 @@ function sourceTag(m: SourceBackedMetric): string {
   return parts.join(" · ");
 }
 
+// Trend glyph for time-series pillars (Search). Distinct shapes per
+// direction so the signal never relies on color alone; the tooltip note
+// carries the exact delta.
+const TREND_GLYPHS = {
+  growing: { glyph: "▲", cls: "text-green-text", label: "demand growing" },
+  stable: { glyph: "→", cls: "text-ink-3", label: "demand stable" },
+  declining: { glyph: "▼", cls: "text-red-text", label: "demand declining" },
+} as const;
+
 function ScoreRing({
   score,
   scoreClass,
@@ -155,6 +164,17 @@ export default function BrandHealthCard({
                     </span>
                     <span className="w-6 shrink-0 text-12 font-medium text-ink text-right">
                       {m.value}
+                    </span>
+                    <span className="w-3 shrink-0 text-10 text-center" data-testid="bh-trend">
+                      {m.trend && (
+                        <span
+                          className={TREND_GLYPHS[m.trend].cls}
+                          title={TREND_GLYPHS[m.trend].label}
+                          aria-label={TREND_GLYPHS[m.trend].label}
+                        >
+                          {TREND_GLYPHS[m.trend].glyph}
+                        </span>
+                      )}
                     </span>
                     <span className="w-[44px] shrink-0 text-10 text-ink-3" title={m.note ?? m.sourceName}>
                       {sourceTag(m)}
