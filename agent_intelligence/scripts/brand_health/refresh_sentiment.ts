@@ -4,10 +4,15 @@
 //   1. Google Places API (New) Text Search — "<brand> insurance" sampled in
 //      each METRO_SAMPLE metro (50km bias), keeping results whose name
 //      matches the brand. Produces a review-count-weighted mean rating and
-//      total review volume. Needs PSI_API_KEY/GOOGLE_API_KEY with billing
-//      enabled + "Places API (New)" enabled on the project. ~130 requests
-//      per run — far inside the free monthly quota.
-//   2. NAIC CIS complaint index — public Tableau CSV endpoint, one GET per
+//      total review volume. Needs PLACES_API_KEY with billing enabled +
+//      "Places API (New)" enabled on the project. ~130 requests per run —
+//      far inside the free monthly quota.
+//   2. iTunes Lookup — App Store rating for the brand's pinned consumer app
+//      (BRAND_APPSTORE_IDS, shared with the Website pillar). No key. The
+//      platform component is the log-volume-weighted blend of both surfaces
+//      (platformRating), which keeps direct writers from being judged solely
+//      on corporate-office Google listings.
+//   3. NAIC CIS complaint index — public Tableau CSV endpoint, one GET per
 //      flagship-entity cocode (see BRAND_NAIC_COCODES for selection rule).
 //      No key. Unknown cocodes return an empty body, treated as no-data.
 // Then blends 45/35/20 (scoreSentiment) and writes the snapshot to
@@ -28,6 +33,7 @@ import {
   BRAND_NAIC_COCODES,
   METRO_SAMPLE,
   complaintScore,
+  platformRating,
   ratingsScore,
   scoreSentiment,
   volumeScore,
@@ -35,15 +41,18 @@ import {
   type SentimentRawComponents,
   type SentimentSnapshot,
 } from "../../src/lib/brandHealthSentiment";
+import { BRAND_APPSTORE_IDS } from "../../src/lib/brandHealthWebsite";
 
 const ROOT = path.join(__dirname, "..", "..");
 const OUT_FILE = path.join(ROOT, "src", "lib", "brandHealthSentimentData.ts");
 // CIS publishes the complaint index for one report year at a time; bump when
 // NAIC rolls (verify script cross-checks a live probe against this).
 const NAIC_REPORT_YEAR = 2025;
-// Brands with fewer matching listings than this are scored at medium (not
-// high) confidence — see the direct-writer note in buildMetric.
+// Confidence floors: a brand needs EITHER a broad Google listing sample OR a
+// substantial app-rating base for high confidence; below both, the platform
+// evidence is thin and the metric says so.
 const SPARSE_LISTING_FLOOR = 30;
+const APP_VOLUME_FLOOR = 10_000;
 
 function loadEnvLocal(): void {
   const envPath = path.join(ROOT, ".env.local");
@@ -130,6 +139,28 @@ async function fetchPlacesForBrand(brand: Brand): Promise<PlacesAggregate> {
 }
 
 // --------------------------------------------------------------------------
+// iTunes Lookup (App Store rating — same pinned apps as the Website pillar)
+// --------------------------------------------------------------------------
+
+async function fetchAppRating(
+  brand: Brand,
+): Promise<{ rating: number | null; count: number | null }> {
+  const res = await fetch(
+    `https://itunes.apple.com/lookup?id=${BRAND_APPSTORE_IDS[brand]}&country=us`,
+    { signal: AbortSignal.timeout(30_000) },
+  );
+  if (!res.ok) throw new Error(`iTunes HTTP ${res.status}`);
+  const d = (await res.json()) as {
+    results?: Array<{ averageUserRating?: number; userRatingCount?: number }>;
+  };
+  const app = d.results?.[0];
+  return {
+    rating: typeof app?.averageUserRating === "number" ? app.averageUserRating : null,
+    count: typeof app?.userRatingCount === "number" ? app.userRatingCount : null,
+  };
+}
+
+// --------------------------------------------------------------------------
 // NAIC CIS complaint index (public Tableau CSV)
 // --------------------------------------------------------------------------
 
@@ -159,20 +190,35 @@ function buildMetric(
   cohortIndexes: number[],
   retrievedAt: string,
 ): SourceBackedMetric | null {
+  const platform = platformRating([
+    { rating: raw.placesRating, count: raw.placesReviewCount },
+    { rating: raw.appRating, count: raw.appRatingCount },
+  ]);
   const components = {
-    ratings: ratingsScore(raw.placesRating),
+    ratings: ratingsScore(platform?.rating ?? null),
     complaints:
       raw.complaintIndex === null ? null : complaintScore(cohortIndexes, raw.complaintIndex),
-    volume: volumeScore(raw.placesReviewCount),
+    volume: volumeScore(platform?.volume ?? null),
   };
   const scored = scoreSentiment(components);
   if (!scored) return null;
 
   const parts: string[] = [];
-  if (raw.placesRating !== null) {
+  if (platform) {
+    const surfaces: string[] = [];
+    if (raw.placesRating !== null) {
+      surfaces.push(
+        `Google ${raw.placesRating.toFixed(2)}★/${((raw.placesReviewCount ?? 0) / 1000).toFixed(1)}k ` +
+          `across ${raw.placesListingCount} listings (${METRO_SAMPLE.length}-metro sample)`,
+      );
+    }
+    if (raw.appRating !== null) {
+      surfaces.push(
+        `App Store ${raw.appRating.toFixed(2)}★/${((raw.appRatingCount ?? 0) / 1000).toFixed(0)}k`,
+      );
+    }
     parts.push(
-      `Google ${raw.placesRating.toFixed(2)}★ across ${raw.placesListingCount} listings ` +
-        `(${((raw.placesReviewCount ?? 0) / 1000).toFixed(1)}k reviews, ${METRO_SAMPLE.length}-metro sample)`,
+      `Platform ${platform.rating.toFixed(2)}★ — ${surfaces.join(" + ")}, log-volume-weighted`,
     );
   }
   if (raw.complaintIndex !== null) {
@@ -192,12 +238,14 @@ function buildMetric(
     .map(([, name]) => name);
   const allPresent = missing.length === 0;
 
-  // Direct writers (USAA, Travelers, Safeco...) have few local listings —
-  // mostly corporate/claims offices that skew negative — while agent-network
-  // brands field thousands of curated agent storefronts. A sparse sample
-  // can't be compared at full confidence and the note must say why.
+  // Thin platform evidence: neither a broad Google listing sample NOR a
+  // substantial app-rating base. (Direct writers clear this via app volume —
+  // the log-volume blend already keeps corporate-office listings from
+  // dominating their rating.)
   const sparse =
-    raw.placesRating !== null && (raw.placesListingCount ?? 0) < SPARSE_LISTING_FLOOR;
+    platform !== null &&
+    (raw.placesListingCount ?? 0) < SPARSE_LISTING_FLOOR &&
+    (raw.appRatingCount ?? 0) < APP_VOLUME_FLOOR;
 
   return {
     value: scored.score,
@@ -220,8 +268,8 @@ function buildMetric(
       ` (ratings/complaints/volume)` +
       (allPresent ? "" : `; ${missing.join(" + ")} unavailable, weights renormalized`) +
       (sparse
-        ? `; sparse listing sample (${raw.placesListingCount} listings) — direct-writer brands` +
-          ` have few local storefronts, so ratings skew toward corporate/claims offices`
+        ? `; sparse platform evidence (${raw.placesListingCount ?? 0} listings, ` +
+          `${raw.appRatingCount ?? 0} app ratings)`
         : "") +
       ". NAIC complaint data is annual; ratings are point-in-time.",
   };
@@ -243,6 +291,12 @@ async function main(): Promise<void> {
     } catch (e) {
       console.error(`  Places FAILED for ${brand}: ${(e as Error).message.slice(0, 200)}`);
     }
+    let app: { rating: number | null; count: number | null } = { rating: null, count: null };
+    try {
+      app = await fetchAppRating(brand);
+    } catch (e) {
+      console.error(`  iTunes FAILED for ${brand}: ${(e as Error).message.slice(0, 200)}`);
+    }
     let complaintIndex: number | null = null;
     try {
       complaintIndex = await fetchComplaintIndex(brand);
@@ -253,11 +307,14 @@ async function main(): Promise<void> {
       placesRating: places.rating,
       placesReviewCount: places.reviewCount,
       placesListingCount: places.listingCount,
+      appRating: app.rating,
+      appRatingCount: app.count,
       complaintIndex,
     };
     console.log(
       `${brand.padEnd(18)} fetched  (google=${places.rating?.toFixed(2) ?? "—"} ` +
-        `reviews=${places.reviewCount ?? "—"} naic=${complaintIndex?.toFixed(2) ?? "—"})`,
+        `reviews=${places.reviewCount ?? "—"} app=${app.rating?.toFixed(2) ?? "—"} ` +
+        `naic=${complaintIndex?.toFixed(2) ?? "—"})`,
     );
   }
 

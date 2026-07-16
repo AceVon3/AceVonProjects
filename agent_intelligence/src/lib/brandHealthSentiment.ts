@@ -69,6 +69,11 @@ export type SentimentRawComponents = {
   placesRating: number | null;
   placesReviewCount: number | null;
   placesListingCount: number | null;
+  // App Store rating (0-5) + count for the brand's pinned consumer app —
+  // the channel-neutral satisfaction surface (direct writers have few local
+  // listings, but millions of app ratings).
+  appRating: number | null;
+  appRatingCount: number | null;
   // NAIC complaint index for the flagship entity (1.0 = industry average,
   // higher = more complaints relative to market share).
   complaintIndex: number | null;
@@ -95,7 +100,28 @@ export const SENTIMENT_COMPONENT_WEIGHTS = {
   volume: 20,
 } as const;
 
-// Platform ratings: Google ratings live on a compressed effective scale —
+// Blend the platform surfaces (Google listings, App Store) into one 0-5
+// rating, each surface weighted by log10 of its review volume — influence
+// proportional to evidence, so USAA's 2.3M app ratings outvote 1.5k reviews
+// of its corporate offices ~2:1, while a 99-rating app barely nudges a brand
+// with thousands of Google reviews. Returns the blended rating plus total
+// volume (feeds volumeScore). Null when no surface has evidence.
+export function platformRating(
+  surfaces: Array<{ rating: number | null; count: number | null }>,
+): { rating: number; volume: number } | null {
+  const present = surfaces.filter(
+    (s): s is { rating: number; count: number } =>
+      s.rating !== null && s.count !== null && s.count > 0,
+  );
+  if (present.length === 0) return null;
+  const totalWeight = present.reduce((a, s) => a + Math.log10(s.count + 1), 0);
+  return {
+    rating: present.reduce((a, s) => a + s.rating * Math.log10(s.count + 1), 0) / totalWeight,
+    volume: present.reduce((a, s) => a + s.count, 0),
+  };
+}
+
+// Platform ratings: consumer ratings live on a compressed effective scale —
 // a 4.6 is genuinely strong, a 3.5 is bad. Map 3.0→30 and 4.8→90 linearly
 // (clamped 0-100) rather than naive rating*20, which would put nearly every
 // brand in the 80s and erase real differences.

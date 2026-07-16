@@ -14,6 +14,7 @@ import {
   METRO_SAMPLE,
   SENTIMENT_COMPONENT_WEIGHTS,
   complaintScore,
+  platformRating,
   ratingsScore,
   scoreSentiment,
   volumeScore,
@@ -39,6 +40,30 @@ console.log("pure math — ratingsScore (3.0->30, 4.8->90 linear, clamped)");
   check("5.0 -> 96.67 (not clamped yet)", near(ratingsScore(5.0), 30 + (2 / 1.8) * 60));
   check("1.0 clamps to 0", ratingsScore(1.0) === 0);
   check("null passthrough", ratingsScore(null) === null);
+}
+
+console.log("pure math — platformRating (log-volume-weighted surface blend)");
+{
+  const equal = platformRating([
+    { rating: 4.0, count: 1000 },
+    { rating: 2.0, count: 1000 },
+  ]);
+  check("equal volumes -> plain mean", near(equal?.rating ?? null, 3.0));
+  check("volume sums across surfaces", equal?.volume === 2000);
+  const skewed = platformRating([
+    { rating: 3.0, count: 1000 },      // log10(1001) ~ 3
+    { rating: 4.8, count: 1_000_000 }, // log10(1000001) ~ 6
+  ]);
+  // weights ~3 and ~6 -> blend ~(3*3 + 4.8*6)/9 = 4.2
+  check("bigger volume dominates ~2:1", Math.abs((skewed?.rating ?? 0) - 4.2) < 0.01, skewed);
+  const single = platformRating([
+    { rating: 4.5, count: 500 },
+    { rating: null, count: null },
+  ]);
+  check("missing surface drops out", near(single?.rating ?? null, 4.5) && single?.volume === 500);
+  check("zero-count surface drops out",
+    near(platformRating([{ rating: 4.5, count: 500 }, { rating: 1.0, count: 0 }])?.rating ?? null, 4.5));
+  check("no evidence -> null", platformRating([{ rating: null, count: null }]) === null);
 }
 
 console.log("pure math — complaintScore (peer-relative, lower index is better)");
@@ -106,10 +131,23 @@ if (!SENTIMENT_SNAPSHOT) {
 
   for (const [brand, { raw, metric }] of entries) {
     // Independent recomputation — deliberately NOT the lib functions.
+    // Platform surface blend: log10-volume-weighted mean of Google + app.
+    const surfaces = [
+      { r: raw.placesRating, c: raw.placesReviewCount },
+      { r: raw.appRating, c: raw.appRatingCount },
+    ].filter((s): s is { r: number; c: number } => s.r !== null && s.c !== null && s.c > 0);
+    let blendRating: number | null = null;
+    let blendVolume: number | null = null;
+    if (surfaces.length > 0) {
+      const wSum = surfaces.reduce((a, s) => a + Math.log10(s.c + 1), 0);
+      blendRating = surfaces.reduce((a, s) => a + s.r * Math.log10(s.c + 1), 0) / wSum;
+      blendVolume = surfaces.reduce((a, s) => a + s.c, 0);
+    }
+
     const comps: Array<[number, number]> = [];
-    if (raw.placesRating !== null) {
+    if (blendRating !== null) {
       comps.push([
-        Math.max(0, Math.min(100, 30 + ((raw.placesRating - 3.0) / 1.8) * 60)),
+        Math.max(0, Math.min(100, 30 + ((blendRating - 3.0) / 1.8) * 60)),
         SENTIMENT_COMPONENT_WEIGHTS.ratings,
       ]);
     }
@@ -118,9 +156,9 @@ if (!SENTIMENT_SNAPSHOT) {
         cMax === cMin ? 60 : Math.round(90 - 60 * ((raw.complaintIndex - cMin) / (cMax - cMin)));
       comps.push([c, SENTIMENT_COMPONENT_WEIGHTS.complaints]);
     }
-    if (raw.placesReviewCount !== null && raw.placesReviewCount > 0) {
+    if (blendVolume !== null && blendVolume > 0) {
       comps.push([
-        Math.min(100, (Math.log10(raw.placesReviewCount) / 6) * 100),
+        Math.min(100, (Math.log10(blendVolume) / 6) * 100),
         SENTIMENT_COMPONENT_WEIGHTS.volume,
       ]);
     }
@@ -134,14 +172,21 @@ if (!SENTIMENT_SNAPSHOT) {
     check(`${brand}: scope national, never seed`,
       metric.scope === "national" && metric.sourceTier !== "seed");
     const allPresent = comps.length === 3;
-    const sparse = raw.placesRating !== null && (raw.placesListingCount ?? 0) < 30;
+    const sparse =
+      surfaces.length > 0 &&
+      (raw.placesListingCount ?? 0) < 30 &&
+      (raw.appRatingCount ?? 0) < 10_000;
     check(`${brand}: confidence honest (${metric.confidence})`,
       allPresent && !sparse ? metric.confidence === "high" : metric.confidence !== "high");
     if (!allPresent) {
       check(`${brand}: note discloses renormalization`, /renormalized/.test(metric.note ?? ""));
     }
     if (sparse) {
-      check(`${brand}: note discloses sparse listing sample`, /sparse listing sample/.test(metric.note ?? ""));
+      check(`${brand}: note discloses sparse evidence`, /sparse platform evidence/.test(metric.note ?? ""));
+    }
+    if (surfaces.length > 0) {
+      check(`${brand}: note discloses the volume-weighted blend`,
+        /log-volume-weighted/.test(metric.note ?? ""));
     }
     if (raw.complaintIndex !== null) {
       check(`${brand}: note cites the NAIC entity`,

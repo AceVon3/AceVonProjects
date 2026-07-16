@@ -29,14 +29,14 @@ const SECTIONS: Array<{
     title: "Customer Sentiment",
     scope: "National · point-in-time (date range does not apply)",
     formula:
-      "45% normalized platform ratings + 35% inverted NAIC complaint index + 20% review volume / recency confidence.",
+      "45% platform ratings (Google listings + App Store, each weighted by log of its review volume) + 35% inverted NAIC complaint index + 20% review volume confidence.",
     sources: [
-      "Google Places ratings and review counts",
-      "NAIC complaint index (official)",
-      "Review volume and recency signals",
+      "Google Places ratings and review counts (10-metro sample)",
+      "App Store ratings (channel-neutral — direct writers have few local listings)",
+      "NAIC complaint index (official; flagship auto entity, named per brand)",
     ],
     notes:
-      "Measured per brand nationally — the same value applies in every state, and cards tag it \"US\" accordingly. Licensed satisfaction benchmarks (J.D. Power, Consumer Reports) would upgrade this formula if ever licensed.",
+      "Measured per brand nationally — the same value applies in every state, and cards tag it \"US\" accordingly. App ratings also inform the Website pillar's app component (a disclosed overlap). Licensed satisfaction benchmarks (J.D. Power, Consumer Reports) would upgrade this formula if ever licensed.",
   },
   {
     title: "Search Interest",
