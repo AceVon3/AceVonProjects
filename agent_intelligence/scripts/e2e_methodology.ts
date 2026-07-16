@@ -9,7 +9,7 @@
 //     Auto + Homeowners, 2024-2026.
 //   - Thresholds section states +5% (Prospect) and -2% (Defend) verbatim.
 //   - All 7 excluded brands are listed with a "why" line each.
-//   - Validation table has 38 rows (one per directly-scraped state) and the cell
+//   - Validation table has 39 rows (one per directly-scraped state) and the cell
 //     values match STATES.validated exactly. Spot-checks: AZ auto=✓
 //     home=✓, MT auto=✓ home=✓, WA auto=✓ home=—, CO auto=— home=—.
 //   - Known limitations section covers SERFF visibility gaps, CO
@@ -78,6 +78,7 @@ const EXPECTED_VALIDATION: Record<string, { auto: boolean; home: boolean }> = {
   KS: { auto: true,  home: true  }, // scraped 2026-07-09 (interim->real); value-agreement 68/68 (100%); COUNTRY richness-only — AK-thinness does not reproduce
   NJ: { auto: true,  home: true  }, // scraped 2026-07-10 (interim->real); the state that surfaced B16 (Prior-Approval vocabularies); value-agreement 65/66 (98.5%)
   MS: { auto: true,  home: true  }, // scraped 2026-07-10 (interim->real); value-agreement 84/84 (100%, 3rd perfect); 2 SERFF-invisible watch clusters documented
+  IN: { auto: true,  home: true  }, // scraped 2026-07-16 (39th state); value-agreement 130/130 (100%); 0 material soft-misses (8 AM-Best-only all 0.0%/recency); RICHNESS-ONLY x4; Consolidated Ins Co excluded (Peerless doctrine)
   CT: { auto: true,  home: true  }, // scraped 2026-07-09 (interim->real); the state that surfaced B14 (the "Flex Rate" filing-type vocabulary, 4th variant) — live GEICO/Progressive PPA signals recovered pre-ship, 25-state retro-sweep 0 exposure; post-fix cross-check (15th point): value-agreement 55/56 (98.2%, the 1 differ = AM Best zeroing a REJECTED filing) / PPA 43/54 / HO 25/33 (AM-Best-only = recency/immaterial/1 new-product), 0 genuine soft-misses -> both validated
 };
 
@@ -182,7 +183,7 @@ async function main(): Promise<void> {
   // -- (7) AM Best validation table matches STATES.validated ---------------
   console.log("\n(7) validation table matches STATES.validated exactly");
   const rowCount = await page.locator('[data-testid="validation-row"]').count();
-  check(`validation table has 38 rows (got ${rowCount})`, rowCount === 38);
+  check(`validation table has 39 rows (got ${rowCount})`, rowCount === 39);
   for (const [code, expected] of Object.entries(EXPECTED_VALIDATION)) {
     const row = page.locator(`[data-testid="validation-row"][data-state="${code}"]`);
     const autoCell = (await row.locator('[data-testid="cell-auto"]').textContent())?.trim();
@@ -203,7 +204,7 @@ async function main(): Promise<void> {
     /Colorado/.test(limitsText) && /validat/i.test(limitsText));
   // 5 not covered = 50 − 45 covered (24 directly scraped incl. VA/OH/IL/WV/NH/VT/HI/AK/MA/ND/RI/ME/SD/DE + 21 AM Best).
   // The uncovered 5: AL/FL/LA (header-only re-pull), NC (structural NCRB gap), WY
-  // (no filings). The validation table is 38 rows (one per directly-scraped state;
+  // (no filings). The validation table is 39 rows (one per directly-scraped state;
   // CO shows "— —" — scraped but not yet AM Best cross-checked (OH cross-checked
   // 2026-06-25 -> now ✓✓); AM Best states, interim AND permanent, are not in the
   // table at all).

@@ -17,7 +17,10 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
-// Re-keyed 2026-07-13: AR/KY/WI triple import (+137 active = 1207). 2026-07-15: PA/MI + B19 window recoveries (+449 = 1656). Prior:
+// Re-keyed 2026-07-16: IN import (39th state). Active 1656->1485 is the as_of
+// slide, NOT data loss: last_updated.txt (xlsx mtime) was stale at 2026-06-11;
+// the rebuild moved the 12-month window +5 weeks (-223 aged out, IN +52).
+// Prior: 2026-07-13 AR/KY/WI (+137 = 1207); 2026-07-15 PA/MI + B19 (+449 = 1656).
 // Re-keyed 2026-07-11 (2nd): OK interim->scraped (+56 active = 1070; incl.
 // the B18-recovered Safeco +8.0%/7,566 Prospect). Prior 1014 note:
 // Re-keyed 2026-07-11: NE/MD interim->scraped (+80 active = 1014; deltas
@@ -44,17 +47,17 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 670,
-  "19.0000 Personal Auto Combinations": 235,
-  "19.0002 Motorcycle": 81,
-  "19.0003 Recreational Vehicle (RV)": 43,
-  "19.0004 Other": 18,
-  "04.0003 Owner Occupied Homeowners": 130,
-  "04.0000 Homeowners Sub-TOI Combinations": 372,
-  "04.0001 Condominium Homeowners": 30,
-  "04.0005 Other Homeowners": 16,
+  "19.0001 Private Passenger Auto (PPA)": 588,
+  "19.0000 Personal Auto Combinations": 205,
+  "19.0002 Motorcycle": 72,
+  "19.0003 Recreational Vehicle (RV)": 42,
+  "19.0004 Other": 13,
+  "04.0003 Owner Occupied Homeowners": 121,
+  "04.0000 Homeowners Sub-TOI Combinations": 342,
+  "04.0001 Condominium Homeowners": 29,
+  "04.0005 Other Homeowners": 13,
   "04.0004 Tenant Homeowners": 32,
-  "04.0002 Mobile Homeowners": 29,
+  "04.0002 Mobile Homeowners": 28,
 };
 
 console.log("=".repeat(72));
@@ -75,7 +78,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1656", rows.length, 1656);
+check("active rolled filings = 1485", rows.length, 1485);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 

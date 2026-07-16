@@ -1,6 +1,6 @@
 // Node-level verification of the Overview helpers against real filings.db data.
 // For the captive State Farm AZ+NV profile:
-//   - Prospect/Defend counts = 14/7 (matching /prospect and /defend; re-keyed 2026-07-15 PA/MI+B19)
+//   - Prospect/Defend counts = 13/7 (matching /prospect and /defend; re-keyed 2026-07-16 IN import — as_of slide 06-11->07-16 aged one prospect out)
 //   - Recent Changes feed top row matches the spec's verification order
 //   - The "My Carrier" alert card's two own-carrier counts (retention /
 //     opportunity) reconcile with the My Carriers set, and both window/sort
@@ -42,7 +42,7 @@ console.log(`asOf (data freshness) = ${asOf}\n`);
 console.log("Captive State Farm, AZ + NV:");
 const prospect = getProspectFilings(CAPTIVE_SF);
 const defend = getDefendFilings(CAPTIVE_SF);
-check("prospect count = 14", prospect.length === 14, { actual: prospect.length });
+check("prospect count = 13", prospect.length === 13, { actual: prospect.length });
 check("defend count = 7", defend.length === 7, { actual: defend.length });
 
 const feed = computeRecentChanges(prospect, defend, asOf);
