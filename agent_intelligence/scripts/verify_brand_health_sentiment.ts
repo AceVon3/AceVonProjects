@@ -134,10 +134,14 @@ if (!SENTIMENT_SNAPSHOT) {
     check(`${brand}: scope national, never seed`,
       metric.scope === "national" && metric.sourceTier !== "seed");
     const allPresent = comps.length === 3;
+    const sparse = raw.placesRating !== null && (raw.placesListingCount ?? 0) < 30;
     check(`${brand}: confidence honest (${metric.confidence})`,
-      allPresent ? metric.confidence === "high" : metric.confidence !== "high");
+      allPresent && !sparse ? metric.confidence === "high" : metric.confidence !== "high");
     if (!allPresent) {
       check(`${brand}: note discloses renormalization`, /renormalized/.test(metric.note ?? ""));
+    }
+    if (sparse) {
+      check(`${brand}: note discloses sparse listing sample`, /sparse listing sample/.test(metric.note ?? ""));
     }
     if (raw.complaintIndex !== null) {
       check(`${brand}: note cites the NAIC entity`,

@@ -41,6 +41,9 @@ const OUT_FILE = path.join(ROOT, "src", "lib", "brandHealthSentimentData.ts");
 // CIS publishes the complaint index for one report year at a time; bump when
 // NAIC rolls (verify script cross-checks a live probe against this).
 const NAIC_REPORT_YEAR = 2025;
+// Brands with fewer matching listings than this are scored at medium (not
+// high) confidence — see the direct-writer note in buildMetric.
+const SPARSE_LISTING_FLOOR = 30;
 
 function loadEnvLocal(): void {
   const envPath = path.join(ROOT, ".env.local");
@@ -54,9 +57,12 @@ function loadEnvLocal(): void {
 }
 
 loadEnvLocal();
-const API_KEY = process.env.PSI_API_KEY ?? process.env.GOOGLE_API_KEY;
+// Places needs its own key: the PSI key is API-restricted and can't call
+// Places, so a separate unrestricted Maps key (PLACES_API_KEY) is preferred.
+const API_KEY =
+  process.env.PLACES_API_KEY ?? process.env.PSI_API_KEY ?? process.env.GOOGLE_API_KEY;
 if (!API_KEY) {
-  console.error("No PSI_API_KEY / GOOGLE_API_KEY in .env.local or environment.");
+  console.error("No PLACES_API_KEY / PSI_API_KEY / GOOGLE_API_KEY in .env.local or environment.");
   process.exit(1);
 }
 
@@ -186,6 +192,13 @@ function buildMetric(
     .map(([, name]) => name);
   const allPresent = missing.length === 0;
 
+  // Direct writers (USAA, Travelers, Safeco...) have few local listings —
+  // mostly corporate/claims offices that skew negative — while agent-network
+  // brands field thousands of curated agent storefronts. A sparse sample
+  // can't be compared at full confidence and the note must say why.
+  const sparse =
+    raw.placesRating !== null && (raw.placesListingCount ?? 0) < SPARSE_LISTING_FLOOR;
+
   return {
     value: scored.score,
     sourceTier: raw.complaintIndex !== null && raw.placesRating === null ? "official" : "platform",
@@ -193,13 +206,23 @@ function buildMetric(
     sourceUrl: "https://content.naic.org/cis_consumer_information.htm",
     dataAsOf: retrievedAt,
     retrievedAt,
-    confidence: allPresent ? "high" : components.complaints !== null ? "medium" : "low",
+    confidence: !allPresent
+      ? components.complaints !== null
+        ? "medium"
+        : "low"
+      : sparse
+        ? "medium"
+        : "high",
     refreshCadence: "monthly",
     scope: "national",
     note:
       `${parts.join("; ")}. Blend ${scored.usedWeights.ratings}/${scored.usedWeights.complaints}/${scored.usedWeights.volume}` +
       ` (ratings/complaints/volume)` +
       (allPresent ? "" : `; ${missing.join(" + ")} unavailable, weights renormalized`) +
+      (sparse
+        ? `; sparse listing sample (${raw.placesListingCount} listings) — direct-writer brands` +
+          ` have few local storefronts, so ratings skew toward corporate/claims offices`
+        : "") +
       ". NAIC complaint data is annual; ratings are point-in-time.",
   };
 }
