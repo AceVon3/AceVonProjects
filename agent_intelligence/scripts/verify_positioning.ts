@@ -52,17 +52,17 @@ console.log("=".repeat(72));
 
 console.log("\nCaptive State Farm, all 8 states:");
 const c = getPositioning(captive).totals;
-check("anchored cells", c.anchoredCellCount, 10);
-check("unanchored cells", c.unanchoredCellCount, 6);
-check("comparable comparisons", c.comparable, 42);
-check("  higher-confidence (>=2 each)", c.higherConfidence, 23);
-check("  thin", c.thin, 19);
-check("insufficient (covered competitor absent)", c.insufficient, 24);
+check("anchored cells", c.anchoredCellCount, 12);
+check("unanchored cells", c.unanchoredCellCount, 4);
+check("comparable comparisons", c.comparable, 52);
+check("  higher-confidence (>=2 each)", c.higherConfidence, 27);
+check("  thin", c.thin, 25);
+check("insufficient (covered competitor absent)", c.insufficient, 27);
 
 console.log("\nIndependent {State Farm, Travelers, Progressive}, all 8 states:");
 const i = getPositioning(independent).totals;
-check("comparable comparisons", i.comparable, 66);
-check("  higher-confidence (>=2 each)", i.higherConfidence, 30);
+check("comparable comparisons", i.comparable, 83);
+check("  higher-confidence (>=2 each)", i.higherConfidence, 38);
 
 console.log("\n" + "=".repeat(72));
 if (failures === 0) {

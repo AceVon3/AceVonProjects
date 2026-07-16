@@ -38,7 +38,7 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm"],
       licensed_states: ["AZ", "NV"],
     } satisfies CaptiveProfile,
-    expected_prospect: 12,
+    expected_prospect: 14,
     expected_defend: 7,
   },
   {
@@ -49,7 +49,7 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["Allstate"],
       licensed_states: ["AZ", "NV"],
     } satisfies CaptiveProfile,
-    expected_prospect: 9,
+    expected_prospect: 11,
     expected_defend: 6,
   },
   {
@@ -60,8 +60,8 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm"],
       licensed_states: ALL_8,
     } satisfies CaptiveProfile,
-    expected_prospect: 40,
-    expected_defend: 28,
+    expected_prospect: 44,
+    expected_defend: 29,
   },
   {
     label: "Independent, AZ+NV",
@@ -70,7 +70,7 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm", "Allstate", "GEICO"], // brands don't matter for Prospect/Defend (independents see all 13)
       licensed_states: ["AZ", "NV"],
     } satisfies IndependentProfile,
-    expected_prospect: 13,
+    expected_prospect: 15,
     expected_defend: 9,
   },
   {
@@ -80,8 +80,8 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm", "Allstate", "GEICO"],
       licensed_states: ALL_8,
     } satisfies IndependentProfile,
-    expected_prospect: 48,
-    expected_defend: 38,
+    expected_prospect: 54,
+    expected_defend: 39,
   },
 ];
 
@@ -111,7 +111,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
       authorized_brands: ["Allstate", "Liberty Mutual", "Safeco"],
       licensed_states: ALL_8,
     },
-    expected: 78,
+    expected: 86,
   },
 ];
 

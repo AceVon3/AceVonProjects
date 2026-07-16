@@ -17,7 +17,7 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
-// Re-keyed 2026-07-13: AR/KY/WI triple import (+137 active = 1207). Prior:
+// Re-keyed 2026-07-13: AR/KY/WI triple import (+137 active = 1207). 2026-07-15: PA/MI + B19 window recoveries (+449 = 1656). Prior:
 // Re-keyed 2026-07-11 (2nd): OK interim->scraped (+56 active = 1070; incl.
 // the B18-recovered Safeco +8.0%/7,566 Prospect). Prior 1014 note:
 // Re-keyed 2026-07-11: NE/MD interim->scraped (+80 active = 1014; deltas
@@ -44,17 +44,17 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 487,
-  "19.0000 Personal Auto Combinations": 178,
-  "19.0002 Motorcycle": 57,
-  "19.0003 Recreational Vehicle (RV)": 34,
-  "19.0004 Other": 11,
-  "04.0003 Owner Occupied Homeowners": 96,
-  "04.0000 Homeowners Sub-TOI Combinations": 276,
-  "04.0001 Condominium Homeowners": 20,
-  "04.0005 Other Homeowners": 15,
-  "04.0004 Tenant Homeowners": 12,
-  "04.0002 Mobile Homeowners": 21,
+  "19.0001 Private Passenger Auto (PPA)": 670,
+  "19.0000 Personal Auto Combinations": 235,
+  "19.0002 Motorcycle": 81,
+  "19.0003 Recreational Vehicle (RV)": 43,
+  "19.0004 Other": 18,
+  "04.0003 Owner Occupied Homeowners": 130,
+  "04.0000 Homeowners Sub-TOI Combinations": 372,
+  "04.0001 Condominium Homeowners": 30,
+  "04.0005 Other Homeowners": 16,
+  "04.0004 Tenant Homeowners": 32,
+  "04.0002 Mobile Homeowners": 29,
 };
 
 console.log("=".repeat(72));
@@ -75,7 +75,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1207", rows.length, 1207);
+check("active rolled filings = 1656", rows.length, 1656);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 
