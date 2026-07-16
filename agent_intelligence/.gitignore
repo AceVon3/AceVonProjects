@@ -39,3 +39,6 @@ next-env.d.ts
 # (before/after PNGs for refactor verification — not source).
 /polish/
 /generate.log
+
+.vercel
+.env*
