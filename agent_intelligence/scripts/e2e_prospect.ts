@@ -83,7 +83,7 @@ async function main(): Promise<void> {
   await setProfileAndOpen(page, CAPTIVE_SF);
 
   const rowCount = await page.$$eval("table tbody tr", rs => rs.length);
-  check("12 rows on screen", rowCount === 12, { rowCount });
+  check("14 rows on screen", rowCount === 14, { rowCount });
 
   const firstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Competitor'", firstHeader === "Competitor", { firstHeader });
@@ -173,7 +173,7 @@ async function main(): Promise<void> {
   await setProfileAndOpen(page, INDEPENDENT_SF_TRV);
 
   const indRowCount = await page.$$eval("table tbody tr", rs => rs.length);
-  check("13 rows on screen", indRowCount === 13, { indRowCount });
+  check("15 rows on screen", indRowCount === 15, { indRowCount });
 
   const indFirstHeader = (await page.locator("table thead th").first().textContent())?.trim();
   check("first column header = 'Carrier'", indFirstHeader === "Carrier", { indFirstHeader });

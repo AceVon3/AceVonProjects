@@ -83,10 +83,10 @@ async function main(): Promise<void> {
 
   const t = await tierCounts(page);
   // re-keyed 2026-07-14: Personal Auto-only view (was 42/23/19 both-lines)
-  check("28 comparison rows", t.total === 28, { total: t.total });
-  check("18 higher-confidence rows", t.high === 18, { high: t.high });
-  check("10 thin rows", t.thin === 10, { thin: t.thin });
-  check("spread shown on exactly the 18 high rows (none on thin)", t.spread === 18, { spread: t.spread });
+  check("30 comparison rows", t.total === 30, { total: t.total });
+  check("22 higher-confidence rows", t.high === 22, { high: t.high });
+  check("8 thin rows", t.thin === 8, { thin: t.thin });
+  check("spread shown on exactly the 18 high rows (none on thin)", t.spread === 22, { spread: t.spread });
 
   const unanchored = await page.locator('[data-testid="unanchored-item"]').count();
   check("2 unanchored (line·state) items (auto-only)", unanchored === 2, { unanchored });
@@ -136,9 +136,9 @@ async function main(): Promise<void> {
   await open(page, INDEP);
   const ti = await tierCounts(page);
   // re-keyed 2026-07-14: Personal Auto-only view (was 66/30 both-lines)
-  check("42 comparison rows", ti.total === 42, { total: ti.total });
-  check("22 higher-confidence rows", ti.high === 22, { high: ti.high });
-  check("spread shown on exactly the 22 high rows", ti.spread === 22, { spread: ti.spread });
+  check("49 comparison rows", ti.total === 49, { total: ti.total });
+  check("30 higher-confidence rows", ti.high === 30, { high: ti.high });
+  check("spread shown on exactly the 22 high rows", ti.spread === 30, { spread: ti.spread });
 
   // Explainer renders for the independent view too, and stays determination-free.
   const explInd = (await page.locator('[data-testid="positioning-explainer"]').textContent()) ?? "";

@@ -119,7 +119,7 @@ async function main(): Promise<void> {
   console.log("\nCase C: Independent, Allstate + Liberty Mutual + Safeco, all 8 states");
   await setProfileAndOpen(page, CASE_C, "/my-carriers");
   const cRows = await rowCountAfterLoad(page);
-  check("78 rows on screen", cRows === 78);
+  check("86 rows on screen", cRows === 86);
 
   // First column header should be "Carrier" for my-carriers regardless of
   // agent_type — spec line 854.

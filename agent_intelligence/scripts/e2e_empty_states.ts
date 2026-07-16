@@ -19,10 +19,10 @@ import { Page, chromium } from "playwright";
 
 const BASE = process.env.E2E_BASE ?? "http://localhost:3000";
 
-const INDEPENDENT_AZ_NV = {
+const INDEPENDENT_WA_OR = {
   agent_type: "independent",
   authorized_brands: ["State Farm", "Travelers"],
-  licensed_states: ["AZ", "NV"],
+  licensed_states: ["WA", "OR"],
   full_name: "Test", zip_code: "99206", home_state: "WA",
   employee_count: 5, employee_states: ["WA"],
   created_at: "2026-05-28T00:00:00.000Z",
@@ -60,14 +60,16 @@ async function main(): Promise<void> {
   console.log("=".repeat(72));
 
   // -- (1) filtered-to-empty on /prospect -----------------------------------
-  // Independent AZ+NV: 13 raw prospect rows in 12m (2026-06-11 baseline); 0 in 30d.
+  // Independent WA+OR: 14 raw prospect rows in 12m; 0 in 30d. (Re-keyed 2026-07-15:
+  // windows have no upper bound — eff >= as_of-30d — so B19's future-eff recoveries
+  // put rows in AZ+NV's and ID+MT's 30d windows; WA+OR has nothing eff after 05/12/26.)
   console.log("\n(1) /prospect: window=30d → filtered-to-empty");
-  await setProfile(page, INDEPENDENT_AZ_NV);
+  await setProfile(page, INDEPENDENT_WA_OR);
   await page.goto(`${BASE}/prospect`, { waitUntil: "networkidle" });
   await page.waitForSelector('[data-testid="filter-bar"]', { timeout: 5000 });
   // Sanity: default state should show 13 rows, no empty-state visible.
   const defaultRows = await page.$$eval("table tbody tr", rs => rs.length);
-  check("default → 13 rows (sanity)", defaultRows === 13, { defaultRows });
+  check("default → 14 rows (sanity)", defaultRows === 14, { defaultRows });
   const beforeEmpty = await page.locator('[data-testid="empty-state"]').count();
   check("no empty-state visible at default", beforeEmpty === 0);
 
@@ -95,7 +97,7 @@ async function main(): Promise<void> {
   // ID is a candidate — Encompass has very few filings.
   console.log("\n(2) /defend: profile with no defend rows → no-data empty");
   const CAPTIVE_NO_DEFEND = {
-    ...INDEPENDENT_AZ_NV,
+    ...INDEPENDENT_WA_OR,
     agent_type: "captive",
     authorized_brands: ["Encompass"],
     licensed_states: ["ID"],
@@ -126,7 +128,7 @@ async function main(): Promise<void> {
   // "no recent filings" copy that reads like a bug.
   console.log("\n(3) /my-carriers: captive Farmers in WA → coverage-gap empty");
   const CAPTIVE_FARMERS_WA = {
-    ...INDEPENDENT_AZ_NV,
+    ...INDEPENDENT_WA_OR,
     agent_type: "captive",
     authorized_brands: ["Farmers"],
     licensed_states: ["WA"],
@@ -153,7 +155,7 @@ async function main(): Promise<void> {
   // plus the "rate-neutral filings hidden" note explaining the emptiness.
   console.log("\n(4) /my-carriers: captive GEICO in WA (all-neutral) → no-data + hidden note");
   const CAPTIVE_GEICO_WA = {
-    ...INDEPENDENT_AZ_NV,
+    ...INDEPENDENT_WA_OR,
     agent_type: "captive",
     authorized_brands: ["GEICO"],
     licensed_states: ["WA"],
