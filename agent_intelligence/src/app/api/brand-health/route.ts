@@ -9,6 +9,7 @@ import {
 } from "@/lib/brandHealth";
 import { BRAND_HEALTH_SNAPSHOT } from "@/lib/brandHealthData";
 import { computePriceMetrics } from "@/lib/brandHealthPrice";
+import { SENTIMENT_SNAPSHOT } from "@/lib/brandHealthSentimentData";
 import { WEBSITE_SNAPSHOT } from "@/lib/brandHealthWebsiteData";
 import { BRANDS, COVERED_STATES, type Brand } from "@/lib/constants";
 import { getDataAsOf } from "@/lib/db";
@@ -47,14 +48,16 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }),
   ) as Record<Brand, BrandStateMetrics>;
 
-  // National pillars: website comes from the generated PageSpeed/CrUX
-  // snapshot when it exists (brands it omitted honestly get null, not the
-  // seed value); sentiment stays seed until its refresh phase lands.
+  // National pillars come from their generated snapshots when those exist
+  // (brands a snapshot omitted honestly get null, not the seed value); a
+  // pillar whose refresh has never run stays seed.
   const national = Object.fromEntries(
     BRANDS.map(brand => {
       const seeded = snapshot.national[brand];
       const entry: BrandNationalMetrics = {
-        sentiment: seeded.sentiment,
+        sentiment: SENTIMENT_SNAPSHOT
+          ? (SENTIMENT_SNAPSHOT.brands[brand]?.metric ?? null)
+          : seeded.sentiment,
         website: WEBSITE_SNAPSHOT
           ? (WEBSITE_SNAPSHOT.brands[brand]?.metric ?? null)
           : seeded.website,
