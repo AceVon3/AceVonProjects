@@ -16,7 +16,7 @@ const SECTIONS: Array<{
     title: "Price Competitiveness",
     scope: "State-scoped · varies with the date range",
     formula:
-      "Filed rate momentum: the brand's net approved rate impact over the selected window, inverted and normalized against the state peer average — a brand raising rates less than its peers scores higher. Blended with public average-premium context where available (always marked estimated).",
+      "Filed rate momentum (Personal Auto): the brand's net approved/pending rate impact over the selected window, ranked against the peers that also filed in that state — lowest net increase scores 90, highest scores 30, linear between. Public average-premium context may be blended in where available (always marked estimated).",
     sources: [
       "SERFF rate filings (our own scraped dataset — official regulatory source)",
       "State DOI filing portals (non-SERFF states)",

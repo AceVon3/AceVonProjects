@@ -2,9 +2,13 @@
 
 // Brand Health (/brand-health) — composite 0-100 score per tracked brand,
 // scoped to one of the agent's licensed states, over a selectable date
-// range, weighted by user-adjustable pillar sliders. Reads the monthly
-// pre-generated snapshot (src/lib/brandHealthData.ts) — no live fetching,
-// same pattern as compliance. All scoring math lives in src/lib/brandHealth.
+// range, weighted by user-adjustable pillar sliders.
+//
+// Data flow: /api/brand-health?state=XX returns one state's slice —
+// price computed LIVE from filings.db (filed rate momentum), the other
+// pillars from the monthly snapshot (seed until their refresh phases land).
+// All composite scoring happens client-side from the current weights
+// (src/lib/brandHealth) so slider changes recompute instantly.
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -19,18 +23,28 @@ import {
   BH_RANGE_LABELS,
   type BhRangeKey,
   type BrandHealthResult,
+  type BrandNationalMetrics,
+  type BrandStateMetrics,
   calculateBrandHealth,
   DEFAULT_BH_RANGE,
   DEFAULT_WEIGHTS,
-  getPillarScores,
   normalizeWeights,
+  PILLAR_LABELS,
   type PillarKey,
+  resolvePillars,
   type SourceBackedMetric,
   type Weights,
 } from "@/lib/brandHealth";
-import { BRAND_HEALTH_SNAPSHOT } from "@/lib/brandHealthData";
 import { BRANDS, type Brand } from "@/lib/constants";
 import { AgentProfile, loadProfile } from "@/lib/profile";
+
+type ApiResponse = {
+  asOf: string;
+  dataYear: number;
+  national: Record<Brand, BrandNationalMetrics>;
+  brands: Record<Brand, BrandStateMetrics>;
+  seedPillars: PillarKey[];
+};
 
 type CardData = {
   brand: Brand;
@@ -44,6 +58,8 @@ export default function BrandHealthPage(): React.JSX.Element {
   const [state, setState] = useState<string>("");
   const [range, setRange] = useState<BhRangeKey>(DEFAULT_BH_RANGE);
   const [weights, setWeights] = useState<Weights>({ ...DEFAULT_WEIGHTS });
+  const [data, setData] = useState<ApiResponse | null>(null);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const p = loadProfile();
@@ -55,15 +71,40 @@ export default function BrandHealthPage(): React.JSX.Element {
     setState(p.licensed_states[0] ?? "");
   }, [router]);
 
-  const snapshot = BRAND_HEALTH_SNAPSHOT;
+  // Fetch the state slice whenever the state changes. Previous data stays
+  // on screen during a switch (no skeleton flash); errors surface inline.
+  useEffect(() => {
+    if (!state) return;
+    let cancelled = false;
+    fetch(`/api/brand-health?state=${encodeURIComponent(state)}`)
+      .then(async r => {
+        if (!r.ok) throw new Error((await r.json()).error ?? `HTTP ${r.status}`);
+        return r.json() as Promise<ApiResponse>;
+      })
+      .then(d => {
+        if (cancelled) return;
+        setData(d);
+        setError("");
+      })
+      .catch(e => {
+        if (!cancelled) setError(String(e?.message ?? e));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [state]);
 
-  // Score every brand for the current state/range/weights. Weights always
-  // pass through normalizeWeights so the applied formula matches the panel.
+  // Score every brand for the current range/weights. Weights always pass
+  // through normalizeWeights so the applied formula matches the panel.
   const cards: CardData[] = useMemo(() => {
-    if (!state) return [];
+    if (!data) return [];
     const applied = normalizeWeights(weights);
     const rows = BRANDS.map(brand => {
-      const { scores, metrics } = getPillarScores(snapshot, brand, state, range);
+      const { scores, metrics } = resolvePillars(
+        data.national[brand],
+        data.brands[brand],
+        range,
+      );
       return { brand, metrics, result: calculateBrandHealth(scores, applied) };
     });
     // Rank by score desc; unscorable brands sink to the bottom alphabetically.
@@ -74,20 +115,36 @@ export default function BrandHealthPage(): React.JSX.Element {
       return a.brand.localeCompare(b.brand);
     });
     return rows;
-  }, [snapshot, state, range, weights]);
+  }, [data, range, weights]);
 
   if (!profile || !state) return <PageSkeleton variant="table" />;
 
-  // Preview banner while the snapshot is still Phase-1 seed data — flips off
-  // automatically once refresh.ts writes real metrics (tier !== "seed").
-  const isSeed = snapshot.national[BRANDS[0]].sentiment?.sourceTier === "seed";
+  if (error && !data) {
+    return (
+      <main className="min-h-screen bg-canvas">
+        <TopBar title="Brand Health" />
+        <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
+          <p className="text-13 m-0 p-3 rounded-md text-red-text bg-red-fill border border-red-border">
+            Couldn&apos;t load Brand Health data: {error}
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!data) return <PageSkeleton variant="table" />;
+
+  const seedNames = data.seedPillars.map(k => PILLAR_LABELS[k]);
+  const livePillars = (["price", "sentiment", "search", "website"] as PillarKey[]).filter(
+    k => !data.seedPillars.includes(k),
+  );
 
   return (
     <main className="min-h-screen bg-canvas">
       <TopBar
         title="Brand Health"
         chips={[{ icon: "map-pin", label: state }]}
-        asOf={snapshot.generatedAt.slice(0, 10)}
+        asOf={data.asOf}
       />
 
       <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
@@ -97,14 +154,17 @@ export default function BrandHealthPage(): React.JSX.Element {
           what matters in your market.
         </p>
 
-        {isSeed && (
+        {data.seedPillars.length > 0 && (
           <div
             data-testid="bh-seed-banner"
             className="mb-4 rounded-tile bg-amber-fill text-amber-text border border-amber-border px-[18px] py-3 text-13 leading-normal"
           >
-            <span className="font-bold">Preview — placeholder data.</span> Every score below
-            is seed data; layout and interactions are real, values are not. The first monthly
-            refresh replaces this snapshot and removes this banner.
+            <span className="font-bold">Preview — partial placeholder data.</span>{" "}
+            {seedNames.join(", ")} {seedNames.length === 1 ? "is" : "are"} still seed values.
+            {livePillars.length > 0 && (
+              <> {livePillars.map(k => PILLAR_LABELS[k]).join(", ")} {livePillars.length === 1 ? "is" : "are"} live from real source data.</>
+            )}{" "}
+            This banner disappears once every pillar is live.
           </div>
         )}
 
@@ -146,7 +206,7 @@ export default function BrandHealthPage(): React.JSX.Element {
           </div>
 
           <span className="w-full md:w-auto md:ml-auto text-12 text-ink-3">
-            Quarters refer to {snapshot.dataYear}. Sentiment &amp; website are point-in-time.
+            Quarters refer to {data.dataYear}. Sentiment &amp; website are point-in-time.
           </span>
         </div>
 

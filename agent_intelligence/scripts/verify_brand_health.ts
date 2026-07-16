@@ -17,9 +17,9 @@ import {
   DEFAULT_WEIGHTS,
   calculateBrandHealth,
   classifyScore,
-  getPillarScores,
   normalizeWeights,
   PILLAR_KEYS,
+  resolvePillars,
 } from "../src/lib/brandHealth";
 import { BRAND_HEALTH_SNAPSHOT } from "../src/lib/brandHealthData";
 
@@ -147,7 +147,7 @@ console.log("seed snapshot completeness");
   // End-to-end resolve: every brand in AZ @ 12m must produce a full pillar
   // set and a computable Brand Health.
   for (const brand of BRANDS) {
-    const { scores } = getPillarScores(snap, brand, "AZ", "12m");
+    const { scores } = resolvePillars(snap.national[brand], snap.states["AZ"][brand], "12m");
     const full = PILLAR_KEYS.every(k => scores[k] !== null);
     const result = calculateBrandHealth(scores, DEFAULT_WEIGHTS);
     check(`AZ/12m/${brand} resolves + scores`, full && result !== null, JSON.stringify(scores));
@@ -155,7 +155,7 @@ console.log("seed snapshot completeness");
 
   // Unknown state → state pillars null, national still present, score still
   // computable from the remaining two (reduced-confidence path).
-  const { scores: zz } = getPillarScores(snap, "GEICO", "ZZ", "12m");
+  const { scores: zz } = resolvePillars(snap.national["GEICO"], snap.states["ZZ"]?.["GEICO"], "12m");
   const zzResult = calculateBrandHealth(zz, DEFAULT_WEIGHTS);
   check(
     "uncovered state degrades to national-only pillars",

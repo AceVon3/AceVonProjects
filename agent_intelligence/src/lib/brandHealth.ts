@@ -204,18 +204,14 @@ export type BrandHealthSnapshot = {
   states: Record<string, Record<Brand, BrandStateMetrics>>;
 };
 
-// Resolve the four pillar values for one brand/state/range out of a
-// snapshot. This is the single place the "national pillars ignore the
-// range" rule lives.
-export function getPillarScores(
-  snapshot: BrandHealthSnapshot,
-  brand: Brand,
-  state: string,
+// Resolve the four pillar values for one brand out of a per-brand slice
+// (national + one state's metrics — how the API serves it). This is the
+// single place the "national pillars ignore the range" rule lives.
+export function resolvePillars(
+  national: BrandNationalMetrics | undefined,
+  stateMetrics: BrandStateMetrics | undefined,
   range: BhRangeKey,
 ): { scores: PillarScores; metrics: Record<PillarKey, SourceBackedMetric | null> } {
-  const stateMetrics = snapshot.states[state]?.[brand];
-  const national = snapshot.national[brand];
-
   const metrics: Record<PillarKey, SourceBackedMetric | null> = {
     price: stateMetrics?.price[range] ?? null,
     search: stateMetrics?.search[range] ?? null,
