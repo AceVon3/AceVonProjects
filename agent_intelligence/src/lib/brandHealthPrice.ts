@@ -17,6 +17,7 @@
 
 import { ACTIVE_RATE_ACTIVITIES, BRANDS, type Brand } from "./constants";
 import { getDataAsOf, getDb } from "./db";
+import { STATE_AVG_EXPENDITURE, STATE_AVG_EXPENDITURE_YEAR } from "./stateAvgPremiums";
 import {
   BH_RANGE_KEYS,
   type BhRangeKey,
@@ -95,6 +96,46 @@ const TREND_WORD: Record<TrendDirection, string> = {
   declining: "cooling",
 };
 
+// Filing volatility (display-only): population std dev of a brand's filed
+// impacts across the FULL dataset (2024+) in a state — how erratic a filer
+// the brand is, independent of the selected window. Bands sit on the
+// observed distribution's quartiles (p25 ≈ 2.8pp, p75 ≈ 7.6pp).
+export function volatilityBand(stdevPp: number): "consistent" | "moderate" | "volatile" {
+  if (stdevPp < 3) return "consistent";
+  if (stdevPp <= 8) return "moderate";
+  return "volatile";
+}
+
+type Volatility = { stdev: number; filings: number };
+
+// SQLite has no STDEV — derive population std dev from sum/sum-of-squares.
+function queryVolatility(state: string): Map<Brand, Volatility> {
+  const placeholders = ACTIVE_RATE_ACTIVITIES.map(() => "?").join(",");
+  const rows = getDb()
+    .prepare(
+      `SELECT brand, COUNT(*) AS n,
+              SUM(overall_rate_impact) AS s,
+              SUM(overall_rate_impact * overall_rate_impact) AS ss
+         FROM filings
+        WHERE state = ?
+          AND line_of_business = 'Personal Auto'
+          AND rate_activity IN (${placeholders})
+          AND overall_rate_impact IS NOT NULL
+        GROUP BY brand
+       HAVING COUNT(*) >= 3`,
+    )
+    .all(state, ...ACTIVE_RATE_ACTIVITIES) as Array<{ brand: string; n: number; s: number; ss: number }>;
+  const known = new Set<string>(BRANDS);
+  const out = new Map<Brand, Volatility>();
+  for (const r of rows) {
+    if (!known.has(r.brand)) continue;
+    const mean = r.s / r.n;
+    const variance = Math.max(0, r.ss / r.n - mean * mean);
+    out.set(r.brand as Brand, { stdev: Math.sqrt(variance), filings: r.n });
+  }
+  return out;
+}
+
 type BrandNet = { brand: Brand; net: number; filings: number; hasScraped: boolean };
 
 // One state+window: net rate movement per brand that filed there.
@@ -160,6 +201,12 @@ export function computePriceMetrics(state: string): PricePillarByBrand {
   const asOf = getDataAsOf();
   const windows = rangeWindows(asOf);
   const priors = priorRangeWindows(asOf);
+  const volatility = queryVolatility(state);
+  const stateAvg = STATE_AVG_EXPENDITURE[state];
+  const stateAvgNote =
+    stateAvg !== undefined
+      ? ` State avg auto expenditure: $${stateAvg.toLocaleString("en-US")}/yr (NAIC ${STATE_AVG_EXPENDITURE_YEAR}, all brands).`
+      : "";
   const result: PricePillarByBrand = {};
 
   for (const range of BH_RANGE_KEYS) {
@@ -179,6 +226,10 @@ export function computePriceMetrics(state: string): PricePillarByBrand {
         trend === undefined
           ? ""
           : ` Momentum ${TREND_WORD[trend]}: ${fmtPct(n.net)} now vs ${fmtPct(prior!)} ${priors[range].label}.`;
+      const vol = volatility.get(n.brand);
+      const volNote = vol
+        ? ` Filing pattern: ${volatilityBand(vol.stdev)} (±${vol.stdev.toFixed(1)}pp across ${vol.filings} filings since 2024).`
+        : "";
       const metric: SourceBackedMetric = {
         value: scoreNets(netValues, n.net),
         sourceTier: n.hasScraped ? "official" : "licensed",
@@ -194,7 +245,7 @@ export function computePriceMetrics(state: string): PricePillarByBrand {
         note:
           `Filed rate momentum: net ${fmtPct(n.net)} across ${n.filings} filing${n.filings === 1 ? "" : "s"} ` +
           `vs ${peers - 1} peer brand${peers - 1 === 1 ? "" : "s"} in this window. ` +
-          `Lower filed increases than peers score higher.${trendNote} ` +
+          `Lower filed increases than peers score higher.${trendNote}${volNote}${stateAvgNote} ` +
           `Rate movement, not price levels.`,
       };
       (result[n.brand] ??= {})[range] = metric;

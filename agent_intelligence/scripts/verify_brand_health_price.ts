@@ -21,6 +21,7 @@ import {
   priorRangeWindows,
   rangeWindows,
   scoreNets,
+  volatilityBand,
 } from "../src/lib/brandHealthPrice";
 import { getDataAsOf } from "../src/lib/db";
 import { BRANDS, type Brand } from "../src/lib/constants";
@@ -82,6 +83,51 @@ console.log("trend — prior windows + band");
   check("-3pp -> declining (cooling)", priceTrend(0, 3) === "declining");
   check("inside band -> stable", priceTrend(4, 2) === "stable" && priceTrend(2, 4) === "stable");
   check("Encompass AZ case: +24 -> 0 reads cooling", priceTrend(0.0, 24.0) === "declining");
+}
+
+console.log("context notes — volatility + state average (display-only)");
+{
+  check("volatility bands on distribution quartiles",
+    volatilityBand(2.9) === "consistent" && volatilityBand(3) === "moderate" &&
+    volatilityBand(8) === "moderate" && volatilityBand(8.1) === "volatile");
+
+  // Independent stdev recomputation for AZ from raw rows.
+  const rows = db
+    .prepare(
+      `SELECT brand, overall_rate_impact AS v FROM filings
+        WHERE state='AZ' AND line_of_business='Personal Auto'
+          AND rate_activity IN ('rate_change','rate_change_pending')
+          AND overall_rate_impact IS NOT NULL`,
+    )
+    .all() as Array<{ brand: Brand; v: number }>;
+  const byBrand = new Map<Brand, number[]>();
+  for (const r of rows) {
+    if ((BRANDS as readonly string[]).includes(r.brand)) {
+      byBrand.set(r.brand, [...(byBrand.get(r.brand) ?? []), r.v]);
+    }
+  }
+  const az = computePriceMetrics("AZ");
+  let volChecked = 0;
+  for (const [brand, vals] of Array.from(byBrand.entries())) {
+    if (vals.length < 3) continue;
+    const mean = vals.reduce((a: number, b: number) => a + b, 0) / vals.length;
+    const stdev = Math.sqrt(
+      vals.reduce((a: number, b: number) => a + (b - mean) ** 2, 0) / vals.length,
+    );
+    const note = az[brand]?.["12m"]?.note ?? az[brand]?.["6m"]?.note ?? "";
+    if (!note) continue;
+    const m = note.match(/Filing pattern: (\w+) \(±([\d.]+)pp across (\d+) filings/);
+    check(`AZ ${brand}: volatility in note matches independent stdev`,
+      m !== null && Math.abs(parseFloat(m[2]) - stdev) < 0.05 &&
+      Number(m[3]) === vals.length && m[1] === volatilityBand(stdev),
+      { note: m?.slice(1), expected: [volatilityBand(stdev), stdev.toFixed(1), vals.length] });
+    volChecked++;
+  }
+  check("volatility verified for >= 4 AZ brands", volChecked >= 4, volChecked);
+
+  const sample = az["State Farm"]?.["12m"];
+  check("state-average expenditure cited (AZ $1,344, NAIC 2023)",
+    /State avg auto expenditure: \$1,344\/yr \(NAIC 2023/.test(sample?.note ?? ""), sample?.note);
 }
 
 for (const state of ["AZ", "NV", "GA", "CA"]) {
