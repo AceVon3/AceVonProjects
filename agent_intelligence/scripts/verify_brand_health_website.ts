@@ -16,7 +16,10 @@
 import {
   appScore,
   cruxScore,
+  pathScore,
+  quoteFlowScore,
   scoreWebsite,
+  speedScore,
   WEBSITE_COMPONENT_WEIGHTS,
   BRAND_WEBSITES,
   BRAND_APPSTORE_IDS,
@@ -45,36 +48,57 @@ console.log("pure math — component scores");
   check("appScore null passthrough", appScore(null) === null);
 }
 
-console.log("pure math — blend + renormalization");
+console.log("pure math — quote-flow friction scoring");
+{
+  check("ZIP on homepage -> path 100", pathScore(true, 0) === 100);
+  check("1 click -> path 70", pathScore(false, 1) === 70);
+  check("2+ clicks -> path 40", pathScore(false, 2) === 40 && pathScore(false, 3) === 40);
+  check("<=5s -> speed 100", speedScore(3_900) === 100 && speedScore(5_000) === 100);
+  check(">=30s -> speed 0", speedScore(30_640) === 0);
+  check("17.5s -> speed 50", speedScore(17_500) === 50);
+  const qf = quoteFlowScore({ zipOnHomepage: true, clicksToQuote: 0, msToQuoteStart: 5_000 });
+  check("frictionless case -> 100 (0.6*100 + 0.4*100)", qf === 100, qf);
+  const qf2 = quoteFlowScore({ zipOnHomepage: false, clicksToQuote: 1, msToQuoteStart: 17_500 });
+  check("1 click + 17.5s -> 62 (0.6*70 + 0.4*50)", qf2 === 62, qf2);
+  check("failed probe -> null", quoteFlowScore(null) === null && quoteFlowScore(undefined) === null);
+}
+
+console.log("pure math — blend + renormalization (50/30/20, quote-flow dormant at 0)");
 {
   const full = scoreWebsite({
     lighthouse: 80,
     cruxGoodShares: { lcp: 0.9, inp: 0.8, cls: 0.7 }, // crux = 80
     appRating: 4.5, // app = 90
     appRatingCount: 1000,
+    quoteFlow: { zipOnHomepage: true, clicksToQuote: 0, msToQuoteStart: 5_000 }, // qf = 100, weight 0
   });
-  // 0.5*80 + 0.3*80 + 0.2*90 = 40 + 24 + 18 = 82
-  check("full blend 50/30/20", full?.score === 82, full);
-  check("full blend reports weights 50/30/20",
-    full?.usedWeights.lighthouse === 50 && full?.usedWeights.crux === 30 && full?.usedWeights.app === 20);
+  // 0.5*80 + 0.3*80 + 0.2*90 = 82 — dormant quote-flow contributes NOTHING
+  check("blend is 50/30/20; dormant quote-flow contributes 0", full?.score === 82, full);
+  check("weights report 50/30/20/0",
+    full?.usedWeights.lighthouse === 50 && full?.usedWeights.crux === 30 &&
+    full?.usedWeights.app === 20 && full?.usedWeights.quoteFlow === 0);
 
-  const noApp = scoreWebsite({
+  const noQf = scoreWebsite({
     lighthouse: 80,
     cruxGoodShares: { lcp: 0.9, inp: 0.8, cls: 0.7 },
-    appRating: null,
-    appRatingCount: null,
+    appRating: 4.5,
+    appRatingCount: 1000,
+    quoteFlow: null,
   });
-  // (80*50 + 80*30) / 80 = 80
-  check("missing app renormalizes over lighthouse+crux", noApp?.score === 80, noApp);
-  check("renormalized weights sum to 100",
-    (noApp!.usedWeights.lighthouse + noApp!.usedWeights.crux + noApp!.usedWeights.app) === 100,
-    noApp?.usedWeights);
+  check("score identical with or without a probe measurement", noQf?.score === 82, noQf);
+  check("weights sum to 100",
+    noQf!.usedWeights.lighthouse + noQf!.usedWeights.crux +
+    noQf!.usedWeights.app + noQf!.usedWeights.quoteFlow === 100,
+    noQf?.usedWeights);
+  check("pre-probe snapshots (field absent) score identically",
+    scoreWebsite({ lighthouse: 80, cruxGoodShares: { lcp: 0.9, inp: 0.8, cls: 0.7 }, appRating: 4.5, appRatingCount: 1000 })?.score === 82);
 
   const appOnly = scoreWebsite({
     lighthouse: null,
     cruxGoodShares: null,
     appRating: 3.46,
     appRatingCount: 99,
+    quoteFlow: null,
   });
   check("app-only blend = rating*20 rounded", appOnly?.score === Math.round(3.46 * 20), appOnly);
 
@@ -83,6 +107,7 @@ console.log("pure math — blend + renormalization");
     cruxGoodShares: null,
     appRating: null,
     appRatingCount: null,
+    quoteFlow: null,
   });
   check("no components -> null (never a fabricated 0)", nothing === null);
 }
@@ -121,6 +146,12 @@ if (!WEBSITE_SNAPSHOT) {
       ]);
     }
     if (raw.appRating !== null) comps.push([raw.appRating * 20, WEBSITE_COMPONENT_WEIGHTS.app]);
+    if (raw.quoteFlow) {
+      const path = raw.quoteFlow.zipOnHomepage || raw.quoteFlow.clicksToQuote === 0
+        ? 100 : raw.quoteFlow.clicksToQuote === 1 ? 70 : 40;
+      const speed = Math.max(0, Math.min(100, (100 * (30_000 - raw.quoteFlow.msToQuoteStart)) / 25_000));
+      comps.push([0.6 * path + 0.4 * speed, WEBSITE_COMPONENT_WEIGHTS.quoteFlow]);
+    }
 
     const wTotal = comps.reduce((a, [, w]) => a + w, 0);
     const expected = Math.round(comps.reduce((a, [v, w]) => a + v * w, 0) / wTotal);
@@ -131,11 +162,21 @@ if (!WEBSITE_SNAPSHOT) {
     check(`${brand}: score in [0,100]`, metric.value >= 0 && metric.value <= 100, metric.value);
     check(`${brand}: tier digital, scope national, never seed`,
       metric.sourceTier === "digital" && metric.scope === "national");
-    const allPresent = comps.length === 3;
+    // Confidence keys on the three measured-data components; a blocked
+    // quote-flow probe is disclosed but doesn't downgrade confidence.
+    const corePresent =
+      raw.lighthouse !== null && shares.length > 0 && raw.appRating !== null;
     check(`${brand}: confidence honest (${metric.confidence})`,
-      allPresent ? metric.confidence === "high" : metric.confidence !== "high");
-    if (!allPresent) {
+      corePresent ? metric.confidence === "high" : metric.confidence !== "high");
+    // Renormalization must be disclosed when an ACTIVE (weight > 0)
+    // component is missing — dormant components don't count.
+    const activeCount = Object.values(WEBSITE_COMPONENT_WEIGHTS).filter(w => w > 0).length;
+    const activePresent = comps.filter(([, w]) => w > 0).length;
+    if (activePresent < activeCount) {
       check(`${brand}: note discloses renormalization`, /renormalized/.test(metric.note ?? ""));
+    }
+    if (raw.quoteFlow && WEBSITE_COMPONENT_WEIGHTS.quoteFlow > 0) {
+      check(`${brand}: note cites the quote-start measurement`, /Quote start:/.test(metric.note ?? ""));
     }
   }
 

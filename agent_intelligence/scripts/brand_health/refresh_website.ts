@@ -30,10 +30,12 @@ import {
   BRAND_APPSTORE_IDS,
   BRAND_WEBSITES,
   scoreWebsite,
+  WEBSITE_COMPONENT_WEIGHTS,
   type WebsiteBrandEntry,
   type WebsiteRawComponents,
   type WebsiteSnapshot,
 } from "../../src/lib/brandHealthWebsite";
+import { QUOTEFLOW_SNAPSHOT } from "../../src/lib/brandHealthQuoteFlowData";
 
 const ROOT = path.join(__dirname, "..", "..");
 const OUT_FILE = path.join(ROOT, "src", "lib", "brandHealthWebsiteData.ts");
@@ -173,32 +175,49 @@ function buildMetric(
         (raw.appRatingCount ? ` (${Math.round(raw.appRatingCount / 1000)}k ratings)` : ""),
     );
   }
+  const qfActive = WEBSITE_COMPONENT_WEIGHTS.quoteFlow > 0;
+  if (qfActive && scored.components.quoteFlow !== null && raw.quoteFlow) {
+    parts.push(
+      `Quote start: ${raw.quoteFlow.zipOnHomepage ? "ZIP on homepage" : `${raw.quoteFlow.clicksToQuote} click${raw.quoteFlow.clicksToQuote === 1 ? "" : "s"}`}, ` +
+        `${(raw.quoteFlow.msToQuoteStart / 1000).toFixed(1)}s to first field`,
+    );
+  }
   const missing = (
     [
       [scored.components.lighthouse, "Lighthouse"],
       [scored.components.crux, "CrUX"],
       [scored.components.app, "app rating"],
-    ] as const
+      ...(qfActive ? ([[scored.components.quoteFlow, "quote-flow probe"]] as const) : []),
+    ] as ReadonlyArray<readonly [number | null, string]>
   )
     .filter(([v]) => v === null)
     .map(([, name]) => name);
 
-  const allPresent = missing.length === 0;
+  // Confidence keys on the three measured-data components; the quote-flow
+  // heuristic is a bonus signal whose absence (bot walls) is disclosed but
+  // doesn't downgrade an otherwise fully-measured brand.
+  const corePresent =
+    scored.components.lighthouse !== null &&
+    scored.components.crux !== null &&
+    scored.components.app !== null;
   return {
     value: scored.score,
     sourceTier: "digital",
-    sourceName: "Google PageSpeed/CrUX + App Store",
+    sourceName: "Google PageSpeed/CrUX + App Store + quote-flow probe",
     sourceUrl: "https://pagespeed.web.dev/",
     dataAsOf: retrievedAt,
     retrievedAt,
-    confidence: allPresent ? "high" : scored.components.lighthouse !== null ? "medium" : "low",
+    confidence: corePresent ? "high" : scored.components.lighthouse !== null ? "medium" : "low",
     refreshCadence: "monthly",
     scope: "national",
     note:
-      `${parts.join("; ")}. Blend ${scored.usedWeights.lighthouse}/${scored.usedWeights.crux}/${scored.usedWeights.app}` +
-      ` (Lighthouse/CrUX/app-rating proxy)` +
-      (allPresent ? "" : `; ${missing.join(" + ")} unavailable, weights renormalized`) +
-      ". CrUX is a 28-day rolling real-user window.",
+      `${parts.join("; ")}. Blend ` +
+      (qfActive
+        ? `${scored.usedWeights.lighthouse}/${scored.usedWeights.crux}/${scored.usedWeights.app}/${scored.usedWeights.quoteFlow} (Lighthouse/CrUX/app/quote-flow)`
+        : `${scored.usedWeights.lighthouse}/${scored.usedWeights.crux}/${scored.usedWeights.app} (Lighthouse/CrUX/app-rating proxy)`) +
+      (missing.length === 0 ? "" : `; ${missing.join(" + ")} unavailable, weights renormalized`) +
+      ". CrUX is a 28-day rolling real-user window" +
+      (qfActive ? "; quote-flow is a monthly probe that never submits a quote." : "."),
   };
 }
 
@@ -226,11 +245,19 @@ async function main(): Promise<void> {
       console.error(`  iTunes FAILED for ${brand}: ${(e as Error).message.slice(0, 200)}`);
     }
 
+    const qf = QUOTEFLOW_SNAPSHOT?.brands[brand];
     const raw: WebsiteRawComponents = {
       lighthouse: psi.lighthouse,
       cruxGoodShares: psi.cruxGoodShares,
       appRating: app.rating,
       appRatingCount: app.count,
+      quoteFlow: qf && !("failed" in qf)
+        ? {
+            zipOnHomepage: qf.zipOnHomepage,
+            clicksToQuote: qf.clicksToQuote,
+            msToQuoteStart: qf.msToQuoteStart,
+          }
+        : null,
     };
     const metric = buildMetric(raw, retrievedAt);
     if (metric) {

@@ -108,3 +108,30 @@ Net: v4 ratifies the shipped architecture (its formulas moved *toward* what
 we built), contributes two cheap context upgrades and one real formula
 upgrade (quote-flow), and its remaining differences are artifacts of
 assuming a zero-key, zero-budget build we've already outgrown.
+
+---
+
+## Addendum (2026-07-17): quote-flow heuristic attempted — shipped DORMANT
+
+The probe (`scripts/brand_health/probe_quoteflow.ts`) and the full scoring
+path (`pathScore`/`speedScore`/`quoteFlowScore`, 4-component `scoreWebsite`)
+are built and verified, but the component is **dormant at weight 0**:
+
+- Three probe runs measured 7/13, 4/13, and 6/13 brands, with brands
+  flapping between measured and blocked run-to-run (Progressive and
+  Nationwide measured in run 1, bot-walled in runs 2-3; State Farm and
+  Allstate only appeared once using the real-Chrome channel). Carrier bot
+  management reacts to repeated automated visits.
+- Decision rule (same argument as the per-state price surveys): a formula
+  component that exists for a shifting minority of brands makes the score
+  mean different things per brand and per month. Coverage floor for
+  activation: **>= 10/13 brands, stable across consecutive runs**.
+- Measured friction data (for when it activates): ZIP-on-homepage in ~5s —
+  Travelers, State Farm, Liberty Mutual, Farmers, Progressive, Nationwide;
+  1-click flows — American Family (~7s), Allstate (~14s); consistently
+  blocked — GEICO, USAA (hard walls); no CTA detected — COUNTRY, Encompass.
+- Activation paths: (a) one-time **manual audit** (~20 min in a normal
+  browser, recorded into `brandHealthQuoteFlowData.ts` as manual_upload —
+  v4 §12 Phase C explicitly sanctions manual ingestion), refreshed
+  quarterly; (b) scheduled CI probe from a different network vantage;
+  (c) both — manual baseline, automation where it works.

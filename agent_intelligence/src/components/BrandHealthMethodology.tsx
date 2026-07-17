@@ -59,7 +59,7 @@ const SECTIONS: Array<{
       "App Store / Google Play ratings",
     ],
     notes:
-      "Carrier websites are national properties — one measurement per brand, tagged \"US\" on cards.",
+      "Carrier websites are national properties — one measurement per brand, tagged \"US\" on cards. A quote-flow friction heuristic (clicks and seconds to the first quote question) is built and under evaluation; it joins the formula at 20% weight once its measurement source is reliable across brands.",
   },
 ];
 
