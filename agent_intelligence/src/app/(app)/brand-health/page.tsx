@@ -222,6 +222,13 @@ export default function BrandHealthPage(): React.JSX.Element {
               result={c.result}
               metrics={c.metrics}
               state={state}
+              ownBadge={
+                profile.authorized_brands.includes(c.brand)
+                  ? profile.agent_type === "captive"
+                    ? "Your Carrier"
+                    : "You sell"
+                  : undefined
+              }
             />
           ))}
         </div>

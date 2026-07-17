@@ -96,6 +96,25 @@ async function main() {
   const pillarRows = await page.$$('[data-testid^="bh-pillar-"]');
   check("every card has 4 pillar rows", pillarRows.length === 13 * 4, pillarRows.length);
 
+  // Ownership badges: the independent test profile sells 3 brands — exactly
+  // those cards carry a "You sell" badge (captives get "Your Carrier").
+  const ownBadges = await page.$$eval('[data-testid="bh-card"]', els =>
+    els
+      .filter(e => e.querySelector('[data-testid="bh-own-badge"]'))
+      .map(e => ({
+        brand: e.getAttribute("data-brand"),
+        label: e.querySelector('[data-testid="bh-own-badge"]')!.textContent?.trim(),
+      })),
+  );
+  check(
+    "authorized brands badged 'You sell'",
+    ownBadges.length === PROFILE.authorized_brands.length &&
+      ownBadges.every(
+        b => b.label === "You sell" && (PROFILE.authorized_brands as string[]).includes(b.brand ?? ""),
+      ),
+    ownBadges,
+  );
+
   const usTags = await page.$$eval('[data-testid="bh-card"] span', els =>
     els.filter(e => (e.textContent ?? "").includes("US")).length,
   );

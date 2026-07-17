@@ -102,6 +102,9 @@ type Props = {
   result: BrandHealthResult | null; // null = nothing scorable in this state
   metrics: Record<PillarKey, SourceBackedMetric | null>;
   state: string;
+  // "Your Carrier" (captive) / "You sell" (independent) badge + accent
+  // border when this brand is in the agent's authorized_brands.
+  ownBadge?: string;
 };
 
 export default function BrandHealthCard({
@@ -109,6 +112,7 @@ export default function BrandHealthCard({
   result,
   metrics,
   state,
+  ownBadge,
 }: Props): React.JSX.Element {
   const scoreClass = result ? classifyScore(result.score) : null;
 
@@ -126,10 +130,23 @@ export default function BrandHealthCard({
     <div
       data-testid="bh-card"
       data-brand={brand}
-      className="bg-surface border border-card-line rounded-card shadow-card px-5 py-4"
+      className={[
+        "bg-surface border rounded-card shadow-card px-5 py-4",
+        ownBadge ? "border-brand-navy" : "border-card-line",
+      ].join(" ")}
     >
       <div className="flex items-center justify-between gap-2 mb-3">
-        <span className="text-14 font-semibold text-ink">{brand}</span>
+        <span className="flex items-center gap-2 min-w-0">
+          <span className="text-14 font-semibold text-ink truncate">{brand}</span>
+          {ownBadge && (
+            <span
+              data-testid="bh-own-badge"
+              className="shrink-0 text-10 font-medium rounded-badge px-2 py-0.5 bg-brand-navy text-white"
+            >
+              {ownBadge}
+            </span>
+          )}
+        </span>
         {result && scoreClass ? (
           <span
             data-testid="bh-badge"
