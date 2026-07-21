@@ -29,6 +29,12 @@ type MyCarriersCase = {
   expected: number;
 };
 
+// Re-keyed 2026-07-21: MO import (40th state) — every moved pin is the +5-day
+// as_of slide only (MO is in no case's state set). Defend all-8: GNSC-134605705
+// UT (State Farm -9.9), LBPM-134543988 MT (Safeco -4.0), LBPM-134586929 OR
+// (Safeco -4.0) aged out (eff 2025-07-18/19/20) -> independent 38->35,
+// captive-SF 28->26 (GNSC is SF, already excluded there). My-carriers:
+// LBPM-134532655 OR + the two Safeco rows aged out -> 25->24, 75->73.
 const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
   {
     label: "Captive State Farm, AZ+NV",
@@ -61,7 +67,7 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       licensed_states: ALL_8,
     } satisfies CaptiveProfile,
     expected_prospect: 39,
-    expected_defend: 28,
+    expected_defend: 26,
   },
   {
     label: "Independent, AZ+NV",
@@ -81,7 +87,7 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       licensed_states: ALL_8,
     } satisfies IndependentProfile,
     expected_prospect: 48,
-    expected_defend: 38,
+    expected_defend: 35,
   },
 ];
 
@@ -102,7 +108,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
       authorized_brands: ["State Farm", "Travelers", "Progressive"],
       licensed_states: ["AZ", "CO", "NV"],
     },
-    expected: 25,
+    expected: 24,
   },
   {
     label: "Independent, sells Allstate + Liberty Mutual + Safeco, all 8 states",
@@ -111,7 +117,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
       authorized_brands: ["Allstate", "Liberty Mutual", "Safeco"],
       licensed_states: ALL_8,
     },
-    expected: 75,
+    expected: 73,
   },
 ];
 

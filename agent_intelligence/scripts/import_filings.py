@@ -62,6 +62,7 @@ AMBEST_STATES = [  # VA (06-22), OH (06-24), IL (06-25), WV (06-26), NH (06-29),
                  # AR, KY, WI (07-13) removed: scraped — 34th/35th/36th scraped states.
                  # PA, MI (07-15) removed: scraped — 37th/38th scraped states (B19 batch).
                  # IN (07-16) removed: scraped — 39th scraped state.
+                 # MO (07-21) removed: scraped — 40th scraped state.
                  "CA",
                  # 22-state batch (2026-06-17): 20 interim + NY/TX permanent.
                  # NC EXCLUDED: 68.1% Data-N/A → only 26 thin filings, because
@@ -72,7 +73,7 @@ AMBEST_STATES = [  # VA (06-22), OH (06-24), IL (06-25), WV (06-26), NH (06-29),
                  # MA (07-06) removed: scraped (serff_scraped), no longer interim.
                  # ND (07-07) removed: scraped (serff_scraped), no longer interim.
                  # ME (07-08) removed: scraped (serff_scraped), no longer interim.
-                 "MN", "MO",
+                 "MN",
                  # RI (07-07), SD (07-08) removed: scraped, no longer interim.
                  "NY", "TN", "TX"]
 AMBEST_CSV_DIR = PROJECT_DIR.parent / "Insurance Rate Data Scraper" / "tools"
@@ -772,9 +773,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # _FIG_FARMERS_PATTERNS allowlist; the independents dropped from interim.
     # Prior 2026-07-06 baseline (post-MA) was 3,092/1,890/566 (19 states).
     raw = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
-    ok = raw == 7288
+    ok = raw == 7618
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 7288, got {raw}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 7618, got {raw}")
 
     null_brand = con.execute("SELECT COUNT(*) FROM filings_raw WHERE brand IS NULL").fetchone()[0]
     ok = null_brand == 0
@@ -782,9 +783,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (2) unmatched company_name: expected 0, got {null_brand}")
 
     rolled = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = rolled == 4556
+    ok = rolled == 4779
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 4556, got {rolled}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 4779, got {rolled}")
 
     # (4) GECC-134661852 Personal Auto spot-check
     raw_n = con.execute(
@@ -862,9 +863,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (7) scraped distinct brands: expected 13, got {n_brands}")
 
     n_states = con.execute("SELECT COUNT(DISTINCT state) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = n_states == 39
+    ok = n_states == 40
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 39, got {n_states}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 40, got {n_states}")
 
     # (9) active window + (10) anchor — SCOPED to scraped so AM Best can't move them.
     as_of = LAST_UPDATED_PATH.read_text(encoding="utf-8").strip()
@@ -875,15 +876,14 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
              AND effective_date >= date(?, '-12 months')""",
         (as_of,),
     ).fetchone()[0]
-    # 1485 as of 2026-07-16 (as_of = xlsx mtime). The 1656->1485 move at the IN
-    # import is NOT data loss: last_updated.txt had been stale at 2026-06-11
-    # (consolidated xlsx last rebuilt then), so the prior pin was computed on a
-    # frozen as_of. Today's rebuild slid the 12-month window forward 5 weeks
-    # (-223 aged out) and IN added +52. Re-derive this pin at every import.
-    ok = active == 1485
+    # 1521 as of 2026-07-21 (as_of = xlsx mtime). The 1485->1521 move at the MO
+    # import is the +5-day as_of slide plus MO (+61 active): all 39 prior states
+    # verified byte-identical on active counts under the same as_of against the
+    # HEAD db. Re-derive this pin at every import.
+    ok = active == 1521
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (9) scraped active-window filings (as of {as_of}): "
-          f"expected 1485, got {active}")
+          f"expected 1521, got {active}")
 
     anchor = con.execute(
         """SELECT serff_tracking_number, brand, state, overall_rate_impact
@@ -904,16 +904,16 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # (11)/(12) source tags — scraped baseline intact + AM Best present.
     raw_scraped = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
     raw_ambest = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced'").fetchone()[0]
-    ok = raw_scraped == 7288 and raw_ambest > 0
+    ok = raw_scraped == 7618 and raw_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 7288 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 7618 serff_scraped "
           f"+ {raw_ambest} ambest_sourced (got {raw_scraped} / {raw_ambest})")
 
     f_scraped = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     f_ambest = con.execute("SELECT COUNT(*) FROM filings WHERE source='ambest_sourced'").fetchone()[0]
-    ok = f_scraped == 4556 and f_ambest > 0
+    ok = f_scraped == 4779 and f_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 4556 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 4779 serff_scraped "
           f"+ {f_ambest} ambest_sourced (got {f_scraped} / {f_ambest})")
 
     # ---- AM Best-specific checks (own invariants) ----
