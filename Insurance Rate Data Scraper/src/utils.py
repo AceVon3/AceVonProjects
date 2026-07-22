@@ -734,6 +734,18 @@ _FS_CONT_STOP = re.compile(
     r"State:|TOI/Sub-TOI|Product Name|Company Rate Information)"
 )
 
+# TN DOI actuarial-memo guard (2026-07-22): TN embeds the state actuary's
+# review memo inside the filing summary; its per-coverage rate tables
+# ("Bodily Injury 4.8% 41.9% ...", "Homeowners 6% ...") match the sparse
+# company-row shapes and emitted 19 debris rows across 3 TN filings
+# (ALSE-134149698, FARM-134172973, NWPP-134180330 — real company rows were
+# unaffected; all 41 prior states scanned clean). A legal entity name never
+# contains a percent figure, and bare line-of-business words are not
+# companies.
+_FS_NON_COMPANY_NAMES = {
+    "homeowners", "tenants", "condo", "condominium", "renters", "dwelling",
+}
+
 
 def _fs_normalize_money(s: str) -> str:
     s = s.replace(",", "").strip()
@@ -824,6 +836,14 @@ def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "", *,
             name_parts.append(nxt); j += 1
         full_name = " ".join(name_parts).strip()
         name_key = re.sub(r"\s+", " ", full_name.lower())
+        # Actuarial-memo debris guard — see _FS_NON_COMPANY_NAMES above.
+        # Prefix match + length cap catch memo-text blobs that carry no "%"
+        # in the captured name (e.g. "Condo Premium Trends The data ...");
+        # no legal entity name approaches 100 characters.
+        if ("%" in full_name or len(full_name) > 100
+                or name_key in _FS_NON_COMPANY_NAMES
+                or name_key.split(" ", 1)[0] in _FS_NON_COMPANY_NAMES):
+            i = j; continue
         if name_key in seen_names:
             i = j; continue
         seen_names.add(name_key)

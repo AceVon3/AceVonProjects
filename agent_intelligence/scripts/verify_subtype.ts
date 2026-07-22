@@ -17,6 +17,12 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-07-22 (2nd): TN import (42nd state — CHAIN COMPLETE, AMBEST
+// now permanent-only CA/NY/TX). Active 1541->1593 = TN alone (+52; same-day
+// import, zero as_of slide). Per-sub_type attribution verified CLEAN against
+// the HEAD db: new = old + TN for every sub_type (PPA +29, HO-Comb +10,
+// Owner-Occ +5, Tenant +2, Auto-Comb/Motorcycle/RV/Other-Auto/Condo/Mobile +1;
+// Other-HO unchanged). Prior note:
 // Re-keyed 2026-07-22: MN import (41st state). Active 1521->1541 = as_of slide
 // +1 day (-25 aged, eff exactly 2025-07-21 — a renewal-date cluster) + MN (+45
 // active). Per-sub_type attribution verified CLEAN against the HEAD db:
@@ -58,17 +64,17 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 602,
-  "19.0000 Personal Auto Combinations": 205,
-  "19.0002 Motorcycle": 74,
-  "19.0003 Recreational Vehicle (RV)": 45,
-  "19.0004 Other": 10,
-  "04.0003 Owner Occupied Homeowners": 126,
-  "04.0000 Homeowners Sub-TOI Combinations": 371,
-  "04.0001 Condominium Homeowners": 31,
+  "19.0001 Private Passenger Auto (PPA)": 631,
+  "19.0000 Personal Auto Combinations": 206,
+  "19.0002 Motorcycle": 75,
+  "19.0003 Recreational Vehicle (RV)": 46,
+  "19.0004 Other": 11,
+  "04.0003 Owner Occupied Homeowners": 131,
+  "04.0000 Homeowners Sub-TOI Combinations": 381,
+  "04.0001 Condominium Homeowners": 32,
   "04.0005 Other Homeowners": 13,
-  "04.0004 Tenant Homeowners": 35,
-  "04.0002 Mobile Homeowners": 29,
+  "04.0004 Tenant Homeowners": 37,
+  "04.0002 Mobile Homeowners": 30,
 };
 
 console.log("=".repeat(72));
@@ -89,7 +95,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1541", rows.length, 1541);
+check("active rolled filings = 1593", rows.length, 1593);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 

@@ -64,6 +64,8 @@ AMBEST_STATES = [  # VA (06-22), OH (06-24), IL (06-25), WV (06-26), NH (06-29),
                  # IN (07-16) removed: scraped — 39th scraped state.
                  # MO (07-21) removed: scraped — 40th scraped state.
                  # MN (07-22) removed: scraped — 41st scraped state.
+                 # TN (07-22) removed: scraped — 42nd scraped state, chain
+                 # complete. AMBEST_STATES is now PERMANENT-only (CA/NY/TX).
                  "CA",
                  # 22-state batch (2026-06-17): 20 interim + NY/TX permanent.
                  # NC EXCLUDED: 68.1% Data-N/A → only 26 thin filings, because
@@ -75,7 +77,7 @@ AMBEST_STATES = [  # VA (06-22), OH (06-24), IL (06-25), WV (06-26), NH (06-29),
                  # ND (07-07) removed: scraped (serff_scraped), no longer interim.
                  # ME (07-08) removed: scraped (serff_scraped), no longer interim.
                  # RI (07-07), SD (07-08) removed: scraped, no longer interim.
-                 "NY", "TN", "TX"]
+                 "NY", "TX"]
 AMBEST_CSV_DIR = PROJECT_DIR.parent / "Insurance Rate Data Scraper" / "tools"
 AMBEST_WINDOW = (date(2024, 1, 1), date(2026, 12, 31))  # B19 2026-07-15: bumped with EFFECTIVE_DATE_TO (was 04/17/2026)
 AMBEST_LINE = {"PPA": "Personal Auto", "HO": "Homeowners"}
@@ -308,7 +310,12 @@ def derive_brand(name) -> str | None:
     # DISTINCT live entity, not the retired national Drive brand the exclude
     # list names as "drive insurance") — found at the NJ import 2026-07-10.
     # "american strategic": ASI = Progressive Home.
-    if n.startswith("progressive") or "artisan and truckers" in n or "drive new jersey" in n or "american strategic" in n:
+    # "mountain laurel": Mountain Laurel Assurance Company — Progressive
+    # subsidiary (its TN/PA consumer-auto vehicle) that co-files on PRGS-*
+    # filings; legal name lacks "progressive". TN-first (2026-07-22): 0 rows
+    # in the 41 prior scraped states (verified against the shipped
+    # all_states csv), so this mapping cannot shift shipped brands.
+    if n.startswith("progressive") or "artisan and truckers" in n or "drive new jersey" in n or "american strategic" in n or "mountain laurel" in n:
         return "Progressive"
     # Safeco — incl. consumer-facing Safeco companies whose legal names carry
     # neither "safeco" nor "liberty" (Liberty Mutual owns the parent post-2008,
@@ -773,9 +780,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # _FIG_FARMERS_PATTERNS allowlist; the independents dropped from interim.
     # Prior 2026-07-06 baseline (post-MA) was 3,092/1,890/566 (19 states).
     raw = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
-    ok = raw == 7899
+    ok = raw == 8221
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 7899, got {raw}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 8221, got {raw}")
 
     null_brand = con.execute("SELECT COUNT(*) FROM filings_raw WHERE brand IS NULL").fetchone()[0]
     ok = null_brand == 0
@@ -783,9 +790,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (2) unmatched company_name: expected 0, got {null_brand}")
 
     rolled = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = rolled == 4964
+    ok = rolled == 5141
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 4964, got {rolled}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 5141, got {rolled}")
 
     # (4) GECC-134661852 Personal Auto spot-check
     raw_n = con.execute(
@@ -863,9 +870,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (7) scraped distinct brands: expected 13, got {n_brands}")
 
     n_states = con.execute("SELECT COUNT(DISTINCT state) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = n_states == 41
+    ok = n_states == 42
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 41, got {n_states}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 42, got {n_states}")
 
     # (9) active window + (10) anchor — SCOPED to scraped so AM Best can't move them.
     as_of = LAST_UPDATED_PATH.read_text(encoding="utf-8").strip()
@@ -876,14 +883,15 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
              AND effective_date >= date(?, '-12 months')""",
         (as_of,),
     ).fetchone()[0]
-    # 1541 as of 2026-07-22 (as_of = xlsx mtime). The 1521->1541 move at the MN
-    # import is the +1-day as_of slide (-25 aged, eff exactly 2025-07-21) plus
-    # MN (+45 active): all 40 prior states verified byte-identical on active
-    # counts under the same as_of against the HEAD db. Re-derive at every import.
-    ok = active == 1541
+    # 1593 as of 2026-07-22 (as_of = xlsx mtime, unchanged from the MN import
+    # earlier the same day — zero slide). The 1541->1593 move at the TN import
+    # is TN alone (+52 active): all 41 prior states verified byte-identical on
+    # active counts under the same as_of against the HEAD db. Re-derive at
+    # every import.
+    ok = active == 1593
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (9) scraped active-window filings (as of {as_of}): "
-          f"expected 1541, got {active}")
+          f"expected 1593, got {active}")
 
     anchor = con.execute(
         """SELECT serff_tracking_number, brand, state, overall_rate_impact
@@ -895,25 +903,28 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
         (as_of,),
     ).fetchone()
     serff, brand, state, impact = anchor
-    ok = (serff == "SFMA-134315091" and abs(impact - 93.70) < 0.05
-          and brand == "State Farm" and state == "WA")
+    # Anchor re-keyed at the TN import (2026-07-22): GMMX-134651170 is the
+    # PDF-verified Encompass Personal Umbrella re-rate (+110.9% on a 1,490-ph
+    # / $851k book) — it displaces the long-standing SFMA-134315091 WA +93.7%.
+    ok = (serff == "GMMX-134651170" and abs(impact - 110.90) < 0.05
+          and brand == "Encompass" and state == "TN")
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (10) scraped max active impact: expected "
-          f"+93.70% SFMA-134315091 State Farm WA, got +{impact:.2f}% {serff} {brand} {state}")
+          f"+110.90% GMMX-134651170 Encompass TN, got +{impact:.2f}% {serff} {brand} {state}")
 
     # (11)/(12) source tags — scraped baseline intact + AM Best present.
     raw_scraped = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
     raw_ambest = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced'").fetchone()[0]
-    ok = raw_scraped == 7899 and raw_ambest > 0
+    ok = raw_scraped == 8221 and raw_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 7899 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 8221 serff_scraped "
           f"+ {raw_ambest} ambest_sourced (got {raw_scraped} / {raw_ambest})")
 
     f_scraped = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     f_ambest = con.execute("SELECT COUNT(*) FROM filings WHERE source='ambest_sourced'").fetchone()[0]
-    ok = f_scraped == 4964 and f_ambest > 0
+    ok = f_scraped == 5141 and f_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 4964 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 5141 serff_scraped "
           f"+ {f_ambest} ambest_sourced (got {f_scraped} / {f_ambest})")
 
     # ---- AM Best-specific checks (own invariants) ----
