@@ -29,6 +29,11 @@ type MyCarriersCase = {
   expected: number;
 };
 
+// Re-keyed 2026-07-22: MN import (41st state) — every moved pin is the +1-day
+// as_of slide only (MN is in no case's state set; 5 rows eff exactly 2025-07-21
+// aged out). Prospect all-8: ALSE-134570882 OR +31.0, ALSE-134604458 UT +10.7
+// aged -> captive-SF 39->37, independent 48->46; defend untouched. My-carriers
+// all-8: the LBPM-134399434 ID / ALSE-134489276+134489925 WA agings -> 73->71.
 // Re-keyed 2026-07-21: MO import (40th state) — every moved pin is the +5-day
 // as_of slide only (MO is in no case's state set). Defend all-8: GNSC-134605705
 // UT (State Farm -9.9), LBPM-134543988 MT (Safeco -4.0), LBPM-134586929 OR
@@ -66,7 +71,7 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm"],
       licensed_states: ALL_8,
     } satisfies CaptiveProfile,
-    expected_prospect: 39,
+    expected_prospect: 37,
     expected_defend: 26,
   },
   {
@@ -86,7 +91,7 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm", "Allstate", "GEICO"],
       licensed_states: ALL_8,
     } satisfies IndependentProfile,
-    expected_prospect: 48,
+    expected_prospect: 46,
     expected_defend: 35,
   },
 ];
@@ -117,7 +122,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
       authorized_brands: ["Allstate", "Liberty Mutual", "Safeco"],
       licensed_states: ALL_8,
     },
-    expected: 73,
+    expected: 71,
   },
 ];
 

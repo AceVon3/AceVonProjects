@@ -202,7 +202,12 @@ GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate 
     # Garrison carries neither string (GA portal check: three disjoint NAIC
     # buckets). Farmers' exchanges/Mid-Century likewise lack "farmers".
     "USAA":             ["usaa", "united services", "garrison"],
-    "Farmers":          ["farmers", "mid-century", "fire insurance exchange", "truck insurance exchange"],
+    # "illinois farmers": FIG midwest vehicle; SERFF search is prefix-anchored
+    # so bare "farmers" never returns it. Solo filings were invisible until MN
+    # 2026-07-22 (AM Best showed +2.7%/34,169ph disp 03/06/26 with zero
+    # universe rows); its co-filed rows always rode FIE filings that DID
+    # surface — the TravCo/Liberty Insurance search-term-gap family.
+    "Farmers":          ["farmers", "mid-century", "fire insurance exchange", "truck insurance exchange", "illinois farmers"],
     "Nationwide":       ["nationwide"],
     # "american standard insurance": AmFam WI/OH auto subs, no brand string in
     # the legal name (B9 audit) — a solo filing needs its own search term.
@@ -386,6 +391,11 @@ EXCLUDED_SUBSIDIARY_PATTERNS = (
     # Best rating consolidated under LM. Same filing-vehicle pattern as LM
     # General / American Economy (Thread 1, 2026-05-26).
     "peerless",
+    # Consolidated Insurance Company — legacy Peerless/Indiana Insurance group
+    # entity, first seen IN (2026-07-16, import brand gate). Rides LM's own
+    # LBPM HO filings alongside Peerless Indemnity + LM Insurance Corp, both
+    # excluded ON THE SAME FILING (LBPM-134019021) — Peerless doctrine.
+    "consolidated insurance company",
     # --- 13-brand expansion exclusions (2026-06-10, SCOPE.md) -------------
     # USAA: Noblr is a distinct telematics brand.
     "noblr",
@@ -443,6 +453,8 @@ INDEPENDENT_COMPANY_PATTERNS = (
     "farmers mutual fire",
     "the farmers fire insurance",
     "farmers insurance company of flemington",
+    "farmers insurance co. of flemington",   # abbreviated variant (B19 import gate, 2026-07-15)
+    "farmers' & mechanics'", "farmers' and mechanics'",  # apostrophe variants of farmers & mechanics (B19 import gate)
     "alliance insurance company",
     # B9 root-pattern audit (2026-07-07 follow-up) — latent unaffiliated names
     # the full-surface scan found in AM Best CSVs / SERFF search universes that
@@ -453,6 +465,7 @@ INDEPENDENT_COMPANY_PATTERNS = (
     "farmers mutual hail",           # Farmers Mutual Hail of Iowa (GA/IL/ND/OH/WV universes)
     "farmers and mechanics", "farmers & mechanics",   # WV/VA independents
     "farmers' mutual insurance",     # Farmers' Mutual Insurance Company/WV
+    "farmers mutual insurance company of michigan",  # AAIS-filed MI independent (AATX-134434886, found by the MI zero-row audit 2026-07-15)
     "countryway",                    # independent NY farm-line insurer, NOT COUNTRY Financial
     "town & country insurance",      # MO Farm Bureau Town & Country
     "north country insurance",

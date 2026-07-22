@@ -67,6 +67,14 @@ TARGET_COMPANIES = [
     "Mid-Century",               # Farmers underwriter, no "farmers" in name
     "Fire Insurance Exchange",   # Farmers HO exchange
     "Truck Insurance Exchange",  # Farmers exchange (mostly commercial; cheap)
+    # FIG midwest PPA/HO vehicle whose legal name does NOT start with the
+    # brand string — SERFF company search is prefix-anchored, so a bare
+    # "Farmers" search never returns it (same gap family as Liberty
+    # Insurance / TravCo / Garrison). Found MN 2026-07-22: AM Best showed
+    # Illinois Farmers PPA +2.7%/34,169ph (disp 03/06/26) with ZERO universe
+    # rows; targeted search returned 20 filings (19 in-target). GROUP_KW
+    # already classifies via the "farmers insurance company" anchor.
+    "Illinois Farmers",
     "Nationwide",
     "American Family",
     # AmFam auto subs whose legal names lack the brand string (B9 audit) —
@@ -116,7 +124,12 @@ DATE_TO = "04/17/2026"
 # capture calendar-year 2024 effective dates). See AMBEST_VALIDATED_FROM below
 # for the validation-tier boundary.
 EFFECTIVE_DATE_FROM = "01/01/2024"
-EFFECTIVE_DATE_TO = "04/17/2026"
+# B19 (2026-07-15): 04/17/2026 was a fixed ceiling set early in the project and
+# never rolled forward — by July 2026 it was silently dropping already-in-force
+# filings (MI: PRGS-134782430/455 -2.8/-2.7 on 585k/238k books, USAA +7.0%).
+# Bumped to 12/31/2026 per user approval. THIS IS STILL A FIXED DATE — revisit
+# before 2027 collections or make it rolling (build date + N months).
+EFFECTIVE_DATE_TO = "12/31/2026"
 
 # AM Best validation boundary. The per-state AM Best cross-checks (see
 # dataset_summary.md "Validation") were run against AM Best exports scoped to

@@ -17,6 +17,12 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-07-22: MN import (41st state). Active 1521->1541 = as_of slide
+// +1 day (-25 aged, eff exactly 2025-07-21 — a renewal-date cluster) + MN (+45
+// active). Per-sub_type attribution verified CLEAN against the HEAD db:
+// new = old + MN - aged for every sub_type (PPA +17-11, HO-Comb +14, Owner-Occ
+// +3-3, Auto-Comb +4-5, Motorcycle +2-2, RV +2, Condo +1, Tenant +2, Mobile -1,
+// Other-Auto -3; Other-HO unchanged). Prior note:
 // Re-keyed 2026-07-21: MO import (40th state). Active 1485->1521 = as_of slide
 // +5 days (-25 aged out) + MO (+61 active). Per-sub_type attribution verified
 // CLEAN against the HEAD db: new = old + MO - aged for every sub_type
@@ -52,17 +58,17 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 596,
-  "19.0000 Personal Auto Combinations": 206,
+  "19.0001 Private Passenger Auto (PPA)": 602,
+  "19.0000 Personal Auto Combinations": 205,
   "19.0002 Motorcycle": 74,
-  "19.0003 Recreational Vehicle (RV)": 43,
-  "19.0004 Other": 13,
+  "19.0003 Recreational Vehicle (RV)": 45,
+  "19.0004 Other": 10,
   "04.0003 Owner Occupied Homeowners": 126,
-  "04.0000 Homeowners Sub-TOI Combinations": 357,
-  "04.0001 Condominium Homeowners": 30,
+  "04.0000 Homeowners Sub-TOI Combinations": 371,
+  "04.0001 Condominium Homeowners": 31,
   "04.0005 Other Homeowners": 13,
-  "04.0004 Tenant Homeowners": 33,
-  "04.0002 Mobile Homeowners": 30,
+  "04.0004 Tenant Homeowners": 35,
+  "04.0002 Mobile Homeowners": 29,
 };
 
 console.log("=".repeat(72));
@@ -83,7 +89,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1521", rows.length, 1521);
+check("active rolled filings = 1541", rows.length, 1541);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 

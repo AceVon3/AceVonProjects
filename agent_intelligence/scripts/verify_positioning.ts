@@ -46,6 +46,11 @@ const independent: AgentProfile = {
   licensed_states: ALL_8,
 };
 
+// Re-keyed 2026-07-22: MN import (41st state) — moved pins are the +1-day
+// as_of slide only (MN not in ALL_8): the 5 aged rows (eff exactly 2025-07-21,
+// incl ALSE-134570882 OR +31.0 / ALSE-134604458 UT +10.7) drop comparisons ->
+// captive comparable 47->46, thin 23->22, insufficient 26->27; independent
+// comparable 78->77. verify_queries.ts carries the same aged-row attribution.
 console.log("=".repeat(72));
 console.log("VERIFY: Rate Positioning classifier vs recon answer key");
 console.log("=".repeat(72));
@@ -54,14 +59,14 @@ console.log("\nCaptive State Farm, all 8 states:");
 const c = getPositioning(captive).totals;
 check("anchored cells", c.anchoredCellCount, 11);
 check("unanchored cells", c.unanchoredCellCount, 5);
-check("comparable comparisons", c.comparable, 47);
+check("comparable comparisons", c.comparable, 46);
 check("  higher-confidence (>=2 each)", c.higherConfidence, 24);
-check("  thin", c.thin, 23);
-check("insufficient (covered competitor absent)", c.insufficient, 26);
+check("  thin", c.thin, 22);
+check("insufficient (covered competitor absent)", c.insufficient, 27);
 
 console.log("\nIndependent {State Farm, Travelers, Progressive}, all 8 states:");
 const i = getPositioning(independent).totals;
-check("comparable comparisons", i.comparable, 78);
+check("comparable comparisons", i.comparable, 77);
 check("  higher-confidence (>=2 each)", i.higherConfidence, 33);
 
 console.log("\n" + "=".repeat(72));
