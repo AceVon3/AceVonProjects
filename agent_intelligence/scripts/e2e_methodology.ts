@@ -9,7 +9,7 @@
 //     Auto + Homeowners, 2024-2026.
 //   - Thresholds section states +5% (Prospect) and -2% (Defend) verbatim.
 //   - All 7 excluded brands are listed with a "why" line each.
-//   - Validation table has 43 rows (one per directly-scraped state) and the cell
+//   - Validation table has 44 rows (one per directly-scraped state) and the cell
 //     values match STATES.validated exactly. Spot-checks: AZ auto=✓
 //     home=✓, MT auto=✓ home=✓, WA auto=✓ home=—, CO auto=— home=—.
 //   - Known limitations section covers SERFF visibility gaps, CO
@@ -83,6 +83,7 @@ const EXPECTED_VALIDATION: Record<string, { auto: boolean; home: boolean }> = {
   MN: { auto: true,  home: true  }, // scraped 2026-07-22 (41st state); value-agreement 126/126 (100%); Illinois Farmers +2.7%/34,169ph RECOVERED pre-import (prefix-anchored search gap, WV-Liberty fix family); 1 ours-correct impact disagreement; 1 SERFF-visibility watch item (Allstate NA)
   TN: { auto: true,  home: true  }, // scraped 2026-07-22 (42nd state — chain complete); value-agreement 139/141 (98.6%), both disagreements ours-correct from PDFs (incl. the REAL Encompass umbrella +110.9%); TN DOI actuarial-memo debris class fixed (19 rows, 3 filings); Mountain Laurel -> Progressive (TN-first)
   AL: { auto: false, home: false }, // scraped 2026-07-27 (43rd state, gap-batch): 45-row PARTIAL import, CO-style no-cross-check (no AM Best AL CSV). AL DOI doesn't mandate the rate-data dialog — 85 Rate filings are prose-only; prose extraction + fresh AM Best pull pending
+  LA: { auto: false, home: false }, // scraped 2026-07-27 (44th state): 156 rows, CO-style no-cross-check (no AM Best LA CSV); zero-row flags adjudicated zero-effect
   CT: { auto: true,  home: true  }, // scraped 2026-07-09 (interim->real); the state that surfaced B14 (the "Flex Rate" filing-type vocabulary, 4th variant) — live GEICO/Progressive PPA signals recovered pre-ship, 25-state retro-sweep 0 exposure; post-fix cross-check (15th point): value-agreement 55/56 (98.2%, the 1 differ = AM Best zeroing a REJECTED filing) / PPA 43/54 / HO 25/33 (AM-Best-only = recency/immaterial/1 new-product), 0 genuine soft-misses -> both validated
 };
 
@@ -187,7 +188,7 @@ async function main(): Promise<void> {
   // -- (7) AM Best validation table matches STATES.validated ---------------
   console.log("\n(7) validation table matches STATES.validated exactly");
   const rowCount = await page.locator('[data-testid="validation-row"]').count();
-  check(`validation table has 43 rows (got ${rowCount})`, rowCount === 43);
+  check(`validation table has 44 rows (got ${rowCount})`, rowCount === 44);
   for (const [code, expected] of Object.entries(EXPECTED_VALIDATION)) {
     const row = page.locator(`[data-testid="validation-row"][data-state="${code}"]`);
     const autoCell = (await row.locator('[data-testid="cell-auto"]').textContent())?.trim();
@@ -208,14 +209,15 @@ async function main(): Promise<void> {
     /Colorado/.test(limitsText) && /validat/i.test(limitsText));
   // 5 not covered = 50 − 45 covered (24 directly scraped incl. VA/OH/IL/WV/NH/VT/HI/AK/MA/ND/RI/ME/SD/DE + 21 AM Best).
   // The uncovered 5: AL/FL/LA (header-only re-pull), NC (structural NCRB gap), WY
-  // (no filings). The validation table is 43 rows (one per directly-scraped state;
+  // (no filings). The validation table is 44 rows (one per directly-scraped state;
   // CO shows "— —" — scraped but not yet AM Best cross-checked (OH cross-checked
   // 2026-06-25 -> now ✓✓); AM Best states, interim AND permanent, are not in the
   // table at all).
   // 5->4 at the AL import (2026-07-27): AL flipped data_coverage true, leaving
   // FL/LA/NC/WY uncovered (LA + NC flip at their imports; FL unprobed; WY empty).
-  check("limitations mention '4 states not yet covered'",
-    /4 states not yet covered/i.test(limitsText));
+  // 4->3 at the LA import (2026-07-27): FL/NC/WY remain (NC flips at its import).
+  check("limitations mention '3 states not yet covered'",
+    /3 states not yet covered/i.test(limitsText));
   check("limitations include the no-future-dated-filings note",
     /no future-dated filings/i.test(limitsText) || /no future filings/i.test(limitsText));
 

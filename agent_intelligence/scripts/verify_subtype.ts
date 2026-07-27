@@ -17,6 +17,10 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-07-27 (3rd): LA import (44th state). Active 1582->1617 = LA
+// alone (+35; same-day, zero slide, LA-only diff vs HEAD db): PPA +13,
+// Auto-Comb +6, HO-Comb +5, RV +5, Owner-Occ +3, Other-Auto +2, Motorcycle +1.
+// Prior note:
 // Re-keyed 2026-07-27 (2nd): AL prose-extraction re-import (+36 rows, AL
 // 45->81). Active 1569->1582 = AL prose rows alone (+13; same-day re-import,
 // zero slide, diff verified AL-only vs HEAD db). Deltas: HO-Comb +5, PPA +2,
@@ -74,13 +78,13 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 618,
-  "19.0000 Personal Auto Combinations": 205,
-  "19.0002 Motorcycle": 75,
-  "19.0003 Recreational Vehicle (RV)": 45,
-  "19.0004 Other": 11,
-  "04.0003 Owner Occupied Homeowners": 131,
-  "04.0000 Homeowners Sub-TOI Combinations": 384,
+  "19.0001 Private Passenger Auto (PPA)": 631,
+  "19.0000 Personal Auto Combinations": 211,
+  "19.0002 Motorcycle": 76,
+  "19.0003 Recreational Vehicle (RV)": 50,
+  "19.0004 Other": 13,
+  "04.0003 Owner Occupied Homeowners": 134,
+  "04.0000 Homeowners Sub-TOI Combinations": 389,
   "04.0001 Condominium Homeowners": 32,
   "04.0005 Other Homeowners": 13,
   "04.0004 Tenant Homeowners": 38,
@@ -105,7 +109,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1582", rows.length, 1582);
+check("active rolled filings = 1617", rows.length, 1617);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 
