@@ -29,6 +29,11 @@ type MyCarriersCase = {
   expected: number;
 };
 
+// Re-keyed 2026-07-27: AL import (43rd state) — all three moved pins trace to
+// ONE aged filing: ALSE-134500694 Allstate WA -2.9% (eff 2025-07-24) left the
+// +5-day slide window -> captive-SF defend 26->25, independent defend 35->34,
+// my-carriers all-8 71->70. AL is in no case's state set (adds 3 active rows
+// total, none in ALL_8).
 // Re-keyed 2026-07-22: MN import (41st state) — every moved pin is the +1-day
 // as_of slide only (MN is in no case's state set; 5 rows eff exactly 2025-07-21
 // aged out). Prospect all-8: ALSE-134570882 OR +31.0, ALSE-134604458 UT +10.7
@@ -72,7 +77,7 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       licensed_states: ALL_8,
     } satisfies CaptiveProfile,
     expected_prospect: 37,
-    expected_defend: 26,
+    expected_defend: 25,
   },
   {
     label: "Independent, AZ+NV",
@@ -92,7 +97,7 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       licensed_states: ALL_8,
     } satisfies IndependentProfile,
     expected_prospect: 46,
-    expected_defend: 35,
+    expected_defend: 34,
   },
 ];
 
@@ -122,7 +127,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
       authorized_brands: ["Allstate", "Liberty Mutual", "Safeco"],
       licensed_states: ALL_8,
     },
-    expected: 71,
+    expected: 70,
   },
 ];
 

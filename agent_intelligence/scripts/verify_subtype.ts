@@ -17,6 +17,12 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-07-27: AL import (43rd state). Active 1593->1569 = +5-day
+// as_of slide (-27 aged, eff 2025-07-22..26) + AL (+3: Auto-Comb +2, PPA +1 —
+// AL's 2025+ activity sits in 85 prose-only filings pending prose extraction).
+// Per-sub_type attribution CLEAN vs HEAD db: new = old + AL - aged everywhere
+// (PPA -16+1, Auto-Comb -5+2, HO-Comb -2, Condo/Owner-Occ/Motorcycle/RV -1).
+// Prior note:
 // Re-keyed 2026-07-22 (2nd): TN import (42nd state — CHAIN COMPLETE, AMBEST
 // now permanent-only CA/NY/TX). Active 1541->1593 = TN alone (+52; same-day
 // import, zero as_of slide). Per-sub_type attribution verified CLEAN against
@@ -64,14 +70,14 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 631,
-  "19.0000 Personal Auto Combinations": 206,
-  "19.0002 Motorcycle": 75,
-  "19.0003 Recreational Vehicle (RV)": 46,
+  "19.0001 Private Passenger Auto (PPA)": 616,
+  "19.0000 Personal Auto Combinations": 203,
+  "19.0002 Motorcycle": 74,
+  "19.0003 Recreational Vehicle (RV)": 45,
   "19.0004 Other": 11,
-  "04.0003 Owner Occupied Homeowners": 131,
-  "04.0000 Homeowners Sub-TOI Combinations": 381,
-  "04.0001 Condominium Homeowners": 32,
+  "04.0003 Owner Occupied Homeowners": 130,
+  "04.0000 Homeowners Sub-TOI Combinations": 379,
+  "04.0001 Condominium Homeowners": 31,
   "04.0005 Other Homeowners": 13,
   "04.0004 Tenant Homeowners": 37,
   "04.0002 Mobile Homeowners": 30,
@@ -95,7 +101,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1593", rows.length, 1593);
+check("active rolled filings = 1569", rows.length, 1569);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 

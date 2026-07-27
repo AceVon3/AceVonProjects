@@ -780,9 +780,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # _FIG_FARMERS_PATTERNS allowlist; the independents dropped from interim.
     # Prior 2026-07-06 baseline (post-MA) was 3,092/1,890/566 (19 states).
     raw = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
-    ok = raw == 8221
+    ok = raw == 8266
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 8221, got {raw}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 8266, got {raw}")
 
     null_brand = con.execute("SELECT COUNT(*) FROM filings_raw WHERE brand IS NULL").fetchone()[0]
     ok = null_brand == 0
@@ -790,9 +790,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (2) unmatched company_name: expected 0, got {null_brand}")
 
     rolled = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = rolled == 5141
+    ok = rolled == 5167
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 5141, got {rolled}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 5167, got {rolled}")
 
     # (4) GECC-134661852 Personal Auto spot-check
     raw_n = con.execute(
@@ -870,9 +870,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (7) scraped distinct brands: expected 13, got {n_brands}")
 
     n_states = con.execute("SELECT COUNT(DISTINCT state) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = n_states == 42
+    ok = n_states == 43
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 42, got {n_states}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 43, got {n_states}")
 
     # (9) active window + (10) anchor — SCOPED to scraped so AM Best can't move them.
     as_of = LAST_UPDATED_PATH.read_text(encoding="utf-8").strip()
@@ -883,15 +883,16 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
              AND effective_date >= date(?, '-12 months')""",
         (as_of,),
     ).fetchone()[0]
-    # 1593 as of 2026-07-22 (as_of = xlsx mtime, unchanged from the MN import
-    # earlier the same day — zero slide). The 1541->1593 move at the TN import
-    # is TN alone (+52 active): all 41 prior states verified byte-identical on
-    # active counts under the same as_of against the HEAD db. Re-derive at
-    # every import.
-    ok = active == 1593
+    # 1569 as of 2026-07-27 (as_of = xlsx mtime). The 1593->1569 move at the AL
+    # import is the +5-day as_of slide (-27 aged, eff 2025-07-22..26) plus AL
+    # (+3 active — AL's 45 structured rows are mostly 2024 back-extension; its
+    # 2025+ activity sits in the 85 prose-only filings pending the AL prose-
+    # extraction workstream). All 42 prior states verified byte-identical under
+    # the same as_of vs the HEAD db. Re-derive at every import.
+    ok = active == 1569
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (9) scraped active-window filings (as of {as_of}): "
-          f"expected 1593, got {active}")
+          f"expected 1569, got {active}")
 
     anchor = con.execute(
         """SELECT serff_tracking_number, brand, state, overall_rate_impact
@@ -915,16 +916,16 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # (11)/(12) source tags — scraped baseline intact + AM Best present.
     raw_scraped = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
     raw_ambest = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced'").fetchone()[0]
-    ok = raw_scraped == 8221 and raw_ambest > 0
+    ok = raw_scraped == 8266 and raw_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 8221 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 8266 serff_scraped "
           f"+ {raw_ambest} ambest_sourced (got {raw_scraped} / {raw_ambest})")
 
     f_scraped = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     f_ambest = con.execute("SELECT COUNT(*) FROM filings WHERE source='ambest_sourced'").fetchone()[0]
-    ok = f_scraped == 5141 and f_ambest > 0
+    ok = f_scraped == 5167 and f_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 5141 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 5167 serff_scraped "
           f"+ {f_ambest} ambest_sourced (got {f_scraped} / {f_ambest})")
 
     # ---- AM Best-specific checks (own invariants) ----
