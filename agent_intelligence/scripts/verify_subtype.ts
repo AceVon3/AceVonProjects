@@ -17,6 +17,10 @@ function check(label: string, actual: unknown, expected: unknown) {
   console.log(`  [${ok ? "OK  " : "FAIL"}] ${label}: ${actual}${ok ? "" : ` (expected ${expected})`}`);
 }
 
+// Re-keyed 2026-07-27 (2nd): AL prose-extraction re-import (+36 rows, AL
+// 45->81). Active 1569->1582 = AL prose rows alone (+13; same-day re-import,
+// zero slide, diff verified AL-only vs HEAD db). Deltas: HO-Comb +5, PPA +2,
+// Auto-Comb +2, Motorcycle/Owner-Occ/Condo/Tenant +1. Prior note:
 // Re-keyed 2026-07-27: AL import (43rd state). Active 1593->1569 = +5-day
 // as_of slide (-27 aged, eff 2025-07-22..26) + AL (+3: Auto-Comb +2, PPA +1 —
 // AL's 2025+ activity sits in 85 prose-only filings pending prose extraction).
@@ -70,16 +74,16 @@ function check(label: string, actual: unknown, expected: unknown) {
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 616,
-  "19.0000 Personal Auto Combinations": 203,
-  "19.0002 Motorcycle": 74,
+  "19.0001 Private Passenger Auto (PPA)": 618,
+  "19.0000 Personal Auto Combinations": 205,
+  "19.0002 Motorcycle": 75,
   "19.0003 Recreational Vehicle (RV)": 45,
   "19.0004 Other": 11,
-  "04.0003 Owner Occupied Homeowners": 130,
-  "04.0000 Homeowners Sub-TOI Combinations": 379,
-  "04.0001 Condominium Homeowners": 31,
+  "04.0003 Owner Occupied Homeowners": 131,
+  "04.0000 Homeowners Sub-TOI Combinations": 384,
+  "04.0001 Condominium Homeowners": 32,
   "04.0005 Other Homeowners": 13,
-  "04.0004 Tenant Homeowners": 37,
+  "04.0004 Tenant Homeowners": 38,
   "04.0002 Mobile Homeowners": 30,
 };
 
@@ -101,7 +105,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1569", rows.length, 1569);
+check("active rolled filings = 1582", rows.length, 1582);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 
