@@ -744,7 +744,27 @@ _FS_CONT_STOP = re.compile(
 # companies.
 _FS_NON_COMPANY_NAMES = {
     "homeowners", "tenants", "condo", "condominium", "renters", "dwelling",
+    # B21 (2026-07-30, NJ ALSE-133980775): a bare "Total" is an exhibit
+    # summary line, never a legal entity.
+    "total",
 }
+
+# B21 exhibit-arithmetic debris guard (2026-07-30): the B20 recoveries
+# surfaced an Allstate NJ actuarial exhibit ("Milewise Technology Premium
+# (2) / (1) 4.05% 5.14% ...", "5. Adjusted Ratio (3) + (4) ...", year rows
+# "2015 1.73% ...") whose lines match the sparse company-row shapes. A legal
+# entity name is never a bare number, never contains parenthesized operand
+# references like "(9) + (10)", and never starts with an "N." enumerator.
+# All 9,606 shipped+pending rows scanned under both B21 guards (2026-07-30):
+# exhibit debris = ALSE-133980775 only (7 rows); wrapped-name fragments
+# (guard below) = 7 rows across NV/LA/NY (GECC-134012732, PRGS-133883056,
+# LBPM-133872556, USAA-134777840, USAA-133951533, SFMA-134122369,
+# TRVD-G134438569). NJ/NV/LA/NY re-harvested same day.
+_FS_EXHIBIT_DEBRIS_RE = re.compile(
+    r"^\d[\d,.]*$"              # pure number / year row
+    r"|\(\s*\d+\s*\)"           # parenthesized operand reference: (2) / (1)
+    r"|^\d+\s*\.\s"             # leading exhibit enumerator: "5. " / "11. "
+)
 
 
 def _fs_normalize_money(s: str) -> str:
@@ -842,7 +862,8 @@ def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "", *,
         # no legal entity name approaches 100 characters.
         if ("%" in full_name or len(full_name) > 100
                 or name_key in _FS_NON_COMPANY_NAMES
-                or name_key.split(" ", 1)[0] in _FS_NON_COMPANY_NAMES):
+                or name_key.split(" ", 1)[0] in _FS_NON_COMPANY_NAMES
+                or _FS_EXHIBIT_DEBRIS_RE.search(full_name)):
             i = j; continue
         if name_key in seen_names:
             i = j; continue
@@ -859,4 +880,24 @@ def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "", *,
             minimum_pct_change=(gd["minp"] + "%") if gd.get("minp") else None,
         ))
         i = j
+    # B21 wrapped-name fragment guard (2026-07-30, LA LBPM-133872556): a
+    # company name that wraps mid-line can emit BOTH a truncated-name row
+    # ("Liberty Personal") and the full-name row ("Liberty Personal
+    # Insurance Company") with identical values — a double-count. Drop a row
+    # whose name is a proper prefix of another row's name when every parsed
+    # value agrees (identical values + prefix name = the same entity).
+    if len(fs.company_rates) > 1:
+        keep = []
+        for r in fs.company_rates:
+            is_fragment = any(
+                o is not r
+                and o.company_name.lower().startswith(r.company_name.lower() + " ")
+                and (o.overall_rate_impact, o.overall_indicated_change,
+                     o.policyholders_affected, o.written_premium_for_program)
+                    == (r.overall_rate_impact, r.overall_indicated_change,
+                        r.policyholders_affected, r.written_premium_for_program)
+                for o in fs.company_rates)
+            if not is_fragment:
+                keep.append(r)
+        fs.company_rates = keep
     return fs

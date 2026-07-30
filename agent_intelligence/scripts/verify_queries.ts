@@ -77,7 +77,10 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       licensed_states: ALL_8,
     } satisfies CaptiveProfile,
     expected_prospect: 37,
-    expected_defend: 25,
+    // Re-keyed 2026-07-30 (TX import / B20 fold-in): 25 -> 26. The +1 is UT
+    // ALSE-134657702 Allstate Personal Auto -7.0% eff 2025-10-14 — a B20
+    // new-product override save (non-own-brand, so it lands in SF Defend).
+    expected_defend: 26,
   },
   {
     label: "Independent, AZ+NV",
@@ -96,7 +99,9 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm", "Allstate", "GEICO"],
       licensed_states: ALL_8,
     } satisfies IndependentProfile,
-    expected_prospect: 46,
+    // Re-keyed 2026-07-30: 46 -> 45. -1 = CO SFMA-134532940 SF Personal Auto
+    // +13.4% eff 2025-07-29 aged out by the 3-day as_of slide (07-27 -> 07-30).
+    expected_prospect: 45,
     expected_defend: 34,
   },
 ];
@@ -118,7 +123,10 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
       authorized_brands: ["State Farm", "Travelers", "Progressive"],
       licensed_states: ["AZ", "CO", "NV"],
     },
-    expected: 24,
+    // Re-keyed 2026-07-30: 24 -> 21. -3 = the CO State Farm Personal Auto trio
+    // (SFMA-134532992/134532940/134532998, all eff 2025-07-29) aged out by the
+    // 3-day as_of slide. Nothing added: no TX/B20 rows touch this scope.
+    expected: 21,
   },
   {
     label: "Independent, sells Allstate + Liberty Mutual + Safeco, all 8 states",
@@ -127,7 +135,11 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
       authorized_brands: ["Allstate", "Liberty Mutual", "Safeco"],
       licensed_states: ALL_8,
     },
-    expected: 70,
+    // Re-keyed 2026-07-30 (TX import / B20 fold-in): 70 -> 71. The B20 sweep
+    // added 6 rows to this brand/state slice; 5 are exactly-0% (suppressed by
+    // the rate-neutral filter) — the +1 is UT ALSE-134657702 Allstate Personal
+    // Auto -7.0% eff 2025-10-14 (a new-product override save, 17,653 ph).
+    expected: 71,
   },
 ];
 

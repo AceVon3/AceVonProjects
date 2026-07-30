@@ -60,17 +60,20 @@ export type CoveredState = (typeof COVERED_STATES)[number];
 // The subset of COVERED_STATES whose data is AM Best industry data (not a SERFF
 // scrape). Lets coverage-aware UI mark these honestly without re-deriving from
 // states.ts. Must stay in sync with AMBEST_STATES in scripts/import_filings.py.
-export const AMBEST_STATES = [  // VA..WI (06-22..07-13), PA/MI (07-15), IN (07-16), MO (07-21), MN+TN (07-22) removed — all now scraped (42). PERMANENT-only from here: CA/NY/TX run non-SERFF filing systems and can never be scraped.
+export const AMBEST_STATES = [  // VA..WI (06-22..07-13), PA/MI (07-15), IN (07-16), MO (07-21), MN+TN (07-22) removed — all now scraped (42). TX (07-30) removed — scraped, 45th state (permanent-doctrine unwind: the 07-28 probe proved TX live on SERFF; 'non-SERFF' was regulatory-structure inference, never probed).
   "CA",
-  "NY", "TX"] as const;
+  "NY"] as const;
 
 // The subset of AMBEST_STATES that are PERMANENT, not interim: they are not on
-// SERFF Public Access (the state runs its own non-SERFF system — CA/CDI, NY/DFS,
-// TX/TDI), so they can never be replaced by a normal scrape. They must NOT be
-// presented as "interim / awaiting scrape" and must NEVER be swept by the
-// replacement path. (NY/TX non-SERFF status is from regulatory structure, not a
-// SERFF probe — confirm if scraping them is ever considered.)
-export const AMBEST_PERMANENT_STATES = ["CA", "NY", "TX"] as const;
+// SERFF Public Access (the state runs its own non-SERFF system — CA/CDI), so
+// they can never be replaced by a normal scrape. They must NOT be presented as
+// "interim / awaiting scrape" and must NEVER be swept by the replacement path.
+// DOCTRINE UNWIND (2026-07-28/30): NY/TX were listed here from regulatory-
+// structure inference alone; probes proved both live on SERFF Filing Access.
+// TX scraped+imported 07-30; NY import in flight. CA (CDI) is the only
+// probe-confirmed permanent; FL probed ZERO filings (true non-SERFF, OIR
+// I-File) but was never AM Best-loaded.
+export const AMBEST_PERMANENT_STATES = ["CA"] as const;
 
 // Window dropdown options → SQLite date('now', ...) modifier.
 export const WINDOW_MODIFIERS = {

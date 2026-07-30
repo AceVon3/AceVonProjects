@@ -77,18 +77,24 @@ function check(label: string, actual: unknown, expected: unknown) {
 // refreshed 277->282 (+2 active rolled): active 342 -> 392. Per-sub_type deltas
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
+// Re-keyed 2026-07-30 at the TX import (45th state): 1617 -> 1776 (+159 =
+// TX +129 + B20-recovery +55 across 33 prior states - 25 aged by the 3-day
+// as_of slide; the 12 B21 debris removals were all outside the window).
+// Answer key re-derived INDEPENDENTLY from the consolidated xlsx (group by
+// serff+lob, active-window, as_of 2026-07-30): 1776 groups, 0 mixed,
+// distinct still 11. Note 19.0004 Other 13 -> 11: -2 by aging alone.
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 631,
-  "19.0000 Personal Auto Combinations": 211,
-  "19.0002 Motorcycle": 76,
-  "19.0003 Recreational Vehicle (RV)": 50,
-  "19.0004 Other": 13,
-  "04.0003 Owner Occupied Homeowners": 134,
-  "04.0000 Homeowners Sub-TOI Combinations": 389,
-  "04.0001 Condominium Homeowners": 32,
+  "19.0001 Private Passenger Auto (PPA)": 690,
+  "19.0000 Personal Auto Combinations": 239,
+  "19.0002 Motorcycle": 81,
+  "19.0003 Recreational Vehicle (RV)": 52,
+  "19.0004 Other": 11,
+  "04.0003 Owner Occupied Homeowners": 142,
+  "04.0000 Homeowners Sub-TOI Combinations": 437,
+  "04.0001 Condominium Homeowners": 34,
   "04.0005 Other Homeowners": 13,
-  "04.0004 Tenant Homeowners": 38,
-  "04.0002 Mobile Homeowners": 30,
+  "04.0004 Tenant Homeowners": 44,
+  "04.0002 Mobile Homeowners": 33,
 };
 
 console.log("=".repeat(72));
@@ -109,7 +115,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1617", rows.length, 1617);
+check("active rolled filings = 1776", rows.length, 1776);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 
