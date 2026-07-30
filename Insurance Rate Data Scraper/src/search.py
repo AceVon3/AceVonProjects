@@ -232,6 +232,26 @@ def _submit_search_attempt(
     _fill_and_blur(page, "simpleSearch:submissionStartDate_input", date_from)
     _fill_and_blur(page, "simpleSearch:submissionEndDate_input", date_to)
 
+    # MN 'farmers' mis-fire (2026-07-16): a PrimeFaces re-render can wipe a
+    # filled field before submit — the search then runs UNFILTERED, returns the
+    # full state universe, and records as a clean 'ok' (7,239 rows merged into
+    # the MN universe). Never submit an unverified search: read the company
+    # field back, refill once, then hard-fail. Date fields get a blank-only
+    # check (the calendar widget may reformat text, so exact-match would
+    # false-positive; a wiped-blank date silently widens the window).
+    comp_loc = _byid(page, "simpleSearch:companyName").first
+    if (comp_loc.input_value(timeout=5000) or "").strip().lower() != company.strip().lower():
+        _fill_and_blur(page, "simpleSearch:companyName", company)
+        if (comp_loc.input_value(timeout=5000) or "").strip().lower() != company.strip().lower():
+            return False, "company_field_not_applied"
+    for jsf_id, want in (("simpleSearch:submissionStartDate_input", date_from),
+                         ("simpleSearch:submissionEndDate_input", date_to)):
+        d_loc = _byid(page, jsf_id).first
+        if not (d_loc.input_value(timeout=5000) or "").strip():
+            _fill_and_blur(page, jsf_id, want)
+            if not (d_loc.input_value(timeout=5000) or "").strip():
+                return False, f"date_field_not_applied:{jsf_id.rsplit(':', 1)[1]}"
+
     _byid(page, "simpleSearch:saveBtn").first.click()
     try:
         _wait_for_results(page)
@@ -273,8 +293,13 @@ def _set_rows_per_page_100(page: Page) -> None:
     for attempt in (1, 2):
         try:
             sel.select_option("100")
+            # rows OR no-records: an EMPTY result set renders no tr[data-rk]
+            # ever — waiting rows-only burned 2x45s per empty term (ND sweep).
             page.wait_for_function(
-                "() => !!document.querySelector('tr[data-rk]')", timeout=45000)
+                """() => !!document.querySelector('tr[data-rk]') ||
+                       Array.from(document.querySelectorAll('span, div, td, h5'))
+                         .some(e => /no\\s+records|no\\s+filings?\\s+(were|matched|found)|0\\s+filing/i.test(e.textContent || ''))""",
+                timeout=45000)
             page.wait_for_load_state("networkidle", timeout=45000)
             time.sleep(1.0)
             return
@@ -564,11 +589,22 @@ def search_company(
         # the false-clean-0 class (and any future variant) cannot masquerade
         # as a genuine empty result again.
         if reported_total is not None and len(filings) < reported_total:
-            print(f"    [paginator] EXTRACT MISMATCH: saved {len(filings)} of "
-                  f"{reported_total} reported — flagging in ledger", flush=True)
-            _diag_record(state, company,
-                         f"extract_mismatch_{len(filings)}_of_{reported_total}",
-                         0.0, [], None, page)
+            # SERFF renders a page-style "(1 of 1)" paginator on EMPTY result
+            # tables — the "of N" read is then PAGES, not rows. A visible
+            # no-records message means the 0 is genuine: don't flag it.
+            no_rec = False
+            try:
+                no_rec = bool(page.evaluate(
+                    """() => Array.from(document.querySelectorAll('span, div, td, h5'))
+                          .some(e => /no\\s+records|no\\s+filings?\\s+(were|matched|found)|0\\s+filing/i.test(e.textContent || ''))"""))
+            except Exception:
+                pass
+            if not (no_rec and not filings):
+                print(f"    [paginator] EXTRACT MISMATCH: saved {len(filings)} of "
+                      f"{reported_total} reported — flagging in ledger", flush=True)
+                _diag_record(state, company,
+                             f"extract_mismatch_{len(filings)}_of_{reported_total}",
+                             0.0, [], None, page)
 
         if fetch_submission_dates and filings:
             print(f"    fetching submission dates for {len(filings)} filings ...", flush=True)

@@ -29,7 +29,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 import openpyxl  # noqa: E402
 
-STATES = ["AL", "LA", "NC"]  # gap-state batch 2026-07-22: probes confirmed all three live on SERFF Filing Access with in-target rate filings (AL 8 / LA 14 / NC 3 State-Farm-only). WY probed structurally empty (0 rate filings, no date filter) — excluded. Prior chain KY..TN completed 07-22.
+STATES = ["NY", "TX"]  # gap-state batch 2026-07-22: probes confirmed all three live on SERFF Filing Access with in-target rate filings (AL 8 / LA 14 / NC 3 State-Farm-only). WY probed structurally empty (0 rate filings, no date filter) — excluded. Prior chain KY..TN completed 07-22.
 LEDGER = Path("output/serff_diagnostics/search_ledger.csv")
 ALL_TERMS = ["state farm", "mga insurance", "geico", "government employees",
              "allstate", "encompass", "travelers", "travco", "liberty mutual",
@@ -174,7 +174,7 @@ for st in STATES:
                 break
         else:
             zero_streak = 0
-            rest = 900  # back to 15-min cadence per user 2026-07-11
+            rest = 300  # 5-min cadence trial per user 2026-07-28 (was 900; zero-progress backoffs unchanged — the WAF guard)
             log(f"{st}: burst-{i} banked {before - after} ({after} remain), resting {rest}s")
         time.sleep(rest)
     log(f"===== {st} ARC END =====")

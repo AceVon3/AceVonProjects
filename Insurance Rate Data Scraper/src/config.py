@@ -75,6 +75,12 @@ TARGET_COMPANIES = [
     # rows; targeted search returned 20 filings (19 in-target). GROUP_KW
     # already classifies via the "farmers insurance company" anchor.
     "Illinois Farmers",
+    # TX county-mutual vehicles (2026-07-29, TX cross-check): consumer books
+    # ride county mutuals whose legal names break the prefix match — the same
+    # gap family. 5 material soft-misses incl. SF County Mutual 173k ph.
+    "Liberty County Mutual",
+    "State Farm County",
+    "Farmers Property and Casualty",
     "Nationwide",
     "American Family",
     # AmFam auto subs whose legal names lack the brand string (B9 audit) —

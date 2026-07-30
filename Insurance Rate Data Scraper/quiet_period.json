@@ -1,6 +1,0 @@
-{
-  "start": "2026-06-15T16:06:06",
-  "end": "2026-06-21T16:06:06",
-  "days": 6,
-  "reason": "WAF penalty recovery + cold-capacity decision test (VA 165/498, OH partial parked; cold read at end drives eastern scope decision per resume_state.md decision tree)"
-}

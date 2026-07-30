@@ -179,7 +179,7 @@ GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate 
     # MGA Insurance Company is a State Farm subsidiary that files under its
     # own name on SERFF and is NOT returned by a "state farm" keyword search
     # (Item #3a, 2026-05-15).
-    "State Farm":     ["state farm", "mga insurance"],
+    "State Farm":     ["state farm", "mga insurance", "state farm county"],
     "GEICO":          ["geico", "government employees"],
     # Encompass files under its own brand on SERFF and is NOT returned by an
     # "allstate" keyword search; we search both names under the Allstate group.
@@ -195,7 +195,8 @@ GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate 
     # files under its own name and is NOT returned by "liberty mutual" (no
     # "mutual" in the name) — the Allstate/Encompass search-term-gap family
     # (WV 2026-06-26: surfaced 2 in-target HO filings the group search missed).
-    "Liberty Mutual": ["liberty mutual", "safeco", "liberty insurance", "general insurance", "american states", "first national insurance"],
+    "Liberty Mutual": ["liberty county mutual",  # FIRST: TX recovery 2026-07-29 — the six brand terms burn the whole burst budget on misses before this term gets a session; ordering it first is harmless elsewhere (terms only search when the group has uncached targets)
+                      "liberty mutual", "safeco", "liberty insurance", "general insurance", "american states", "first national insurance"],
     "Progressive":    ["progressive", "artisan and truckers"],
     # 13-brand expansion (2026-06-10, SCOPE.md). USAA needs three keywords —
     # the parent files as "United Services Automobile Association" and
@@ -207,7 +208,7 @@ GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate 
     # 2026-07-22 (AM Best showed +2.7%/34,169ph disp 03/06/26 with zero
     # universe rows); its co-filed rows always rode FIE filings that DID
     # surface — the TravCo/Liberty Insurance search-term-gap family.
-    "Farmers":          ["farmers", "mid-century", "fire insurance exchange", "truck insurance exchange", "illinois farmers"],
+    "Farmers":          ["farmers", "mid-century", "fire insurance exchange", "truck insurance exchange", "illinois farmers", "farmers property and casualty"],
     "Nationwide":       ["nationwide"],
     # "american standard insurance": AmFam WI/OH auto subs, no brand string in
     # the legal name (B9 audit) — a solo filing needs its own search term.
@@ -215,11 +216,11 @@ GROUP_SEARCH = {  # group -> list of SERFF search terms (each term = a separate 
     "Country Financial": ["country"],
 }
 GROUP_KW = {  # subsidiary-name keywords used to assign a filing to its parent group
-    "State Farm":     ["state farm", "mga insurance"],
+    "State Farm":     ["state farm", "mga insurance", "state farm county"],
     "GEICO":          ["geico", "government employees"],
     "Allstate":       ["allstate", "encompass", "integon", "north american insurance"],
     "Travelers":      ["travelers", "standard fire", "travco insurance", "the phoenix insurance"],
-    "Liberty Mutual": ["liberty mutual", "liberty insurance corporation", "safeco", "first national insurance company of america", "general insurance company of america", "american states"],
+    "Liberty Mutual": ["liberty mutual", "liberty insurance corporation", "safeco", "first national insurance company of america", "general insurance company of america", "american states", "liberty county mutual"],
     "Progressive":    ["progressive", "artisan and truckers",
                        # NJ consumer auto writer (distinct from retired Drive) +
                        # ASI = Progressive Home (2026-07-10, NJ/KS imports):
@@ -299,7 +300,12 @@ NEW_PRODUCT_RE = re.compile(
     # questionnaire; the explicit "...: Yes" alternative below trusts the
     # answered-Yes declaration outright.
     r"|New Program\s*\(Type Yes or No\)\s*:\s*Yes"
-    r"|\bNew Program\b(?!\s+Table)(?!\s*\(Type Yes or No\)\s*:\s*No)"
+    # TX (2026-07-29): the TDI checklist embedded in TX summaries asks
+    # "state if this is a new program" — the bare keyword matched the
+    # QUESTION (7 material TX rate filings dropped, incl Farmers +25.6%).
+    # Fixed-width negative lookbehind skips the questionnaire phrasing; the
+    # emit-loop ph>0 semantic backstop covers any residual phrasing variants.
+    r"|(?<!state if this is a )New Program(?!\s+Table)(?!\s*\(Type Yes or No\)\s*:\s*No)"
     # `\bnew product\b` now requires introduction/rollout context within 40
     # chars (Issue #5, 2026-05-27 MT/WY/NV expansion). Without anchoring, the
     # bare \bnew product\b matched narrative/regulator-commentary references
@@ -1376,9 +1382,22 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
         ft = ft_pdf or t.filing_type_xlsx
         if not _is_rate_filing_type(ft):
             stats["filings_excluded_form_or_rule"] += 1; continue
-        if is_new:
-            stats["filings_excluded_new_product"] += 1; continue
         fs = parse_filing_summary_pdf(pdf, t.tracking, text=pdf_text)
+        # TX new-product false-positive class (2026-07-29): the TDI filing
+        # checklist embedded in TX summaries asks "state if this is a new
+        # program", and filer memos use "new program" loosely for revision
+        # rollouts — the bare catch-alls fired on BOTH, silently dropping 8
+        # material TX rate filings (incl. Farmers +25.6% and Allstate +5.9%
+        # on 856k ph) that TDI's own open-data index records as rate changes.
+        # SEMANTIC BACKSTOP: a genuine new product cannot affect existing
+        # policyholders, so is_new is overridden when the parsed company
+        # table shows policyholders_affected > 0. Logged loudly either way.
+        if is_new:
+            ph_total = sum((cr.policyholders_affected or 0) for cr in fs.company_rates)
+            if ph_total > 0:
+                print(f"  ! {t.tracking}: new-product flag OVERRIDDEN — table shows {ph_total:,} existing policyholders (kept)")
+            else:
+                stats["filings_excluded_new_product"] += 1; continue
         # DE layout-class fix (2026-07-08): some filings (the "Rate Information
         # for Multiple Company Filings" summary layout) OMIT the "Rate data
         # applies/does NOT apply to filing." sentence entirely, so
@@ -1420,8 +1439,15 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
         else:
             activity = "rate_change"
 
+        # Window-gate date preference fix (2026-07-29, TX ALSE-133905207
+        # +5.9%/856k ph): the gate tested the NEW-business date first while
+        # emitted rows prefer the RENEWAL date (README doctrine) — a filing
+        # straddling the window floor (new 12/2023, renewal 01/2024) was
+        # excluded by a date the dataset doesn't even report. A filing is
+        # in-window if EITHER effective date falls inside it.
         eff = fs.effective_date_new or fs.effective_date_renewal
-        if not _in_effective_window(eff):
+        eff_alt = fs.effective_date_renewal or fs.effective_date_new
+        if not (_in_effective_window(eff) or _in_effective_window(eff_alt)):
             stats["filings_excluded_out_of_effective_window"] += 1
             continue
         rel_pdf = pdf.relative_to(Path(".")).as_posix() if pdf.is_absolute() is False else pdf.as_posix()
