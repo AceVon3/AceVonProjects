@@ -9,17 +9,27 @@ flavors, both loaded by the identical pipeline:
 - **Permanent** — **not** on SERFF Public Access (the state runs its own non-SERFF
   system, e.g. CA / CDI). They can **never** be replaced by a normal scrape, so
   they are AM Best-sourced for good. `AMBEST_PERMANENT_STATES` (currently
-  `["CA", "NY", "TX"]`). They must NOT be presented as "interim / awaiting scrape"
+  `["CA"]`). They must NOT be presented as "interim / awaiting scrape"
   and must NEVER be swept by the replacement path below.
+
+> **PERMANENT-DOCTRINE UNWIND (2026-07-28/30).** NY and TX sat on the permanent
+> list from regulatory-structure inference alone ("NY/DFS, TX/TDI run their own
+> systems") — never probed. 2026-07-28 probes proved **both live on SERFF Filing
+> Access**; both were fully scraped (NY 324/324 targets, TX 701/701) and imported
+> as the 45th/46th scraped states on 2026-07-30, replacing their `ambest_sourced`
+> rows via the standard replacement path. FL probed ZERO filings (true non-SERFF —
+> OIR I-File) but was never AM Best-loaded. **CA is the only remaining permanent
+> state**, and its non-SERFF status (CDI) is structural fact. Lesson: "permanent"
+> requires a probe, not an org-chart inference.
 
 Coverage (35 AM Best states):
 - IL, OH, VA — interim (built 2026-06-16).
 - AK, AR, CT, DE, HI, IA, IN, KS, KY — interim (10-state batch, 2026-06-17).
 - ME, MD, MA, MI, MN, MS, MO, NE, NH, NJ, ND, OK, PA, RI, SC, SD, TN, VT, WV, WI
   — interim (22-state batch, 2026-06-17).
-- **CA, NY, TX — permanent** (non-SERFF: CA/CDI, NY/DFS, TX/TDI). NY/TX flagged
-  from regulatory structure, not a SERFF probe — confirm if scraping them is ever
-  considered (not load-blocking).
+- **CA — permanent** (non-SERFF: CA/CDI).
+- ~~NY, TX~~ — were listed permanent; probed live on SERFF 2026-07-28, scraped +
+  imported 2026-07-30 (45th/46th states) — see the doctrine-unwind note above.
 
 Interim states are "interim" on the *assumption* they're SERFF-PA; that has
 **not** been portal-probed (quiet period). Conservative-safe tagging: when

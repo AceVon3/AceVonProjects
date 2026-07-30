@@ -473,6 +473,12 @@ INDEPENDENT_COMPANY_PATTERNS = (
     "farmers' mutual insurance",     # Farmers' Mutual Insurance Company/WV
     "farmers mutual insurance company of michigan",  # AAIS-filed MI independent (AATX-134434886, found by the MI zero-row audit 2026-07-15)
     "countryway",                    # independent NY farm-line insurer, NOT COUNTRY Financial
+    # Country-Wide Insurance Company — independent NYC private-passenger auto
+    # insurer (its own MRTN-* filings, no co-filers), NOT COUNTRY Financial.
+    # The Countryway class made LIVE: swept in-target by the "Country" search
+    # into the NY universe and reached the NY deliverable (3 rows) before the
+    # NY import gate caught it (2026-07-30). 0 rows in the 44 shipped states.
+    "country-wide insurance",
     "town & country insurance",      # MO Farm Bureau Town & Country
     "north country insurance",
     "nationwide warranty", "nationwide protection plan",

@@ -77,24 +77,28 @@ function check(label: string, actual: unknown, expected: unknown) {
 // refreshed 277->282 (+2 active rolled): active 342 -> 392. Per-sub_type deltas
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
-// Re-keyed 2026-07-30 at the TX import (45th state): 1617 -> 1776 (+159 =
-// TX +129 + B20-recovery +55 across 33 prior states - 25 aged by the 3-day
-// as_of slide; the 12 B21 debris removals were all outside the window).
-// Answer key re-derived INDEPENDENTLY from the consolidated xlsx (group by
-// serff+lob, active-window, as_of 2026-07-30): 1776 groups, 0 mixed,
-// distinct still 11. Note 19.0004 Other 13 -> 11: -2 by aging alone.
+// Re-keyed 2026-07-30 at the NY import (46th state, second same-day re-key):
+// 1776 -> 1807 (+31 = NY alone, zero slide; per-sub_type deltas exactly NY's:
+// PPA +13, HO-Comb +10, Owner-Occ +2, Condo +2, Other-HO +2, Auto-Comb +1,
+// Mobile +1; distinct still 11 — NY's active sub_types are a subset).
+// Prior same-day TX baseline: 1617 -> 1776 (+159 = TX +129 + B20-recovery
+// +55 across 33 prior states - 25 aged by the 3-day as_of slide; the 12 B21
+// debris removals were all outside the window; 19.0004 Other 13 -> 11 by
+// aging alone). Answer key re-derived INDEPENDENTLY from the consolidated
+// xlsx (group by serff+lob, active-window, as_of 2026-07-30) both times:
+// 1807 groups, 0 mixed.
 const EXPECTED: Record<string, number> = {
-  "19.0001 Private Passenger Auto (PPA)": 690,
-  "19.0000 Personal Auto Combinations": 239,
+  "19.0001 Private Passenger Auto (PPA)": 703,
+  "19.0000 Personal Auto Combinations": 240,
   "19.0002 Motorcycle": 81,
   "19.0003 Recreational Vehicle (RV)": 52,
   "19.0004 Other": 11,
-  "04.0003 Owner Occupied Homeowners": 142,
-  "04.0000 Homeowners Sub-TOI Combinations": 437,
-  "04.0001 Condominium Homeowners": 34,
-  "04.0005 Other Homeowners": 13,
+  "04.0003 Owner Occupied Homeowners": 144,
+  "04.0000 Homeowners Sub-TOI Combinations": 447,
+  "04.0001 Condominium Homeowners": 36,
+  "04.0005 Other Homeowners": 15,
   "04.0004 Tenant Homeowners": 44,
-  "04.0002 Mobile Homeowners": 33,
+  "04.0002 Mobile Homeowners": 34,
 };
 
 console.log("=".repeat(72));
@@ -115,7 +119,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1776", rows.length, 1776);
+check("active rolled filings = 1807", rows.length, 1807);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 

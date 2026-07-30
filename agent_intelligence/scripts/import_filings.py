@@ -85,7 +85,12 @@ AMBEST_STATES = [  # VA (06-22), OH (06-24), IL (06-25), WV (06-26), NH (06-29),
                  # ND (07-07) removed: scraped (serff_scraped), no longer interim.
                  # ME (07-08) removed: scraped (serff_scraped), no longer interim.
                  # RI (07-07), SD (07-08) removed: scraped, no longer interim.
-                 "NY"]
+                 # NY (07-30) removed: scraped — 46th scraped state (324/324
+                 # targets, zero misses; 225-row deliverable incl 2
+                 # prose_extracted). Permanent-doctrine unwind COMPLETE:
+                 # AMBEST_STATES is now CA-only, and CA is genuinely
+                 # permanent (CDI, non-SERFF).
+                 ]
 AMBEST_CSV_DIR = PROJECT_DIR.parent / "Insurance Rate Data Scraper" / "tools"
 AMBEST_WINDOW = (date(2024, 1, 1), date(2026, 12, 31))  # B19 2026-07-15: bumped with EFFECTIVE_DATE_TO (was 04/17/2026)
 AMBEST_LINE = {"PPA": "Personal Auto", "HO": "Homeowners"}
@@ -799,15 +804,19 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # active-window) as brand=Farmers — derive_brand now uses the explicit
     # _FIG_FARMERS_PATTERNS allowlist; the independents dropped from interim.
     # Prior 2026-07-06 baseline (post-MA) was 3,092/1,890/566 (19 states).
+    # Baseline re-keyed 2026-07-30 (same day, second import) at the NY import
+    # (46th state): 9364 -> 9589 = +225 NY exactly (223 harvest + 2
+    # prose_extracted; zero as_of slide — same-day xlsx rebuild). Rolled
+    # 5899 -> 6023 (+124 NY). Prior note (TX import, earlier same day):
     # Baseline re-keyed 2026-07-30 at the TX import (45th state): 8458 -> 9364 =
     # +510 TX + 408 B20 retro-sweep recoveries (all 44 prior states, silent-drop
     # fixes) - 12 B21 debris rows (7 NJ exhibit fragments incl the resurrected
     # B17 ALSE-133980775 junk, now killed at the parser; 5 NV/LA wrapped-name
     # double-counts). Rolled 5318 -> 5899.
     raw = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
-    ok = raw == 9364
+    ok = raw == 9589
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 9364, got {raw}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 9589, got {raw}")
 
     null_brand = con.execute("SELECT COUNT(*) FROM filings_raw WHERE brand IS NULL").fetchone()[0]
     ok = null_brand == 0
@@ -815,9 +824,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (2) unmatched company_name: expected 0, got {null_brand}")
 
     rolled = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = rolled == 5899
+    ok = rolled == 6023
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 5899, got {rolled}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 6023, got {rolled}")
 
     # (4) GECC-134661852 Personal Auto spot-check
     raw_n = con.execute(
@@ -895,9 +904,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (7) scraped distinct brands: expected 13, got {n_brands}")
 
     n_states = con.execute("SELECT COUNT(DISTINCT state) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = n_states == 45
+    ok = n_states == 46
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 45, got {n_states}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 46, got {n_states}")
 
     # (9) active window + (10) anchor — SCOPED to scraped so AM Best can't move them.
     as_of = LAST_UPDATED_PATH.read_text(encoding="utf-8").strip()
@@ -914,10 +923,11 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # 55 B20-recovery rows across 33 prior states (window-gate/new-product
     # silent-drop fixes); 0 removed (the 12 B21 debris rows all sat outside
     # the active window). Re-derive at every import.
-    ok = active == 1776
+    # 1807 at the NY import (same day): 1776 + 31 NY, zero slide, exact.
+    ok = active == 1807
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (9) scraped active-window filings (as of {as_of}): "
-          f"expected 1776, got {active}")
+          f"expected 1807, got {active}")
 
     anchor = con.execute(
         """SELECT serff_tracking_number, brand, state, overall_rate_impact
@@ -941,16 +951,16 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # (11)/(12) source tags — scraped baseline intact + AM Best present.
     raw_scraped = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
     raw_ambest = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced'").fetchone()[0]
-    ok = raw_scraped == 9364 and raw_ambest > 0
+    ok = raw_scraped == 9589 and raw_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 9364 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 9589 serff_scraped "
           f"+ {raw_ambest} ambest_sourced (got {raw_scraped} / {raw_ambest})")
 
     f_scraped = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     f_ambest = con.execute("SELECT COUNT(*) FROM filings WHERE source='ambest_sourced'").fetchone()[0]
-    ok = f_scraped == 5899 and f_ambest > 0
+    ok = f_scraped == 6023 and f_ambest > 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 5899 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 6023 serff_scraped "
           f"+ {f_ambest} ambest_sourced (got {f_scraped} / {f_ambest})")
 
     # ---- AM Best-specific checks (own invariants) ----
