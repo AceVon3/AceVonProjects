@@ -99,9 +99,13 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm", "Allstate", "GEICO"],
       licensed_states: ALL_8,
     } satisfies IndependentProfile,
+    // Re-keyed 2026-08-03 (CA import): 45 -> 44. -1 = WA SFMA-134422784 aged
+    // out by the 4-day as_of slide (07-30 -> 08-03); old-vs-new db diff at the
+    // same as_of is EMPTY (CA is not in the 8 western test states, so the CA
+    // import itself cannot move these counts). Prior note:
     // Re-keyed 2026-07-30: 46 -> 45. -1 = CO SFMA-134532940 SF Personal Auto
     // +13.4% eff 2025-07-29 aged out by the 3-day as_of slide (07-27 -> 07-30).
-    expected_prospect: 45,
+    expected_prospect: 44,
     expected_defend: 34,
   },
 ];

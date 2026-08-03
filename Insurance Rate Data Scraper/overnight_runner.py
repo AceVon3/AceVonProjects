@@ -29,7 +29,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 import openpyxl  # noqa: E402
 
-STATES = ["NY", "TX"]  # gap-state batch 2026-07-22: probes confirmed all three live on SERFF Filing Access with in-target rate filings (AL 8 / LA 14 / NC 3 State-Farm-only). WY probed structurally empty (0 rate filings, no date filter) — excluded. Prior chain KY..TN completed 07-22.
+STATES = ["CA"]  # CA probe 2026-08-03: 58 SF filings, 27 rate-type — the last permanent-doctrine tag falls (probe_ca_sfa.py). CDI approved-% closed-lists are the standing audit at judgment. Prior batch NY/TX completed 07-28.
 LEDGER = Path("output/serff_diagnostics/search_ledger.csv")
 ALL_TERMS = ["state farm", "mga insurance", "geico", "government employees",
              "allstate", "encompass", "travelers", "travco", "liberty mutual",

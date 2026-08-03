@@ -1414,7 +1414,21 @@ def build_rows(state: str, targets: list[Target], backfill_ids: set[str] | None 
         # Encompass +8.6%; Allstate +17.5%). Only an EXPLICIT "does NOT apply"
         # excludes now; UNKNOWN falls through to the row-based decision.
         if fs.rate_data_applies is False:
-            stats["filings_excluded_rate_data_does_not_apply"] += 1; continue
+            # B22 CA disposition-letter class (2026-08-03, TRVD-134167995
+            # +6.8%/152,726 ph — dual-corroborated by AM Best AND the CDI
+            # approved-% closed list): CA summaries are CDI disposition
+            # letters, and the parser can read an explicit does-NOT-apply
+            # while ALSO extracting a complete company row. Same semantic-
+            # backstop principle as the new-product override above: a filing
+            # whose parsed table shows a real impact on existing
+            # policyholders IS a rate filing — trust the table, loudly.
+            ph_total = sum((cr.policyholders_affected or 0) for cr in fs.company_rates)
+            has_impact = any((cr.overall_rate_impact or "").strip() for cr in fs.company_rates)
+            if has_impact and ph_total > 0:
+                print(f"  ! {t.tracking}: rate-data-does-NOT-apply OVERRIDDEN — "
+                      f"table shows impact + {ph_total:,} policyholders (kept)")
+            else:
+                stats["filings_excluded_rate_data_does_not_apply"] += 1; continue
         if not fs.company_rates:
             if fs.rate_data_applies:
                 # rate_data_applies=True but no rows extracted — zero-row anomaly

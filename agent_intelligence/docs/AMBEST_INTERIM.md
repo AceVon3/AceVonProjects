@@ -97,3 +97,37 @@ DELETE FROM filings     WHERE state='<ST>' AND source='ambest_sourced';
 `import_filings.py` (the scrape imports as `serff_scraped`). The mixed-source
 guard + the `source` tag make it a clean swap with no double-count. Idempotent:
 re-running the import always regenerates identical AM Best keys.
+
+## PROGRAM COMPLETE — the full doctrine unwind (2026-08-03)
+
+**Every AM Best state has been replaced by a direct scrape. `AMBEST_STATES`
+and `AMBEST_PERMANENT_STATES` are both EMPTY; the import loads zero
+`ambest_sourced` rows.** This document is now a historical record of the
+interim program (2026-06-16 → 2026-08-03) and the pipeline is retained only
+for a hypothetical future re-use.
+
+The "permanent" class died in three probes:
+- **NY + TX (2026-07-28)**: listed permanent from regulatory-structure
+  inference alone; single probes proved both live on SERFF Filing Access.
+  Scraped + imported 07-30 (45th/46th states).
+- **CA (2026-08-03)**: the founding member — the state the CA-landmine
+  warning above was written about — fell the same way. CDI's own
+  viewing-room page states P&C filings are public on SFA (SERFF e-filing
+  mandatory since 2015). Probed, fully collected (726-filing universe,
+  252/252 targets), and imported as the 47th state IN ONE DAY. The 66
+  ambest_sourced CA rows were retired by the state-scoped replacement
+  (6089 − 66 + 63 scraped rollups = 6086, exact).
+
+Postmortem (upgraded from the NY/TX lesson): **"permanent" requires a probe,
+not an org-chart inference — and the probe costs one afternoon.** Nothing may
+ever be tagged permanent again without one.
+
+CA-specific successor doctrine: CA is prior-approval, so the PDF-parsed filed
+% is not always the customer-facing outcome. The CDI "Rate Filing Approvals"
+closed-lists (scraper `tools/cdi_closed_lists/`, refreshed from
+insurance.ca.gov) carry requested AND approved %; `b23_apply_ca_cdi.py`
+applies the arbitration overlay (approved-value overrides + CDI-only
+supplements) after every CA harvest — the TDI-for-TX standing-audit pattern.
+
+Remaining coverage gaps (NOT AM Best matters): FL (OIR I-File, probed zero
+SERFF filings), NC (NCRB rate bureau), WY (structurally empty; ships 0 rows).

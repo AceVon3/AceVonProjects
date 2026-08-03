@@ -54,7 +54,15 @@ PROJECT_DIR = SCRIPT_DIR.parent
 # Access; both were then fully scraped (NY 324/324, TX 701/701) and imported
 # as the 45th/46th scraped states. FL probed ZERO filings (true non-SERFF,
 # OIR I-File); NC rates through NCRB. CA remains the only permanent state.
-AMBEST_PERMANENT_STATES = ["CA"]
+# DOCTRINE UNWIND COMPLETE-COMPLETE (2026-08-03): CA TOO was never probed —
+# CDI's own viewing-room page says P&C filings are public on SERFF Filing
+# Access (mandatory SERFF e-filing since 2015). Probed (58 SF filings),
+# swept same-day (726 universe, 252/252 targets), imported as the 47th
+# scraped state. "Permanent" is now an EMPTY class: every state that files
+# rates per-carrier is either scraped or structurally different (FL I-File,
+# NC NCRB, WY empty). The AM Best interim pipeline below is retired but kept
+# for the historical record + any future refresh need.
+AMBEST_PERMANENT_STATES = []
 AMBEST_STATES = [  # VA (06-22), OH (06-24), IL (06-25), WV (06-26), NH (06-29), VT (06-30), HI (07-01), AK (07-05), DE (07-08) all removed: scraped (serff_scraped), no longer interim.
                  # 10-state batch (2026-06-17). 9 interim + CA (permanent). HI + AK now scraped.
                  # CT (07-09) removed: scraped (serff_scraped), no longer interim — 25th scraped state.
@@ -74,7 +82,11 @@ AMBEST_STATES = [  # VA (06-22), OH (06-24), IL (06-25), WV (06-26), NH (06-29),
                  # deliverable incl the B20 recoveries; TDI open-data census
                  # audit = zero absent). Permanent-doctrine unwind: TX was
                  # never non-SERFF.
-                 "CA",
+                 # CA (08-03) removed: scraped — 47th scraped state (726
+                 # universe / 252 targets in ONE afternoon; 96-row deliverable
+                 # incl B22 disposition-letter recoveries + 1 cdi_supplement;
+                 # CDI closed-list census: TDI-style standing audit, AM Best
+                 # value-agreement 26/26). AMBEST_STATES is now EMPTY.
                  # 22-state batch (2026-06-17): 20 interim + NY/TX permanent.
                  # NC EXCLUDED: 68.1% Data-N/A → only 26 thin filings, because
                  # NC rates auto/home through the NC Rate Bureau (collective, no
@@ -386,6 +398,13 @@ def derive_brand(name) -> str | None:
     # (2026-07-30): 0 rows in the 44 prior scraped states (verified against
     # the shipped all_states csv), so this mapping cannot shift shipped brands.
     if "colonial county mutual" in n:
+        return "Nationwide"
+    # Crestbrook Insurance Company — Nationwide Private Client (high-net-worth
+    # line SOLD UNDER THE NATIONWIDE NAME; operative test: customer believes
+    # Nationwide). CA-first (2026-08-03): co-files on NWPP-133922828 alongside
+    # Nationwide Insurance Company of America; surfaced by the B22
+    # disposition-letter recovery. 0 rows in the 46 prior scraped states.
+    if "crestbrook" in n:
         return "Nationwide"
     if "nationwide" in n and not any(x in n for x in (
             "nationwide warranty", "nationwide protection plan",
@@ -804,19 +823,21 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # active-window) as brand=Farmers — derive_brand now uses the explicit
     # _FIG_FARMERS_PATTERNS allowlist; the independents dropped from interim.
     # Prior 2026-07-06 baseline (post-MA) was 3,092/1,890/566 (19 states).
-    # Baseline re-keyed 2026-07-30 (same day, second import) at the NY import
-    # (46th state): 9364 -> 9589 = +225 NY exactly (223 harvest + 2
-    # prose_extracted; zero as_of slide — same-day xlsx rebuild). Rolled
-    # 5899 -> 6023 (+124 NY). Prior note (TX import, earlier same day):
-    # Baseline re-keyed 2026-07-30 at the TX import (45th state): 8458 -> 9364 =
-    # +510 TX + 408 B20 retro-sweep recoveries (all 44 prior states, silent-drop
-    # fixes) - 12 B21 debris rows (7 NJ exhibit fragments incl the resurrected
-    # B17 ALSE-133980775 junk, now killed at the parser; 5 NV/LA wrapped-name
-    # double-counts). Rolled 5318 -> 5899.
+    # Baseline re-keyed 2026-08-03 at the CA import (47th state, the LAST
+    # ex-"permanent" state): 9589 -> 9685 = +96 CA exactly (95 harvest incl
+    # the B22 disposition-letter recoveries + 1 cdi_supplement
+    # TRVD-134168019; zero prior-state drift — same-day xlsx rebuild).
+    # Rolled 6023 -> 6086 (+63 CA); the 66 ambest_sourced CA rows retired by
+    # the state-scoped replacement (exact identity 6089 - 66 + 63 = 6086
+    # against the HEAD db incl ambest). AM Best pipeline now loads ZERO rows.
+    # Prior note: re-keyed 2026-07-30 (NY import, 46th state): 9364 -> 9589 =
+    # +225 NY exactly (223 harvest + 2 prose_extracted). Rolled 5899 -> 6023.
+    # Prior note (TX import, earlier same day): 8458 -> 9364 = +510 TX + 408
+    # B20 retro-sweep recoveries - 12 B21 debris rows. Rolled 5318 -> 5899.
     raw = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
-    ok = raw == 9589
+    ok = raw == 9685
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 9589, got {raw}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 9685, got {raw}")
 
     null_brand = con.execute("SELECT COUNT(*) FROM filings_raw WHERE brand IS NULL").fetchone()[0]
     ok = null_brand == 0
@@ -824,9 +845,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (2) unmatched company_name: expected 0, got {null_brand}")
 
     rolled = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = rolled == 6023
+    ok = rolled == 6086
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 6023, got {rolled}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 6086, got {rolled}")
 
     # (4) GECC-134661852 Personal Auto spot-check
     raw_n = con.execute(
@@ -904,9 +925,9 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (7) scraped distinct brands: expected 13, got {n_brands}")
 
     n_states = con.execute("SELECT COUNT(DISTINCT state) FROM filings WHERE source='serff_scraped'").fetchone()[0]
-    ok = n_states == 46
+    ok = n_states == 47
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 46, got {n_states}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (8) scraped distinct states: expected 47, got {n_states}")
 
     # (9) active window + (10) anchor — SCOPED to scraped so AM Best can't move them.
     as_of = LAST_UPDATED_PATH.read_text(encoding="utf-8").strip()
@@ -924,10 +945,13 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # silent-drop fixes); 0 removed (the 12 B21 debris rows all sat outside
     # the active window). Re-derive at every import.
     # 1807 at the NY import (same day): 1776 + 31 NY, zero slide, exact.
-    ok = active == 1807
+    # 1787 at the CA import (2026-08-03): 1807 - 31 as_of slide (07-30 ->
+    # 08-03; the aged cohort) + 11 CA active-window rows, exact identity
+    # 1776 + 11 = 1787 vs the HEAD snapshot at the same as_of.
+    ok = active == 1787
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (9) scraped active-window filings (as of {as_of}): "
-          f"expected 1807, got {active}")
+          f"expected 1787, got {active}")
 
     anchor = con.execute(
         """SELECT serff_tracking_number, brand, state, overall_rate_impact
@@ -948,20 +972,21 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     print(f"  [{'OK' if ok else 'FAIL'}] (10) scraped max active impact: expected "
           f"+110.90% GMMX-134651170 Encompass TN, got +{impact:.2f}% {serff} {brand} {state}")
 
-    # (11)/(12) source tags — scraped baseline intact + AM Best present.
+    # (11)/(12) source tags — scraped baseline intact + AM Best RETIRED
+    # (2026-08-03 CA import: AMBEST_STATES is empty, expect exactly zero).
     raw_scraped = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
     raw_ambest = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced'").fetchone()[0]
-    ok = raw_scraped == 9589 and raw_ambest > 0
+    ok = raw_scraped == 9685 and raw_ambest == 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 9589 serff_scraped "
-          f"+ {raw_ambest} ambest_sourced (got {raw_scraped} / {raw_ambest})")
+    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 9685 serff_scraped "
+          f"+ 0 ambest_sourced (got {raw_scraped} / {raw_ambest})")
 
     f_scraped = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     f_ambest = con.execute("SELECT COUNT(*) FROM filings WHERE source='ambest_sourced'").fetchone()[0]
-    ok = f_scraped == 6023 and f_ambest > 0
+    ok = f_scraped == 6086 and f_ambest == 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 6023 serff_scraped "
-          f"+ {f_ambest} ambest_sourced (got {f_scraped} / {f_ambest})")
+    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 6086 serff_scraped "
+          f"+ 0 ambest_sourced (got {f_scraped} / {f_ambest})")
 
     # ---- AM Best-specific checks (own invariants) ----
     amb_states = sorted(r[0] for r in con.execute(

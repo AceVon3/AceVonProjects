@@ -123,8 +123,13 @@ export default function MethodologyPage(): React.JSX.Element {
             <li className={liCls}>
               <strong>{coveredStates.length} states currently covered:</strong>{" "}
               {scrapedStates.map(s => s.code).join(", ")} from directly-scraped
-              SERFF filings, plus {interimAmbestStates.map(s => s.code).join(", ")}{" "}
-              from interim AM Best industry data (not yet directly scraped)
+              SERFF filings
+              {interimAmbestStates.length > 0 && (
+                <>
+                  , plus {interimAmbestStates.map(s => s.code).join(", ")} from
+                  interim AM Best industry data (not yet directly scraped)
+                </>
+              )}
               {permanentAmbestStates.length > 0 && (
                 <>
                   , and {permanentAmbestStates.map(s => s.code).join(", ")} from
@@ -308,9 +313,14 @@ export default function MethodologyPage(): React.JSX.Element {
           <p className={pCls}>
             Currently validated on{" "}
             <strong>{validatedSomewhere} of {scrapedStates.length} cross-checked states</strong>{" "}
-            for at least one line. ({ambestStates.map(s => s.code).join(", ")} are
-            AM Best industry data and are not cross-checked, so they do
-            not appear in this table.)
+            for at least one line.
+            {ambestStates.length > 0 && (
+              <>
+                {" "}({ambestStates.map(s => s.code).join(", ")} are AM Best
+                industry data and are not cross-checked, so they do not appear
+                in this table.)
+              </>
+            )}
           </p>
           <div className="border border-card-line rounded-tile overflow-hidden mt-3">
             <table
@@ -381,8 +391,15 @@ export default function MethodologyPage(): React.JSX.Element {
             <li className={liCls}>
               <strong>{50 - coveredStates.length} states not yet covered.</strong>{" "}
               Only the {coveredStates.length} listed above currently have filing
-              data ({scrapedStates.length} directly scraped, {interimAmbestStates.length}{" "}
-              interim AM Best, {permanentAmbestStates.length} permanent AM Best).
+              data
+              {ambestStates.length > 0 ? (
+                <>
+                  {" "}({scrapedStates.length} directly scraped, {interimAmbestStates.length}{" "}
+                  interim AM Best, {permanentAmbestStates.length} permanent AM Best)
+                </>
+              ) : (
+                <> (all {scrapedStates.length} directly scraped)</>
+              )}.
               Selecting other states in setup is intentionally
               blocked rather than silently returning empty results.
             </li>

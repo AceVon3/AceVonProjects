@@ -60,19 +60,17 @@ export type CoveredState = (typeof COVERED_STATES)[number];
 // The subset of COVERED_STATES whose data is AM Best industry data (not a SERFF
 // scrape). Lets coverage-aware UI mark these honestly without re-deriving from
 // states.ts. Must stay in sync with AMBEST_STATES in scripts/import_filings.py.
-export const AMBEST_STATES = [  // VA..WI (06-22..07-13), PA/MI (07-15), IN (07-16), MO (07-21), MN+TN (07-22) removed — all now scraped (42). TX (07-30) + NY (07-30) removed — scraped, 45th/46th states (permanent-doctrine unwind: the 07-28 probes proved both live on SERFF; 'non-SERFF' was regulatory-structure inference, never probed). CA-only from here, and CA is genuinely permanent (CDI).
-  "CA"] as const;
+export const AMBEST_STATES = [  // VA..WI (06-22..07-13), PA/MI (07-15), IN (07-16), MO (07-21), MN+TN (07-22) removed — all now scraped (42). TX + NY (07-30) removed — scraped, 45th/46th (permanent-doctrine unwind). CA (08-03) removed — scraped, 47th state: CDI's own viewing-room page says P&C filings are public on SERFF Filing Access (mandatory e-filing since 2015); probed + fully collected same day (726 universe, 252/252 targets). "Permanent" was never real for any state. EMPTY from here — every covered state is a direct SERFF scrape.
+] as const;
 
-// The subset of AMBEST_STATES that are PERMANENT, not interim: they are not on
-// SERFF Public Access (the state runs its own non-SERFF system — CA/CDI), so
-// they can never be replaced by a normal scrape. They must NOT be presented as
-// "interim / awaiting scrape" and must NEVER be swept by the replacement path.
-// DOCTRINE UNWIND (2026-07-28/30): NY/TX were listed here from regulatory-
-// structure inference alone; probes proved both live on SERFF Filing Access.
-// TX scraped+imported 07-30; NY import in flight. CA (CDI) is the only
-// probe-confirmed permanent; FL probed ZERO filings (true non-SERFF, OIR
-// I-File) but was never AM Best-loaded.
-export const AMBEST_PERMANENT_STATES = ["CA"] as const;
+// PERMANENT is now an EMPTY class (2026-08-03, CA import — the full
+// doctrine unwind). Every "permanent non-SERFF" tag (NY, TX, then CA) was
+// regulatory-structure inference that a probe overturned. Kept as a typed
+// empty list so the UI/e2e code that references it stays honest: nothing
+// may ever be added here again without a probe FIRST. FL (probed: ZERO
+// filings, true OIR I-File) and NC (NCRB bureau) are coverage GAPS, not
+// AM Best states — they were never loaded from AM Best.
+export const AMBEST_PERMANENT_STATES = [] as const;
 
 // Window dropdown options → SQLite date('now', ...) modifier.
 export const WINDOW_MODIFIERS = {

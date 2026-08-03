@@ -9,7 +9,7 @@
 //     Auto + Homeowners, 2024-2026.
 //   - Thresholds section states +5% (Prospect) and -2% (Defend) verbatim.
 //   - All 7 excluded brands are listed with a "why" line each.
-//   - Validation table has 46 rows (one per directly-scraped state) and the cell
+//   - Validation table has 47 rows (one per directly-scraped state) and the cell
 //     values match STATES.validated exactly. Spot-checks: AZ auto=✓
 //     home=✓, MT auto=✓ home=✓, WA auto=✓ home=—, CO auto=— home=—.
 //   - Known limitations section covers SERFF visibility gaps, CO
@@ -86,6 +86,7 @@ const EXPECTED_VALIDATION: Record<string, { auto: boolean; home: boolean }> = {
   LA: { auto: false, home: false }, // scraped 2026-07-27 (44th state): 156 rows, CO-style no-cross-check (no AM Best LA CSV); zero-row flags adjudicated zero-effect
   TX: { auto: true,  home: true  }, // scraped 2026-07-30 (45th state — permanent-doctrine unwind, TX was never non-SERFF): 510 rows incl +81 B20 recoveries; value-agreement 201/201 (100%), PPA 123/128 / HO 87/87; TDI open-data census audit ZERO absent; Colonial County Mutual -> Nationwide (TX-first)
   NY: { auto: true,  home: true  }, // scraped 2026-07-30 (46th state — doctrine unwind complete, CA-only permanent): 225 rows (223 + 2 prose); value-agreement 71/73 (97.3%, both differs ours-correct from PDFs — AM Best stale-stage zeroing); PPA 67/69 / HO 29/29; Farmington+Charter Oak -> Travelers; Country-Wide excluded (Countryway class live)
+  CA: { auto: true,  home: true  }, // scraped 2026-08-03 (47th state — the LAST ex-"permanent" state, probe-to-import in one day; AMBEST now EMPTY): 96 rows incl 11 B22 disposition-letter recoveries + 1 cdi_supplement; TRIPLE cross-check: AM Best value-agreement 26/26 (100%), CDI approved-% closed-lists arbitration (prior-approval: LBPM filed 41.6 -> approved 31.5 override), CDI reverse census fully adjudicated; Crestbrook -> Nationwide (CA-first)
   CT: { auto: true,  home: true  }, // scraped 2026-07-09 (interim->real); the state that surfaced B14 (the "Flex Rate" filing-type vocabulary, 4th variant) — live GEICO/Progressive PPA signals recovered pre-ship, 25-state retro-sweep 0 exposure; post-fix cross-check (15th point): value-agreement 55/56 (98.2%, the 1 differ = AM Best zeroing a REJECTED filing) / PPA 43/54 / HO 25/33 (AM-Best-only = recency/immaterial/1 new-product), 0 genuine soft-misses -> both validated
 };
 
@@ -190,7 +191,7 @@ async function main(): Promise<void> {
   // -- (7) AM Best validation table matches STATES.validated ---------------
   console.log("\n(7) validation table matches STATES.validated exactly");
   const rowCount = await page.locator('[data-testid="validation-row"]').count();
-  check(`validation table has 46 rows (got ${rowCount})`, rowCount === 46);
+  check(`validation table has 47 rows (got ${rowCount})`, rowCount === 47);
   for (const [code, expected] of Object.entries(EXPECTED_VALIDATION)) {
     const row = page.locator(`[data-testid="validation-row"][data-state="${code}"]`);
     const autoCell = (await row.locator('[data-testid="cell-auto"]').textContent())?.trim();
