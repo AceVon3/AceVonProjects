@@ -77,6 +77,12 @@ function check(label: string, actual: unknown, expected: unknown) {
 // refreshed 277->282 (+2 active rolled): active 342 -> 392. Per-sub_type deltas
 // are exactly VA's + OH's contribution; distinct sub_types still 11 (OH's are a
 // subset of the existing 11). Prior 2026-06-22 baseline was 342 (VA->scraped).
+// Re-keyed 2026-08-03 late (B22 retro-sweep import, same night as CA):
+// 1787 -> 1794 = -1 aged (a motorcycle row; as_of slid 08-03 -> 08-04 via
+// the rebuilt xlsx mtime crossing midnight UTC) + 8 AR B22-recovered active
+// rows (Owner-Occ +6: 5 ALSE eff 07/01/26 + ALSE-134599491; HO-Comb +2:
+// LBPM-134877102 + FARM-134647896). Identity -1+6+2 = +7 exact vs HEAD
+// snapshot at the same as_of. Prior note:
 // Re-keyed 2026-08-03 at the CA import (47th state — the LAST ex-"permanent"
 // state; AMBEST retired to zero rows): 1807 -> 1787 = -31 aged by the 4-day
 // as_of slide (07-30 -> 08-03: PPA -9, HO-Comb -8, Auto-Comb -5, Mobile -3,
@@ -95,11 +101,11 @@ function check(label: string, actual: unknown, expected: unknown) {
 const EXPECTED: Record<string, number> = {
   "19.0001 Private Passenger Auto (PPA)": 697,
   "19.0000 Personal Auto Combinations": 236,
-  "19.0002 Motorcycle": 81,
+  "19.0002 Motorcycle": 80,
   "19.0003 Recreational Vehicle (RV)": 51,
   "19.0004 Other": 8,
-  "04.0003 Owner Occupied Homeowners": 148,
-  "04.0000 Homeowners Sub-TOI Combinations": 441,
+  "04.0003 Owner Occupied Homeowners": 154,
+  "04.0000 Homeowners Sub-TOI Combinations": 443,
   "04.0001 Condominium Homeowners": 35,
   "04.0005 Other Homeowners": 15,
   "04.0004 Tenant Homeowners": 44,
@@ -124,7 +130,7 @@ const rows = getDb().prepare(`
 `).all(asOf) as { sub: string | null }[];
 
 console.log(`\nasOf=${asOf}, active rolled filings: ${rows.length}`);
-check("active rolled filings = 1787", rows.length, 1787);
+check("active rolled filings = 1794", rows.length, 1794);
 check("all active filings single-valued (non-null sub_type)",
   rows.every(r => r.sub != null && r.sub !== ""), true);
 
