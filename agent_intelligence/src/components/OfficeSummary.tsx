@@ -19,6 +19,21 @@ import {
   registrationInfo,
 } from "@/lib/stateRegistration";
 import { AgentProfile, needsProfileUpgrade, primaryOffice } from "@/lib/profile";
+import type { StateReview } from "@/lib/officeSummary";
+
+// "Missouri (MO), Kansas (KS), and Oklahoma (OK)" — for the merged
+// federal-default line.
+function joinStateNames(reviews: StateReview[]): string {
+  const names = reviews.map(r => `${r.name} (${r.state})`);
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
+}
+
+// A state whose review is only the generic federal-default fallback line —
+// these merge into one shared line instead of repeating per state.
+function isFederalDefaultOnly(sr: StateReview): boolean {
+  return sr.lines.length === 1 && sr.lines[0].key === "default";
+}
 
 type Props = {
   profile: AgentProfile;
@@ -118,15 +133,15 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
         data-testid="office-summary-relevance"
         className="border-t border-line px-6 py-4"
       >
-        <h3 className="text-11 uppercase tracking-wider04 text-ink-2 m-0 mb-2">
+        <h3 className="text-11 uppercase tracking-wider04 font-semibold text-ink m-0 mb-2">
           Worth reviewing for your office
         </h3>
-        <ul className="m-0 pl-0 list-none flex flex-col gap-1.5">
+        <ul className="m-0 pl-0 list-none flex flex-col gap-2">
           {pointers.map(pt => {
             // A pointer becomes an in-page link ONLY when its target briefing
             // section actually renders for this profile. briefingSectionAnchorId
             // returns null otherwise — so a link can never point at an absent
-            // section, and a no-target pointer (e.g. remote) stays plain text.
+            // section, and a no-target pointer (e.g. remote) has no Review link.
             const anchorId = pt.targetSection
               ? briefingSectionAnchorId(profile.employee_states, primaryState, pt.targetSection)
               : null;
@@ -139,28 +154,32 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
                 className="text-13 text-ink-2 leading-[1.5] flex gap-2"
               >
                 <span aria-hidden className="text-ink-3 mt-px">·</span>
-                {anchorId ? (
-                  <a
-                    href={`#${anchorId}`}
-                    data-testid="relevance-link"
-                    data-target={anchorId}
-                    // Primary navigation into the briefing: expand the target
-                    // accordion section first, THEN scroll — never jump to a
-                    // collapsed row. preventDefault stops the native hash jump
-                    // (which would land on a collapsed, empty row).
-                    onClick={e => {
-                      if (onJump) {
-                        e.preventDefault();
-                        onJump(anchorId);
-                      }
-                    }}
-                    className="text-brand-red hover:underline"
-                  >
-                    {pt.text}
-                  </a>
-                ) : (
-                  <span>{pt.text}</span>
-                )}
+                <span>
+                  {pt.text}
+                  {anchorId && (
+                    <>
+                      {" "}
+                      <a
+                        href={`#${anchorId}`}
+                        data-testid="relevance-link"
+                        data-target={anchorId}
+                        // Primary navigation into the briefing: expand the target
+                        // accordion section first, THEN scroll — never jump to a
+                        // collapsed row. preventDefault stops the native hash jump
+                        // (which would land on a collapsed, empty row).
+                        onClick={e => {
+                          if (onJump) {
+                            e.preventDefault();
+                            onJump(anchorId);
+                          }
+                        }}
+                        className="text-brand-red font-medium hover:underline whitespace-nowrap"
+                      >
+                        Review →
+                      </a>
+                    </>
+                  )}
+                </span>
               </li>
             );
           })}
@@ -170,55 +189,119 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
             headcount. Same derivation as the briefing sections, so the
             summary can never claim a gate the briefing doesn't render.
             Lines link into the state's own briefing section when it
-            renders (expand-then-scroll via onJump, like the pointers). */}
-        <div data-testid="state-reviews" className="mt-3.5 flex flex-col gap-2.5">
-          {stateReviews(profile.employee_states, primaryState, profile.employee_count).map(sr => (
-            <div key={sr.state} data-testid="state-review-block" data-state={sr.state}>
-              <div className="text-11 uppercase tracking-wider04 text-ink-3 mb-1">
-                {sr.name} ({sr.state})
-              </div>
-              <ul className="m-0 pl-0 list-none flex flex-col gap-1">
-                {sr.lines.map(line => {
-                  // Link only when the state actually renders that section.
-                  const hasSection = line.targetSection
-                    ? sectionsForState(sr.state).some(s => s.key === line.targetSection)
-                    : false;
-                  const anchorId = hasSection ? `briefing-${sr.state}-${line.targetSection}` : null;
-                  return (
-                    <li
-                      key={line.key}
-                      data-testid="state-review-pointer"
-                      data-state={sr.state}
-                      data-key={line.key}
-                      data-linked={anchorId ? "true" : "false"}
-                      className="text-13 text-ink-2 leading-[1.5] flex gap-2"
-                    >
-                      <span aria-hidden className="text-ink-3 mt-px">·</span>
-                      {anchorId ? (
-                        <a
-                          href={`#${anchorId}`}
-                          data-testid="state-review-link"
-                          data-target={anchorId}
-                          onClick={e => {
-                            if (onJump) {
-                              e.preventDefault();
-                              onJump(anchorId);
-                            }
-                          }}
-                          className="text-brand-red hover:underline"
+            renders (expand-then-scroll via onJump, like the pointers).
+            States with only the generic federal-default line merge into
+            ONE shared line (per-state Review links) instead of repeating
+            a near-identical sentence per state. */}
+        {(() => {
+          const reviews = stateReviews(
+            profile.employee_states,
+            primaryState,
+            profile.employee_count,
+          );
+          const merged = reviews.filter(isFederalDefaultOnly);
+          const distinct =
+            merged.length >= 2 ? reviews.filter(sr => !isFederalDefaultOnly(sr)) : reviews;
+
+          // A state's Review link renders only when its briefing actually has
+          // the target section (same rule as the per-line links below).
+          const reviewAnchor = (state: string, targetSection?: string) =>
+            targetSection && sectionsForState(state).some(s => s.key === targetSection)
+              ? `briefing-${state}-${targetSection}`
+              : null;
+
+          return (
+            <div
+              data-testid="state-reviews"
+              className="mt-4 pt-4 border-t border-line flex flex-col gap-3"
+            >
+              {merged.length >= 2 && (
+                <div
+                  data-testid="state-review-merged"
+                  data-states={merged.map(sr => sr.state).join(",")}
+                >
+                  <p className="m-0 text-13 text-ink-2 leading-[1.5]">
+                    {joinStateNames(merged)} largely follow the federal
+                    wage-and-hour floors, with no state paid-leave mandate or
+                    employer-mandate programs — their briefings below cover the
+                    specifics.{" "}
+                    {merged.map((sr, i) => {
+                      const anchorId = reviewAnchor(sr.state, sr.lines[0].targetSection);
+                      if (!anchorId) return null;
+                      return (
+                        <span key={sr.state} className="whitespace-nowrap">
+                          {i > 0 && <span className="text-ink-3"> · </span>}
+                          <a
+                            href={`#${anchorId}`}
+                            data-testid="state-review-link"
+                            data-state={sr.state}
+                            data-target={anchorId}
+                            onClick={e => {
+                              if (onJump) {
+                                e.preventDefault();
+                                onJump(anchorId);
+                              }
+                            }}
+                            className="text-brand-red font-medium hover:underline"
+                          >
+                            {sr.state} →
+                          </a>
+                        </span>
+                      );
+                    })}
+                  </p>
+                </div>
+              )}
+              {distinct.map(sr => (
+                <div key={sr.state} data-testid="state-review-block" data-state={sr.state}>
+                  <div className="text-11 uppercase tracking-wider04 font-semibold text-ink-2 mb-1">
+                    {sr.name} ({sr.state})
+                  </div>
+                  <ul className="m-0 pl-0 list-none flex flex-col gap-1.5">
+                    {sr.lines.map(line => {
+                      // Link only when the state actually renders that section.
+                      const anchorId = reviewAnchor(sr.state, line.targetSection);
+                      return (
+                        <li
+                          key={line.key}
+                          data-testid="state-review-pointer"
+                          data-state={sr.state}
+                          data-key={line.key}
+                          data-linked={anchorId ? "true" : "false"}
+                          className="text-13 text-ink-2 leading-[1.5] flex gap-2"
                         >
-                          {line.text}
-                        </a>
-                      ) : (
-                        <span>{line.text}</span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
+                          <span aria-hidden className="text-ink-3 mt-px">·</span>
+                          <span>
+                            {line.text}
+                            {anchorId && (
+                              <>
+                                {" "}
+                                <a
+                                  href={`#${anchorId}`}
+                                  data-testid="state-review-link"
+                                  data-target={anchorId}
+                                  onClick={e => {
+                                    if (onJump) {
+                                      e.preventDefault();
+                                      onJump(anchorId);
+                                    }
+                                  }}
+                                  className="text-brand-red font-medium hover:underline whitespace-nowrap"
+                                >
+                                  Review →
+                                </a>
+                              </>
+                            )}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          );
+        })()}
         <p className="text-11 text-ink-3 m-0 mt-2.5">
           These flag what&rsquo;s worth a closer look given your numbers. Whether a
           given rule actually reaches your office depends on the counting rules —
