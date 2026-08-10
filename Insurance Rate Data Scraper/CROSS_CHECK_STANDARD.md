@@ -70,3 +70,26 @@ copied from the corroboration CSV, at ingestion. Unmatched in-window rows →
 - [ ] Apply earned `external_validation` + `match_strength` to the state's rows
 - [ ] Report: matched/total per line, direct/date_relaxed/reclassified split,
       any mostly-date_relaxed flag, HO coverage
+
+## Standing per-refresh audits (added 2026-08-10 — run at EVERY data refresh)
+
+The AM Best pipeline above is retired (all states scraped). These are the
+live standing audits; run all three during every refresh's judgment day:
+
+1. **CDI CA closed-list arbitration** (prior-approval state — the APPROVED
+   number is the product). Download the latest YTD xlsx from
+   https://www.insurance.ca.gov/0250-insurers/0800-rate-filings/0100-rate-filing-lists/rate-filing-approvals/
+   into `tools/cdi_closed_lists/`, diff new rows vs the prior snapshot,
+   filter in-brand personal lines, and for any approved % that differs from
+   our parsed filed % add a value_override (or supplement) to
+   `output/ca_cdi_overlay.json`, then run `b23_apply_ca_cdi.py` (idempotent,
+   run after EVERY CA harvest regardless). Watch list rides here: pending-
+   with-waiver filings (2026-08: 3 SF HO — 17/9.3/32.8%, one 1.22M ph).
+2. **TDI TX census** (suppression/recency audit). Fresh pull of
+   https://data.texas.gov/resource/iubg-btfs.json ($limit=50000), compare
+   in-brand/in-window nonzero-% rows vs our TX universe by SERFF id; any
+   material absent row is a harvest gap to chase.
+3. **B24 pending-disposition recheck** (see BACKLOG.md B24): pending-status
+   filings freeze at scrape time — sideline their cached filing_summary.pdf
+   pre-burst so the refresh re-pulls current dispositions. Triage GA's
+   2024-era pendings first (likely permanent no-disposition practice).
