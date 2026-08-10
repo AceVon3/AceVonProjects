@@ -54,8 +54,8 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm"],
       licensed_states: ["AZ", "NV"],
     } satisfies CaptiveProfile,
-    expected_prospect: 13,
-    expected_defend: 7,
+    expected_prospect: 22,
+    expected_defend: 14,
   },
   {
     label: "Captive Allstate, AZ+NV",
@@ -65,8 +65,8 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["Allstate"],
       licensed_states: ["AZ", "NV"],
     } satisfies CaptiveProfile,
-    expected_prospect: 10,
-    expected_defend: 6,
+    expected_prospect: 19,
+    expected_defend: 13,
   },
   {
     label: "Captive State Farm, all 8 states",
@@ -76,11 +76,11 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm"],
       licensed_states: ALL_8,
     } satisfies CaptiveProfile,
-    expected_prospect: 37,
+    expected_prospect: 54,
     // Re-keyed 2026-07-30 (TX import / B20 fold-in): 25 -> 26. The +1 is UT
     // ALSE-134657702 Allstate Personal Auto -7.0% eff 2025-10-14 — a B20
     // new-product override save (non-own-brand, so it lands in SF Defend).
-    expected_defend: 26,
+    expected_defend: 46,
   },
   {
     label: "Independent, AZ+NV",
@@ -89,8 +89,8 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm", "Allstate", "GEICO"], // brands don't matter for Prospect/Defend (independents see all 13)
       licensed_states: ["AZ", "NV"],
     } satisfies IndependentProfile,
-    expected_prospect: 14,
-    expected_defend: 9,
+    expected_prospect: 25,
+    expected_defend: 16,
   },
   {
     label: "Independent, all 8 states",
@@ -105,8 +105,8 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
     // import itself cannot move these counts). Prior note:
     // Re-keyed 2026-07-30: 46 -> 45. -1 = CO SFMA-134532940 SF Personal Auto
     // +13.4% eff 2025-07-29 aged out by the 3-day as_of slide (07-27 -> 07-30).
-    expected_prospect: 44,
-    expected_defend: 34,
+    expected_prospect: 65,
+    expected_defend: 54,
   },
 ];
 
@@ -118,7 +118,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
       authorized_brands: ["State Farm", "Travelers"],
       licensed_states: ["AZ", "NV"],
     },
-    expected: 10,
+    expected: 14,
   },
   {
     label: "Independent, sells SF + Travelers + Progressive, AZ+CO+NV",
@@ -130,7 +130,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
     // Re-keyed 2026-07-30: 24 -> 21. -3 = the CO State Farm Personal Auto trio
     // (SFMA-134532992/134532940/134532998, all eff 2025-07-29) aged out by the
     // 3-day as_of slide. Nothing added: no TX/B20 rows touch this scope.
-    expected: 21,
+    expected: 27,
   },
   {
     label: "Independent, sells Allstate + Liberty Mutual + Safeco, all 8 states",
@@ -143,7 +143,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
     // added 6 rows to this brand/state slice; 5 are exactly-0% (suppressed by
     // the rate-neutral filter) — the +1 is UT ALSE-134657702 Allstate Personal
     // Auto -7.0% eff 2025-10-14 (a new-product override save, 17,653 ph).
-    expected: 71,
+    expected: 97,
   },
 ];
 
@@ -167,6 +167,7 @@ function main(): void {
   console.log("=".repeat(78));
 
   // Sanity totals for the active window — baseline is 293 filings (data as-of 2026-06-11).
+  // Pins re-keyed 2026-08-10 at the 26h2 refresh import (active 1794 -> 2289; all 8 cases grew, none shrank).
   const active = db
     .prepare(
       `SELECT COUNT(*) AS n FROM filings
@@ -174,7 +175,7 @@ function main(): void {
          AND effective_date >= date(?, '-12 months')`,
     )
     .get(ref) as { n: number };
-  console.log(`  active-window filings (all states, all brands) = ${active.n}  (baseline: 293)`);
+  console.log(`  active-window filings (all states, all brands) = ${active.n}  (baseline: 293; 2289 at the 2026-08-10 26h2 refresh import)`);
   console.log("=".repeat(78));
 
   let allOk = true;

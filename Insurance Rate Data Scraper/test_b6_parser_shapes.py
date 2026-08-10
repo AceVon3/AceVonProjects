@@ -106,6 +106,23 @@ def test_shape_j_pct_only():
               f"{r.written_premium_for_program} {r.policyholders_affected}")
 
 
+def test_shape_k_omitted_prem_chg():
+    # Judgment-day sweep 2026-08-08: GA CFPC-134983942 — written-premium-CHANGE
+    # column alone omitted (G's mirror).
+    fs = parse_text(
+        "COUNTRY Preferred 0.000% 0.000% 58,678 $107,129,061 0.000% 0.000%\n"
+        "Insurance Company"
+    )
+    check("K: 1 row", len(fs.company_rates) == 1, f"got {len(fs.company_rates)}")
+    if fs.company_rates:
+        r = fs.company_rates[0]
+        check("K: name folded", r.company_name == "COUNTRY Preferred Insurance Company", r.company_name)
+        check("K: ph + prem_for captured, prem_chg None",
+              r.policyholders_affected == 58678 and r.written_premium_for_program == "107129061"
+              and r.written_premium_change is None,
+              f"ph={r.policyholders_affected!r} prem_for={r.written_premium_for_program!r} prem_chg={r.written_premium_change!r}")
+
+
 def test_existing_shapes_unchanged():
     # one canonical example per pre-B6 pattern (from the pattern comments) —
     # each must parse exactly as before the B6 edit.
@@ -206,10 +223,11 @@ def test_real_pdfs():
 if __name__ == "__main__":
     print("=== 1: comma-percent (material bug) ===")
     test_comma_percent_full_row()
-    print("=== 2: additive shapes H/I/J ===")
+    print("=== 2: additive shapes H/I/J/K ===")
     test_shape_h_blank_ph()
     test_shape_i_blank_min()
     test_shape_j_pct_only()
+    test_shape_k_omitted_prem_chg()
     print("=== 3: pre-B6 shapes byte-identical + non-rows stay 0 ===")
     test_existing_shapes_unchanged()
     test_nonrows_still_zero()

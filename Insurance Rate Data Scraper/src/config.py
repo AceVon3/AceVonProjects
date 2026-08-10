@@ -118,7 +118,13 @@ STATES = ["WA", "ID", "CO", "OR", "UT", "AZ", "MT", "WY", "NV", "NM", "GA", "VA"
 # Filings submitted 2024-07-01 onward are already cached from the prior run, so
 # the incremental search only needs the new 2023-07-01 -> 2024-06-30 slice.
 DATE_FROM = "07/01/2023"
-DATE_TO = "04/17/2026"
+# 2026-08-03 REFRESH CAMPAIGN: rolled forward from 04/17/2026 (the fixed
+# ceiling every one of the 47 states was collected under — the dataset was
+# uniformly ~3.5 months stale on submissions). refresh_runner.py sweeps the
+# 04/01/2026->08/04/2026 slice per state (overlap-safe: merge dedupes by
+# filing_id) and merges into the universes. STILL A FIXED DATE — roll forward
+# at every refresh, or make it rolling.
+DATE_TO = "08/04/2026"
 
 # Effective-date emit filter applied at row emission (run_final_rates.py).
 # This is the axis that aligns with AM Best's effective-date matching. Rows
@@ -135,7 +141,13 @@ EFFECTIVE_DATE_FROM = "01/01/2024"
 # filings (MI: PRGS-134782430/455 -2.8/-2.7 on 585k/238k books, USAA +7.0%).
 # Bumped to 12/31/2026 per user approval. THIS IS STILL A FIXED DATE — revisit
 # before 2027 collections or make it rolling (build date + N months).
-EFFECTIVE_DATE_TO = "12/31/2026"
+# 2026-08-03 REFRESH: bumped 12/31/2026 -> 12/31/2027 with the DATE_TO roll.
+# Freshly-submitted filings carry renewal effectives deep into 2027 (the
+# B19 class one year on); the old ceiling would have silently dropped them
+# at emit. NOTE for judgment day: this bump also newly admits any OLD cached
+# filing with a 2027 effective — those surface as adjudicable deltas at the
+# next full rebuild, they are NOT parser regressions.
+EFFECTIVE_DATE_TO = "12/31/2027"
 
 # AM Best validation boundary. The per-state AM Best cross-checks (see
 # dataset_summary.md "Validation") were run against AM Best exports scoped to

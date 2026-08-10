@@ -711,6 +711,22 @@ _FS_RATE_ROW_RE_J = re.compile(
     r"(?P<maxp>" + _FS_PCT + r")%\s+"
     r"(?P<minp>" + _FS_PCT + r")%\s*$"
 )
+# Pattern K: full row but the written-premium-CHANGE ($) column alone is
+# omitted — G's mirror (G omits prem_FOR). Seen in GA CFPC-134983942
+# (judgment-day sweep, 2026-08-08; 0% rule revision, 58,678 ph):
+#   "COUNTRY Preferred 0.000% 0.000% 58,678 $107,129,061 0.000% 0.000%"
+# Disjoint with A-J: A/F/I require "$prem_chg" between imp% and ph, G requires
+# "$" before ph with no "$prem_for" after, B/D/E require a bare leading "%",
+# C/J have no money/ph columns — purely additive, tried last.
+_FS_RATE_ROW_RE_K = re.compile(
+    r"^(?P<name>.+?)\s+"
+    r"(?P<ind>" + _FS_PCT + r")%\s+"
+    r"(?P<imp>" + _FS_PCT + r")%\s+"
+    r"(?P<ph>[\d,]+)\s+"
+    r"\$(?P<prem_for>[\d,]+)\s+"
+    r"(?P<maxp>" + _FS_PCT + r")%\s+"
+    r"(?P<minp>" + _FS_PCT + r")%\s*$"
+)
 _FS_MULTI_INDICATED_RE = re.compile(r"Overall Percentage Rate Indicated For This Filing\s+(-?\d+(?:\.\d+)?)%")
 _FS_MULTI_IMPACT_RE    = re.compile(r"Overall Percentage Rate Impact For This Filing\s+(-?\d+(?:\.\d+)?)%")
 _FS_MULTI_PREMCHG_RE   = re.compile(r"Effect of Rate Filing[-\s]+Written Premium Change For This Program\s+\$\(?(-?[\d,]+)\)?")
@@ -764,6 +780,10 @@ _FS_EXHIBIT_DEBRIS_RE = re.compile(
     r"^\d[\d,.]*$"              # pure number / year row
     r"|\(\s*\d+\s*\)"           # parenthesized operand reference: (2) / (1)
     r"|^\d+\s*\.\s"             # leading exhibit enumerator: "5. " / "11. "
+    # Judgment-day sweep (2026-08-10, CA GECC-134953695): GEICO trend exhibit
+    # ("1 year trend 18.80% ...") parsed as company rows. A legal entity name
+    # never starts with a year-count.
+    r"|^\d+\s*(?:year|yr)\b"
 )
 
 
@@ -839,6 +859,7 @@ def parse_filing_summary_pdf(pdf_path: Path, tracking_number: str = "", *,
         if not m: m = _FS_RATE_ROW_RE_H.match(ln)  # additive: blank-ph shape (B6)
         if not m: m = _FS_RATE_ROW_RE_I.match(ln)  # additive: blank-min shape (B6)
         if not m: m = _FS_RATE_ROW_RE_J.match(ln)  # additive: pct-only shape (B6)
+        if not m: m = _FS_RATE_ROW_RE_K.match(ln)  # additive: omitted-prem_chg shape (judgment sweep 2026-08-08)
         if not m:
             i += 1; continue
         gd = m.groupdict()
