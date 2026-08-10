@@ -53,6 +53,12 @@ export const COVERED_STATES = [
   // NC excluded (structural NCRB Rate-Bureau gap — not fixable via AM Best).
   "ME", "MD", "MA", "MI", "MN", "MS", "MO", "NE", "NH", "NJ",
   "NY", "ND", "OK", "PA", "RI", "SC", "SD", "TN", "TX", "VT", "WV", "WI",
+  // NC (2026-08-10, 48th covered state): the "structural NCRB gap" verdict was
+  // half-right — the BUREAU owns base rates, but carriers file their
+  // departures as SERFF filing type "Deviations", which carry real
+  // per-carrier %/policyholder rows. 49-row deliverable from already-cached
+  // filings (zero new collection). See states.ts NC entry.
+  "NC",
 ] as const;
 
 export type CoveredState = (typeof COVERED_STATES)[number];

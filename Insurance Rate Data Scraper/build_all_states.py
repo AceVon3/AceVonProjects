@@ -9,7 +9,9 @@ import csv
 import openpyxl
 from openpyxl.styles import Font, Alignment
 
-STATES = ["ID", "WA", "CO", "OR", "UT", "AZ", "MT", "WY", "NV", "NM", "GA", "VA", "OH", "IL", "WV", "NH", "VT", "HI", "AK", "MA", "ND", "RI", "ME", "SD", "DE", "CT", "KS", "NJ", "MS", "IA", "SC", "NE", "MD", "OK", "AR", "KY", "WI", "PA", "MI", "IN", "MO", "MN", "TN", "AL", "LA", "TX", "NY", "CA"]
+# NC appended 2026-08-10 (48th state — Deviations discovery; appended LAST so
+# every prior state's row order/ids stay byte-identical).
+STATES = ["ID", "WA", "CO", "OR", "UT", "AZ", "MT", "WY", "NV", "NM", "GA", "VA", "OH", "IL", "WV", "NH", "VT", "HI", "AK", "MA", "ND", "RI", "ME", "SD", "DE", "CT", "KS", "NJ", "MS", "IA", "SC", "NE", "MD", "OK", "AR", "KY", "WI", "PA", "MI", "IN", "MO", "MN", "TN", "AL", "LA", "TX", "NY", "CA", "NC"]
 OUT_XLSX = Path("output/all_states_final_rates.xlsx")
 OUT_CSV = Path("output/all_states_final_rates.csv")
 

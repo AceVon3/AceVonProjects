@@ -352,6 +352,18 @@ def _is_rate_filing_type(ft) -> bool:
     # effective window to emit anything.
     if ft.endswith("Prior Approval"):
         return True
+    # NC (bureau state, found 2026-08-10 — 7th vocabulary variant): NCRB owns
+    # base rates, so carriers file their DEPARTURES as filing type
+    # "Deviations" (207 in the NC universe; they parse to real per-carrier
+    # %/ph rows with the standard parser — e.g. SF NC HO +5.9%/647k ph, SF
+    # auto +4.7%/1.37M ph), plus a small "Enhancements - Rate" type (10).
+    # The original NC gap-state verdict ("1 deliverable row, forms-only")
+    # predates this discovery — it classified from the filing_type metadata
+    # and this type was never in the rate family. Same containment as NJ:
+    # a false-include still needs parseable rate rows + rate_data_applies +
+    # the effective window to emit anything.
+    if ft == "Deviations" or ft == "Enhancements - Rate":
+        return True
     return "Rate" in (c.strip() for c in ft.split("/"))
 PDF_FILING_TYPE_RE = re.compile(r"Filing Type:\s*([A-Za-z/ \-]+)\s*$", re.MULTILINE)
 
