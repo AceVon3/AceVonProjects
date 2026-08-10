@@ -94,8 +94,24 @@ export function computeWindowBadge(
 // "Pending"; everything else in the active window is an approved filing.
 // The color also drives the compact status dot in the table, so it reads as
 // a status signal: green = approved (in force), amber = still pending review.
-export function computeStatusBadge(rateActivity: string): Badge {
+//
+// File-and-use wrinkle (2026-08-10, user-requested after the OR Farmers
+// FAIG-134959263 confusion): "pending" is the REGULATOR's review status, not
+// the rate's — in file-and-use states a rate takes effect while the review is
+// still open. A bare "Pending" next to a past effective date reads as a
+// contradiction, so once the effective date has passed we spell it out.
+// `asOf` anchors the comparison (same date the query builder used) so the
+// label stays consistent with row inclusion and doesn't drift with the wall
+// clock.
+export function computeStatusBadge(
+  rateActivity: string,
+  effectiveDate: string | null,
+  asOf: string,
+): Badge {
   if (rateActivity === "rate_change_pending") {
+    if (effectiveDate && effectiveDate <= asOf) {
+      return { color: "amber", text: "Rate in effect; state review still open" };
+    }
     return { color: "amber", text: "Pending" };
   }
   return { color: "green", text: "Approved" };

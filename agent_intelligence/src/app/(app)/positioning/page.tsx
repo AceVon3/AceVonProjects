@@ -162,7 +162,7 @@ export default function PositioningPage(): React.JSX.Element {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
               {view.anchoredCells.map(cell => (
-                <PositioningCard key={`${cell.line}@@${cell.state}`} cell={cell} />
+                <PositioningCard key={`${cell.line}@@${cell.state}`} cell={cell} asOf={asOf} />
               ))}
             </div>
 

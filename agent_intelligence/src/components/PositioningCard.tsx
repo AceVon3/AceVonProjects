@@ -28,7 +28,7 @@ function fmtSpread(d: number): string {
   return d > 0 ? `+${mag} pts higher` : `−${mag} pts lower`;
 }
 
-function FilingsAudit({ filings }: { filings: BrandStat["filings"] }): React.JSX.Element {
+function FilingsAudit({ filings, asOf }: { filings: BrandStat["filings"]; asOf: string }): React.JSX.Element {
   return (
     <div className="mt-2 mb-1 rounded-lg bg-surface-2 border border-line px-3.5 py-2.5">
       <div className="text-10 uppercase tracking-wider04 text-ink-3 mb-1.5">
@@ -47,7 +47,13 @@ function FilingsAudit({ filings }: { filings: BrandStat["filings"] }): React.JSX
               <span>· {f.serff_tracking_number}</span>
             )}
             {f.rate_activity === "rate_change_pending" && (
-              <span className="text-amber-text">· pending</span>
+              <span className="text-amber-text">
+                {/* file-and-use: rate can be live while the review is open —
+                    say so once the effective date has passed (see format.ts) */}
+                {f.effective_date && asOf && f.effective_date <= asOf
+                  ? "· rate in effect; state review still open"
+                  : "· pending"}
+              </span>
             )}
           </li>
         ))}
@@ -96,7 +102,7 @@ function ExpandableRow({
   );
 }
 
-function ComparisonRow({ cmp }: { cmp: Comparison }): React.JSX.Element {
+function ComparisonRow({ cmp, asOf }: { cmp: Comparison; asOf: string }): React.JSX.Element {
   const thin = cmp.tier === "thin";
   return (
     <ExpandableRow
@@ -123,12 +129,12 @@ function ComparisonRow({ cmp }: { cmp: Comparison }): React.JSX.Element {
         </span>
       }
     >
-      <FilingsAudit filings={cmp.competitor.filings} />
+      <FilingsAudit filings={cmp.competitor.filings} asOf={asOf} />
     </ExpandableRow>
   );
 }
 
-function Anchor({ anchor, withDivider }: { anchor: AnchorBlock; withDivider: boolean }): React.JSX.Element {
+function Anchor({ anchor, withDivider, asOf }: { anchor: AnchorBlock; withDivider: boolean; asOf: string }): React.JSX.Element {
   return (
     <div className={withDivider ? "border-t border-line-2 mt-1 pt-1" : ""}>
       <ExpandableRow
@@ -146,11 +152,11 @@ function Anchor({ anchor, withDivider }: { anchor: AnchorBlock; withDivider: boo
           </span>
         }
       >
-        <FilingsAudit filings={anchor.agent.filings} />
+        <FilingsAudit filings={anchor.agent.filings} asOf={asOf} />
       </ExpandableRow>
 
       {anchor.comparisons.map(c => (
-        <ComparisonRow key={c.competitor.brand} cmp={c} />
+        <ComparisonRow key={c.competitor.brand} cmp={c} asOf={asOf} />
       ))}
 
       {anchor.insufficient.length > 0 && (
@@ -162,7 +168,7 @@ function Anchor({ anchor, withDivider }: { anchor: AnchorBlock; withDivider: boo
   );
 }
 
-export default function PositioningCard({ cell }: { cell: PositioningCell }): React.JSX.Element {
+export default function PositioningCard({ cell, asOf }: { cell: PositioningCell; asOf: string }): React.JSX.Element {
   return (
     <div
       data-testid="positioning-cell"
@@ -176,7 +182,7 @@ export default function PositioningCard({ cell }: { cell: PositioningCell }): Re
       </div>
       <div className="px-[18px]">
         {cell.anchors.map((a, i) => (
-          <Anchor key={a.agent.brand} anchor={a} withDivider={i > 0} />
+          <Anchor key={a.agent.brand} anchor={a} withDivider={i > 0} asOf={asOf} />
         ))}
       </div>
     </div>

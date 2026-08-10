@@ -259,7 +259,7 @@ export default function FilingsTable({
                 f.entity_count, f.min_entity_impact, f.max_entity_impact,
               );
               const windowB = computeWindowBadge(f.effective_date, asOf, mode);
-              const statusB = computeStatusBadge(f.rate_activity);
+              const statusB = computeStatusBadge(f.rate_activity, f.effective_date, asOf);
               const isAmBest = f.source === "ambest_sourced";
 
               return (
