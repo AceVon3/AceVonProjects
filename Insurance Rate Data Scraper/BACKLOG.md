@@ -2,6 +2,33 @@
 
 Tracked-but-deferred work. Each item: rationale + spec pointer + sizing.
 
+## B24 — Pending-disposition recheck at every refresh (statuses freeze at scrape time)
+**Opened:** 2026-08-10 (user asked after the OR Farmers FAIG-134959263 UI fix).
+**Size:** small script + one refresh-recipe step. **Run at the NEXT refresh.**
+Cached filings are NEVER re-fetched (the burst cache-check skips any filing
+whose `filing_summary.pdf` exists), so a `rate_change_pending` status is a
+frozen snapshot of scrape day — approvals never land in our data on their
+own. As of the 26h2 import (as_of 2026-08-10): **145 pending rolled filings,
+112 with passed effective dates** (the ones showing the "Rate in effect;
+state review still open" UI verbiage shipped 2026-08-10):
+GA 75 · NV 9 · OR 8 · MD 5 · ID 5 · AK 5 · CA 2 · VT 1 · VA 1 · OH 1.
+**Recheck mechanism:** before the refresh bursts, enumerate pending-status
+filings from the workbooks and delete (or sideline) their cached
+`filing_summary.pdf` — the normal burst then re-downloads them with the
+CURRENT disposition; harvest picks up flips to approved automatically.
+Cost is modest (they ride existing group searches; no extra Begin-Search
+budget beyond batch size).
+**GA caveat — triage before burning searches:** GA's 75 include effective
+dates back to 2024-01-01. Pendings that old are likely a state-practice
+artifact (GA DOI appears not to update disposition in SERFF public access),
+not live reviews. Sample 2-3 old GA filings FIRST; if their live pages still
+say pending after 2+ years, tag GA (and the similar old AK rows) as a
+permanent no-disposition class and exclude them from the recheck loop so
+they don't waste spend every cycle. The recent-effective cohort (NV/OR/ID/
+MD/VT/VA/OH 2026 effectives + the 3 SF-CA pending-with-waiver HO, which
+ALSO have the 8/31 CDI closed-list as their disposition channel) is the
+real payload.
+
 ## B12 — 2× external background-task kill at ~30-min age (RI harvest)
 **Opened:** 2026-07-07 (RI). **Size:** investigate before the LARGE tier.
 During the RI harvest, two burst tasks were killed externally at ~30-31 min
