@@ -254,7 +254,9 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
               )}
               {distinct.map(sr => (
                 <div key={sr.state} data-testid="state-review-block" data-state={sr.state}>
-                  <div className="text-11 uppercase tracking-wider04 font-semibold text-ink-2 mb-1">
+                  {/* State headers read at full ink + bold so the per-state
+                      groups scan clearly against the muted section label. */}
+                  <div className="text-11 uppercase tracking-wider04 font-bold text-ink mb-1">
                     {sr.name} ({sr.state})
                   </div>
                   <ul className="m-0 pl-0 list-none flex flex-col gap-1.5">
