@@ -1,3 +1,4 @@
+import FeedbackFab from "@/components/FeedbackFab";
 import NavBar from "@/components/NavBar";
 import ProfileBootstrap from "@/components/ProfileBootstrap";
 
@@ -21,6 +22,9 @@ export default function AppLayout({
             bootstrap refreshes that cache from the account first. */}
         <ProfileBootstrap>{children}</ProfileBootstrap>
       </div>
+      {/* Floating data-feedback reporter — copy adapts per route, hidden on
+          /setup and /methodology (see FeedbackFab). */}
+      <FeedbackFab />
     </div>
   );
 }
