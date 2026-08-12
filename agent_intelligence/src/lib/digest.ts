@@ -137,92 +137,86 @@ function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-// --- row rendering ----------------------------------------------------------
+// --- rendering --------------------------------------------------------------
 //
-// Visual language matched to the app's "Recent signals" cards (user request
-// 2026-08-12): white rounded cards floating on the gray canvas, a colored
-// accent stripe per row, bold brand + muted detail line, right-aligned
-// impact beside a labeled pill (PROSPECT/DEFEND for competitors, RAISED/CUT
-// for own carriers). Raises read red, cuts read BLUE (the site's defend
-// blue — not green), matching the site exactly.
+// Faithful port of the user's Claude Design handoff (2026-08-12,
+// design_handoff_digest_email): typographic hierarchy on a 600px white
+// sheet — 4px brand rule, AGENCYMAN masthead, 34px headline, #f4f6f9
+// office panel, bulletproof CTA, sections opened by 2px ink rules with
+// muted counts, filing rows as name/detail vs number/label columns
+// (raises #c02617, cuts #1b6ca8), HR with letterspaced state subheads.
+// Every text style carries mso-line-height-rule:exactly per the handoff.
+// REVIEW items keep the README's defined label color (#9aa1ad) even though
+// the sample showed only UPDATED/SCHEDULED — dropping them would empty the
+// HR section on first sends (no prior snapshot => no UPDATED items).
 
-const INK = "#1a1d21";
-const INK2 = "#4b5563";
-const INK3 = "#8a919c";
-const LINE = "#e6e9ef";
+const F = "Helvetica Neue,Helvetica,Arial,sans-serif";
+const INK = "#14171a";
+const BODY = "#3f4854";
+const DETAIL = "#6b7280";
+const MUTED = "#8a919c";
+const LABEL = "#9aa1ad";
+const HAIR = "#e6e9ef";
 const RED = "#c02617";
+const RED_DEEP = "#b3261a";
 const BLUE = "#1b6ca8";
-const CANVAS = "#f1f3f7";
-const FONT = "-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif";
+const AMBER = "#b45309";
 
-// Pill + stripe treatment per section kind, mirroring the site's signal
-// chips: PROSPECT/RAISED = red family, DEFEND/CUT = blue family.
-type Kind = { stripe: string; pillBg: string; pillFg: string; pill: string };
-const KIND_RAISED: Kind = { stripe: RED, pillBg: "#fdecea", pillFg: "#b3261a", pill: "RAISED" };
-const KIND_CUT: Kind = { stripe: BLUE, pillBg: "#e5f0fa", pillFg: BLUE, pill: "CUT" };
-const KIND_PROSPECT: Kind = { ...KIND_RAISED, pill: "PROSPECT" };
-const KIND_DEFEND: Kind = { ...KIND_CUT, pill: "DEFEND" };
-
-function eyebrow(text: string): string {
-  return `
-      <div style="font:700 10px/1 ${FONT};color:${INK3};letter-spacing:.09em;text-transform:uppercase;padding:0 2px 7px;">
-        ${text}
-      </div>`;
+function t(size: number, lh: number, extra = ""): string {
+  return `font-family:${F};font-size:${size}px;line-height:${lh}px;mso-line-height-rule:exactly;${extra}`;
 }
 
-function card(inner: string): string {
-  return `
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid ${LINE};border-radius:12px;">
-        ${inner}
-      </table>`;
-}
+type Kind = { label: string; labelColor: string };
+const KIND_RAISED: Kind = { label: "RAISED", labelColor: RED_DEEP };
+const KIND_CUT: Kind = { label: "CUT", labelColor: BLUE };
+const KIND_PROSPECT: Kind = { label: "PROSPECT", labelColor: RED_DEEP };
+const KIND_DEFEND: Kind = { label: "DEFEND", labelColor: BLUE };
 
-function rowHtml(f: Row, kind: Kind, last: boolean): string {
-  const color = f.overall_rate_impact > 0 ? RED : f.overall_rate_impact < 0 ? BLUE : INK;
+function filingRow(f: Row, kind: Kind, first: boolean): string {
+  const numColor = f.overall_rate_impact >= 0 ? RED : BLUE;
   const ph = fmtPh(f.total_policyholders);
   const sub = f.sub_type ? cleanSubtypeLabel(f.sub_type) : "";
-  const bb = last ? "" : `border-bottom:1px solid ${LINE};`;
-  // Outlook fixes (2026-08-12, user screenshot): its Word renderer ignores
-  // white-space:nowrap, wrapping the pill under the number — a nested
-  // single-row table in a FIXED-width cell is the only reliable way to keep
-  // them side by side. The detail line shows the sub-type INSTEAD OF the
-  // line-of-business (the sub-type is strictly more specific; printing both
-  // read redundantly and double-wrapped the row).
   const product = sub || f.line_of_business;
   return `
-        <tr>
-          <td width="4" style="background:${kind.stripe};font-size:0;line-height:0;">&nbsp;</td>
-          <td style="padding:10px 10px 10px 13px;${bb}">
-            <div style="font:650 13px/1.35 ${FONT};color:${INK};">${esc(f.brand)}</div>
-            <div style="font:400 11px/1.45 ${FONT};color:${INK2};">
-              ${esc(product)} · ${esc(f.state)} · effective ${fmtDate(f.effective_date)}${ph ? ` · ${ph}` : ""}
-            </div>
-          </td>
-          <td width="132" align="right" style="padding:10px 12px 10px 4px;${bb}vertical-align:middle;">
-            <table role="presentation" cellpadding="0" cellspacing="0" align="right">
-              <tr>
-                <td style="font:700 13px/1 ${FONT};color:${color};padding-right:7px;">${fmtImpact(f.overall_rate_impact)}</td>
-                <td style="font:700 9px/1.7 ${FONT};color:${kind.pillFg};background:${kind.pillBg};border-radius:9px;padding:1px 7px;letter-spacing:.05em;">${kind.pill}</td>
-              </tr>
-            </table>
-          </td>
-        </tr>`;
+      <tr><td style="padding:${first ? "16px 0 14px" : "14px 0"};border-bottom:1px solid ${HAIR};">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+          <tr>
+            <td class="lbl" width="392" style="width:392px;font-family:${F};">
+              <div style="${t(17, 22, `font-weight:700;color:${INK};`)}">${esc(f.brand)}</div>
+              <div style="${t(13, 20, `color:${DETAIL};padding-top:2px;`)}">${esc(product)} &middot; ${esc(f.state)} &middot; effective ${fmtDate(f.effective_date)}${ph ? ` &middot; ${ph}` : ""}</div>
+            </td>
+            <td width="136" align="right" valign="top" style="width:136px;font-family:${F};">
+              <div class="num" style="${t(21, 24, `font-weight:700;letter-spacing:-.015em;color:${numColor};`)}">${fmtImpact(f.overall_rate_impact)}</div>
+              <div style="${t(10, 16, `font-weight:700;letter-spacing:.12em;color:${kind.labelColor};padding-top:3px;`)}">${kind.label}</div>
+            </td>
+          </tr>
+        </table>
+      </td></tr>`;
 }
 
-function sectionHtml(title: string, intro: string, rows: Row[], cap: number, appPath: string, kind: Kind): string {
+function sectionHeaderRow(title: string, count: number | null): string {
+  const countSpan = count != null
+    ? ` <span style="font-weight:400;color:${LABEL};">&nbsp;${count} filing${count === 1 ? "" : "s"}</span>`
+    : "";
+  return `
+      <tr><td style="border-top:2px solid ${INK};padding-top:10px;${t(17, 22, `font-weight:700;letter-spacing:-.01em;color:${INK};`)}">${title}${countSpan}</td></tr>`;
+}
+
+function sectionHtml(title: string, takeaway: string, rows: Row[], cap: number, appPath: string, kind: Kind, first: boolean): string {
   if (rows.length === 0) return "";
   const shown = rows.slice(0, cap);
   const more = rows.length - shown.length;
+  const moreLink = more > 0
+    ? ` +&nbsp;${more} more in the app: <a href="${APP_URL}${appPath}" style="color:${BLUE};text-decoration:none;font-weight:700;">${APP_URL.replace("https://", "")}${appPath}</a>`
+    : "";
   return `
-    <tr><td style="padding:26px 0 0;">
-      ${eyebrow(`${esc(title)} · ${rows.length} filing${rows.length === 1 ? "" : "s"}`)}
-      ${card(shown.map((f, i) => rowHtml(f, kind, i === shown.length - 1)).join(""))}
-      <div style="font:400 12px/1.6 ${FONT};color:${INK3};padding:7px 2px 0;">
-        ${esc(intro)}${more > 0
-          ? ` &nbsp;+ ${more} more in the app: <a href="${APP_URL}${appPath}" style="color:${BLUE};">${APP_URL.replace("https://", "")}${appPath}</a>`
-          : ""}
-      </div>
-    </td></tr>`;
+  <tr><td class="sheet" style="padding:${first ? 44 : 36}px 36px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+      ${sectionHeaderRow(esc(title), rows.length)}
+      ${shown.map((f, i) => filingRow(f, kind, i === 0)).join("")}
+      <tr><td style="padding:10px 0 0;${t(13, 20, `color:${MUTED};`)}">${esc(takeaway)}${moreLink}</td></tr>
+    </table>
+  </td></tr>`;
 }
 
 // --- assembly ---------------------------------------------------------------
@@ -297,36 +291,27 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
 
   // "Your office at a glance" strip — the same facts the compliance page
   // leads with, so the email opens grounded in THEIR office, not generic.
-  // Header card: greeting + office facts as a compact chip row (mirrors the
-  // app's top-bar scope chips — replaces the bulky 5-row glance table, user
-  // feedback 2026-08-12) + the log-in CTA button up top.
-  const chips: string[] = [];
-  if (p.office_state) chips.push(`${stateName(p.office_state)} office`);
-  chips.push(p.agent.agent_type === "captive"
+  // Office panel facts (design: 2 rows x 3 columns; SELLS IN + TEAM WORKS IN
+  // on the second row, the latter spanning two columns).
+  const officeVal = p.office_state ? stateName(p.office_state) : "";
+  const carriersLabel = p.agent.agent_type === "captive" ? "BRAND" : "CARRIERS";
+  const carriersVal = p.agent.agent_type === "captive"
     ? p.agent.authorized_brands[0]
-    : `${p.agent.authorized_brands.length} carriers`);
-  chips.push(`${p.employee_count} employee${p.employee_count === 1 ? "" : "s"}`
-    + (p.remote_count ? ` · ${p.remote_count} remote` : ""));
-  chips.push(`Sells in ${p.agent.licensed_states.join(", ")}`);
-  if (p.employee_states.length) chips.push(`Team in ${p.employee_states.join(", ")}`);
-  const chipHtml = chips.map(c => `<span style="display:inline-block;font:600 10.5px/1.7 ${FONT};color:${INK2};background:#f2f4f8;border:1px solid ${LINE};border-radius:12px;padding:2px 9px;margin:6px 5px 0 0;">${esc(c)}</span>`).join("");
-  const headerCard = `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid ${LINE};border-radius:12px;">
-    <tr><td style="padding:18px 20px;">
-      <div style="font:700 16px/1.3 ${FONT};color:${INK};">Your ${esc(monthLabel(anchor))} rate radar</div>
-      <div style="font:400 12px/1.55 ${FONT};color:${INK2};padding-top:3px;">
-        ${hi} here&rsquo;s what moved for your carriers and competitors, plus HR items for the states your team works in.
-      </div>
-      <div>${chipHtml}</div>
-      <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:14px;">
-        <tr><td style="background:${RED};border-radius:8px;">
-          <a href="${APP_URL}/overview" style="display:inline-block;font:700 12px/1 ${FONT};color:#ffffff;text-decoration:none;padding:10px 18px;">
-            Log in to review your dashboard &rarr;
-          </a>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>`;
+    : String(p.agent.authorized_brands.length);
+  const teamVal = `${p.employee_count} employee${p.employee_count === 1 ? "" : "s"}`
+    + (p.remote_count ? `, ${p.remote_count} remote` : "");
+  const cell = (label: string, value: string, style: string, attrs = "") => `
+        <td${attrs} valign="top" style="${style}font-family:${F};">
+          <div style="${t(10, 14, `font-weight:700;letter-spacing:.12em;color:${LABEL};`)}">${esc(label)}</div>
+          <div style="${t(14, 20, `font-weight:700;color:${INK};padding-top:3px;`)}">${esc(value)}</div>
+        </td>`;
+
+  // Preheader — regenerated per send from the actual counts (handoff spec).
+  const preheaderBits: string[] = [];
+  if (mineN) preheaderBits.push(`${mineN} of your carriers moved`);
+  if (competitorsN) preheaderBits.push(`${competitorsN} competitor change${competitorsN === 1 ? "" : "s"}`);
+  const preheader = (preheaderBits.length ? preheaderBits.join(", ") + ". " : "A quiet month. ")
+    + (hr.length ? `Plus HR items for ${p.employee_states.join(", ")}.` : "");
 
   const buckets = (rows: Row[]) => {
     const hit = rows.filter(justHit).length;
@@ -337,83 +322,132 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
     return parts.join(", ") + ".";
   };
 
-  const html = `
-<div style="background:${CANVAS};padding:28px 10px 40px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
-<table role="presentation" width="620" cellpadding="0" cellspacing="0" style="max-width:620px;width:100%;">
-<tr><td>
+  // HR items per state in design order: UPDATED, SCHEDULED, REVIEW.
+  type HrItem = { labelHtml: string; text: string };
+  const hrBlocks = hr.map(x => {
+    const items: HrItem[] = [
+      ...x.updated.map(u => ({
+        labelHtml: `<span style="color:${BLUE};">UPDATED <span style="font-weight:400;letter-spacing:0;color:${LABEL};">&middot; refreshed ${esc(u.checked)}</span></span>`,
+        text: u.title,
+      })),
+      ...x.scheduled.map(sc => ({
+        labelHtml: `<span style="color:${AMBER};">SCHEDULED &middot; ${esc(sc.topic.toUpperCase())}</span>`,
+        text: sc.sent,
+      })),
+      ...x.lines.map(l => ({
+        labelHtml: `<span style="color:${LABEL};">REVIEW</span>`,
+        text: l.text,
+      })),
+    ];
+    return { ...x, items };
+  });
 
-  ${headerCard}
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Agencyman Monthly Digest</title>
+<style>
+  @media only screen and (max-width:620px){
+    .sheet{padding-left:22px !important;padding-right:22px !important;}
+    .h1{font-size:26px !important;line-height:1.2 !important;}
+    .lbl{width:auto !important;}
+    .num{font-size:19px !important;}
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#eceef2;">
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-    ${sectionHtml(
-      "Your carriers raised rates",
-      mineRaises.length ? `Retention risk — your book may shop. ${buckets(mineRaises)}` : "",
-      mineRaises, 6, "/my-carriers", KIND_RAISED)}
-    ${sectionHtml(
-      "Your carriers cut rates",
-      mineCuts.length ? `A price advantage you can sell. ${buckets(mineCuts)}` : "",
-      mineCuts, 6, "/my-carriers", KIND_CUT)}
-    ${mineNeutral > 0 ? `
-    <tr><td style="padding:8px 2px 0;">
-      <div style="font:400 12px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK3};">
-        Your carriers also filed ${mineNeutral} rate-neutral change${mineNeutral === 1 ? "" : "s"} (0.0%) in your states this month.
-      </div>
-    </td></tr>` : ""}
-    ${sectionHtml(
-      "Competitors raised rates",
-      prospect.length ? `Their customers are likely to shop. ${buckets(prospect)}` : "",
-      prospect, 8, "/prospect", KIND_PROSPECT)}
-    ${sectionHtml(
-      "Competitors cut rates",
-      defend.length ? `Your customers may see cheaper quotes. ${buckets(defend)}` : "",
-      defend, 6, "/defend", KIND_DEFEND)}
-  </table>
+<span style="display:none;font-size:1px;color:#eceef2;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${esc(preheader)}</span>
 
-  ${hr.length ? `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-    <tr><td style="padding:26px 0 0;">
-      ${eyebrow("HR — worth reviewing for your office")}
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid ${LINE};border-radius:12px;">
-      ${hr.map(x => {
-        type HrItem = { stripe: string; label: string; labelColor: string; text: string; muted?: string };
-        const items: HrItem[] = [
-          ...x.updated.map(u => ({ stripe: BLUE, label: "UPDATED", labelColor: BLUE, text: u.title, muted: `refreshed ${u.checked}` })),
-          ...x.scheduled.map(sc => ({ stripe: "#d97706", label: `SCHEDULED · ${sc.topic.toUpperCase()}`, labelColor: "#b45309", text: sc.sent })),
-          ...x.lines.map(l => ({ stripe: "#cdd3dc", label: "REVIEW", labelColor: INK3, text: l.text })),
-        ];
-        return `
-        <tr><td colspan="2" style="background:#f6f8fb;padding:6px 13px;font:700 10px/1.4 ${FONT};color:${INK3};letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid ${LINE};">
-          ${esc(x.name)} (${esc(x.state)})
-        </td></tr>
-        ${items.map((it, i) => `
-        <tr>
-          <td width="4" style="background:${it.stripe};font-size:0;line-height:0;">&nbsp;</td>
-          <td style="padding:9px 13px;${i === items.length - 1 ? "" : `border-bottom:1px solid ${LINE};`}">
-            <div style="font:700 9px/1.5 ${FONT};color:${it.labelColor};letter-spacing:.07em;">${esc(it.label)}${it.muted ? ` <span style="font-weight:400;color:${INK3};letter-spacing:0;">· ${esc(it.muted)}</span>` : ""}</div>
-            <div style="font:400 11px/1.5 ${FONT};color:${INK2};padding-top:1px;">${esc(it.text)}</div>
-          </td>
-        </tr>`).join("")}`;
-      }).join("")}
-      </table>
-      <div style="font:400 11px/1.6 ${FONT};color:${INK3};padding:7px 2px 0;">
-        Full state briefings: <a href="${APP_URL}/compliance" style="color:${BLUE};">${APP_URL.replace("https://", "")}/compliance</a>
-      </div>
-    </td></tr>
-  </table>` : ""}
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#eceef2;">
+<tr><td align="center" style="padding:32px 12px 48px;">
 
-  <div style="margin-top:26px;padding:0 2px;font:400 11px/1.6 ${FONT};color:${INK3};">
-    Data as of ${esc(asOf)}, from public rate filings with state insurance regulators.
-    Not legal or financial advice &mdash; verify against the official filing before acting.<br>
-    You&rsquo;re receiving this monthly digest as an Agencyman user.
-    <a href="${APP_URL}/setup" style="color:${INK3};">Manage your profile</a> &middot;
-    <a href="{{{unsubscribe_url}}}" style="color:${INK3};">Unsubscribe</a>
-  </div>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:600px;max-width:600px;background:#ffffff;">
+  <tr><td height="4" style="height:4px;line-height:4px;font-size:0;background:${RED};">&nbsp;</td></tr>
+
+  <tr><td class="sheet" style="padding:26px 36px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+      <tr>
+        <td align="left" style="${t(12, 14, `font-weight:700;letter-spacing:.16em;color:${INK};`)}">AGENCYMAN</td>
+        <td align="right" style="${t(11, 14, `font-weight:700;letter-spacing:.14em;color:${LABEL};`)}">MONTHLY DIGEST</td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <tr><td class="sheet" style="padding:30px 36px 0;">
+    <div class="h1" style="${t(34, 38, `font-weight:700;letter-spacing:-.02em;color:${INK};`)}">Your ${esc(monthLabel(anchor))} rate radar</div>
+    <div style="${t(15, 24, `color:#4b5563;padding-top:12px;`)}">${hi} here&rsquo;s what moved for your carriers and competitors, plus HR items for the states your team works in.</div>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:20px;background:#f4f6f9;">
+      <tr>
+        ${cell("OFFICE", officeVal || "—", 'width:176px;padding:14px 12px 8px 16px;', ' width="176"')}
+        ${cell(carriersLabel, carriersVal, 'width:176px;padding:14px 12px 8px 0;', ' width="176"')}
+        ${cell("TEAM", teamVal, 'width:176px;padding:14px 16px 8px 0;', ' width="176"')}
+      </tr>
+      <tr>
+        ${cell("SELLS IN", p.agent.licensed_states.join(", "), 'padding:8px 12px 14px 16px;')}
+        ${cell("TEAM WORKS IN", p.employee_states.join(", ") || "—", 'padding:8px 16px 14px 0;', ' colspan="2"')}
+      </tr>
+    </table>
+  </td></tr>
+
+  <tr><td class="sheet" style="padding:22px 36px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+      <tr><td bgcolor="${RED}" style="background:${RED};border-radius:4px;">
+        <a href="${APP_URL}/overview" style="display:block;${t(14, 16, `font-weight:700;color:#ffffff;text-decoration:none;padding:14px 22px;`)}">Log in to review your dashboard &rarr;</a>
+      </td></tr>
+    </table>
+  </td></tr>
+
+  ${sectionHtml("Your carriers raised rates",
+    mineRaises.length ? `Retention risk — your book may shop. ${buckets(mineRaises)}` : "",
+    mineRaises, 6, "/my-carriers", KIND_RAISED, true)}
+  ${sectionHtml("Your carriers cut rates",
+    mineCuts.length ? `A price advantage you can sell. ${buckets(mineCuts)}` : "",
+    mineCuts, 6, "/my-carriers", KIND_CUT, mineRaises.length === 0)}
+  ${mineNeutral > 0 ? `
+  <tr><td class="sheet" style="padding:12px 36px 0;">
+    <div style="${t(13, 20, `color:${MUTED};`)}">Your carriers also filed ${mineNeutral} rate-neutral change${mineNeutral === 1 ? "" : "s"} (0.0%) in your states this month.</div>
+  </td></tr>` : ""}
+  ${sectionHtml("Competitors raised rates",
+    prospect.length ? `Their customers are likely to shop. ${buckets(prospect)}` : "",
+    prospect, 8, "/prospect", KIND_PROSPECT, mineRaises.length === 0 && mineCuts.length === 0)}
+  ${sectionHtml("Competitors cut rates",
+    defend.length ? `Your customers may see cheaper quotes. ${buckets(defend)}` : "",
+    defend, 6, "/defend", KIND_DEFEND, false)}
+
+  ${hrBlocks.length ? `
+  <tr><td class="sheet" style="padding:44px 36px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+      ${sectionHeaderRow("HR &mdash; worth reviewing for your office", null)}
+      ${hrBlocks.map((x, xi) => `
+      <tr><td style="padding:${xi === 0 ? 20 : 22}px 0 0;${t(12, 16, `font-weight:700;letter-spacing:.14em;color:${LABEL};`)}">${esc(x.name.toUpperCase())} (${esc(x.state)})</td></tr>
+      ${x.items.map((it, i) => `
+      <tr><td style="padding:${i === 0 ? "10px 0 12px" : "12px 0"};border-bottom:1px solid ${HAIR};font-family:${F};">
+        <div style="${t(10, 16, `font-weight:700;letter-spacing:.12em;`)}">${it.labelHtml}</div>
+        <div style="${t(14, 22, `color:${BODY};padding-top:3px;`)}">${esc(it.text)}</div>
+      </td></tr>`).join("")}`).join("")}
+      <tr><td style="padding:12px 0 0;${t(13, 20, `color:${MUTED};`)}">Full state briefings: <a href="${APP_URL}/compliance" style="color:${BLUE};text-decoration:none;font-weight:700;">${APP_URL.replace("https://", "")}/compliance</a></td></tr>
+    </table>
+  </td></tr>` : ""}
+
+  <tr><td class="sheet" style="padding:40px 36px 34px;">
+    <div style="border-top:1px solid ${HAIR};padding-top:18px;${t(12, 20, `color:${MUTED};`)}">
+      Data as of ${esc(asOf)}, from public rate filings with state insurance regulators. Not legal or financial advice &mdash; verify against the official filing before acting.<br>
+      You&rsquo;re receiving this monthly digest as an Agencyman user.
+      <a href="${APP_URL}/setup" style="color:${MUTED};text-decoration:underline;">Manage your profile</a> &middot;
+      <a href="{{{unsubscribe_url}}}" style="color:${MUTED};text-decoration:underline;">Unsubscribe</a>
+    </div>
+  </td></tr>
+</table>
 
 </td></tr>
 </table>
-</td></tr></table>
-</div>`;
+</body>
+</html>`;
 
   const subjBits: string[] = [];
   if (mineN) subjBits.push(`${mineN} of your carriers moved`);
