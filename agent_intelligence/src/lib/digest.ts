@@ -375,30 +375,28 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
     <tr><td style="padding:26px 0 0;">
       ${eyebrow("HR — worth reviewing for your office")}
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid ${LINE};border-radius:12px;">
-      <tr><td style="padding:15px 16px 6px;">
-      ${hr.map(x => `
-        <div style="padding-bottom:14px;">
-          <div style="font:700 11px/1.4 ${FONT};color:${INK};text-transform:uppercase;letter-spacing:.04em;">
-            ${esc(x.name)} (${esc(x.state)})
-          </div>
-          ${x.updated.map(u => `
-            <div style="font:400 12px/1.55 ${FONT};color:${INK2};padding:2px 0 0 10px;">
-              <span style="display:inline-block;font:700 10px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#1d4ed8;background:#e8edfb;border-radius:8px;padding:0 7px;vertical-align:1px;">UPDATED</span>
-              ${esc(u.title)} <span style="color:${INK3};">(refreshed ${esc(u.checked)})</span>
-            </div>`).join("")}
-          ${x.scheduled.map(sc => `
-            <div style="font:400 12px/1.55 ${FONT};color:${INK2};padding:2px 0 0 10px;">
-              <span style="display:inline-block;font:700 10px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#8a5a00;background:#fdf1dc;border-radius:8px;padding:0 7px;vertical-align:1px;">SCHEDULED</span>
-              ${esc(sc.sent)} <span style="color:${INK3};">(${esc(sc.topic)})</span>
-            </div>`).join("")}
-          ${x.lines.map(l => `
-            <div style="font:400 12px/1.55 ${FONT};color:${INK2};padding:2px 0 0 10px;">
-              &middot; ${esc(l.text)}
-            </div>`).join("")}
-        </div>`).join("")}
-      </td></tr>
+      ${hr.map(x => {
+        type HrItem = { stripe: string; label: string; labelColor: string; text: string; muted?: string };
+        const items: HrItem[] = [
+          ...x.updated.map(u => ({ stripe: BLUE, label: "UPDATED", labelColor: BLUE, text: u.title, muted: `refreshed ${u.checked}` })),
+          ...x.scheduled.map(sc => ({ stripe: "#d97706", label: `SCHEDULED · ${sc.topic.toUpperCase()}`, labelColor: "#b45309", text: sc.sent })),
+          ...x.lines.map(l => ({ stripe: "#cdd3dc", label: "REVIEW", labelColor: INK3, text: l.text })),
+        ];
+        return `
+        <tr><td colspan="2" style="background:#f6f8fb;padding:6px 13px;font:700 10px/1.4 ${FONT};color:${INK3};letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid ${LINE};">
+          ${esc(x.name)} (${esc(x.state)})
+        </td></tr>
+        ${items.map((it, i) => `
+        <tr>
+          <td width="4" style="background:${it.stripe};font-size:0;line-height:0;">&nbsp;</td>
+          <td style="padding:9px 13px;${i === items.length - 1 ? "" : `border-bottom:1px solid ${LINE};`}">
+            <div style="font:700 9px/1.5 ${FONT};color:${it.labelColor};letter-spacing:.07em;">${esc(it.label)}${it.muted ? ` <span style="font-weight:400;color:${INK3};letter-spacing:0;">· ${esc(it.muted)}</span>` : ""}</div>
+            <div style="font:400 11px/1.5 ${FONT};color:${INK2};padding-top:1px;">${esc(it.text)}</div>
+          </td>
+        </tr>`).join("")}`;
+      }).join("")}
       </table>
-      <div style="font:400 12px/1.6 ${FONT};color:${INK3};padding:7px 2px 0;">
+      <div style="font:400 11px/1.6 ${FONT};color:${INK3};padding:7px 2px 0;">
         Full state briefings: <a href="${APP_URL}/compliance" style="color:${BLUE};">${APP_URL.replace("https://", "")}/compliance</a>
       </div>
     </td></tr>
