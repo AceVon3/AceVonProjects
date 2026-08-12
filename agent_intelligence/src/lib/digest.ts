@@ -32,6 +32,11 @@ export type DigestProfile = {
   employee_count: number;
   employee_states: string[];
   first_name?: string;
+  // Office-at-a-glance fields (all optional — the summary strip renders
+  // whatever is present; matches src/lib/profile.ts field names).
+  office_state?: string;   // offices[0].state — the agency's home state
+  remote_count?: number;   // 0..employee_count
+  pay_type?: "hourly" | "salary" | "both";
 };
 
 type Row = {
@@ -282,6 +287,34 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
   const hi = p.first_name ? `Hi ${esc(p.first_name)} —` : "Hi —";
   const states = p.agent.licensed_states.join(", ");
 
+  // "Your office at a glance" strip — the same facts the compliance page
+  // leads with, so the email opens grounded in THEIR office, not generic.
+  const glanceFacts: Array<[string, string]> = [];
+  if (p.office_state) glanceFacts.push(["Office", stateName(p.office_state)]);
+  glanceFacts.push([
+    p.agent.agent_type === "captive" ? "Brand" : "Carriers",
+    p.agent.agent_type === "captive"
+      ? p.agent.authorized_brands[0]
+      : `${p.agent.authorized_brands.length} — ${p.agent.authorized_brands.join(", ")}`,
+  ]);
+  glanceFacts.push([
+    "Team",
+    `${p.employee_count} employee${p.employee_count === 1 ? "" : "s"}` +
+      (p.remote_count ? `, ${p.remote_count} remote` : ""),
+  ]);
+  glanceFacts.push(["Sells in", p.agent.licensed_states.join(", ")]);
+  glanceFacts.push(["Team works in", p.employee_states.join(", ")]);
+  const glanceHtml = `
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${SOFT};border:1px solid ${LINE};border-radius:8px;margin-top:14px;">
+    <tr><td style="padding:12px 16px;">
+      ${glanceFacts.map(([k, v]) => `
+      <div style="padding:2px 0;">
+        <span style="display:inline-block;min-width:112px;font:700 10px/1.8 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK3};letter-spacing:.07em;text-transform:uppercase;vertical-align:top;">${esc(k)}</span>
+        <span style="font:600 13px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};">${esc(v)}</span>
+      </div>`).join("")}
+    </td></tr>
+  </table>`;
+
   const buckets = (rows: Row[]) => {
     const hit = rows.filter(justHit).length;
     const up = rows.filter(upcoming).length;
@@ -304,6 +337,7 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
     ${hi} here&rsquo;s what moved in ${esc(states)} for your carriers and your competitors,
     plus what&rsquo;s worth an HR review in the states your team works in.
   </div>
+  ${glanceHtml}
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
     ${sectionHtml(

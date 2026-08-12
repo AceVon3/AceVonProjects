@@ -31,6 +31,9 @@ const sample: DigestProfile = {
   employee_count: 20,
   employee_states: ["WA", "OR", "ID"],
   first_name: "Ryan",
+  office_state: "WA",
+  remote_count: 5,
+  pay_type: "both",
 };
 
 const d = buildDigest(sample, { runDate, priorCompliance: prior });
