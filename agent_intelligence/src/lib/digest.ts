@@ -182,20 +182,29 @@ function rowHtml(f: Row, kind: Kind, last: boolean): string {
   const ph = fmtPh(f.total_policyholders);
   const sub = f.sub_type ? cleanSubtypeLabel(f.sub_type) : "";
   const bb = last ? "" : `border-bottom:1px solid ${LINE};`;
+  // Outlook fixes (2026-08-12, user screenshot): its Word renderer ignores
+  // white-space:nowrap, wrapping the pill under the number — a nested
+  // single-row table in a FIXED-width cell is the only reliable way to keep
+  // them side by side. The detail line shows the sub-type INSTEAD OF the
+  // line-of-business (the sub-type is strictly more specific; printing both
+  // read redundantly and double-wrapped the row).
+  const product = sub || f.line_of_business;
   return `
         <tr>
-          <td width="4" style="background:${kind.stripe};font-size:0;line-height:0;${last ? "border-radius:0 0 0 11px;" : ""}">&nbsp;</td>
-          <td style="padding:13px 14px;${bb}">
-            <div style="font:650 14px/1.4 ${FONT};color:${INK};">${esc(f.brand)}</div>
-            <div style="font:400 12px/1.5 ${FONT};color:${INK2};">
-              ${esc(f.line_of_business)} · ${esc(f.state)}${sub ? ` · ${esc(sub)}` : ""} · effective ${fmtDate(f.effective_date)}${ph ? ` · ${ph}` : ""}
+          <td width="4" style="background:${kind.stripe};font-size:0;line-height:0;">&nbsp;</td>
+          <td style="padding:12px 12px 12px 14px;${bb}">
+            <div style="font:650 14px/1.35 ${FONT};color:${INK};">${esc(f.brand)}</div>
+            <div style="font:400 12px/1.45 ${FONT};color:${INK2};">
+              ${esc(product)} · ${esc(f.state)} · effective ${fmtDate(f.effective_date)}${ph ? ` · ${ph}` : ""}
             </div>
           </td>
-          <td align="right" style="padding:13px 16px 13px 8px;${bb}vertical-align:middle;white-space:nowrap;">
-            <span style="font:700 15px/1 ${FONT};color:${color};">${fmtImpact(f.overall_rate_impact)}</span>
-            <span style="display:inline-block;margin-left:9px;font:700 10px/1.7 ${FONT};color:${kind.pillFg};background:${kind.pillBg};border-radius:11px;padding:1px 9px;letter-spacing:.06em;vertical-align:1px;">
-              ${kind.pill}
-            </span>
+          <td width="160" align="right" style="padding:12px 14px 12px 4px;${bb}vertical-align:middle;">
+            <table role="presentation" cellpadding="0" cellspacing="0" align="right">
+              <tr>
+                <td style="font:700 14px/1 ${FONT};color:${color};padding-right:8px;">${fmtImpact(f.overall_rate_impact)}</td>
+                <td style="font:700 9.5px/1.7 ${FONT};color:${kind.pillFg};background:${kind.pillBg};border-radius:10px;padding:1px 8px;letter-spacing:.05em;">${kind.pill}</td>
+              </tr>
+            </table>
           </td>
         </tr>`;
 }
