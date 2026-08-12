@@ -45,13 +45,15 @@ export default function SubtypeCell({ raw }: { raw: string | null }): React.JSX.
   }
 
   return (
-    // The `i` follows the label inline (it now lives on the sub-type secondary
-    // line inside the carrier cell, not its own column), so it reads as part of
-    // the label rather than pinned to a column edge. items-start keeps the dot
-    // aligned to the first line when the label wraps.
+    // Discoverability upgrade (2026-08-12, user request after the SF MI
+    // 'Other' mix-up): the WHOLE label is the button (dashed underline +
+    // help cursor = the defined-term affordance, and a far bigger tap
+    // target than the old 14px dot), the dot itself is larger and
+    // blue-filled so it reads interactive, and catch-all rows — where the
+    // real confusion lives — carry a visible "what's this?" hint. Explained
+    // non-catch-all rows stay compact: label + dot only.
     <span className="inline-flex items-start gap-1 align-top">
-      <span className="min-w-0">{label}</span>
-      {explanation && (
+      {explanation ? (
         <button
           ref={btnRef}
           type="button"
@@ -59,11 +61,26 @@ export default function SubtypeCell({ raw }: { raw: string | null }): React.JSX.
           aria-label={`What is ${label}?`}
           aria-expanded={!!pos}
           onClick={toggle}
-          className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-soft text-ink-2 text-10 italic cursor-pointer border-none shrink-0 mt-px"
-          style={{ fontFamily: "Georgia, serif" }}
+          className="group inline-flex items-start gap-1 cursor-help border-none bg-transparent p-0 m-0 text-left text-12 text-ink-2"
         >
-          i
+          <span className="min-w-0 underline decoration-dashed decoration-ink-3/60 underline-offset-2 group-hover:decoration-ink-2">
+            {label}
+          </span>
+          <span
+            aria-hidden
+            className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-fill text-blue-text text-10 italic shrink-0 mt-px group-hover:ring-1 group-hover:ring-blue-text/40"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
+            i
+          </span>
+          {catchAll && (
+            <span className="text-11 text-blue-text whitespace-nowrap mt-px group-hover:underline">
+              what&rsquo;s this?
+            </span>
+          )}
         </button>
+      ) : (
+        <span className="min-w-0">{label}</span>
       )}
       {pos && explanation && createPortal(
         <div
