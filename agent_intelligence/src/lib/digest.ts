@@ -128,9 +128,9 @@ function fmtImpact(v: number): string {
 
 function fmtPh(v: number | null): string {
   if (v == null) return "";
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M policyholders`;
-  if (v >= 1_000) return `${(v / 1_000).toFixed(1)}k policyholders`;
-  return `${v} policyholders`;
+  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M policies`;
+  if (v >= 1_000) return `${(v / 1_000).toFixed(1)}k policies`;
+  return `${v} policies`;
 }
 
 function esc(s: string): string {
@@ -165,7 +165,7 @@ const KIND_DEFEND: Kind = { ...KIND_CUT, pill: "DEFEND" };
 
 function eyebrow(text: string): string {
   return `
-      <div style="font:700 10.5px/1 ${FONT};color:${INK3};letter-spacing:.09em;text-transform:uppercase;padding:0 2px 7px;">
+      <div style="font:700 10px/1 ${FONT};color:${INK3};letter-spacing:.09em;text-transform:uppercase;padding:0 2px 7px;">
         ${text}
       </div>`;
 }
@@ -192,17 +192,17 @@ function rowHtml(f: Row, kind: Kind, last: boolean): string {
   return `
         <tr>
           <td width="4" style="background:${kind.stripe};font-size:0;line-height:0;">&nbsp;</td>
-          <td style="padding:12px 12px 12px 14px;${bb}">
-            <div style="font:650 14px/1.35 ${FONT};color:${INK};">${esc(f.brand)}</div>
-            <div style="font:400 12px/1.45 ${FONT};color:${INK2};">
+          <td style="padding:10px 10px 10px 13px;${bb}">
+            <div style="font:650 13px/1.35 ${FONT};color:${INK};">${esc(f.brand)}</div>
+            <div style="font:400 11px/1.45 ${FONT};color:${INK2};">
               ${esc(product)} · ${esc(f.state)} · effective ${fmtDate(f.effective_date)}${ph ? ` · ${ph}` : ""}
             </div>
           </td>
-          <td width="160" align="right" style="padding:12px 14px 12px 4px;${bb}vertical-align:middle;">
+          <td width="132" align="right" style="padding:10px 12px 10px 4px;${bb}vertical-align:middle;">
             <table role="presentation" cellpadding="0" cellspacing="0" align="right">
               <tr>
-                <td style="font:700 14px/1 ${FONT};color:${color};padding-right:8px;">${fmtImpact(f.overall_rate_impact)}</td>
-                <td style="font:700 9.5px/1.7 ${FONT};color:${kind.pillFg};background:${kind.pillBg};border-radius:10px;padding:1px 8px;letter-spacing:.05em;">${kind.pill}</td>
+                <td style="font:700 13px/1 ${FONT};color:${color};padding-right:7px;">${fmtImpact(f.overall_rate_impact)}</td>
+                <td style="font:700 9px/1.7 ${FONT};color:${kind.pillFg};background:${kind.pillBg};border-radius:9px;padding:1px 7px;letter-spacing:.05em;">${kind.pill}</td>
               </tr>
             </table>
           </td>
@@ -314,13 +314,13 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
   glanceFacts.push(["Team works in", p.employee_states.join(", ")]);
   const glanceHtml = `
   <div style="padding-top:20px;">
-  <div style="font:700 10.5px/1 ${FONT};color:${INK3};letter-spacing:.09em;text-transform:uppercase;padding:0 2px 7px;">Your office at a glance</div>
+  <div style="font:700 10px/1 ${FONT};color:${INK3};letter-spacing:.09em;text-transform:uppercase;padding:0 2px 7px;">Your office at a glance</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid ${LINE};border-radius:12px;">
     <tr><td style="padding:13px 16px;">
       ${glanceFacts.map(([k, v]) => `
       <div style="padding:2px 0;">
-        <span style="display:inline-block;min-width:112px;font:700 10px/1.8 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK3};letter-spacing:.07em;text-transform:uppercase;vertical-align:top;">${esc(k)}</span>
-        <span style="font:600 13px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};">${esc(v)}</span>
+        <span style="display:inline-block;min-width:100px;font:700 9.5px/1.8 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK3};letter-spacing:.07em;text-transform:uppercase;vertical-align:top;">${esc(k)}</span>
+        <span style="font:600 12px/1.5 ${FONT};color:${INK};">${esc(v)}</span>
       </div>`).join("")}
     </td></tr>
   </table>
@@ -341,10 +341,10 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
 <table role="presentation" width="620" cellpadding="0" cellspacing="0" style="max-width:620px;width:100%;">
 <tr><td>
 
-  <div style="font:700 18px/1.3 ${FONT};color:${INK};padding:0 2px 3px;">
+  <div style="font:700 16px/1.3 ${FONT};color:${INK};padding:0 2px 3px;">
     Agencyman &mdash; your ${esc(monthLabel(anchor))} rate radar
   </div>
-  <div style="font:400 13px/1.6 ${FONT};color:${INK2};padding:0 2px;">
+  <div style="font:400 12px/1.6 ${FONT};color:${INK2};padding:0 2px;">
     ${hi} here&rsquo;s what moved in ${esc(states)} for your carriers and your competitors,
     plus what&rsquo;s worth an HR review in the states your team works in.
   </div>
@@ -383,21 +383,21 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
       <tr><td style="padding:15px 16px 6px;">
       ${hr.map(x => `
         <div style="padding-bottom:14px;">
-          <div style="font:700 12px/1.4 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};text-transform:uppercase;letter-spacing:.04em;">
+          <div style="font:700 11px/1.4 ${FONT};color:${INK};text-transform:uppercase;letter-spacing:.04em;">
             ${esc(x.name)} (${esc(x.state)})
           </div>
           ${x.updated.map(u => `
-            <div style="font:400 13px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK2};padding:2px 0 0 10px;">
+            <div style="font:400 12px/1.55 ${FONT};color:${INK2};padding:2px 0 0 10px;">
               <span style="display:inline-block;font:700 10px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#1d4ed8;background:#e8edfb;border-radius:8px;padding:0 7px;vertical-align:1px;">UPDATED</span>
               ${esc(u.title)} <span style="color:${INK3};">(refreshed ${esc(u.checked)})</span>
             </div>`).join("")}
           ${x.scheduled.map(sc => `
-            <div style="font:400 13px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK2};padding:2px 0 0 10px;">
+            <div style="font:400 12px/1.55 ${FONT};color:${INK2};padding:2px 0 0 10px;">
               <span style="display:inline-block;font:700 10px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#8a5a00;background:#fdf1dc;border-radius:8px;padding:0 7px;vertical-align:1px;">SCHEDULED</span>
               ${esc(sc.sent)} <span style="color:${INK3};">(${esc(sc.topic)})</span>
             </div>`).join("")}
           ${x.lines.map(l => `
-            <div style="font:400 13px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK2};padding:2px 0 0 10px;">
+            <div style="font:400 12px/1.55 ${FONT};color:${INK2};padding:2px 0 0 10px;">
               &middot; ${esc(l.text)}
             </div>`).join("")}
         </div>`).join("")}
