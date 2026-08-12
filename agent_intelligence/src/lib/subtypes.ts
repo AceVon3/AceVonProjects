@@ -39,8 +39,13 @@ export const SUBTYPE_INFO: Record<string, SubtypeInfo> = {
   "19.0004 Other": {
     label: "Other",
     catchAll: true,
+    // Expanded 2026-08-12 after a real mix-up: an agent read a -9.3% SF MI
+    // "Other" filing as the main auto book (the rate-neutral PPA restructure
+    // was a same-day sibling filing). The examples are domain knowledge of
+    // what carriers typically file here, NOT from any field in the data —
+    // hence "typically" / "such as" hedging (same convention as 04.0005).
     explanation:
-      "A residual category for personal-auto filings that don't fall under the named sub-types (private passenger, motorcycle, RV). Not a specific product — it groups miscellaneous personal-auto sub-types.",
+      "A residual category for personal-auto filings that don't fall under the named sub-types (private passenger, motorcycle, RV). It typically holds a carrier's smaller specialty auto programs — such as antique and classic cars, off-road vehicles and snowmobiles, golf carts and low-speed vehicles, named non-owner policies, or trailers — though the filing data doesn't break out which. Important: this is NOT the carrier's main auto book. Carriers often file these specialty programs alongside their main auto filing (same state, same effective date), so a rate change here can look like — but isn't — a change to standard auto rates. The policyholder count is the tell: these programs are usually a small fraction of the main book.",
   },
 
   // --- Homeowners (04.xxxx) ---
