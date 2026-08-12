@@ -70,6 +70,7 @@ export default function FeedbackFab(): React.JSX.Element | null {
   const copy = copyForPath(pathname);
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState("");
+  const [phase, setPhase] = useState<"idle" | "sending" | "sent">("idle");
   const panelRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
 
@@ -94,14 +95,39 @@ export default function FeedbackFab(): React.JSX.Element | null {
 
   if (!copy) return null;
 
-  function send() {
+  // Server-side send via /api/feedback (Resend). Falls back to the original
+  // mailto: when the route is unconfigured (501) or errors — the widget
+  // works identically before and after the Resend account exists.
+  async function send() {
+    const message = msg.trim();
+    const context = contextLines(pathname);
+    setPhase("sending");
+    try {
+      const r = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: message || "(no message entered)",
+          context,
+          subjectTag: copy!.subjectTag,
+        }),
+      });
+      if (r.ok) {
+        setPhase("sent");
+        setMsg("");
+        window.setTimeout(() => { setOpen(false); setPhase("idle"); }, 1600);
+        return;
+      }
+    } catch {
+      // network error — fall through to mailto
+    }
+    setPhase("idle");
     const body =
-      (msg.trim() || "(describe what looks wrong)") +
-      "\n\n---\nContext (auto-included):\n" + contextLines(pathname);
-    const url =
+      (message || "(describe what looks wrong)") +
+      "\n\n---\nContext (auto-included):\n" + context;
+    window.location.href =
       `mailto:${SUPPORT}?subject=${encodeURIComponent(`${copy!.subjectTag} ${copy!.title}`)}` +
       `&body=${encodeURIComponent(body)}`;
-    window.location.href = url;
     setOpen(false);
   }
 
@@ -125,12 +151,15 @@ export default function FeedbackFab(): React.JSX.Element | null {
           <button
             type="button"
             onClick={send}
-            className="mt-2.5 w-full rounded-lg border-none bg-brand-red py-2.5 text-13 font-bold text-white cursor-pointer hover:opacity-90"
+            disabled={phase !== "idle"}
+            className={`mt-2.5 w-full rounded-lg border-none py-2.5 text-13 font-bold text-white cursor-pointer ${
+              phase === "sent" ? "bg-green-text" : "bg-brand-red hover:opacity-90"
+            } ${phase === "sending" ? "opacity-60" : ""}`}
           >
-            Email support
+            {phase === "sent" ? "Sent ✓ — thank you" : phase === "sending" ? "Sending…" : "Email support"}
           </button>
           <p className="m-0 mt-2 text-center text-10 text-ink-3">
-            Opens your mail app — sent to {SUPPORT}
+            Goes to {SUPPORT}
           </p>
         </div>
       )}
