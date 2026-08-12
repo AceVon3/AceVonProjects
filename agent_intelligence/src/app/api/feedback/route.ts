@@ -1,3 +1,4 @@
+import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 // POST /api/feedback — send a data-feedback report to support, server-side.
@@ -55,14 +56,39 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json({ error: "message is required" }, { status: 400 });
   }
 
+  // Reporter identity from the Clerk session (server-side — authoritative,
+  // not client-supplied). Dormant-auth deployments and signed-out sessions
+  // degrade to an anonymous report rather than failing the send. The
+  // reporter's address also becomes Reply-To, so support can answer the
+  // agent directly from the inbox.
+  let reporterName = "";
+  let reporterEmail = "";
+  if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    try {
+      const u = await currentUser();
+      if (u) {
+        reporterName = [u.firstName, u.lastName].filter(Boolean).join(" ");
+        reporterEmail = u.primaryEmailAddress?.emailAddress
+          ?? u.emailAddresses?.[0]?.emailAddress
+          ?? "";
+      }
+    } catch {
+      // Clerk unavailable — send anonymously rather than dropping the report
+    }
+  }
+  const reporterLine = reporterEmail
+    ? `Reported by: ${reporterName ? `${reporterName} ` : ""}<${reporterEmail}>`
+    : "Reported by: (not signed in)";
+
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       from: FROM,
       to: [SUPPORT_TO],
-      subject: `${subjectTag} In-app report`,
-      text: `${message}\n\n---\nContext (auto-included):\n${context}`,
+      ...(reporterEmail ? { reply_to: [reporterEmail] } : {}),
+      subject: `${subjectTag} In-app report${reporterName ? ` — ${reporterName}` : ""}`,
+      text: `${message}\n\n---\n${reporterLine}\nContext (auto-included):\n${context}`,
     }),
   });
 
