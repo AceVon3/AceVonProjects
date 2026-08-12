@@ -297,34 +297,36 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
 
   // "Your office at a glance" strip — the same facts the compliance page
   // leads with, so the email opens grounded in THEIR office, not generic.
-  const glanceFacts: Array<[string, string]> = [];
-  if (p.office_state) glanceFacts.push(["Office", stateName(p.office_state)]);
-  glanceFacts.push([
-    p.agent.agent_type === "captive" ? "Brand" : "Carriers",
-    p.agent.agent_type === "captive"
-      ? p.agent.authorized_brands[0]
-      : `${p.agent.authorized_brands.length} — ${p.agent.authorized_brands.join(", ")}`,
-  ]);
-  glanceFacts.push([
-    "Team",
-    `${p.employee_count} employee${p.employee_count === 1 ? "" : "s"}` +
-      (p.remote_count ? `, ${p.remote_count} remote` : ""),
-  ]);
-  glanceFacts.push(["Sells in", p.agent.licensed_states.join(", ")]);
-  glanceFacts.push(["Team works in", p.employee_states.join(", ")]);
-  const glanceHtml = `
-  <div style="padding-top:20px;">
-  <div style="font:700 10px/1 ${FONT};color:${INK3};letter-spacing:.09em;text-transform:uppercase;padding:0 2px 7px;">Your office at a glance</div>
+  // Header card: greeting + office facts as a compact chip row (mirrors the
+  // app's top-bar scope chips — replaces the bulky 5-row glance table, user
+  // feedback 2026-08-12) + the log-in CTA button up top.
+  const chips: string[] = [];
+  if (p.office_state) chips.push(`${stateName(p.office_state)} office`);
+  chips.push(p.agent.agent_type === "captive"
+    ? p.agent.authorized_brands[0]
+    : `${p.agent.authorized_brands.length} carriers`);
+  chips.push(`${p.employee_count} employee${p.employee_count === 1 ? "" : "s"}`
+    + (p.remote_count ? ` · ${p.remote_count} remote` : ""));
+  chips.push(`Sells in ${p.agent.licensed_states.join(", ")}`);
+  if (p.employee_states.length) chips.push(`Team in ${p.employee_states.join(", ")}`);
+  const chipHtml = chips.map(c => `<span style="display:inline-block;font:600 10.5px/1.7 ${FONT};color:${INK2};background:#f2f4f8;border:1px solid ${LINE};border-radius:12px;padding:2px 9px;margin:6px 5px 0 0;">${esc(c)}</span>`).join("");
+  const headerCard = `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid ${LINE};border-radius:12px;">
-    <tr><td style="padding:13px 16px;">
-      ${glanceFacts.map(([k, v]) => `
-      <div style="padding:2px 0;">
-        <span style="display:inline-block;min-width:100px;font:700 9.5px/1.8 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK3};letter-spacing:.07em;text-transform:uppercase;vertical-align:top;">${esc(k)}</span>
-        <span style="font:600 12px/1.5 ${FONT};color:${INK};">${esc(v)}</span>
-      </div>`).join("")}
+    <tr><td style="padding:18px 20px;">
+      <div style="font:700 16px/1.3 ${FONT};color:${INK};">Your ${esc(monthLabel(anchor))} rate radar</div>
+      <div style="font:400 12px/1.55 ${FONT};color:${INK2};padding-top:3px;">
+        ${hi} here&rsquo;s what moved for your carriers and competitors, plus HR items for the states your team works in.
+      </div>
+      <div>${chipHtml}</div>
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:14px;">
+        <tr><td style="background:${RED};border-radius:8px;">
+          <a href="${APP_URL}/overview" style="display:inline-block;font:700 12px/1 ${FONT};color:#ffffff;text-decoration:none;padding:10px 18px;">
+            Log in to review your dashboard &rarr;
+          </a>
+        </td></tr>
+      </table>
     </td></tr>
-  </table>
-  </div>`;
+  </table>`;
 
   const buckets = (rows: Row[]) => {
     const hit = rows.filter(justHit).length;
@@ -341,14 +343,7 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
 <table role="presentation" width="620" cellpadding="0" cellspacing="0" style="max-width:620px;width:100%;">
 <tr><td>
 
-  <div style="font:700 16px/1.3 ${FONT};color:${INK};padding:0 2px 3px;">
-    Agencyman &mdash; your ${esc(monthLabel(anchor))} rate radar
-  </div>
-  <div style="font:400 12px/1.6 ${FONT};color:${INK2};padding:0 2px;">
-    ${hi} here&rsquo;s what moved in ${esc(states)} for your carriers and your competitors,
-    plus what&rsquo;s worth an HR review in the states your team works in.
-  </div>
-  ${glanceHtml}
+  ${headerCard}
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
     ${sectionHtml(
