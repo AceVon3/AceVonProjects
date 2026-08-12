@@ -138,82 +138,81 @@ function esc(s: string): string {
 }
 
 // --- row rendering ----------------------------------------------------------
+//
+// Visual language matched to the app's "Recent signals" cards (user request
+// 2026-08-12): white rounded cards floating on the gray canvas, a colored
+// accent stripe per row, bold brand + muted detail line, right-aligned
+// impact beside a labeled pill (PROSPECT/DEFEND for competitors, RAISED/CUT
+// for own carriers). Raises read red, cuts read BLUE (the site's defend
+// blue — not green), matching the site exactly.
 
 const INK = "#1a1d21";
 const INK2 = "#4b5563";
 const INK3 = "#8a919c";
-const LINE = "#e5e7eb";
+const LINE = "#e6e9ef";
 const RED = "#c02617";
-const GREEN = "#147a3d";
-const SOFT = "#f6f7f9";
+const BLUE = "#1b6ca8";
+const CANVAS = "#f1f3f7";
+const FONT = "-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif";
 
-function rowHtml(f: Row): string {
-  const color = f.overall_rate_impact > 0 ? RED : f.overall_rate_impact < 0 ? GREEN : INK;
+// Pill + stripe treatment per section kind, mirroring the site's signal
+// chips: PROSPECT/RAISED = red family, DEFEND/CUT = blue family.
+type Kind = { stripe: string; pillBg: string; pillFg: string; pill: string };
+const KIND_RAISED: Kind = { stripe: RED, pillBg: "#fdecea", pillFg: "#b3261a", pill: "RAISED" };
+const KIND_CUT: Kind = { stripe: BLUE, pillBg: "#e5f0fa", pillFg: BLUE, pill: "CUT" };
+const KIND_PROSPECT: Kind = { ...KIND_RAISED, pill: "PROSPECT" };
+const KIND_DEFEND: Kind = { ...KIND_CUT, pill: "DEFEND" };
+
+function eyebrow(text: string): string {
+  return `
+      <div style="font:700 10.5px/1 ${FONT};color:${INK3};letter-spacing:.09em;text-transform:uppercase;padding:0 2px 7px;">
+        ${text}
+      </div>`;
+}
+
+function card(inner: string): string {
+  return `
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid ${LINE};border-radius:12px;">
+        ${inner}
+      </table>`;
+}
+
+function rowHtml(f: Row, kind: Kind, last: boolean): string {
+  const color = f.overall_rate_impact > 0 ? RED : f.overall_rate_impact < 0 ? BLUE : INK;
   const ph = fmtPh(f.total_policyholders);
   const sub = f.sub_type ? cleanSubtypeLabel(f.sub_type) : "";
+  const bb = last ? "" : `border-bottom:1px solid ${LINE};`;
   return `
-    <tr>
-      <td style="padding:10px 0;border-bottom:1px solid ${LINE};">
-        <div style="font:600 14px/1.4 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};">
-          ${esc(f.brand)}
-          <span style="font-weight:400;color:${INK3};">&nbsp;·&nbsp;${esc(f.state)} · ${esc(f.line_of_business)}</span>
-        </div>
-        <div style="font:400 12px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK2};">
-          ${sub ? `${esc(sub)} · ` : ""}Effective ${fmtDate(f.effective_date)}${ph ? ` · ${ph}` : ""}
-        </div>
-      </td>
-      <td align="right" style="padding:10px 0 10px 12px;border-bottom:1px solid ${LINE};vertical-align:middle;">
-        <span style="font:700 16px/1 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${color};white-space:nowrap;">
-          ${fmtImpact(f.overall_rate_impact)}
-        </span>
-      </td>
-    </tr>`;
+        <tr>
+          <td width="4" style="background:${kind.stripe};font-size:0;line-height:0;${last ? "border-radius:0 0 0 11px;" : ""}">&nbsp;</td>
+          <td style="padding:13px 14px;${bb}">
+            <div style="font:650 14px/1.4 ${FONT};color:${INK};">${esc(f.brand)}</div>
+            <div style="font:400 12px/1.5 ${FONT};color:${INK2};">
+              ${esc(f.line_of_business)} · ${esc(f.state)}${sub ? ` · ${esc(sub)}` : ""} · effective ${fmtDate(f.effective_date)}${ph ? ` · ${ph}` : ""}
+            </div>
+          </td>
+          <td align="right" style="padding:13px 16px 13px 8px;${bb}vertical-align:middle;white-space:nowrap;">
+            <span style="font:700 15px/1 ${FONT};color:${color};">${fmtImpact(f.overall_rate_impact)}</span>
+            <span style="display:inline-block;margin-left:9px;font:700 10px/1.7 ${FONT};color:${kind.pillFg};background:${kind.pillBg};border-radius:11px;padding:1px 9px;letter-spacing:.06em;vertical-align:1px;">
+              ${kind.pill}
+            </span>
+          </td>
+        </tr>`;
 }
 
-// Section tones — a tinted header band per section makes the boundaries
-// unmistakable and carries the semantic color (raise = red family, cut =
-// green family, HR = blue family) without relying on the impact numbers
-// alone.
-type Tone = { bg: string; fg: string };
-const TONE_RAISE: Tone = { bg: "#fbeae7", fg: "#9f1f12" };
-const TONE_CUT: Tone = { bg: "#e6f4ec", fg: "#10693a" };
-const TONE_HR: Tone = { bg: "#e8edfb", fg: "#1d3f9e" };
-
-function sectionHeader(title: string, count: number | null, tone: Tone): string {
-  return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${tone.bg};border-radius:8px;">
-      <tr>
-        <td style="padding:9px 14px;">
-          <span style="font:700 13px/1.2 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${tone.fg};letter-spacing:.02em;">
-            ${esc(title)}
-          </span>
-        </td>
-        ${count != null ? `
-        <td align="right" style="padding:9px 14px;">
-          <span style="font:700 11px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${tone.bg};background:${tone.fg};border-radius:10px;padding:1px 9px;white-space:nowrap;">
-            ${count}
-          </span>
-        </td>` : ""}
-      </tr>
-    </table>`;
-}
-
-function sectionHtml(title: string, intro: string, rows: Row[], cap: number, appPath: string, tone: Tone): string {
+function sectionHtml(title: string, intro: string, rows: Row[], cap: number, appPath: string, kind: Kind): string {
   if (rows.length === 0) return "";
   const shown = rows.slice(0, cap);
   const more = rows.length - shown.length;
   return `
-    <tr><td style="padding:30px 0 0;">
-      ${sectionHeader(title, rows.length, tone)}
-      <div style="font:400 13px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK2};padding:8px 2px 4px;">
-        ${esc(intro)}
+    <tr><td style="padding:26px 0 0;">
+      ${eyebrow(`${esc(title)} · ${rows.length} filing${rows.length === 1 ? "" : "s"}`)}
+      ${card(shown.map((f, i) => rowHtml(f, kind, i === shown.length - 1)).join(""))}
+      <div style="font:400 12px/1.6 ${FONT};color:${INK3};padding:7px 2px 0;">
+        ${esc(intro)}${more > 0
+          ? ` &nbsp;+ ${more} more in the app: <a href="${APP_URL}${appPath}" style="color:${BLUE};">${APP_URL.replace("https://", "")}${appPath}</a>`
+          : ""}
       </div>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:0 2px;">
-        ${shown.map(rowHtml).join("")}
-      </table>
-      ${more > 0
-        ? `<div style="font:400 12px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK3};padding-top:8px;">+ ${more} more in the app: <a href="${APP_URL}${appPath}" style="color:#1d4ed8;">${APP_URL.replace("https://", "")}${appPath}</a></div>`
-        : ""}
     </td></tr>`;
 }
 
@@ -305,15 +304,18 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
   glanceFacts.push(["Sells in", p.agent.licensed_states.join(", ")]);
   glanceFacts.push(["Team works in", p.employee_states.join(", ")]);
   const glanceHtml = `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${SOFT};border:1px solid ${LINE};border-radius:8px;margin-top:14px;">
-    <tr><td style="padding:12px 16px;">
+  <div style="padding-top:20px;">
+  <div style="font:700 10.5px/1 ${FONT};color:${INK3};letter-spacing:.09em;text-transform:uppercase;padding:0 2px 7px;">Your office at a glance</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid ${LINE};border-radius:12px;">
+    <tr><td style="padding:13px 16px;">
       ${glanceFacts.map(([k, v]) => `
       <div style="padding:2px 0;">
         <span style="display:inline-block;min-width:112px;font:700 10px/1.8 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK3};letter-spacing:.07em;text-transform:uppercase;vertical-align:top;">${esc(k)}</span>
         <span style="font:600 13px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};">${esc(v)}</span>
       </div>`).join("")}
     </td></tr>
-  </table>`;
+  </table>
+  </div>`;
 
   const buckets = (rows: Row[]) => {
     const hit = rows.filter(justHit).length;
@@ -325,15 +327,15 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
   };
 
   const html = `
-<div style="background:${SOFT};padding:24px 8px;">
+<div style="background:${CANVAS};padding:28px 10px 40px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid ${LINE};border-radius:10px;">
-<tr><td style="padding:28px 32px 32px;">
+<table role="presentation" width="620" cellpadding="0" cellspacing="0" style="max-width:620px;width:100%;">
+<tr><td>
 
-  <div style="font:700 16px/1.3 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};padding-bottom:2px;">
+  <div style="font:700 18px/1.3 ${FONT};color:${INK};padding:0 2px 3px;">
     Agencyman &mdash; your ${esc(monthLabel(anchor))} rate radar
   </div>
-  <div style="font:400 13px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK2};padding-bottom:4px;">
+  <div style="font:400 13px/1.6 ${FONT};color:${INK2};padding:0 2px;">
     ${hi} here&rsquo;s what moved in ${esc(states)} for your carriers and your competitors,
     plus what&rsquo;s worth an HR review in the states your team works in.
   </div>
@@ -343,11 +345,11 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
     ${sectionHtml(
       "Your carriers raised rates",
       mineRaises.length ? `Retention risk — your book may shop. ${buckets(mineRaises)}` : "",
-      mineRaises, 6, "/my-carriers", TONE_RAISE)}
+      mineRaises, 6, "/my-carriers", KIND_RAISED)}
     ${sectionHtml(
       "Your carriers cut rates",
       mineCuts.length ? `A price advantage you can sell. ${buckets(mineCuts)}` : "",
-      mineCuts, 6, "/my-carriers", TONE_CUT)}
+      mineCuts, 6, "/my-carriers", KIND_CUT)}
     ${mineNeutral > 0 ? `
     <tr><td style="padding:8px 2px 0;">
       <div style="font:400 12px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK3};">
@@ -357,18 +359,19 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
     ${sectionHtml(
       "Competitors raised rates",
       prospect.length ? `Their customers are likely to shop. ${buckets(prospect)}` : "",
-      prospect, 8, "/prospect", TONE_RAISE)}
+      prospect, 8, "/prospect", KIND_PROSPECT)}
     ${sectionHtml(
       "Competitors cut rates",
       defend.length ? `Your customers may see cheaper quotes. ${buckets(defend)}` : "",
-      defend, 6, "/defend", TONE_CUT)}
+      defend, 6, "/defend", KIND_DEFEND)}
   </table>
 
   ${hr.length ? `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-    <tr><td style="padding:30px 0 0;">
-      ${sectionHeader("HR — worth reviewing for your office", null, TONE_HR)}
-      <div style="height:10px;line-height:10px;">&nbsp;</div>
+    <tr><td style="padding:26px 0 0;">
+      ${eyebrow("HR — worth reviewing for your office")}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid ${LINE};border-radius:12px;">
+      <tr><td style="padding:15px 16px 6px;">
       ${hr.map(x => `
         <div style="padding-bottom:14px;">
           <div style="font:700 12px/1.4 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};text-transform:uppercase;letter-spacing:.04em;">
@@ -389,13 +392,15 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
               &middot; ${esc(l.text)}
             </div>`).join("")}
         </div>`).join("")}
-      <div style="font:400 12px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK3};">
-        Full state briefings: <a href="${APP_URL}/compliance" style="color:#1d4ed8;">${APP_URL.replace("https://", "")}/compliance</a>
+      </td></tr>
+      </table>
+      <div style="font:400 12px/1.6 ${FONT};color:${INK3};padding:7px 2px 0;">
+        Full state briefings: <a href="${APP_URL}/compliance" style="color:${BLUE};">${APP_URL.replace("https://", "")}/compliance</a>
       </div>
     </td></tr>
   </table>` : ""}
 
-  <div style="border-top:1px solid ${LINE};margin-top:28px;padding-top:14px;font:400 11px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK3};">
+  <div style="margin-top:26px;padding:0 2px;font:400 11px/1.6 ${FONT};color:${INK3};">
     Data as of ${esc(asOf)}, from public rate filings with state insurance regulators.
     Not legal or financial advice &mdash; verify against the official filing before acting.<br>
     You&rsquo;re receiving this monthly digest as an Agencyman user.
