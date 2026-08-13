@@ -59,6 +59,11 @@ export const COVERED_STATES = [
   // per-carrier %/policyholder rows. 49-row deliverable from already-cached
   // filings (zero new collection). See states.ts NC entry.
   "NC",
+  // AL + LA (2026-07-27 gap-batch, 43rd/44th scraped): imported and flagged
+  // data_coverage:true in states.ts at the time, but never added here — the
+  // homepage undercounted until this sync (2026-08-13). Coverage is now every
+  // state except FL (OIR I-File, zero SERFF filings) and WY (no rows).
+  "AL", "LA",
 ] as const;
 
 export type CoveredState = (typeof COVERED_STATES)[number];
