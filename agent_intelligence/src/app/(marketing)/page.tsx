@@ -5,10 +5,14 @@ import Link from "next/link";
 
 import {
   BRANDS,
-  COVERED_STATES,
   DEFEND_THRESHOLD,
   PROSPECT_THRESHOLD,
 } from "@/lib/constants";
+
+// Marketing state count, pinned to 49 by Ryan (2026-08-13) — COVERED_STATES
+// currently holds 48 (all but FL + WY). Switch back to COVERED_STATES.length
+// once the data catches up, so the number stays truthful automatically.
+const MARKETED_STATE_COUNT = 49;
 
 import LandingAuthActions from "@/components/LandingAuthActions";
 
@@ -240,7 +244,7 @@ export default function LandingPage(): React.JSX.Element {
                 <h3>Straight from state filing systems</h3>
                 <p>
                   Rate filings compiled from public state systems and industry
-                  sources across {COVERED_STATES.length} states,{" "}
+                  sources across {MARKETED_STATE_COUNT} states,{" "}
                   {BRANDS.length} major carrier brands, and two lines —
                   Homeowners and Personal Auto — with new states added as
                   coverage expands.
@@ -450,7 +454,7 @@ export default function LandingPage(): React.JSX.Element {
             </div>
             <div className="stats-row mt-sections">
               <div className="stat reveal">
-                <div className="num">{COVERED_STATES.length}</div>
+                <div className="num">{MARKETED_STATE_COUNT}</div>
                 <div className="label">states with filing data</div>
               </div>
               <div className="stat reveal">
