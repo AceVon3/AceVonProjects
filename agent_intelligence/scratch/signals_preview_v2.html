@@ -1,0 +1,324 @@
+<title>Signals Strip</title>
+<style>
+  /* Single-theme by design: mocks AgencyMan.ai's light UI verbatim
+     (tokens from tailwind.config.ts — the app has no dark mode). */
+  :root {
+    --canvas: #F7F8FB; --surface: #fff; --surface2: #FAFBFD; --soft: #F1F2F7;
+    --ink: #14142B; --ink2: #6B7080; --ink3: #9AA0B0; --ink-mid: #4A4E63;
+    --card-line: #E5E8F0; --line: #EDEFF4;
+    --brand-red: #C42127;
+    --red-fill: #FBEAEB; --red-text: #8A1B1F; --red-border: #F0C8CA;
+    --blue: #1B6CA8; --blue-fill: #E5F0FA;
+    --shadow-card: 0 2px 8px rgba(20,20,43,0.05);
+    --pop: 0 8px 28px rgba(20,20,43,0.14);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--canvas); color: var(--ink);
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px; line-height: 1.5;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 34px 24px 60px; }
+  .pv-head h1 { font-size: 20px; margin: 0 0 4px; letter-spacing: -0.2px; }
+  .pv-head p { margin: 0; color: var(--ink2); max-width: 660px; }
+  .pv-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--brand-red); font-weight: 600; margin: 40px 0 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pv-label::after { content: ""; flex: 1; height: 1px; background: var(--card-line); }
+  .pv-note { color: var(--ink2); font-size: 12px; margin: 0 0 14px; max-width: 700px; }
+
+  .page { background: var(--surface); border: 1px solid var(--card-line); border-radius: 14px; box-shadow: var(--shadow-card); overflow: hidden; }
+  .topbar { display: flex; align-items: baseline; gap: 12px; padding: 16px 22px; border-bottom: 1px solid var(--line); }
+  .topbar h2 { font-size: 17px; margin: 0; letter-spacing: -0.2px; }
+  .chip { font-size: 11px; background: var(--soft); color: var(--ink-mid); border-radius: 7px; padding: 2px 8px; white-space: nowrap; }
+  .asof { margin-left: auto; font-size: 11px; color: var(--ink3); }
+  .pagebody { padding: 20px 22px 24px; background: var(--canvas); display: flex; flex-direction: column; gap: 16px; }
+
+  .sig-card { background: var(--surface); border: 1px solid var(--card-line); border-radius: 14px; box-shadow: var(--shadow-card); padding: 16px 18px 12px; }
+  .sig-title-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 4px; }
+  .sig-card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--ink3); }
+  .legend { display: flex; gap: 14px; margin-left: auto; font-size: 11px; color: var(--ink2); }
+  .legend .key { display: inline-flex; align-items: center; gap: 5px; }
+  .sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .dotsw { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .chart-wrap { overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; }
+  svg text { font-family: inherit; }
+  .caption { font-size: 12px; color: var(--ink2); margin: 6px 2px 4px; }
+  .caption b { color: var(--ink-mid); }
+  details { font-size: 12px; color: var(--ink2); margin: 2px; }
+  details summary { cursor: pointer; color: var(--ink3); font-size: 11px; }
+  details table { border-collapse: collapse; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  details th, details td { text-align: left; padding: 3px 14px 3px 0; border-bottom: 1px solid var(--line); font-weight: 400; }
+  details th { color: var(--ink3); font-size: 11px; }
+
+  .frame-band { background: var(--red-fill); color: var(--red-text); border: 1px solid var(--red-border); border-radius: 10px; padding: 10px 16px; font-size: 12.5px; }
+  .ph-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .ph-card { background: var(--surface); border: 1px solid var(--card-line); border-radius: 14px; height: 80px; padding: 12px 14px; color: var(--ink3); font-size: 11px; }
+  .ph-card .bar { height: 8px; width: 60%; background: var(--soft); border-radius: 4px; margin-top: 10px; }
+  .ph-two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ph-wide { background: var(--surface); border: 1px solid var(--card-line); border-radius: 14px; height: 110px; padding: 12px 14px; color: var(--ink3); font-size: 11px; }
+
+  #tip {
+    position: fixed; z-index: 10; pointer-events: none; display: none;
+    background: var(--surface); border: 1px solid var(--card-line); border-radius: 10px;
+    box-shadow: var(--pop); padding: 8px 12px; max-width: 280px; font-size: 12px; color: var(--ink-mid);
+  }
+  #tip b { color: var(--ink); display: block; font-size: 12.5px; }
+  @media (max-width: 760px) { .ph-grid { grid-template-columns: 1fr 1fr; } .ph-two { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+  <div class="pv-head">
+    <h1>Signals as dual graphs — preview</h1>
+    <p>Same engine, same <b>real data</b> (as of Aug 10, 2026; captive State Farm agent, 8 states) —
+       now organized as two paired charts instead of text chips. Hover any bar or dot for the
+       plain-English signal behind it.</p>
+  </div>
+
+  <div class="pv-label">Placement 1 · Overview — recent rate moves (diverging bars)</div>
+  <p class="pv-note">Cuts pull left (Defend, blue), increases push right (price pressure, brand red).
+     One glance answers &ldquo;who moved, which way, how hard.&rdquo; Clicking a bar goes to the page that backs it up.</p>
+
+  <div class="page">
+    <div class="topbar">
+      <h2>Overview</h2>
+      <span class="chip">&#128205; AZ, CO, ID, MT, NV, OR, UT, WA</span>
+      <span class="chip">&#128188; State Farm</span>
+      <span class="asof">Data as of Aug 10, 2026</span>
+    </div>
+    <div class="pagebody">
+      <div class="sig-card">
+        <div class="sig-title-row">
+          <span class="sig-card-title">Signals — recent rate moves in your states</span>
+          <span class="legend">
+            <span class="key"><span class="sw" style="background:#1B6CA8"></span>Cuts — defend</span>
+            <span class="key"><span class="sw" style="background:#C42127"></span>Increases — price pressure</span>
+          </span>
+        </div>
+        <div class="chart-wrap"><svg id="divchart" viewBox="0 0 720 258" role="img" aria-label="Diverging bar chart of recent rate moves"></svg></div>
+        <p class="caption"><b>Rate changes, not price levels</b> — a smaller increase isn&rsquo;t necessarily a cheaper premium. The +93.7% State Farm bar is clipped to keep the rest readable.</p>
+        <details><summary>View as table</summary><table><tr><th>Carrier</th><th>Where</th><th>Change</th><th>Effective</th></tr>
+          <tr><td>State Farm (your carrier)</td><td>WA Homeowners</td><td>+93.7%</td><td>Apr 15, 2026</td></tr>
+          <tr><td>Allstate</td><td>MT Homeowners</td><td>+20.1%</td><td>Apr 6, 2026</td></tr>
+          <tr><td>Safeco</td><td>CO Personal Auto</td><td>+11.0%</td><td>Jul 1, 2026</td></tr>
+          <tr><td>Liberty Mutual</td><td>NV Homeowners</td><td>&minus;9.2%</td><td>Aug 1, 2026</td></tr>
+          <tr><td>COUNTRY Financial</td><td>AZ Personal Auto</td><td>&minus;11.7%</td><td>Jul 23, 2026</td></tr>
+          <tr><td>Allstate</td><td>ID Homeowners</td><td>&minus;12.1%</td><td>Apr 14, 2026</td></tr>
+        </table></details>
+      </div>
+      <div class="ph-grid">
+        <div class="ph-card">Prospect count<div class="bar"></div></div>
+        <div class="ph-card">Defend count<div class="bar" style="width:40%"></div></div>
+        <div class="ph-card">My Carrier alert<div class="bar"></div></div>
+        <div class="ph-card">Compliance<div class="bar" style="width:40%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pv-label">Placement 2 · Competitive Positioning — you vs the market (dumbbell)</div>
+  <p class="pv-note">Two dots per state: your carrier&rsquo;s premium-weighted average change (red) vs the
+     pooled competitor average (blue). The connector is the spread — dot to the left of the market means
+     your rates moved less/down relative to competitors. Personal Auto, trailing 12 months.</p>
+
+  <div class="page">
+    <div class="topbar">
+      <h2>Competitive Positioning</h2>
+      <span class="chip">&#128205; AZ, CO, ID, MT, NV, OR, UT, WA</span>
+      <span class="asof">Data as of Aug 10, 2026</span>
+    </div>
+    <div class="pagebody">
+      <div class="frame-band"><b>These are rate changes, not price levels.</b>
+        A carrier filing a smaller increase than yours isn&rsquo;t necessarily cheaper — it moved less, recently.</div>
+      <div class="sig-card">
+        <div class="sig-title-row">
+          <span class="sig-card-title">Signals — your average change vs the market, by state</span>
+          <span class="legend">
+            <span class="key"><span class="dotsw" style="background:#C42127"></span>State Farm (you)</span>
+            <span class="key"><span class="dotsw" style="background:#1B6CA8"></span>Market avg (competitors)</span>
+          </span>
+        </div>
+        <div class="chart-wrap"><svg id="dumbchart" viewBox="0 0 720 300" role="img" aria-label="Dumbbell chart of your average rate change versus the market by state"></svg></div>
+        <p class="caption">In <b>every state but MT</b>, State Farm&rsquo;s filed Auto rates moved down more (or up less) than the market average — the largest gap is <b>CO: &minus;7.7% vs &minus;1.7%</b>. Hollow dot = one filing only (thin data). WA has no State Farm Auto filing in the window, so it has no row.</p>
+        <details><summary>View as table</summary><table><tr><th>State</th><th>You</th><th>Filings</th><th>Market</th><th>Filings</th><th>Gap (pts)</th></tr>
+          <tr><td>CO</td><td>&minus;7.7%</td><td>3</td><td>&minus;1.7%</td><td>21</td><td>6.0</td></tr>
+          <tr><td>NV</td><td>+2.7%</td><td>4</td><td>+6.2%</td><td>27</td><td>3.5</td></tr>
+          <tr><td>UT</td><td>&minus;3.9%</td><td>4</td><td>&minus;0.4%</td><td>13</td><td>3.5</td></tr>
+          <tr><td>AZ</td><td>&minus;3.0%</td><td>5</td><td>&minus;0.4%</td><td>29</td><td>2.6</td></tr>
+          <tr><td>ID</td><td>&minus;4.6%</td><td>3</td><td>&minus;2.0%</td><td>15</td><td>2.6</td></tr>
+          <tr><td>OR</td><td>&minus;2.6%</td><td>4</td><td>&minus;1.1%</td><td>23</td><td>1.5</td></tr>
+          <tr><td>MT</td><td>0.0%</td><td>1</td><td>&minus;0.6%</td><td>7</td><td>&minus;0.6</td></tr>
+        </table></details>
+      </div>
+      <div class="ph-two">
+        <div class="ph-wide">AZ · Personal Auto comparison card (existing)</div>
+        <div class="ph-wide">NV · Personal Auto comparison card (existing)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pv-label">Decisions to make</div>
+  <p class="pv-note" style="max-width:760px">
+    <b>1. Graphs only, or graphs + a one-line headline?</b> The charts can stand alone, or each can carry
+    one sentence above it (&ldquo;Defend in ID — Allstate cut &minus;12.1%&rdquo;) for customers who don&rsquo;t read charts.<br>
+    <b>2. The +93.7% outlier.</b> Shown clipped with its true value labeled. Alternative: plot the
+    premium-weighted average per carrier instead of single largest filings.<br>
+    <b>3. Homeowners.</b> The dumbbell shows Personal Auto (matching the Positioning page&rsquo;s auto-only view).
+    A line toggle (Auto / Home) is a natural follow-on.
+  </p>
+</div>
+
+<div id="tip"></div>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var INK2 = "#6B7080", INK3 = "#9AA0B0", INKMID = "#4A4E63", LINE = "#EDEFF4", LINE2 = "#DDE1EA";
+  var RED = "#C42127", BLUE = "#1B6CA8", SURFACE = "#ffffff";
+  var tip = document.getElementById("tip");
+
+  function el(parent, tag, attrs) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    parent.appendChild(n);
+    return n;
+  }
+  function txt(parent, x, y, s, attrs) {
+    var n = el(parent, "text", Object.assign({ x: x, y: y, "font-size": 12, fill: INK2 }, attrs || {}));
+    n.textContent = s;
+    return n;
+  }
+  function hover(node, html) {
+    node.style.cursor = "pointer";
+    node.addEventListener("mousemove", function (e) {
+      tip.innerHTML = html;
+      tip.style.display = "block";
+      var w = tip.offsetWidth;
+      var x = Math.min(e.clientX + 14, window.innerWidth - w - 12);
+      tip.style.left = x + "px";
+      tip.style.top = (e.clientY + 14) + "px";
+    });
+    node.addEventListener("mouseleave", function () { tip.style.display = "none"; });
+  }
+  // Bar with a 4px-rounded data end, square at the baseline.
+  function bar(parent, zx, y, w, h, dir, color, clipped) {
+    var r = Math.min(4, Math.abs(w));
+    var d;
+    if (dir > 0) {
+      d = clipped
+        ? "M" + zx + "," + y + " h" + w + " v" + h + " h-" + w + " z"
+        : "M" + zx + "," + y + " h" + (w - r) + " a" + r + "," + r + " 0 0 1 " + r + "," + r +
+          " v" + (h - 2 * r) + " a" + r + "," + r + " 0 0 1 -" + r + "," + r + " h-" + (w - r) + " z";
+    } else {
+      d = "M" + zx + "," + y + " h-" + (w - r) + " a" + r + "," + r + " 0 0 0 -" + r + "," + r +
+          " v" + (h - 2 * r) + " a" + r + "," + r + " 0 0 0 " + r + "," + r + " h" + (w - r) + " z";
+    }
+    return el(parent, "path", { d: d, fill: color });
+  }
+
+  /* ---------------- Chart 1: diverging bars ---------------- */
+  (function () {
+    var svg = document.getElementById("divchart");
+    var rows = [
+      { name: "State Farm", tag: "YOUR CARRIER", where: "WA Homeowners", v: 93.7, clip: true,
+        tipHtml: "<b>State Farm trending up</b>+93.7% in WA Homeowners, effective Apr 15, 2026 (7 recent increases). &rarr; My Carriers" },
+      { name: "Allstate", where: "MT Homeowners", v: 20.1,
+        tipHtml: "<b>Price pressure on Allstate</b>9 recent increases — largest +20.1% (MT Homeowners), effective Apr 6, 2026. &rarr; Prospect" },
+      { name: "Safeco", where: "CO Personal Auto", v: 11.0,
+        tipHtml: "<b>Price pressure on Safeco</b>6 recent increases — largest +11.0% (CO Personal Auto), effective Jul 1, 2026. &rarr; Prospect" },
+      { name: "Liberty Mutual", where: "NV Homeowners", v: -9.2,
+        tipHtml: "<b>Defend in NV</b>Liberty Mutual filed &minus;9.2% Homeowners, effective Aug 1, 2026. &rarr; Defend" },
+      { name: "COUNTRY Financial", where: "AZ Personal Auto", v: -11.7,
+        tipHtml: "<b>Defend in AZ</b>COUNTRY Financial filed &minus;11.7% Personal Auto, effective Jul 23, 2026 (+8 more recent cuts). &rarr; Defend" },
+      { name: "Allstate", where: "ID Homeowners", v: -12.1,
+        tipHtml: "<b>Defend in ID</b>Allstate filed &minus;12.1% Homeowners, effective Apr 14, 2026 (+4 more recent cuts). &rarr; Defend" }
+    ];
+    var x0 = 170, x1 = 692, min = -15, max = 25;
+    function X(v) { return x0 + (v - min) / (max - min) * (x1 - x0); }
+    var zx = X(0);
+    var top = 26, rowH = 34, barH = 18;
+
+    // gridlines + axis labels (recessive, hairline, solid)
+    [-10, 0, 10, 20].forEach(function (g) {
+      el(svg, "line", { x1: X(g), y1: top - 8, x2: X(g), y2: top + rows.length * rowH,
+        stroke: g === 0 ? LINE2 : LINE, "stroke-width": 1 });
+      txt(svg, X(g), top + rows.length * rowH + 16, (g > 0 ? "+" : "") + g + "%",
+        { "text-anchor": "middle", "font-size": 11, fill: INK3 });
+    });
+
+    rows.forEach(function (r, i) {
+      var y = top + i * rowH;
+      var lab = txt(svg, x0 - 10, y + barH / 2 + 4, r.name, { "text-anchor": "end", fill: INKMID, "font-size": 12 });
+      if (r.tag) txt(svg, x0 - 10, y + barH / 2 + 17, r.tag, { "text-anchor": "end", "font-size": 8.5, fill: INK3, "letter-spacing": "0.6px" });
+      var v = r.clip ? max : r.v;
+      var color = r.v > 0 ? RED : BLUE;
+      var w = Math.abs(X(v) - zx);
+      var b = bar(svg, zx, y, w, barH, r.v > 0 ? 1 : -1, color, r.clip);
+      if (r.clip) {
+        // clip marks: two surface-color slashes near the cut edge
+        [10, 16].forEach(function (off) {
+          el(svg, "line", { x1: x1 - off - 4, y1: y - 2, x2: x1 - off + 4, y2: y + barH + 2,
+            stroke: SURFACE, "stroke-width": 3 });
+        });
+      }
+      var vx = r.v > 0 ? zx + w + 8 : zx - w - 8;
+      var anch = r.v > 0 ? "start" : "end";
+      var vlab = r.clip ? "+93.7% →" : (r.v > 0 ? "+" : "−") + Math.abs(r.v).toFixed(1) + "%";
+      if (r.clip) { vx = x1 - 4; anch = "end"; txt(svg, vx, y - 5, vlab, { "text-anchor": anch, "font-size": 11, fill: INKMID, "font-weight": 600 }); }
+      else txt(svg, vx, y + barH / 2 + 4, vlab, { "text-anchor": anch, "font-size": 11.5, fill: INKMID, "font-weight": 600 });
+      hover(b, r.tipHtml);
+      hover(lab, r.tipHtml);
+    });
+  })();
+
+  /* ---------------- Chart 2: dumbbell ---------------- */
+  (function () {
+    var svg = document.getElementById("dumbchart");
+    var rows = [ // sorted by gap (market − you), desc; real DB numbers
+      { st: "CO", you: -7.7, yn: 3, mkt: -1.7, mn: 21 },
+      { st: "NV", you: 2.7, yn: 4, mkt: 6.2, mn: 27 },
+      { st: "UT", you: -3.9, yn: 4, mkt: -0.4, mn: 13 },
+      { st: "AZ", you: -3.0, yn: 5, mkt: -0.4, mn: 29 },
+      { st: "ID", you: -4.6, yn: 3, mkt: -2.0, mn: 15 },
+      { st: "OR", you: -2.6, yn: 4, mkt: -1.1, mn: 23 },
+      { st: "MT", you: 0.0, yn: 1, mkt: -0.6, mn: 7 }
+    ];
+    var x0 = 90, x1 = 692, min = -10, max = 8;
+    function X(v) { return x0 + (v - min) / (max - min) * (x1 - x0); }
+    var top = 26, rowH = 36, r = 5.5;
+
+    [-8, -4, 0, 4, 8].forEach(function (g) {
+      el(svg, "line", { x1: X(g), y1: top - 8, x2: X(g), y2: top + rows.length * rowH,
+        stroke: g === 0 ? LINE2 : LINE, "stroke-width": 1 });
+      txt(svg, X(g), top + rows.length * rowH + 16, (g > 0 ? "+" : "") + g + "%",
+        { "text-anchor": "middle", "font-size": 11, fill: INK3 });
+    });
+
+    rows.forEach(function (row, i) {
+      var y = top + i * rowH + rowH / 2 - 4;
+      var tipHtml = "<b>" + row.st + " — Personal Auto</b>State Farm avg " + fmt(row.you) + " (" + row.yn +
+        (row.yn === 1 ? " filing — thin data" : " filings") + ") vs market avg " + fmt(row.mkt) + " (" + row.mn +
+        " filings). Spread: " + (row.mkt - row.you).toFixed(1) + " pts.";
+      txt(svg, x0 - 14, y + 4, row.st, { "text-anchor": "end", fill: INKMID, "font-weight": 600 });
+      // connector, then dots with a 2px surface ring
+      var g = el(svg, "g", {});
+      el(g, "line", { x1: X(row.you), y1: y, x2: X(row.mkt), y2: y, stroke: LINE2, "stroke-width": 2 });
+      var youDot = el(g, "circle", { cx: X(row.you), cy: y, r: r, stroke: SURFACE, "stroke-width": 2,
+        fill: row.yn === 1 ? SURFACE : RED });
+      if (row.yn === 1) youDot.setAttribute("stroke", RED), youDot.setAttribute("fill", SURFACE), youDot.setAttribute("stroke-width", 2);
+      el(g, "circle", { cx: X(row.mkt), cy: y, r: r, fill: BLUE, stroke: SURFACE, "stroke-width": 2 });
+      // selective direct labels: the headline row (CO) only
+      if (row.st === "CO") {
+        txt(svg, X(row.you) - 10, y + 4, fmt(row.you), { "text-anchor": "end", "font-size": 11.5, fill: INKMID, "font-weight": 600 });
+        txt(svg, X(row.mkt) + 10, y + 4, fmt(row.mkt), { "text-anchor": "start", "font-size": 11.5, fill: INKMID, "font-weight": 600 });
+      }
+      // generous invisible hit target for the whole row
+      var hit = el(g, "rect", { x: x0 - 60, y: y - rowH / 2, width: x1 - x0 + 60, height: rowH, fill: "transparent" });
+      hover(hit, tipHtml);
+    });
+    function fmt(v) { return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(1) + "%"; }
+  })();
+})();
+</script>
