@@ -356,7 +356,8 @@ export function computeRecentSignals(
 
   // Recency first (the Overview strip's whole premise), magnitude breaks ties.
   scored.sort((a, b) => a.recency - b.recency || b.magnitude - a.magnitude);
-  return scored.slice(0, max).map(({ recency: _r, ...s }) => s);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- rest-omit of the ranking key
+  return scored.slice(0, max).map(({ recency, ...s }) => s);
 }
 
 // Magnitude-ranked, capped. Stable tie-break by label so renders don't shuffle.

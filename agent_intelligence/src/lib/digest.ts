@@ -287,7 +287,6 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
   const mineN = mineRaises.length + mineCuts.length;
 
   const hi = p.first_name ? `Hi ${esc(p.first_name)} —` : "Hi —";
-  const states = p.agent.licensed_states.join(", ");
 
   // "Your office at a glance" strip — the same facts the compliance page
   // leads with, so the email opens grounded in THEIR office, not generic.
