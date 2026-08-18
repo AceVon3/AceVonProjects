@@ -459,11 +459,26 @@ def parse_date(val, fmt: str, col: str, row_idx: int):
     if not s or s.lower() in {"nan", "none", "null"}:
         return None
     try:
-        return datetime.strptime(s, fmt).date().isoformat()
+        d = datetime.strptime(s, fmt).date()
     except ValueError as e:
         raise ValueError(
             f"Row {row_idx}: could not parse {col}={s!r} with format {fmt!r}"
         ) from e
+    # Year sanity guard. SERFF source data has produced a dropped-century typo
+    # ("05/01/0026" for 2026 — NWPP-134775715), which parses cleanly but then
+    # silently falls out of every windowed query (string comparison against
+    # 'YYYY-MM-DD' cutoffs). Normalize the unambiguous 00YY class with a loud
+    # warning; anything else outside a sane band is an error, not a guess.
+    if d.year < 100:
+        fixed = d.replace(year=2000 + d.year)
+        print(f"WARNING: row {row_idx}: {col}={s!r} has dropped-century year "
+              f"{d.year:04d}; normalized to {fixed.isoformat()}")
+        d = fixed
+    if not (1990 <= d.year <= 2040):
+        raise ValueError(
+            f"Row {row_idx}: {col}={s!r} parsed to implausible year {d.year}"
+        )
+    return d.isoformat()
 
 
 def find_xlsx(cli_path: str | None) -> Path:
