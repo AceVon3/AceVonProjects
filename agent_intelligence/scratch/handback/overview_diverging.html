@@ -1,0 +1,358 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<title>Overview Rate Moves</title>
+
+<!--
+  AgencyMan.ai · Signals · OVERVIEW surface — diverging bars
+  Styled to match the design-handback dumbbell file (same tokens, same
+  behaviors: correct focus rings, tooltips, keyboard access, table fallback,
+  narrow-layout stacked rows on one shared scale).
+
+  Data: real engine output (computeRecentSignals), as of Aug 10, 2026.
+  Captive State Farm agent, AZ CO ID MT NV OR UT WA. 6-month recency window
+  (effective on/after Feb 10, 2026) plus announced future-dated changes.
+  Each bar is a signal's HEADLINE filing; the (+N more) context rides in the
+  bar's tooltip and table row.
+
+  The +93.7% State Farm bar is clipped at the axis edge with its true value
+  labeled — one real outlier must not crush the readable range.
+-->
+
+<style>
+  :root {
+    color-scheme: light only;
+    --canvas:#F7F8FB; --surface:#fff; --surface2:#FAFBFD; --soft:#F1F2F7;
+    --ink:#14142B; --ink2:#6B7080; --ink3:#9AA0B0; --ink-mid:#4A4E63;
+    --card-line:#E5E8F0; --line:#EDEFF4; --line2:#DDE1EA;
+    --brand-red:#C42127; --red-fill:#FBEAEB; --red-text:#8A1B1F; --red-border:#F0C8CA;
+    --blue:#1B6CA8; --blue-fill:#E5F0FA;
+    --shadow-card:0 2px 8px rgba(20,20,43,.05);
+    --pop:0 8px 28px rgba(20,20,43,.14);
+  }
+  *{box-sizing:border-box}
+  html{background:var(--canvas); -webkit-text-size-adjust:100%}
+  @media (prefers-color-scheme:dark){ html,body{background:#F7F8FB; color:#14142B} }
+  body{
+    margin:0; background:var(--canvas); color:var(--ink);
+    font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    font-size:13px; line-height:1.5;
+  }
+  .wrap{max-width:820px; margin:0 auto; padding:28px 18px 56px}
+
+  .sig-card{
+    background:var(--surface); border:1px solid var(--card-line); border-radius:14px;
+    box-shadow:var(--shadow-card); padding:16px 18px 14px;
+  }
+  .titlerow{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap}
+  .eyebrow{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--ink3)}
+  .legend{display:flex; gap:14px; margin-left:auto; font-size:11px; color:var(--ink2); flex-wrap:wrap}
+  .key{display:inline-flex; align-items:center; gap:5px; white-space:nowrap}
+  .sw{width:10px; height:10px; border-radius:3px; display:inline-block}
+
+  .headline{
+    font-size:15px; font-weight:600; letter-spacing:-.15px; color:var(--ink);
+    margin:10px 0 4px; max-width:64ch;
+  }
+  .headline .num{font-variant-numeric:tabular-nums; white-space:nowrap}
+
+  .chart{margin-top:8px}
+  svg{display:block; width:100%; height:auto}
+  svg text{font-family:inherit}
+  .rowhit{cursor:default; outline:none}
+  .focusring{fill:none}
+  .rowhit:focus-visible .focusring{
+    stroke:var(--ink3); stroke-width:1.5; stroke-dasharray:3 3; fill:none;
+  }
+
+  /* Narrow layout: stacked rows, every strip on the same shared domain. */
+  .mrows{display:none; margin-top:6px}
+  .mrow{padding:9px 0; border-top:1px solid var(--line)}
+  .mrow:first-child{border-top:0}
+  .mrow-top{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+  .mname{font-weight:600; color:var(--ink-mid)}
+  .mtag{font-size:9px; letter-spacing:.5px; color:var(--ink3); text-transform:uppercase}
+  .mval{margin-left:auto; font-size:11.5px; font-weight:600; font-variant-numeric:tabular-nums}
+  .mval.up{color:var(--brand-red)} .mval.dn{color:var(--blue)}
+  .mwhere{font-size:11.5px; color:var(--ink2); width:100%}
+  .maxis{font-size:10.5px; color:var(--ink3); display:flex; justify-content:space-between; margin:2px 0 2px}
+
+  .footnote{font-size:12px; color:var(--ink2); margin:12px 0 0; max-width:70ch}
+  details{margin-top:8px}
+  summary{font-size:12px; color:var(--ink2); cursor:pointer}
+  summary:focus-visible{outline:2px solid var(--ink3); outline-offset:2px; border-radius:4px}
+  table{border-collapse:collapse; margin-top:10px; font-size:12px; width:100%}
+  th,td{text-align:right; padding:5px 10px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+  th{color:var(--ink3); font-weight:600; text-transform:uppercase; font-size:10.5px; letter-spacing:.5px}
+
+  #tip{
+    position:fixed; display:none; z-index:50; max-width:300px;
+    background:var(--surface); border:1px solid var(--card-line); border-radius:10px;
+    box-shadow:var(--pop); padding:9px 11px; font-size:12px; color:var(--ink2); line-height:1.45;
+  }
+  #tip b{display:block; color:var(--ink); font-size:12.5px; margin-bottom:3px}
+  #tip .go{display:block; margin-top:5px; color:var(--ink3); font-size:11px}
+
+  @media (max-width:560px){
+    .wrap{padding:18px 12px 40px}
+    .sig-card{padding:14px 13px 12px}
+    .chart{display:none}
+    .mrows{display:block}
+    .legend{margin-left:0; width:100%; gap:10px}
+    .headline{font-size:14.5px}
+  }
+</style>
+
+<div class="wrap">
+  <div class="sig-card">
+    <div class="titlerow">
+      <span class="eyebrow">Recent rate moves in your states · Last 6 months</span>
+      <span class="legend">
+        <span class="key"><span class="sw" style="background:#1B6CA8"></span>Cuts — defend</span>
+        <span class="key"><span class="sw" style="background:#C42127"></span>Increases — price pressure</span>
+      </span>
+    </div>
+
+    <p class="headline">
+      Competitors cut rates in 3 of your states while Allstate and Safeco pushed increases —
+      and State Farm's own WA Homeowners program is up <span class="num">+93.7%</span>.
+    </p>
+
+    <div class="chart">
+      <svg id="div" role="img"
+        aria-label="Diverging bar chart of recent rate moves in your states. Cuts extend left in blue, increases extend right in red. Each bar is the headline filing behind one signal; full values are in the table below the chart."></svg>
+    </div>
+
+    <div class="mrows" id="mrows" aria-hidden="true"></div>
+
+    <p class="footnote">
+      Real data as of Aug 10, 2026. Each bar is the largest recent move behind one signal —
+      additional filings ride in its tooltip and the table. These are rate changes, not price
+      levels: a smaller increase isn&rsquo;t necessarily a cheaper premium. The State Farm bar is
+      clipped to keep the rest readable; its true value is labeled.
+    </p>
+
+    <details>
+      <summary>View as table</summary>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Carrier</th><th scope="col">Where</th><th scope="col">Change</th>
+            <th scope="col">Effective</th><th scope="col">Recent moves</th><th scope="col">Opens</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </details>
+  </div>
+</div>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var NS="http://www.w3.org/2000/svg";
+  var RED="#C42127", BLUE="#1B6CA8", SURFACE="#ffffff";
+  var INK2="#6B7080", INK3="#9AA0B0", INKMID="#4A4E63", LINE="#EDEFF4", LINE2="#DDE1EA";
+
+  // Real engine output (computeRecentSignals), captive State Farm, as of Aug 10 2026.
+  // v = the signal's headline filing; extra = additional in-window moves behind it.
+  var ROWS=[
+    {name:"State Farm", tag:"YOUR CARRIER", where:"WA Homeowners", v:93.7, clip:true,
+     eff:"Apr 15, 2026", extra:"7 recent increases", go:"My Carriers",
+     tip:"State Farm trending up: +93.7% in WA Homeowners, effective Apr 15, 2026 — the largest of 7 recent increases."},
+    {name:"Allstate", where:"MT Homeowners", v:20.1,
+     eff:"Apr 6, 2026", extra:"9 recent increases", go:"Prospect",
+     tip:"Price pressure on Allstate: 9 recent increases in your states — largest +20.1% (MT Homeowners), effective Apr 6, 2026."},
+    {name:"Safeco", where:"CO Personal Auto", v:11.0,
+     eff:"Jul 1, 2026", extra:"6 recent increases", go:"Prospect",
+     tip:"Price pressure on Safeco: 6 recent increases in your states — largest +11.0% (CO Personal Auto), effective Jul 1, 2026."},
+    {name:"Liberty Mutual", where:"NV Homeowners", v:-9.2,
+     eff:"Aug 1, 2026", extra:"1 recent cut", go:"Defend",
+     tip:"Defend in NV: Liberty Mutual filed −9.2% Homeowners, effective Aug 1, 2026."},
+    {name:"COUNTRY Financial", where:"AZ Personal Auto", v:-11.7,
+     eff:"Jul 23, 2026", extra:"9 recent cuts", go:"Defend",
+     tip:"Defend in AZ: COUNTRY Financial filed −11.7% Personal Auto, effective Jul 23, 2026 — plus 8 more recent cuts in AZ."},
+    {name:"Allstate", where:"ID Homeowners", v:-12.1,
+     eff:"Apr 14, 2026", extra:"5 recent cuts", go:"Defend",
+     tip:"Defend in ID: Allstate filed −12.1% Homeowners, effective Apr 14, 2026 — plus 4 more recent cuts in ID."}
+  ];
+  var DOMAIN={min:-15, max:25};
+  var TICKS=[-10,0,10,20];
+
+  function fmt(v){ return (v>0?"+":v<0?"−":"")+Math.abs(v).toFixed(1)+"%"; }
+  function el(p,tag,a){ var n=document.createElementNS(NS,tag); for(var k in a) n.setAttribute(k,a[k]); p.appendChild(n); return n; }
+  function txt(p,x,y,s,a){ var n=el(p,"text",Object.assign({x:x,y:y,"font-size":12,fill:INK2},a||{})); n.textContent=s; return n; }
+
+  /* ---------- tooltip ---------- */
+  var tip=document.getElementById("tip");
+  function tipHtml(r){
+    return "<b>"+r.name+" — "+r.where+"</b>"+r.tip+
+      "<span class='go'>Opens "+r.go+"</span>";
+  }
+  function showTip(html,x,y){
+    tip.innerHTML=html; tip.style.display="block";
+    var w=tip.offsetWidth, h=tip.offsetHeight;
+    tip.style.left=Math.max(8, Math.min(x+14, window.innerWidth-w-10))+"px";
+    tip.style.top =Math.max(8, Math.min(y+14, window.innerHeight-h-10))+"px";
+  }
+  function hideTip(){ tip.style.display="none"; }
+  function bindTip(node,html,anchor){
+    node.addEventListener("mousemove",function(e){ showTip(html,e.clientX,e.clientY); });
+    node.addEventListener("mouseleave",hideTip);
+    node.addEventListener("focus",function(){
+      var b=(anchor||node).getBoundingClientRect();
+      showTip(html,b.left+b.width*0.35,b.bottom-8);
+    });
+    node.addEventListener("blur",hideTip);
+  }
+  window.addEventListener("keydown",function(e){ if(e.key==="Escape") hideTip(); });
+  window.addEventListener("scroll",hideTip,{passive:true});
+
+  /* Bar with a 4px-rounded data end, square at the baseline; clipped bars stay square. */
+  function bar(parent,zx,y,w,h,dir,color,clipped){
+    var r=Math.min(4,Math.abs(w));
+    var d;
+    if(dir>0){
+      d=clipped
+        ? "M"+zx+","+y+" h"+w+" v"+h+" h-"+w+" z"
+        : "M"+zx+","+y+" h"+(w-r)+" a"+r+","+r+" 0 0 1 "+r+","+r+
+          " v"+(h-2*r)+" a"+r+","+r+" 0 0 1 -"+r+","+r+" h-"+(w-r)+" z";
+    } else {
+      d="M"+zx+","+y+" h-"+(w-r)+" a"+r+","+r+" 0 0 0 -"+r+","+r+
+        " v"+(h-2*r)+" a"+r+","+r+" 0 0 0 "+r+","+r+" h"+(w-r)+" z";
+    }
+    return el(parent,"path",{d:d,fill:color});
+  }
+
+  /* ---------- wide: SVG diverging bars ---------- */
+  function drawSvg(){
+    var svg=document.getElementById("div");
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var W=Math.max(560, svg.parentNode.clientWidth||640);
+    var padTop=16, rowH=37, axisH=28, barH=18;
+    var H=padTop+ROWS.length*rowH+axisH;
+    svg.setAttribute("viewBox","0 0 "+W+" "+H);
+
+    var x0=168, x1=W-14;
+    function X(v){ return x0+(v-DOMAIN.min)/(DOMAIN.max-DOMAIN.min)*(x1-x0); }
+    var zx=X(0), yBot=padTop+ROWS.length*rowH;
+
+    TICKS.forEach(function(g){
+      el(svg,"line",{x1:X(g),y1:padTop-4,x2:X(g),y2:yBot,
+        stroke:g===0?LINE2:LINE,"stroke-width":1});
+      txt(svg,X(g),yBot+17,(g>0?"+":g<0?"−":"")+Math.abs(g)+"%",
+        {"text-anchor":"middle","font-size":11,fill:INK3});
+    });
+
+    ROWS.forEach(function(r,i){
+      var yTop=padTop+i*rowH, y=yTop+(rowH-barH)/2;
+      var g=el(svg,"g",{tabindex:"0",class:"rowhit",role:"img","aria-label":
+        r.name+", "+r.where+": "+fmt(r.v)+", effective "+r.eff+
+        (r.tag?", your own carrier":"")+". "+r.extra+". Opens "+r.go+"."});
+
+      el(g,"rect",{class:"focusring",x:6,y:yTop+1,width:W-12,height:rowH-2,rx:8});
+
+      txt(g,x0-12,y+barH/2+(r.tag?0:4),r.name,
+        {"text-anchor":"end",fill:INKMID,"font-weight":600,"font-size":12});
+      if(r.tag) txt(g,x0-12,y+barH/2+12,r.tag,
+        {"text-anchor":"end","font-size":8.5,fill:INK3,"letter-spacing":"0.6px"});
+
+      var v=r.clip?DOMAIN.max:r.v;
+      var color=r.v>0?RED:BLUE;
+      var w=Math.abs(X(v)-zx);
+      bar(g,zx,y,w,barH,r.v>0?1:-1,color,!!r.clip);
+
+      if(r.clip){
+        [10,16].forEach(function(off){
+          el(g,"line",{x1:x1-off-4,y1:y-2,x2:x1-off+4,y2:y+barH+2,
+            stroke:SURFACE,"stroke-width":3});
+        });
+        txt(g,x1-2,y-4,fmt(r.v)+" →",
+          {"text-anchor":"end","font-size":11,fill:INKMID,"font-weight":600});
+      } else {
+        var vx=r.v>0?zx+w+8:zx-w-8;
+        txt(g,vx,y+barH/2+4,fmt(r.v),
+          {"text-anchor":r.v>0?"start":"end","font-size":11.5,fill:INKMID,"font-weight":600});
+      }
+
+      var hit=el(g,"rect",{x:6,y:yTop,width:W-12,height:rowH,fill:"transparent"});
+      bindTip(g,tipHtml(r),hit);
+    });
+  }
+
+  /* ---------- narrow: stacked rows, one shared scale ---------- */
+  function drawNarrow(){
+    var host=document.getElementById("mrows");
+    host.innerHTML="";
+
+    var ax=document.createElement("div");
+    ax.className="maxis";
+    ax.innerHTML="<span>−15%</span><span>0%</span><span>+25%</span>";
+    host.appendChild(ax);
+
+    ROWS.forEach(function(r){
+      var row=document.createElement("div");
+      row.className="mrow"; row.tabIndex=0;
+
+      var top=document.createElement("div");
+      top.className="mrow-top";
+      top.innerHTML=
+        '<span class="mname">'+r.name+'</span>'+
+        (r.tag?'<span class="mtag">'+r.tag+'</span>':'')+
+        '<span class="mval '+(r.v>0?'up':'dn')+'">'+fmt(r.v)+'</span>'+
+        '<span class="mwhere">'+r.where+' · effective '+r.eff+' · '+r.extra+'</span>';
+      row.appendChild(top);
+
+      var W=300, H=20, x0=6, x1=W-6;
+      function X(v){ return x0+(v-DOMAIN.min)/(DOMAIN.max-DOMAIN.min)*(x1-x0); }
+      var svg=document.createElementNS(NS,"svg");
+      svg.setAttribute("viewBox","0 0 "+W+" "+H);
+      svg.setAttribute("aria-hidden","true");
+      svg.style.width="100%"; svg.style.height="20px"; svg.style.display="block";
+      var zx=X(0), v=r.clip?DOMAIN.max:r.v;
+      el(svg,"line",{x1:zx,y1:2,x2:zx,y2:H-2,stroke:LINE2,"stroke-width":1});
+      var w=Math.abs(X(v)-zx), y=5, h=10;
+      bar(svg,zx,y,w,h,r.v>0?1:-1,r.v>0?RED:BLUE,!!r.clip);
+      if(r.clip){
+        [7,12].forEach(function(off){
+          el(svg,"line",{x1:x1-off-3,y1:y-2,x2:x1-off+3,y2:y+h+2,
+            stroke:SURFACE,"stroke-width":2.5});
+        });
+      }
+      row.appendChild(svg);
+
+      row.setAttribute("aria-label",
+        r.name+", "+r.where+": "+fmt(r.v)+", effective "+r.eff+". "+r.extra+".");
+      bindTip(row,tipHtml(r));
+      host.appendChild(row);
+    });
+  }
+
+  /* ---------- table fallback ---------- */
+  (function(){
+    var tb=document.getElementById("tbody");
+    ROWS.forEach(function(r){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td>"+r.name+(r.tag?" (your carrier)":"")+"</td><td>"+r.where+"</td>"+
+        "<td>"+fmt(r.v)+"</td><td>"+r.eff+"</td><td>"+r.extra+"</td><td>"+r.go+"</td>";
+      tb.appendChild(tr);
+    });
+  })();
+
+  drawSvg();
+  drawNarrow();
+
+  var t=null;
+  window.addEventListener("resize",function(){
+    clearTimeout(t);
+    t=setTimeout(function(){ hideTip(); drawSvg(); },120);
+  });
+})();
+</script>
