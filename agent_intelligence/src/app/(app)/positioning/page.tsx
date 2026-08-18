@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 
 import PageSkeleton from "@/components/PageSkeleton";
 import PositioningCard from "@/components/PositioningCard";
+import PositioningDumbbell from "@/components/PositioningDumbbell";
 import TopBar from "@/components/TopBar";
+import { formatEffectiveDate } from "@/lib/format";
+import { computeMarketDumbbell } from "@/lib/marketDumbbell";
 import type { PositioningResult } from "@/lib/positioning";
 import { buildExplainer, dateRangeNote } from "@/lib/positioningExplainer";
 import { AgentProfile, loadProfile } from "@/lib/profile";
@@ -89,6 +92,10 @@ export default function PositioningPage(): React.JSX.Element {
 
   const sellsEverything = view.competitorBrands.length === 0;
   const nothingAnchored = view.anchoredCells.length === 0;
+  // Headline chart data — derived from the SAME filtered view the cards
+  // render, so the dumbbell and the cards reconcile by construction.
+  const dumbbell = computeMarketDumbbell(view, "Personal Auto");
+  const agentLabel = isCaptive ? brand : "Your carriers";
   // Interprets one real comparison from THIS agent's view; null when the view
   // has no higher-confidence comparison (thin ones carry no spread to explain).
   // Fed the filtered view so the narrated example is always an auto comparison.
@@ -133,6 +140,13 @@ export default function PositioningPage(): React.JSX.Element {
           </div>
         ) : (
           <>
+            <PositioningDumbbell
+              data={dumbbell}
+              line="Personal Auto"
+              agentLabel={agentLabel}
+              asOf={formatEffectiveDate(asOf)}
+            />
+
             {explainer && (
               <div
                 data-testid="positioning-explainer"
