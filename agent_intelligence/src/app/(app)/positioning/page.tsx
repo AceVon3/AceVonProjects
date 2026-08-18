@@ -10,7 +10,7 @@ import TopBar from "@/components/TopBar";
 import { formatEffectiveDate } from "@/lib/format";
 import { computeMarketDumbbell } from "@/lib/marketDumbbell";
 import type { PositioningResult } from "@/lib/positioning";
-import { buildExplainer, dateRangeNote } from "@/lib/positioningExplainer";
+import { dateRangeNote } from "@/lib/positioningExplainer";
 import { AgentProfile, loadProfile } from "@/lib/profile";
 
 type Phase = "loading" | "ready" | "error";
@@ -96,10 +96,6 @@ export default function PositioningPage(): React.JSX.Element {
   // render, so the dumbbell and the cards reconcile by construction.
   const dumbbell = computeMarketDumbbell(view, "Personal Auto");
   const agentLabel = isCaptive ? brand : "Your carriers";
-  // Interprets one real comparison from THIS agent's view; null when the view
-  // has no higher-confidence comparison (thin ones carry no spread to explain).
-  // Fed the filtered view so the narrated example is always an auto comparison.
-  const explainer = buildExplainer(view);
 
   return (
     <main className="min-h-screen bg-canvas">
@@ -147,28 +143,11 @@ export default function PositioningPage(): React.JSX.Element {
               asOf={formatEffectiveDate(asOf)}
             />
 
-            {explainer && (
-              <div
-                data-testid="positioning-explainer"
-                className="mb-5 bg-surface border border-card-line rounded-card shadow-card px-5 py-4"
-              >
-                <div className="text-11 uppercase tracking-wider06 text-ink-3 mb-2">
-                  Example — what this means
-                </div>
-                <p className="m-0 text-13 text-ink-2 leading-relaxed">{explainer}</p>
-                {/* States what the query actually covers: the rolling 12-month
-                    effective-date window (DEFAULT_WINDOW) — NOT the full dataset. */}
-                {asOf && (
-                  <p className="text-12 mt-2 m-0 text-ink-3" data-testid="date-range-note">
-                    {dateRangeNote(asOf)}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* No higher-confidence comparison to narrate → no example card,
-                but the window note must still be stated somewhere. */}
-            {!explainer && asOf && (
+            {/* The "Example — what this means" explainer card was removed
+                2026-08-18 (Ryan: the dumbbell's headline already tells the
+                story). buildExplainer stays in the lib. The window note is
+                load-bearing and must still be stated. */}
+            {asOf && (
               <p className="text-12 mt-0 mb-4 text-ink-3" data-testid="date-range-note">
                 {dateRangeNote(asOf)}
               </p>

@@ -15,8 +15,9 @@
 //   97 comparison rows, 44 higher-confidence.
 // Plus: the persistent rate-change framing band is present; spread appears
 // only on higher-confidence rows; a row expands to its underlying filings;
-// the date-range note states the 12-month window; the plain-language
-// explainer renders from real data and passes the determination blocklist.
+// the date-range note states the 12-month window; the dumbbell's generated
+// text (headline/footnote/table) passes the determination blocklist. The
+// explainer card was removed 2026-08-18 — the e2e asserts its absence.
 //
 // Usage: E2E_BASE=http://localhost:3000 npx tsx scripts/e2e_positioning.ts
 
@@ -125,20 +126,18 @@ async function main(): Promise<void> {
   check("note says 'last 12 months'", /last 12 months/i.test(noteText), { noteText });
   check("note carries a 'Data as of' stamp", /Data as of/i.test(noteText));
 
-  // Plain-language explainer — this profile has 23 higher-confidence
-  // comparisons, so it must render, use the pts-spread (not a side's own
-  // average) as the differential, carry the not-premium-levels caveat, and
-  // pass the determination blocklist.
-  const expl = page.locator('[data-testid="positioning-explainer"]');
-  check("explainer present (higher-confidence comparisons exist)", (await expl.count()) === 1);
-  const explText = (await expl.textContent()) ?? "";
-  check("explainer uses the pts-spread differential", /points (more|less) than/.test(explText), { explText });
-  check("explainer carries the rate-changes-not-premium-levels caveat",
-    /rate changes, not premium levels/i.test(explText));
-  check("explainer names real brands from the data (no template braces)", !/[{}]/.test(explText));
-  const detHit = DETERMINATION.find(re => re.test(explText));
-  check("explainer passes the determination-language blocklist", !detHit,
-    detHit ? { matched: String(detHit), explText } : undefined);
+  // The explainer card was removed 2026-08-18 (the dumbbell headline tells
+  // the story) — the language guard moves to the dumbbell's generated text:
+  // headline sentence, footnote, and table all live inside its testid.
+  const dumb = page.locator('[data-testid="positioning-dumbbell"]');
+  check("dumbbell chart present", (await dumb.count()) === 1);
+  const dumbText = (await dumb.textContent()) ?? "";
+  check("dumbbell states the you-vs-market framing", /market average/i.test(dumbText), { head: dumbText.slice(0, 160) });
+  const detHit = DETERMINATION.find(re => re.test(dumbText));
+  check("dumbbell text passes the determination-language blocklist", !detHit,
+    detHit ? { matched: String(detHit) } : undefined);
+  check("explainer card is gone",
+    (await page.locator('[data-testid="positioning-explainer"]').count()) === 0);
 
   // Expand the first comparison row → underlying filings appear.
   const firstCmp = page.locator('[data-testid="comparison-row"] button').first();
@@ -159,10 +158,11 @@ async function main(): Promise<void> {
   check("44 higher-confidence rows", ti.high === 44, { high: ti.high });
   check("spread shown on exactly the 44 high rows", ti.spread === 44, { spread: ti.spread });
 
-  // Explainer renders for the independent view too, and stays determination-free.
-  const explInd = (await page.locator('[data-testid="positioning-explainer"]').textContent()) ?? "";
-  check("independent explainer present + passes blocklist",
-    explInd.length > 0 && !DETERMINATION.some(re => re.test(explInd)), { explInd });
+  // Dumbbell renders for the independent view too, and stays determination-free.
+  const dumbInd = (await page.locator('[data-testid="positioning-dumbbell"]').textContent()) ?? "";
+  check("independent dumbbell present + passes blocklist",
+    dumbInd.length > 0 && !DETERMINATION.some(re => re.test(dumbInd)),
+    { head: dumbInd.slice(0, 160) });
 
   await browser.close();
   console.log("\n" + "=".repeat(72));
