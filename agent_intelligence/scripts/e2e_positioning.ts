@@ -58,7 +58,18 @@ async function open(page: Page, profile: unknown): Promise<void> {
   await page.goto(`${BASE}/setup`, { waitUntil: "domcontentloaded" });
   await page.evaluate(p => window.localStorage.setItem("agent_profile", JSON.stringify(p)), profile);
   await page.goto(`${BASE}/positioning`, { waitUntil: "networkidle" });
-  await page.waitForSelector('[data-testid="positioning-cell"], [data-testid="positioning-empty"]', { timeout: 8000 });
+  // The card grid is collapsed by default (2026-08-18) — wait on the dumbbell.
+  await page.waitForSelector('[data-testid="positioning-dumbbell"], [data-testid="positioning-empty"]', { timeout: 8000 });
+}
+
+// The per-carrier cards live behind a collapsed-by-default disclosure
+// (2026-08-18). Asserts the default state, then expands for the card checks.
+async function expandDetail(page: Page): Promise<void> {
+  const firstCell = page.locator('[data-testid="positioning-cell"]').first();
+  check("comparison cards hidden until expanded", !(await firstCell.isVisible()));
+  await page.locator('[data-testid="detailed-comparisons"] > summary').click();
+  await page.waitForTimeout(120);
+  check("comparison cards visible after expanding", await firstCell.isVisible());
 }
 
 async function tierCounts(page: Page): Promise<{ total: number; high: number; thin: number; spread: number }> {
@@ -80,6 +91,7 @@ async function main(): Promise<void> {
   // -- Captive State Farm, all 8 states ------------------------------------
   console.log("\nCaptive State Farm, all 8 states (recon answer key)");
   await open(page, CAPTIVE_SF);
+  await expandDetail(page);
 
   const cells = await page.locator('[data-testid="positioning-cell"]').count();
   check("7 anchored cells (cards, auto-only)", cells === 7, { cells });
@@ -139,6 +151,7 @@ async function main(): Promise<void> {
   // -- Independent {SF, Travelers, Progressive}, all 8 ---------------------
   console.log("\nIndependent {State Farm, Travelers, Progressive}, all 8 states");
   await open(page, INDEP);
+  await expandDetail(page);
   const ti = await tierCounts(page);
   // re-keyed 2026-07-14: Personal Auto-only view (was 66/30 both-lines);
   // re-keyed 2026-08-18: 26h2 refresh (see header note).

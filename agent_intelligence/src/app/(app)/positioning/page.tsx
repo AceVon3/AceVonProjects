@@ -174,11 +174,24 @@ export default function PositioningPage(): React.JSX.Element {
               </p>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
-              {view.anchoredCells.map(cell => (
-                <PositioningCard key={`${cell.line}@@${cell.state}`} cell={cell} asOf={asOf} />
-              ))}
-            </div>
+            {/* Per-carrier comparison cards — collapsed by default since the
+                dumbbell carries the headline story (Ryan, 2026-08-18). Kept
+                behind a disclosure rather than removed: the cards' row
+                expansion is the only place the underlying filings behind the
+                averages can be audited. */}
+            <details data-testid="detailed-comparisons" className="group">
+              <summary className="list-none cursor-pointer select-none text-13 text-ink-2 bg-surface border border-card-line rounded-card shadow-card px-5 py-3 hover:bg-surface-2">
+                <span className="group-open:hidden">Show the detailed comparisons, carrier by carrier</span>
+                <span className="hidden group-open:inline">Hide the detailed comparisons</span>
+                <span className="float-right text-ink-3 group-open:hidden">▾</span>
+                <span className="float-right text-ink-3 hidden group-open:inline">▴</span>
+              </summary>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start mt-4">
+                {view.anchoredCells.map(cell => (
+                  <PositioningCard key={`${cell.line}@@${cell.state}`} cell={cell} asOf={asOf} />
+                ))}
+              </div>
+            </details>
 
             {view.unanchoredCells.length > 0 && (
               <div
