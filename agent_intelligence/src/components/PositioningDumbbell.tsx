@@ -19,7 +19,6 @@ import type { DumbbellData, DumbbellRow } from "@/lib/marketDumbbell";
 const RED = "#C42127";
 const BLUE = "#1B6CA8";
 const SURFACE = "#ffffff";
-const INK2 = "#6B7080";
 const INK3 = "#9AA0B0";
 const INKMID = "#4A4E63";
 const LINE = "#EDEFF4";
@@ -127,7 +126,7 @@ export default function PositioningDumbbell({
   const { min, max, ticks } = domainAndTicks(rows);
 
   // Chart geometry (wide layout).
-  const padTop = 22, rowH = 34, axisH = 30, gapCol = 96;
+  const padTop = 22, rowH = 34, axisH = 30, gapCol = 104;
   const H = padTop + rows.length * rowH + axisH;
   const x0 = 64, x1 = width - gapCol - 14;
   const X = (v: number) => x0 + ((v - min) / (max - min)) * (x1 - x0);
@@ -246,8 +245,10 @@ export default function PositioningDumbbell({
                     stroke={SURFACE} strokeWidth={2} />
                 )}
 
-                {/* Direct labels on the headline row only. */}
-                {headline && r.state === headline.state && !r.thin && (() => {
+                {/* Every dot carries its value, placed on the OUTER side of
+                    its dot so close pairs never collide (labels split
+                    left/right of the pair). Requested 2026-08-18. */}
+                {(() => {
                   const left = r.you <= r.market;
                   return (
                     <>
