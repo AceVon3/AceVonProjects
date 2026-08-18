@@ -1,0 +1,423 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<title>Positioning Quadrant</title>
+
+<!--
+  AgencyMan.ai · Signals · Positioning · 2x2 QUADRANT, SPLIT BY LINE
+
+  ============================ REAL-DATA REVISION =============================
+  BOTH panels are real engine output (Aug 10, 2026) for the user's SAVED
+  PROFILE: captive State Farm agent, licensed WA OR ID MI. The designer's
+  illustrative HOME array was replaced with computed values and the shared
+  domains/ticks re-derived for the real ranges (Home you reaches +25.5,
+  Auto you reaches -4.6). ID and OR Home are single-filing (thin).
+  =============================================================================
+
+  Axes, both panels: x = competitor average filed change · y = your carrier's filed
+  change. Same kind of number on both axes, so nothing has to be decoded. The gap
+  survives as distance from the dashed parity line, and as a table column.
+
+  SPLIT DECISION: one panel per line of business. Both panels share the SAME scale,
+  so a state's position means the same thing in each and the panels stay comparable.
+  Auto therefore occupies the lower band and Home the upper one. That emptiness is
+  the finding, not wasted space.
+
+  Cross-panel link replaces the old tether: hovering or focusing a state highlights
+  that state in BOTH panels, so Auto vs Home is still one gesture away without
+  drawing connector lines across the plot.
+
+  Thin data: a state where your carrier has a single filing renders as a gray pill
+  with an asterisk, shown as that one filing, never an average, and no difference
+  is calculated. ID and OR Home are such rows here.
+-->
+
+<style>
+  :root{
+    color-scheme: light only;
+    --canvas:#F7F8FB; --surface:#fff; --surface2:#FAFBFD; --soft:#F1F2F7;
+    --ink:#14142B; --ink2:#6B7080; --ink3:#9AA0B0; --ink-mid:#4A4E63;
+    --card-line:#E5E8F0; --line:#EDEFF4; --line2:#DDE1EA;
+    --brand-red:#C42127; --red-fill:#FBEAEB; --red-text:#8A1B1F; --red-border:#F0C8CA;
+    --blue:#1B6CA8; --blue-fill:#E5F0FA;
+    --amber-fill:#FCF1E3; --amber-text:#8A5A10;
+    --shadow-card:0 2px 8px rgba(20,20,43,.05);
+    --pop:0 8px 28px rgba(20,20,43,.14);
+  }
+  *{box-sizing:border-box}
+  html{background:var(--canvas); -webkit-text-size-adjust:100%}
+  @media (prefers-color-scheme:dark){ html,body{background:#F7F8FB; color:#14142B} }
+  body{
+    margin:0; background:var(--canvas); color:var(--ink);
+    font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    font-size:13px; line-height:1.5;
+  }
+  .wrap{max-width:900px; margin:0 auto; padding:28px 18px 56px}
+
+  .frame-band{
+    background:var(--red-fill); border:1px solid var(--red-border); color:var(--red-text);
+    border-radius:10px; padding:10px 14px; font-size:12px; margin-bottom:16px;
+  }
+
+  .sig-card{
+    background:var(--surface); border:1px solid var(--card-line); border-radius:14px;
+    box-shadow:var(--shadow-card); padding:16px 18px 14px;
+  }
+  .eyebrow{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--ink3)}
+  .howto{
+    display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--ink2);
+    padding:9px 12px; background:var(--surface2); border:1px solid var(--line);
+    border-radius:10px; margin:11px 0 4px;
+  }
+  .howto b{color:var(--ink-mid); font-weight:600}
+
+  .panels{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:12px}
+  .panel{min-width:0}
+  .ptitle{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:2px}
+  .ptitle h3{font-size:13.5px; margin:0; letter-spacing:-.1px}
+  .tag{font-size:10px; text-transform:uppercase; letter-spacing:.5px; padding:1px 7px; border-radius:7px}
+  .tag.real{background:var(--soft); color:var(--ink-mid)}
+  .tag.illus{background:var(--amber-fill); color:var(--amber-text); border:1px solid #EBD6B4}
+  .psub{font-size:12px; color:var(--ink2); margin:0 0 6px; min-height:34px}
+
+  svg{display:block; width:100%; height:auto}
+  svg text{font-family:inherit}
+
+  .pt{outline:none; cursor:default}
+  .fr{fill:none}
+  .pt:focus-visible .fr{stroke:var(--ink3); stroke-width:1.5; stroke-dasharray:3 3; fill:none}
+  .quad.dim .pt{opacity:.16}
+  .quad.dim .pt.on{opacity:1}
+  .pt{transition:opacity .13s ease}
+  @media (prefers-reduced-motion:reduce){ .pt{transition:none} }
+
+  .legendrow{display:flex; gap:16px; flex-wrap:wrap; align-items:center; margin-top:12px;
+    font-size:12px; color:var(--ink-mid)}
+  .lk{display:inline-flex; align-items:center; gap:7px}
+  .shape{height:17px; display:inline-block; flex:none}
+
+  .note{
+    margin-top:12px; padding:9px 12px; background:var(--surface2);
+    border:1px solid var(--line); border-radius:10px; font-size:12px; color:var(--ink2);
+  }
+  .note b{color:var(--ink-mid)}
+
+  .footnote{font-size:12px; color:var(--ink2); margin:12px 0 0; max-width:74ch}
+  details{margin-top:8px}
+  summary{font-size:12px; color:var(--ink2); cursor:pointer}
+  summary:focus-visible{outline:2px solid var(--ink3); outline-offset:2px; border-radius:4px}
+  table{border-collapse:collapse; margin-top:10px; font-size:12px; width:100%}
+  th,td{text-align:right; padding:5px 9px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+  th{color:var(--ink3); font-weight:600; text-transform:uppercase; font-size:10.5px; letter-spacing:.5px}
+  td.thin{color:var(--ink3)}
+  tr.illus td{color:var(--amber-text)}
+
+  #tip{
+    position:fixed; display:none; z-index:50; max-width:310px;
+    background:var(--surface); border:1px solid var(--card-line); border-radius:10px;
+    box-shadow:var(--pop); padding:9px 11px; font-size:12px; color:var(--ink2); line-height:1.45;
+  }
+  #tip b{display:block; color:var(--ink); font-size:12.5px; margin-bottom:3px}
+  #tip .flag{display:block; margin-top:5px; color:var(--amber-text); font-size:11px}
+
+  @media (max-width:660px){
+    .panels{grid-template-columns:1fr; gap:22px}
+    .psub{min-height:0}
+    .wrap{padding:18px 12px 40px}
+    .sig-card{padding:14px 13px 12px}
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="frame-band">
+    <b>These are rate changes, not price levels.</b>
+    A carrier filing a smaller increase than yours isn't necessarily cheaper. It moved less, recently.
+  </div>
+
+  <div class="sig-card">
+    <span class="eyebrow">Each state · What your carrier filed vs what competitors filed · Trailing 12 months</span>
+
+    <div class="howto">
+      <span><b>Left to right:</b> what competitors filed</span>
+      <span><b>Bottom to top:</b> what your carrier filed</span>
+      <span><b>Dashed line:</b> moved with the market</span>
+      <span><b>Hover a state:</b> it lights up in both charts</span>
+    </div>
+
+    <div class="panels">
+      <div class="panel">
+        <div class="ptitle"><h3>Personal Auto</h3><span class="tag real">Real data</span></div>
+        <p class="psub">Both sides filed cuts, and State Farm cut deeper in all 3 comparable
+          states. ID is the widest at &minus;4.6% against &minus;2.0%.</p>
+        <svg id="qAuto" class="quad" role="img"
+          aria-label="Personal Auto scatter. Horizontal axis is the competitor average filed change, cuts left, increases right. Vertical axis is State Farm's filed change, cuts down, increases up. A dashed diagonal marks moving the same as the market. Values are in the table below."></svg>
+      </div>
+      <div class="panel">
+        <div class="ptitle"><h3>Homeowners</h3><span class="tag real">Real data</span></div>
+        <p class="psub">State Farm filed Home increases in every state; ID and OR are single
+          filings (thin). WA stands out: +25.5% avg vs the market's +6.5%.</p>
+        <svg id="qHome" class="quad" role="img"
+          aria-label="Homeowners scatter. Same axes as the Personal Auto chart. Values are in the table below."></svg>
+      </div>
+    </div>
+
+    <div class="legendrow">
+      <span class="lk">
+        <svg class="shape" style="width:29px" viewBox="0 0 29 17" aria-hidden="true"><rect x=".7" y=".7" width="27.6" height="15.6" rx="4" fill="#14142B"/><text x="14.5" y="12" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff" font-family="Segoe UI,Arial,sans-serif">ST</text></svg>
+        Real filing average
+      </span>
+      <span class="lk">
+        <svg class="shape" style="width:29px" viewBox="0 0 29 17" aria-hidden="true"><rect x=".7" y=".7" width="27.6" height="15.6" rx="4" fill="#8A8FA0"/><text x="14.5" y="12" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff" font-family="Segoe UI,Arial,sans-serif">ST*</text></svg>
+        1 filing — thin, no difference calculated
+      </span>
+    </div>
+
+    <div class="note">
+      <b>Both charts share one scale</b>, so a state sits in the same place for the same reason in
+      each. Auto occupies the lower band and Home the upper one because that is where the filings
+      are, not because the charts are drawn differently.
+      <br><b>Not plotted:</b> WA Auto has no State Farm filing in the window. The app never places
+      a state at zero to fill a gap.
+    </div>
+
+    <p class="footnote">
+      All values real as of Aug 10, 2026. Both axes are premium-weighted average filed changes.
+      An asterisk marks a state where your carrier has a single filing, shown as that one filing
+      rather than an average, with no difference calculated.
+    </p>
+
+    <details>
+      <summary>View as table</summary>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">State</th><th scope="col">Line</th><th scope="col">Your carrier</th>
+            <th scope="col">Competitor avg</th><th scope="col">Difference (pts)</th><th scope="col">Source</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </details>
+  </div>
+</div>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var NS="http://www.w3.org/2000/svg";
+  var INK="#14142B", INK2="#6B7080", INK3="#9AA0B0";
+  var LINE="#EDEFF4", LINE2="#DDE1EA", SURFACE="#ffffff";
+  var AMBER="#8A5A10", GRAY="#8A8FA0", REDTINT="#FBF4F4", BLUETINT="#F2F7FB";
+
+  // ---- Personal Auto: REAL, Aug 10 2026 -------------------------------------
+  var AUTO=[
+    {st:"ID", you:-4.6, yn:3, mkt:-2.0, mn:15},
+    {st:"OR", you:-2.6, yn:4, mkt:-1.1, mn:23},
+    {st:"MI", you:-1.4, yn:9, mkt:-1.3, mn:44}
+  ];
+
+  // ---- Homeowners: REAL, Aug 10 2026 ----------------------------------------
+  // 5 of 8 states are single-filing (thin) — the repeated +9.9s are one State
+  // Farm program filed per state, one rolled filing each.
+  var HOME=[
+    {st:"MI", you: 1.0, yn:3, mkt: 4.0, mn:27},
+    {st:"WA", you:25.5, yn:2, mkt: 6.5, mn: 7},
+    {st:"ID", you: 9.9, yn:1, mkt: 1.3, mn:14},
+    {st:"OR", you: 9.9, yn:1, mkt: 0.8, mn:14}
+  ];
+
+  // Shared scale across both panels — re-derived for the real ranges
+  // (you −7.7..+25.5, market −2.0..+16.7).
+  var DX={min:-4.5, max:8.5}, DY={min:-9, max:27.5};
+  var XT=[-4,0,4,8], YT=[-8,0,8,16,24];
+
+  function thin(r){ return r.yn<2 || r.mn<2; }
+  function diffOf(r){ return thin(r)?null:(r.you - r.mkt); }
+  function fmt(v){ return (v>0?"+":v<0?"\u2212":"")+Math.abs(v).toFixed(1)+"%"; }
+  function pts(v){ return (v>0?"+":v<0?"\u2212":"")+Math.abs(v).toFixed(1); }
+
+  function el(p,tag,a){ var n=document.createElementNS(NS,tag); for(var k in a) n.setAttribute(k,a[k]); p.appendChild(n); return n; }
+  function txt(p,x,y,s,a){ var n=el(p,"text",Object.assign({x:x,y:y,"font-size":11,fill:INK2},a||{})); n.textContent=s; return n; }
+
+  // ---- tooltip + cross-panel highlight --------------------------------------
+  var tip=document.getElementById("tip");
+  var roots=[];
+
+  function tipHtml(r,line,illus){
+    var d=diffOf(r), head="<b>"+r.st+" \u2014 "+line+"</b>";
+    if(d===null){
+      return head+"State Farm filed "+fmt(r.you)+" in a single filing, so it is shown as that one "+
+        "filing rather than an average and no difference is calculated. Competitors averaged "+
+        fmt(r.mkt)+" across "+r.mn+" filings."+
+        (illus?"<span class='flag'>Illustrative value, not engine data.</span>":"");
+    }
+    return head+"State Farm filed "+fmt(r.you)+" on average across "+r.yn+" filings. "+
+      "Competitors averaged "+fmt(r.mkt)+" across "+r.mn+" filings. "+
+      "State Farm's filed change ran "+Math.abs(d).toFixed(1)+" pts "+(d<0?"further down":"further up")+
+      " than the market average."+
+      (illus?"<span class='flag'>Illustrative value, not engine data.</span>":"");
+  }
+  function showTip(html,x,y){
+    tip.innerHTML=html; tip.style.display="block";
+    var w=tip.offsetWidth,h=tip.offsetHeight;
+    tip.style.left=Math.max(8,Math.min(x+14,window.innerWidth-w-10))+"px";
+    tip.style.top =Math.max(8,Math.min(y+14,window.innerHeight-h-10))+"px";
+  }
+  function hideTip(){ tip.style.display="none"; }
+  function clearFocus(){
+    roots.forEach(function(sv){
+      sv.classList.remove("dim");
+      Array.prototype.forEach.call(sv.querySelectorAll(".on"),function(n){ n.classList.remove("on"); });
+    });
+  }
+  function focusState(st){
+    roots.forEach(function(sv){
+      sv.classList.add("dim");
+      Array.prototype.forEach.call(sv.querySelectorAll('[data-st="'+st+'"]'),function(n){ n.classList.add("on"); });
+    });
+  }
+  window.addEventListener("keydown",function(e){ if(e.key==="Escape"){ hideTip(); clearFocus(); } });
+  window.addEventListener("scroll",hideTip,{passive:true});
+
+  // ---- panel ----------------------------------------------------------------
+  function drawPanel(id,rows,line,illus){
+    var svg=document.getElementById(id);
+    if(roots.indexOf(svg)<0) roots.push(svg);
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    svg.classList.remove("dim");
+
+    var W=Math.max(330,svg.parentNode.clientWidth||360);
+    var H=Math.round(Math.min(470,Math.max(360,W*1.02)));
+    svg.setAttribute("viewBox","0 0 "+W+" "+H);
+
+    var mL=52, mR=12, mT=26, mB=58;
+    var px0=mL, px1=W-mR, py0=mT, py1=H-mB;
+    function X(v){ return px0+(v-DX.min)/(DX.max-DX.min)*(px1-px0); }
+    function Y(v){ return py1-(v-DY.min)/(DY.max-DY.min)*(py1-py0); }
+    var cx=X(0), cy=Y(0);
+
+    el(svg,"rect",{x:cx,y:py0,width:px1-cx,height:py1-py0,fill:REDTINT});
+    el(svg,"rect",{x:px0,y:py0,width:cx-px0,height:py1-py0,fill:BLUETINT});
+
+    XT.forEach(function(g){ if(g===0) return;
+      el(svg,"line",{x1:X(g),y1:py0,x2:X(g),y2:py1,stroke:LINE,"stroke-width":1}); });
+    YT.forEach(function(g){ if(g===0) return;
+      el(svg,"line",{x1:px0,y1:Y(g),x2:px1,y2:Y(g),stroke:LINE,"stroke-width":1}); });
+
+    el(svg,"line",{x1:cx,y1:py0,x2:cx,y2:py1,stroke:"#CDD3DE","stroke-width":1.5});
+    el(svg,"line",{x1:px0,y1:cy,x2:px1,y2:cy,stroke:"#CDD3DE","stroke-width":1.5});
+
+    var pLo=Math.max(DX.min,DY.min), pHi=Math.min(DX.max,DY.max);
+    el(svg,"line",{x1:X(pLo),y1:Y(pLo),x2:X(pHi),y2:Y(pHi),
+      stroke:"#B9C0CD","stroke-width":1.3,"stroke-dasharray":"5 4"});
+
+    el(svg,"rect",{x:px0,y:py0,width:px1-px0,height:py1-py0,fill:"none",stroke:LINE2,"stroke-width":1,rx:6});
+
+    XT.forEach(function(g){
+      txt(svg,X(g),py1+15,(g>0?"+":g<0?"\u2212":"")+Math.abs(g)+"%",
+        {"text-anchor":"middle","font-size":10,fill:INK3}); });
+    YT.forEach(function(g){
+      txt(svg,px0-8,Y(g)+3.5,(g>0?"+":g<0?"\u2212":"")+Math.abs(g)+"%",
+        {"text-anchor":"end","font-size":10,fill:INK3}); });
+
+    txt(svg,px0,py1+35,"\u2190 Competitors cut",{"text-anchor":"start","font-size":10.5,fill:INK2});
+    txt(svg,px1,py1+35,"Competitors raised \u2192",{"text-anchor":"end","font-size":10.5,fill:INK2});
+
+    var yUp=txt(svg,0,0,"You raised \u2191",{"text-anchor":"middle","font-size":10.5,fill:INK2});
+    yUp.setAttribute("transform","translate(16,"+(py0+(cy-py0)/2)+") rotate(-90)");
+    var yDn=txt(svg,0,0,"\u2193 You cut",{"text-anchor":"middle","font-size":10.5,fill:INK2});
+    yDn.setAttribute("transform","translate(16,"+(cy+(py1-cy)/2)+") rotate(-90)");
+
+    txt(svg,px0+7,py0-8,"YOU UP \u00b7 THEM DOWN",{"text-anchor":"start","font-size":8.5,fill:INK3,"letter-spacing":"0.4px"});
+    txt(svg,px1-7,py0-8,"BOTH UP",{"text-anchor":"end","font-size":8.5,fill:INK3,"letter-spacing":"0.4px"});
+    txt(svg,px0+7,py1-8,"BOTH DOWN",{"text-anchor":"start","font-size":8.5,fill:INK3,"letter-spacing":"0.4px"});
+    txt(svg,px1-7,py1-8,"YOU DOWN \u00b7 THEM UP",{"text-anchor":"end","font-size":8.5,fill:INK3,"letter-spacing":"0.4px"});
+
+    var placed=[], PW=29, PH=17;
+    rows.forEach(function(r){
+      var x=X(r.mkt), y=Y(r.you), isThin=thin(r);
+      var tries=[[0,0],[0,-21],[0,21],[-34,0],[34,0],[-34,-20],[34,-20],[-34,20],[34,20],[0,-41],[0,41]];
+      var lx=x, ly=y, moved=false;
+      for(var t=0;t<tries.length;t++){
+        var tx=x+tries[t][0], ty=y+tries[t][1], clash=false;
+        if(tx-PW/2<px0+3||tx+PW/2>px1-3||ty-PH/2<py0+3||ty+PH/2>py1-3) clash=true;
+        if(!clash) for(var i=0;i<placed.length;i++){
+          if(Math.abs(placed[i].x-tx)<PW+3 && Math.abs(placed[i].y-ty)<PH+3){ clash=true; break; }
+        }
+        if(!clash){ lx=tx; ly=ty; moved=(t>0); break; }
+      }
+      placed.push({x:lx,y:ly});
+
+      var d=diffOf(r), label=r.st+(isThin?"*":"");
+      var node=el(svg,"g",{tabindex:"0",class:"pt","data-st":r.st,role:"img","aria-label":
+        r.st+" "+line+(illus?", illustrative":"")+": your carrier "+fmt(r.you)+
+        ", competitor average "+fmt(r.mkt)+
+        (d===null?", single filing so no difference is calculated"
+                 :", "+Math.abs(d).toFixed(1)+" points "+(d<0?"further down":"further up")+" than the market")});
+      el(node,"rect",{class:"fr",x:lx-PW/2-4,y:ly-PH/2-4,width:PW+8,height:PH+8,rx:8});
+
+      if(moved){
+        el(node,"line",{x1:x,y1:y,x2:lx,y2:ly,stroke:"#C9CFDA","stroke-width":1});
+        el(node,"circle",{cx:x,cy:y,r:2,fill:illus?AMBER:(isThin?GRAY:INK)});
+      }
+
+      if(illus){
+        el(node,"rect",{x:lx-PW/2,y:ly-PH/2,width:PW,height:PH,rx:4,fill:SURFACE,
+          stroke:AMBER,"stroke-width":1.4,"stroke-dasharray":"3 2"});
+        txt(node,lx,ly+4,label,{"text-anchor":"middle","font-size":10.5,fill:AMBER,"font-weight":700});
+      } else {
+        el(node,"rect",{x:lx-PW/2,y:ly-PH/2,width:PW,height:PH,rx:4,fill:isThin?GRAY:INK,
+          stroke:SURFACE,"stroke-width":1.4});
+        txt(node,lx,ly+4,label,{"text-anchor":"middle","font-size":10.5,fill:SURFACE,"font-weight":700});
+      }
+
+      var html=tipHtml(r,line,illus);
+      node.addEventListener("mouseenter",function(){ focusState(r.st); });
+      node.addEventListener("mousemove",function(e){ showTip(html,e.clientX,e.clientY); });
+      node.addEventListener("mouseleave",function(){ hideTip(); clearFocus(); });
+      node.addEventListener("focus",function(){
+        focusState(r.st);
+        var b=node.getBoundingClientRect();
+        showTip(html,b.left,b.bottom-6);
+      });
+      node.addEventListener("blur",function(){ hideTip(); clearFocus(); });
+    });
+  }
+
+  // ---- table ----------------------------------------------------------------
+  (function(){
+    var tb=document.getElementById("tbody");
+    function rowsFor(arr,line,illus){
+      arr.forEach(function(r){
+        var d=diffOf(r), tr=document.createElement("tr");
+        if(illus) tr.className="illus";
+        tr.innerHTML="<td>"+r.st+(thin(r)?"*":"")+"</td><td>"+line+"</td><td>"+fmt(r.you)+"</td>"+
+          "<td>"+fmt(r.mkt)+"</td>"+
+          "<td"+(d===null?' class="thin"':"")+">"+(d===null?"\u2014 (1 filing)":pts(d))+"</td>"+
+          "<td>"+(illus?"Illustrative":"Real")+"</td>";
+        tb.appendChild(tr);
+      });
+    }
+    rowsFor(AUTO,"Auto",false);
+    rowsFor(HOME,"Home",false);
+  })();
+
+  function drawAll(){
+    drawPanel("qAuto",AUTO,"Personal Auto",false);
+    drawPanel("qHome",HOME,"Homeowners",false);
+  }
+  drawAll();
+
+  var t=null;
+  window.addEventListener("resize",function(){
+    clearTimeout(t); t=setTimeout(function(){ hideTip(); clearFocus(); drawAll(); },120);
+  });
+})();
+</script>
