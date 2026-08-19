@@ -1,6 +1,8 @@
 // Node-level verification of the Overview helpers against real filings.db data.
 // For the captive State Farm AZ+NV profile:
-//   - Prospect/Defend counts = 13/7 (matching /prospect and /defend; re-keyed 2026-07-16 IN import — as_of slide 06-11->07-16 aged one prospect out)
+//   - Prospect/Defend counts = 22/14 (matching /prospect and /defend; re-keyed
+//     2026-08-19 for the 26h2 refresh — was 13/7, missed in the 08-10 re-key,
+//     same class as verify_positioning / e2e_positioning / e2e_overview)
 //   - Recent Changes feed top row matches the spec's verification order
 //   - The "My Carrier" alert card's two own-carrier counts (retention /
 //     opportunity) reconcile with the My Carriers set, and both window/sort
@@ -42,8 +44,8 @@ console.log(`asOf (data freshness) = ${asOf}\n`);
 console.log("Captive State Farm, AZ + NV:");
 const prospect = getProspectFilings(CAPTIVE_SF);
 const defend = getDefendFilings(CAPTIVE_SF);
-check("prospect count = 13", prospect.length === 13, { actual: prospect.length });
-check("defend count = 7", defend.length === 7, { actual: defend.length });
+check("prospect count = 22", prospect.length === 22, { actual: prospect.length });
+check("defend count = 14", defend.length === 14, { actual: defend.length });
 
 const feed = computeRecentChanges(prospect, defend, asOf);
 console.log("\nRecent changes feed (top 8, newest first):");
@@ -55,8 +57,7 @@ feed.forEach((r, i) => {
   );
 });
 check("feed has 8 rows", feed.length === 8, { actual: feed.length });
-check("top row brand = Safeco (spec verification; re-keyed 2026-07-15 — B19 recovery outranks)",
-  feed[0]?.filing.brand === "Safeco", { actual: feed[0]?.filing.brand });
+check("top row brand = Liberty Mutual (re-keyed 2026-08-19, 26h2 refresh)", feed[0]?.filing.brand === "Liberty Mutual", { actual: feed[0]?.filing.brand });
 check("top row classification = prospect",
   feed[0]?.classification === "prospect", { actual: feed[0]?.classification });
 

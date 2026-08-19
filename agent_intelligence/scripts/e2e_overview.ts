@@ -1,8 +1,10 @@
 // End-to-end check of the Overview (/) against a running dev server.
 //
 // Captive State Farm, AZ + NV:
-//   - Prospect card count = 12 (matches /prospect)
-//   - Defend card count   = 7  (matches /defend)
+//   - Prospect card count = 22 (matches /prospect)
+//   - Defend card count   = 14 (matches /defend)
+//     (re-keyed 2026-08-19 for the 26h2 refresh — was 12/7; missed in the
+//     08-10 re-key, same class as verify_positioning/e2e_positioning)
 //   - My Carrier card     = two own-carrier counts (retention risk /
 //                           opportunity), both linking to /my-carriers; the
 //                           retention count reconciles with the /my-carriers band
@@ -10,7 +12,7 @@
 //                           length; "Last checked …" line present; no
 //                           wording that implies change-detection ("new
 //                           law", "changes detected", etc.)
-//   - Recent Changes feed top row = Travelers (matches spec verification)
+//   - Recent Changes feed top row = Liberty Mutual +12.0% HO (re-keyed 2026-08-19)
 //
 // Usage: E2E_BASE=http://localhost:3006 npx tsx scripts/e2e_overview.ts
 
@@ -87,22 +89,22 @@ async function main(): Promise<void> {
 
   // -- Counts ---------------------------------------------------------------
   const prospectCount = (await page.locator('[data-testid="ov-prospect-count"]').textContent())?.trim();
-  check("Prospect card count = 12", prospectCount === "12", { prospectCount });
+  check("Prospect card count = 22", prospectCount === "22", { prospectCount });
 
   const defendCount = (await page.locator('[data-testid="ov-defend-count"]').textContent())?.trim();
-  check("Defend card count = 7", defendCount === "7", { defendCount });
+  check("Defend card count = 14", defendCount === "14", { defendCount });
 
   // Cross-check against /prospect and /defend table row counts so the
   // "counts reconcile" contract is exercised end-to-end.
   await page.goto(`${BASE}/prospect`, { waitUntil: "networkidle" });
   await page.waitForSelector("table tbody tr", { timeout: 5000 });
   const prospectRows = await page.$$eval("table tbody tr", rs => rs.length);
-  check("/prospect renders the same 12 rows", prospectRows === 12, { prospectRows });
+  check("/prospect renders the same 22 rows", prospectRows === 22, { prospectRows });
 
   await page.goto(`${BASE}/defend`, { waitUntil: "networkidle" });
   await page.waitForSelector("table tbody tr", { timeout: 5000 });
   const defendRows = await page.$$eval("table tbody tr", rs => rs.length);
-  check("/defend renders the same 7 rows", defendRows === 7, { defendRows });
+  check("/defend renders the same 14 rows", defendRows === 14, { defendRows });
 
   // Back to Overview for the rest.
   await page.goto(`${BASE}/overview`, { waitUntil: "networkidle" });
@@ -153,8 +155,8 @@ async function main(): Promise<void> {
   const feedRows = await feed.locator('[data-testid="feed-row"]').count();
   check("Recent Changes shows ≤ 8 rows", feedRows > 0 && feedRows <= 8, { feedRows });
   const firstFeed = await feed.locator('[data-testid="feed-row"]').first().textContent();
-  check("Top feed row is Travelers (matches spec verification ordering)",
-    !!firstFeed && /Travelers/.test(firstFeed) && /Defend/i.test(firstFeed),
+  check("Top feed row is Liberty Mutual +12.0% (re-keyed 2026-08-19 for the 26h2 refresh)",
+    !!firstFeed && /Liberty Mutual/.test(firstFeed) && /Prospect/i.test(firstFeed),
     { firstFeed });
 
   // -- Opportunity-is-often-0 case (own-carrier decreases are rare) ----------
