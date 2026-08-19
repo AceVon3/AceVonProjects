@@ -4,12 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import OverviewCards, { ComplianceSummaryCard } from "@/components/OverviewCards";
+import OverviewMomentum from "@/components/OverviewMomentum";
 import OverviewNext30 from "@/components/OverviewNext30";
 import PageSkeleton from "@/components/PageSkeleton";
 import RecentChanges from "@/components/RecentChanges";
 import TopBar, { ScopeChip } from "@/components/TopBar";
 import type { Filing } from "@/lib/filings";
+import { computeCarrierMomentum } from "@/lib/momentum";
 import { computeBiggestMover, computeNext30, computeRecentChanges } from "@/lib/overview";
+import type { PositioningResult } from "@/lib/positioning";
 import { AgentProfile, loadProfile } from "@/lib/profile";
 import { computeOpportunity, computeRetentionRisk } from "@/lib/retention";
 
@@ -31,6 +34,11 @@ export default function OverviewPage(): React.JSX.Element {
   const [defend, setDefend] = useState<Filing[]>([]);
   const [myCarriers, setMyCarriers] = useState<Filing[]>([]);
   const [error, setError] = useState<string>("");
+  // Feeds Carrier Momentum only. Fetched separately so it never blocks the
+  // summary row (approved amendment) — the module skeletons until it lands;
+  // on failure the card degrades to its empty state rather than erroring
+  // the page.
+  const [positioning, setPositioning] = useState<PositioningResult | null>(null);
 
   useEffect(() => {
     const p = loadProfile();
@@ -78,6 +86,21 @@ export default function OverviewPage(): React.JSX.Element {
         setError(String(e?.message ?? e));
         setPhase("error");
       });
+
+    // Carrier Momentum's data — same positioning result the /positioning page
+    // uses, fetched independently so the summary row never waits on it. A
+    // failure degrades the module to its empty state instead of erroring the
+    // whole page.
+    fetch(`/api/positioning?${new URLSearchParams(common).toString()}`)
+      .then(async r => {
+        if (!r.ok) throw new Error(`positioning: HTTP ${r.status}`);
+        return r.json() as Promise<{ asOf: string; result: PositioningResult }>;
+      })
+      .then(d => setPositioning(d.result))
+      .catch(() => setPositioning({
+        agentCarriers: [], competitorBrands: [], anchoredCells: [], unanchoredCells: [],
+        totals: { anchoredCellCount: 0, unanchoredCellCount: 0, comparable: 0, higherConfidence: 0, thin: 0, insufficient: 0 },
+      }));
   }, [router]);
 
   const recentChanges = useMemo(() => {
@@ -96,6 +119,13 @@ export default function OverviewPage(): React.JSX.Element {
   const next30 = useMemo(
     () => computeNext30(prospect, defend, asOf),
     [prospect, defend, asOf],
+  );
+
+  // Competitor filed-change streaks; null while positioning is in flight
+  // (the module renders its skeleton).
+  const momentum = useMemo(
+    () => (positioning ? computeCarrierMomentum(positioning) : null),
+    [positioning],
   );
 
   // Own-carrier alerts for the "My Carrier" card — both directions over the SAME
@@ -157,6 +187,7 @@ export default function OverviewPage(): React.JSX.Element {
             the left; Carrier Momentum takes the right cell in Phase 3. */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-7 items-start">
           <OverviewNext30 rows={next30} />
+          <OverviewMomentum rows={momentum} />
         </div>
 
         <RecentChanges rows={recentChanges} />
