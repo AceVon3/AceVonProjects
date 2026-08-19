@@ -35,7 +35,7 @@ export default function OverviewNext30({
   return (
     <div
       data-testid="ov-card-next30"
-      className="flex flex-col bg-surface border border-card-line rounded-card p-5 shadow-card"
+      className="flex flex-col h-full min-h-[264px] bg-surface border border-card-line rounded-card p-5 shadow-card"
     >
       <div className="flex items-baseline justify-between mb-3">
         <div className="text-11 uppercase tracking-wider06 text-ink-3">Next 30 days</div>

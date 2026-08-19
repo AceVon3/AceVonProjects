@@ -183,12 +183,19 @@ export default function OverviewPage(): React.JSX.Element {
           biggestMover={biggestMover}
         />
 
-        {/* Quick-hitter module row (build spec Phases 2–3): Next 30 Days on
-            the left; Carrier Momentum takes the right cell in Phase 3. */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-7 items-start">
+        {/* Quick-hitter module row (build spec Phases 2–3). No items-start:
+            the cells stretch so both cards share one height, and each card
+            carries the same min-height so the pair renders as identical
+            frames on every profile (uniformity fix, 2026-08-19). The honesty
+            note below applies to BOTH cards, so it lives under the row —
+            same caption pattern Recent Signals uses. */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <OverviewNext30 rows={next30} />
           <OverviewMomentum rows={momentum} />
         </div>
+        <p className="text-13 text-ink-3 mt-3 mb-7">
+          Filed rate changes, not price levels — effective dates from state filings.
+        </p>
 
         <RecentChanges rows={recentChanges} />
 

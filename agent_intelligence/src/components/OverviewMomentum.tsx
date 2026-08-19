@@ -27,7 +27,7 @@ export default function OverviewMomentum({
   return (
     <div
       data-testid="ov-card-momentum"
-      className="flex flex-col bg-surface border border-card-line rounded-card p-5 shadow-card"
+      className="flex flex-col h-full min-h-[264px] bg-surface border border-card-line rounded-card p-5 shadow-card"
     >
       <div className="flex items-baseline justify-between mb-3">
         <div className="text-11 uppercase tracking-wider06 text-ink-3">Carrier momentum</div>
@@ -45,6 +45,8 @@ export default function OverviewMomentum({
           No competitor filings in your states in the trailing 12 months.
         </div>
       ) : (
+        // The "filed changes, not price levels" note moved to a shared
+        // caption under the module row (uniformity fix, 2026-08-19).
         <>
           <div className="flex flex-col">
             {rows.map(r => (
@@ -82,9 +84,6 @@ export default function OverviewMomentum({
                 </span>
               </Link>
             ))}
-          </div>
-          <div className="text-11 text-ink-3 mt-auto pt-2.5">
-            Filed rate changes, not price levels.
           </div>
         </>
       )}
