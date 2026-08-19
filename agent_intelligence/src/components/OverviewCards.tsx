@@ -2,16 +2,19 @@
 
 import Link from "next/link";
 
+import { formatEffectiveDate, formatRateImpact } from "@/lib/format";
+import type { BiggestMover } from "@/lib/overview";
+
 type Props = {
   prospectCount: number;
   defendCount: number;
   // Own-carrier alerts (last 6 months) — see src/lib/retention.ts.
   retentionCount: number;   // own-carrier INCREASES >= +5% (retention risk)
   opportunityCount: number; // own-carrier DECREASES <= -2% (opportunity)
-  employeeStatesCount: number;
-  // Today's date for the Compliance card's "Last checked …". v1 has no
-  // snapshot pipeline, so this is just the page-load date (spec line 633).
-  todayLabel: string;
+  // Largest ±30-day filed change (computeBiggestMover). Replaced the
+  // Compliance card in this row 2026-08-19 (build spec Phase 1); Compliance
+  // moved to the bottom of the page — see ComplianceSummaryCard.
+  biggestMover: BiggestMover | null;
 };
 
 // Three summary cards (design frame 2a). Cards are flex columns so pinned
@@ -61,8 +64,7 @@ export default function OverviewCards({
   defendCount,
   retentionCount,
   opportunityCount,
-  employeeStatesCount,
-  todayLabel,
+  biggestMover,
 }: Props): React.JSX.Element {
   return (
     <div
@@ -115,23 +117,87 @@ export default function OverviewCards({
         />
       </div>
 
-      {/* Compliance — lightweight v1 (no change-detection claims) */}
-      <div className={CARD} data-testid="ov-card-compliance">
-        <div className={KICKER}>Compliance</div>
-        <div
-          className="text-18 font-[650] text-ink mb-1"
-          data-testid="ov-compliance-states"
-        >
-          {employeeStatesCount} {employeeStatesCount === 1 ? "state" : "states"} tracked
-        </div>
-        <div className="text-12 text-ink-3">Last checked {todayLabel}</div>
+      {/* Biggest mover — largest |filed change| effective within ±30 days of
+          the data as-of date. Badge inherits the signal's SOURCE mode, never
+          the sign. Whole card links to the page that backs the signal up.
+          "Mover" language only — filed changes, never price levels. */}
+      {biggestMover ? (
         <Link
-          href="/compliance"
-          className="mt-auto pt-3 text-12 font-semibold text-brand-red no-underline hover:underline"
+          href={biggestMover.mode === "prospect" ? "/prospect" : "/defend"}
+          data-testid="ov-card-mover"
+          className={`${CARD} no-underline group`}
         >
-          View resources →
+          <div className="flex items-baseline justify-between">
+            <div className={KICKER.replace(" mb-3", " mb-2")}>Biggest mover</div>
+            <span
+              data-testid="ov-mover-badge"
+              className={`text-10 font-bold tracking-wider06 rounded-badge px-2 py-0.5 ${
+                biggestMover.mode === "prospect"
+                  ? "bg-red-fill text-red-text"
+                  : "bg-blue-fill text-blue-text"
+              }`}
+            >
+              {biggestMover.mode === "prospect" ? "PROSPECT" : "DEFEND"}
+            </span>
+          </div>
+          <div
+            data-testid="ov-mover-impact"
+            className={`text-30 font-bold leading-none tabular-nums ${
+              biggestMover.mode === "prospect" ? "text-brand-red" : "text-blue-text"
+            }`}
+          >
+            {formatRateImpact(biggestMover.filing.overall_rate_impact)}
+          </div>
+          <div className="text-13 text-ink mt-1.5 group-hover:underline">
+            {biggestMover.filing.brand} · {biggestMover.filing.line_of_business} ·{" "}
+            {biggestMover.filing.state}
+          </div>
+          <div className="text-12 text-ink-3 mt-auto pt-2">
+            {biggestMover.future ? "Effective" : "In effect"}{" "}
+            {formatEffectiveDate(biggestMover.filing.effective_date)} · largest{" "}
+            {biggestMover.filing.overall_rate_impact >= 0 ? "increase" : "decrease"} this month
+          </div>
         </Link>
+      ) : (
+        <div className={CARD} data-testid="ov-card-mover">
+          <div className={KICKER}>Biggest mover</div>
+          <div className="text-13 text-ink-3 my-auto">
+            No rate filings in the last 30 days.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Compliance — lightweight v1 (no change-detection claims). Content unchanged
+// from its old summary-row slot; relocated to the bottom of the Overview page
+// when Biggest Mover took the third card (build spec Phase 1, 2026-08-19).
+export function ComplianceSummaryCard({
+  employeeStatesCount,
+  todayLabel,
+}: {
+  employeeStatesCount: number;
+  // Today's date for the "Last checked …" line. v1 has no snapshot pipeline,
+  // so this is just the page-load date (spec line 633).
+  todayLabel: string;
+}): React.JSX.Element {
+  return (
+    <div className={`${CARD} mt-7`} data-testid="ov-card-compliance">
+      <div className={KICKER}>Compliance</div>
+      <div
+        className="text-18 font-[650] text-ink mb-1"
+        data-testid="ov-compliance-states"
+      >
+        {employeeStatesCount} {employeeStatesCount === 1 ? "state" : "states"} tracked
       </div>
+      <div className="text-12 text-ink-3">Last checked {todayLabel}</div>
+      <Link
+        href="/compliance"
+        className="mt-auto pt-3 text-12 font-semibold text-brand-red no-underline hover:underline"
+      >
+        View resources →
+      </Link>
     </div>
   );
 }

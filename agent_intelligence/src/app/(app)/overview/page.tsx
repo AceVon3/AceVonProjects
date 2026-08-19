@@ -3,12 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import OverviewCards from "@/components/OverviewCards";
+import OverviewCards, { ComplianceSummaryCard } from "@/components/OverviewCards";
 import PageSkeleton from "@/components/PageSkeleton";
 import RecentChanges from "@/components/RecentChanges";
 import TopBar, { ScopeChip } from "@/components/TopBar";
 import type { Filing } from "@/lib/filings";
-import { computeRecentChanges } from "@/lib/overview";
+import { computeBiggestMover, computeRecentChanges } from "@/lib/overview";
 import { AgentProfile, loadProfile } from "@/lib/profile";
 import { computeOpportunity, computeRetentionRisk } from "@/lib/retention";
 
@@ -84,6 +84,13 @@ export default function OverviewPage(): React.JSX.Element {
     return computeRecentChanges(prospect, defend, asOf);
   }, [prospect, defend, asOf]);
 
+  // Largest ±30-day filed change across the merged prospect+defend rows —
+  // same rows as the counts above, so the card reconciles by construction.
+  const biggestMover = useMemo(
+    () => computeBiggestMover(prospect, defend, asOf),
+    [prospect, defend, asOf],
+  );
+
   // Own-carrier alerts for the "My Carrier" card — both directions over the SAME
   // full my-carriers set, via the same shared helpers the /my-carriers tab uses,
   // so the dashboard counts reconcile with that tab by construction.
@@ -136,11 +143,17 @@ export default function OverviewPage(): React.JSX.Element {
           defendCount={defend.length}
           retentionCount={retentionRisk.count}
           opportunityCount={opportunity.count}
-          employeeStatesCount={profile!.employee_states.length}
-          todayLabel={todayShort()}
+          biggestMover={biggestMover}
         />
 
         <RecentChanges rows={recentChanges} />
+
+        {/* Relocated from the summary row when Biggest Mover took its slot
+            (build spec Phase 1) — content unchanged. */}
+        <ComplianceSummaryCard
+          employeeStatesCount={profile!.employee_states.length}
+          todayLabel={todayShort()}
+        />
       </div>
     </main>
   );
