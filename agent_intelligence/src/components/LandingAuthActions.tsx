@@ -16,8 +16,10 @@ export default function LandingAuthActions() {
         <Link className="link-quiet" href="/overview">
           Open the app
         </Link>
-        <Link className="btn btn-primary" href="/setup">
-          Get started free
+        {/* Both branches route through /checkout — the launch-offer funnel
+            (price anchor + code) sits in front of account creation. */}
+        <Link className="btn btn-primary" href="/checkout">
+          Get started
         </Link>
       </>
     );
@@ -28,8 +30,8 @@ export default function LandingAuthActions() {
         <Link className="link-quiet" href="/sign-in">
           Sign in
         </Link>
-        <Link className="btn btn-primary" href="/sign-up">
-          Get started free
+        <Link className="btn btn-primary" href="/checkout">
+          Get started
         </Link>
       </SignedOut>
       <SignedIn>

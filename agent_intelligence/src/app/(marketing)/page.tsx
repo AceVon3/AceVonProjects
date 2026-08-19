@@ -145,7 +145,8 @@ export default function LandingPage(): React.JSX.Element {
                 </a>
               </div>
               <p className="microcopy">
-                <b>No account, no credit card.</b> Your profile lives in your browser.
+                <b>$14.99/mo launch pricing</b> — free with an agency code.{" "}
+                <a className="hub-link" href="#pricing">See pricing</a>
               </p>
             </div>
 
@@ -269,8 +270,8 @@ export default function LandingPage(): React.JSX.Element {
                 </p>
               </div>
             </div>
-            <Link className="sec-cta reveal" href="/setup">
-              Get started for free <span aria-hidden="true">→</span>
+            <Link className="sec-cta reveal" href="/checkout">
+              Get started <span aria-hidden="true">→</span>
             </Link>
           </div>
         </section>
@@ -473,6 +474,44 @@ export default function LandingPage(): React.JSX.Element {
           </div>
         </section>
 
+        {/* ===================== PRICING ===================== */}
+        <section className="price-sec" id="pricing">
+          <div className="wrap">
+            <div className="sec-head reveal">
+              <div className="kicker">Pricing</div>
+              <h2 className="sec-title">One plan. Everything included.</h2>
+              <p className="sec-sub">
+                Every signal, every state you work, and the full HR &amp;
+                compliance hub — one subscription.
+              </p>
+            </div>
+
+            <div className="price-card reveal" data-testid="price-card">
+              <div className="price-offer">
+                Launch offer — sign up free with an agency code
+              </div>
+              <div className="price-name">AgencyMan Pro</div>
+              <div className="price-amount">
+                <span className="price-cur">$</span>14.99
+                <span className="price-per">/month</span>
+              </div>
+              <ul className="price-feats">
+                <li>Prospect &amp; Defend lists for every state you sell in</li>
+                <li>Competitive positioning — you vs. the market, carrier by carrier</li>
+                <li>Rate-filing coverage across 49 states, refreshed monthly</li>
+                <li>50-state HR &amp; Compliance Hub for running your agency</li>
+                <li>My Carriers monitoring &amp; retention alerts</li>
+              </ul>
+              <Link className="btn btn-primary lg price-cta" href="/checkout">
+                Get started →
+              </Link>
+              <p className="microcopy">
+                <b>Have an agency code?</b> Enter it at checkout. Cancel anytime.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* ===================== CLOSING BAND (navy) ===================== */}
         <section className="cta-band" id="get-started">
           <div className="band-glow" aria-hidden="true" />
@@ -484,11 +523,12 @@ export default function LandingPage(): React.JSX.Element {
               prospect list, a defend list, and your carrier&apos;s exact position
               in every market you work.
             </p>
-            <Link className="btn btn-primary lg" href="/setup">
-              Open AgencyMan
+            <Link className="btn btn-primary lg" href="/checkout">
+              Get started — $14.99/mo
             </Link>
             <p className="microcopy">
-              <b>Nothing to install, nothing to cancel.</b> It runs in your browser.
+              <b>Launch offer:</b> free with an agency code. Nothing to install,
+              cancel anytime.
             </p>
           </div>
         </section>
@@ -508,6 +548,7 @@ export default function LandingPage(): React.JSX.Element {
           <nav className="foot-links" aria-label="Footer">
             <a href="#features">Features</a>
             <a href="#how">How it works</a>
+            <a href="#pricing">Pricing</a>
             <Link href="/methodology">Methodology</Link>
             <Link href="/privacy">Privacy</Link>
             <Link href="/overview">Open the app</Link>
