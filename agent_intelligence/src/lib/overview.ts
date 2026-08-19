@@ -117,6 +117,41 @@ export function computeBiggestMover(
   return candidates[0];
 }
 
+// ---------------------------------------------------------------------------
+// Next 30 Days (build spec Phase 2, 2026-08-19)
+// ---------------------------------------------------------------------------
+// Strictly future-dated signals landing within 30 days of asOf: effective_date
+// in (asOf, asOf+30d]. Nothing already in effect appears here. Sorted by
+// effective date ascending; the component caps display at 5 and shows the
+// remainder as "+N more". Mode rides along for the dot color and the
+// row's click-through page — carried from the source set, same rule as
+// computeBiggestMover.
+
+export type UpcomingSignal = { filing: Filing; mode: OverviewClassification };
+
+export function computeNext30(
+  prospect: Filing[],
+  defend: Filing[],
+  asOf: string,
+): UpcomingSignal[] {
+  if (!asOf) return [];
+  const asOfMs = Date.parse(`${asOf}T00:00:00Z`);
+  const hi = new Date(asOfMs + 30 * DAY_MS).toISOString().slice(0, 10);
+  const rows: UpcomingSignal[] = [];
+  const collect = (fs: Filing[], mode: OverviewClassification) => {
+    for (const f of fs) {
+      if (!f.effective_date || f.effective_date <= asOf || f.effective_date > hi) continue;
+      rows.push({ filing: f, mode });
+    }
+  };
+  collect(prospect, "prospect");
+  collect(defend, "defend");
+  rows.sort((a, b) =>
+    a.filing.effective_date!.localeCompare(b.filing.effective_date!)
+    || a.filing.brand.localeCompare(b.filing.brand));
+  return rows;
+}
+
 // Spec line 654: red pill for defend rows or near-future prospect (≤2w out),
 // gray otherwise.
 export function feedRowPillColor(r: FeedRow): "red" | "gray" {

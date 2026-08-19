@@ -4,11 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import OverviewCards, { ComplianceSummaryCard } from "@/components/OverviewCards";
+import OverviewNext30 from "@/components/OverviewNext30";
 import PageSkeleton from "@/components/PageSkeleton";
 import RecentChanges from "@/components/RecentChanges";
 import TopBar, { ScopeChip } from "@/components/TopBar";
 import type { Filing } from "@/lib/filings";
-import { computeBiggestMover, computeRecentChanges } from "@/lib/overview";
+import { computeBiggestMover, computeNext30, computeRecentChanges } from "@/lib/overview";
 import { AgentProfile, loadProfile } from "@/lib/profile";
 import { computeOpportunity, computeRetentionRisk } from "@/lib/retention";
 
@@ -91,6 +92,12 @@ export default function OverviewPage(): React.JSX.Element {
     [prospect, defend, asOf],
   );
 
+  // Future-dated signals landing within 30 days, effective-date ascending.
+  const next30 = useMemo(
+    () => computeNext30(prospect, defend, asOf),
+    [prospect, defend, asOf],
+  );
+
   // Own-carrier alerts for the "My Carrier" card — both directions over the SAME
   // full my-carriers set, via the same shared helpers the /my-carriers tab uses,
   // so the dashboard counts reconcile with that tab by construction.
@@ -145,6 +152,12 @@ export default function OverviewPage(): React.JSX.Element {
           opportunityCount={opportunity.count}
           biggestMover={biggestMover}
         />
+
+        {/* Quick-hitter module row (build spec Phases 2–3): Next 30 Days on
+            the left; Carrier Momentum takes the right cell in Phase 3. */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-7 items-start">
+          <OverviewNext30 rows={next30} />
+        </div>
 
         <RecentChanges rows={recentChanges} />
 
