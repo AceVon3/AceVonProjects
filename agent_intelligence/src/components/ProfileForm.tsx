@@ -107,6 +107,30 @@ function errorsByField(errs: ValidationError[]): Record<string, string> {
   return m;
 }
 
+// Field key -> the section name a person would use, for the summary next to
+// the Save button ("nothing happened" fix, 2026-08-20: on a form this tall,
+// per-field messages can all sit above the fold when Save is clicked).
+const SECTION_LABELS: [RegExp, string][] = [
+  [/^full_name$/, "Your name"],
+  [/^employee_count$/, "Number of employees"],
+  [/^remote_count$/, "Remote employees"],
+  [/^offices/, "Office locations"],
+  [/^pay_type$/, "Pay type"],
+  [/^agent_type$/, "Agent type"],
+  [/^authorized_brands$/, "Carriers you sell"],
+  [/^licensed_states$/, "Licensed states"],
+  [/^employee_states$/, "States your team works in"],
+];
+
+function missedSections(errors: Record<string, string>): string[] {
+  const out: string[] = [];
+  for (const key of Object.keys(errors)) {
+    const label = SECTION_LABELS.find(([re]) => re.test(key))?.[1] ?? "Profile details";
+    if (!out.includes(label)) out.push(label);
+  }
+  return out;
+}
+
 // Input + select shared class — kept here so the visual feel of every form
 // field is consistent and gets updated in one place.
 const INPUT_CLS =
@@ -207,12 +231,24 @@ export default function ProfileForm(): React.JSX.Element {
     );
   }, [empSearch]);
 
+  // Set errors AND bring the first missed field into view. The messages
+  // render next to their fields, which on a form this tall can all be above
+  // the fold when Save is clicked — without the scroll, a failed save looks
+  // like nothing happened (real users stalled here, 2026-08-20).
+  function failWith(errs: ValidationError[]) {
+    setErrors(errorsByField(errs));
+    requestAnimationFrame(() => {
+      const first = document.querySelector("[data-field-error]");
+      first?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const draft = toProfile(state);
     const errs = validateProfile(draft);
     if (errs.length > 0) {
-      setErrors(errorsByField(errs));
+      failWith(errs);
       return;
     }
     const profile: AgentProfile = {
@@ -229,7 +265,7 @@ export default function ProfileForm(): React.JSX.Element {
     };
     const saveErrs = saveProfile(profile);
     if (saveErrs.length > 0) {
-      setErrors(errorsByField(saveErrs));
+      failWith(saveErrs);
       return;
     }
     // Local cache saved; now persist to the signed-in user's account.
@@ -237,7 +273,7 @@ export default function ProfileForm(): React.JSX.Element {
     // mode) — only a genuine server-side rejection blocks the redirect.
     const serverErrs = await pushProfile(profile);
     if (serverErrs.length > 0) {
-      setErrors(errorsByField(serverErrs));
+      failWith(serverErrs);
       return;
     }
     setErrors({});
@@ -259,7 +295,8 @@ export default function ProfileForm(): React.JSX.Element {
 
   const FieldErr = ({ msg }: { msg?: string }) =>
     msg ? (
-      <div className="text-11 mt-1 text-red-text">
+      // data-field-error is the scroll anchor failWith targets.
+      <div className="text-11 mt-1 text-red-text" data-field-error>
         {msg}
       </div>
     ) : null;
@@ -658,7 +695,19 @@ export default function ProfileForm(): React.JSX.Element {
           <FieldErr msg={errors.employee_states} />
         </div>
 
-        {/* Save */}
+        {/* Save. The summary sits WITH the button so a failed save is
+            visible where the user is looking; the missed fields themselves
+            are marked in red at their sections (and scrolled to). */}
+        {Object.keys(errors).length > 0 && (
+          <div
+            data-testid="save-error-summary"
+            role="alert"
+            className="mt-5 rounded-tile bg-red-fill text-red-text border border-red-border px-4 py-3 text-13"
+          >
+            <b>Almost there —</b> please finish:{" "}
+            {missedSections(errors).join(" · ")}. Each one is marked in red above.
+          </div>
+        )}
         <div className="flex justify-end mt-5">
           <button
             type="submit"
