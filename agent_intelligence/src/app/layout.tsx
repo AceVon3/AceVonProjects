@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import { ClerkProvider } from "@clerk/nextjs";
 import SignOutCleanup from "@/components/SignOutCleanup";
 import "./globals.css";
@@ -25,6 +26,11 @@ export default function RootLayout({
             marketing landing page can render without it. */}
         {authConfigured && <SignOutCleanup />}
         {children}
+        {/* Vercel Web Analytics — per-route page views (2026-08-21). Sits in
+            the ROOT layout so both route groups (marketing + app) report.
+            No-ops on localhost; requires Web Analytics enabled on the
+            Vercel project. */}
+        <Analytics />
       </body>
     </html>
   );
