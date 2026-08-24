@@ -164,6 +164,21 @@ export function runToken(runDate: string): string {
   return createHmac("sha256", secret()).update(`run:${runDate}`).digest("hex").slice(0, 32);
 }
 
+// Static capability token for Ryan's bookmarkable "stage a batch" link
+// (2026-08-24: NO cron — staging is manual-only). Same trust model as the
+// review link: the URL is the credential. Worst case if it leaks: someone
+// stages a batch and the reviewer gets a review email; nothing sends.
+export function triggerToken(): string {
+  return createHmac("sha256", secret()).update("trigger:stage").digest("hex").slice(0, 32);
+}
+
+export function verifyTriggerToken(token: string): boolean {
+  if (!secret() || !token) return false;
+  const expect = Buffer.from(triggerToken());
+  const got = Buffer.from(token);
+  return expect.length === got.length && timingSafeEqual(expect, got);
+}
+
 export function verifyRunToken(runDate: string, token: string): boolean {
   if (!secret() || !token) return false;
   const expect = Buffer.from(runToken(runDate));

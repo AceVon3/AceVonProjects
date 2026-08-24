@@ -1,22 +1,23 @@
-// Monthly digest STAGING run — nothing is sent to users from here (review-
-// before-send, Ryan's decision 2026-08-24). Invoked by the Vercel cron every
-// Monday 15:00 UTC; the route itself no-ops unless it's the month's FIRST
-// Monday (Vercel cron can't express "first Monday" — restricting both
-// day-of-month and weekday means OR in cron, so the guard lives here).
+// Digest STAGING run — MANUAL-ONLY, nothing automated and nothing is sent
+// to users from here (Ryan's decisions, 2026-08-24: no cron; he triggers a
+// batch himself and approves every send). There is deliberately NO
+// vercel.json cron entry pointing here.
 //
 // What a staging run does: build every subscribed user's digest (with their
 // prior compliance snapshot), resolve their Clerk email, inject the signed
 // unsubscribe link, store the finished emails in digest_runs, and send the
-// REVIEWER one notification email with a signed link to /api/digest/review —
-// where every staged email can be read and the batch approved or discarded.
+// REVIEWER a notification with a signed link to /api/digest/review — where
+// every staged email can be read and the batch approved or discarded.
 // /api/digest/approve sends exactly the stored HTML.
 //
-// Auth: Authorization: Bearer <CRON_SECRET or DIGEST_SECRET>.
-// Test controls:
+// Auth, either of:
+//   - Authorization: Bearer <CRON_SECRET or DIGEST_SECRET>  (curl/testing)
+//   - ?t=<triggerToken>  (Ryan's bookmarkable browser link; on success the
+//     response REDIRECTS to the review page so trigger → review is one click)
+// Test controls (bearer only):
 //   ?dryRun=1  build + report only; stores nothing, notifies nobody.
 //   ?to=email  ONE-OFF: send every built email to this test inbox right now,
 //              bypassing staging entirely; persists nothing.
-//   ?force=1   skip the first-Monday guard (manual staging any day).
 
 import { NextRequest, NextResponse } from "next/server";
 
@@ -27,6 +28,7 @@ import {
   runToken,
   stageRun,
   unsubscribeToken,
+  verifyTriggerToken,
   type StagedItem,
 } from "@/lib/digestDb";
 import type { AgentProfile } from "@/lib/profile";
@@ -42,13 +44,6 @@ function authorized(req: NextRequest): boolean {
   const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
   const ok = (expected?: string) => Boolean(expected) && token === expected;
   return ok(process.env.CRON_SECRET) || ok(process.env.DIGEST_SECRET);
-}
-
-// First Monday of the month, in UTC — at 15:00 UTC this matches the Pacific
-// calendar date, so "first Monday" reads the same for the reviewer.
-function isFirstMonday(iso: string): boolean {
-  const d = new Date(`${iso}T00:00:00Z`);
-  return d.getUTCDay() === 1 && d.getUTCDate() <= 7;
 }
 
 async function clerkEmail(userId: string): Promise<string | null> {
@@ -93,24 +88,21 @@ function toDigestProfile(p: AgentProfile): DigestProfile {
 }
 
 export async function GET(req: NextRequest) {
-  if (!authorized(req)) {
+  // Browser trigger link (?t=) or bearer secret — either authorizes.
+  const viaTrigger = verifyTriggerToken(req.nextUrl.searchParams.get("t") ?? "");
+  if (!viaTrigger && !authorized(req)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   if (!isDigestDbConfigured()) {
     return NextResponse.json({ error: "profiles DB not configured" }, { status: 503 });
   }
 
-  const dryRun = req.nextUrl.searchParams.get("dryRun") === "1";
-  const redirectTo = req.nextUrl.searchParams.get("to");
-  const force = req.nextUrl.searchParams.get("force") === "1";
-  const limit = Number(req.nextUrl.searchParams.get("limit") ?? "0") || Infinity;
+  // Test controls stay bearer-only; the trigger link always stages.
+  const dryRun = !viaTrigger && req.nextUrl.searchParams.get("dryRun") === "1";
+  const redirectTo = viaTrigger ? null : req.nextUrl.searchParams.get("to");
+  const limit = viaTrigger ? Infinity : Number(req.nextUrl.searchParams.get("limit") ?? "0") || Infinity;
   const runDate = new Date().toISOString().slice(0, 10);
 
-  // Cron fires every Monday; only the month's first Monday stages a batch.
-  // Manual/test invocations pass ?force=1 (or dryRun/to, which are harmless).
-  if (!force && !dryRun && !redirectTo && !isFirstMonday(runDate)) {
-    return NextResponse.json({ runDate, skipped: "not the first Monday of the month" });
-  }
   if (!dryRun && !process.env.RESEND_API_KEY) {
     return NextResponse.json({ error: "RESEND_API_KEY missing" }, { status: 503 });
   }
@@ -183,8 +175,13 @@ export async function GET(req: NextRequest) {
        <p style="color:#6B7080;font-size:12px;">Nothing sends until you approve. Staged batches are
        overwritten if the run is re-staged.</p>`,
     );
-    if (notifyErr) {
+    if (notifyErr && !viaTrigger) {
       return NextResponse.json({ runDate, staged: items.length, reviewUrl, notifyError: notifyErr, report }, { status: 502 });
+    }
+    // Browser trigger: land the reviewer directly on the review page —
+    // trigger → review → approve is one continuous flow.
+    if (viaTrigger && reviewUrl) {
+      return NextResponse.redirect(reviewUrl, 302);
     }
   }
 
