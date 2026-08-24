@@ -92,6 +92,85 @@ export async function markUnsubscribed(userId: string): Promise<void> {
   `;
 }
 
+// --- staged runs (review-before-send, 2026-08-24) ---------------------------
+// The cron STAGES a run instead of sending: every rendered email is stored
+// here, the reviewer gets a link, and /api/digest/approve sends exactly the
+// stored HTML. One row per run date.
+
+export type StagedItem = {
+  user_id: string;
+  email: string | null;      // resolved at stage time; null = Clerk lookup failed
+  subject: string;
+  html: string;              // final HTML incl. the user's unsubscribe link
+  counts: { mine: number; competitors: number; hrStates: number };
+  snapshot: ComplianceSnapshot; // persisted to digest_state on approve
+};
+
+export type StagedRun = {
+  run_date: string;
+  status: "staged" | "sent" | "discarded";
+  items: StagedItem[];
+};
+
+let ensuredRuns: Promise<void> | null = null;
+function ensureRunsTable(): Promise<void> {
+  if (!ensuredRuns) {
+    ensuredRuns = sql()`
+      CREATE TABLE IF NOT EXISTS digest_runs (
+        run_date    text PRIMARY KEY,
+        status      text NOT NULL DEFAULT 'staged',
+        created_at  timestamptz NOT NULL DEFAULT now(),
+        resolved_at timestamptz,
+        items       jsonb NOT NULL
+      )
+    `.then(() => undefined);
+  }
+  return ensuredRuns;
+}
+
+export async function stageRun(runDate: string, items: StagedItem[]): Promise<void> {
+  await ensureRunsTable();
+  await sql()`
+    INSERT INTO digest_runs (run_date, status, items)
+    VALUES (${runDate}, 'staged', ${JSON.stringify(items)}::jsonb)
+    ON CONFLICT (run_date) DO UPDATE
+      SET status = 'staged', items = EXCLUDED.items, created_at = now(), resolved_at = NULL
+  `;
+}
+
+export async function getRun(runDate: string): Promise<StagedRun | null> {
+  await ensureRunsTable();
+  const rows = await sql()`
+    SELECT run_date, status, items FROM digest_runs WHERE run_date = ${runDate}
+  `;
+  if (rows.length === 0) return null;
+  return {
+    run_date: rows[0].run_date as string,
+    status: rows[0].status as StagedRun["status"],
+    items: rows[0].items as StagedItem[],
+  };
+}
+
+export async function markRun(runDate: string, status: "sent" | "discarded"): Promise<void> {
+  await ensureRunsTable();
+  await sql()`
+    UPDATE digest_runs SET status = ${status}, resolved_at = now() WHERE run_date = ${runDate}
+  `;
+}
+
+// Review/approve links carry an HMAC over the run date (distinct prefix so a
+// run token can never pass as an unsubscribe token).
+export function runToken(runDate: string): string {
+  return createHmac("sha256", secret()).update(`run:${runDate}`).digest("hex").slice(0, 32);
+}
+
+export function verifyRunToken(runDate: string, token: string): boolean {
+  if (!secret() || !token) return false;
+  const expect = Buffer.from(runToken(runDate));
+  const got = Buffer.from(token);
+  return expect.length === got.length && timingSafeEqual(expect, got);
+}
+
 // --- unsubscribe-link signing ----------------------------------------------
 
 function secret(): string {
