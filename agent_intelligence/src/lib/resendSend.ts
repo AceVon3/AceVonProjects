@@ -11,6 +11,9 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
     },
     body: JSON.stringify({
       from: "AgencyMan <digest@agencyman.ai>",
+      // digest@ is send-only — replies land at a real, monitored inbox
+      // (same one the feedback route delivers to). Ryan, 2026-08-24.
+      reply_to: ["support@myproagency.com"],
       to: [to],
       subject,
       html,
