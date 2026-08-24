@@ -298,10 +298,17 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
         name: stateName(s),
         updated,
         scheduled,
-        lines: stateReviewLines(s, p.employee_count),
+        // REVIEW lines are standing reminders and repeat verbatim month to
+        // month — so they only ride along when the state has actual news
+        // (an UPDATED or SCHEDULED item) that month (Ryan, 2026-08-24).
+        // A state with no news drops out entirely; a month with no news in
+        // any state renders no HR section at all.
+        lines: updated.length > 0 || scheduled.length > 0
+          ? stateReviewLines(s, p.employee_count)
+          : [],
       };
     })
-    .filter(x => x.lines.length > 0 || x.updated.length > 0 || x.scheduled.length > 0);
+    .filter(x => x.updated.length > 0 || x.scheduled.length > 0);
 
   const competitorsN = prospect.length + defend.length;
   const mineN = mineRaises.length + mineCuts.length;
@@ -330,7 +337,9 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
   if (mineN) preheaderBits.push(`${mineN} of your carriers moved`);
   if (competitorsN) preheaderBits.push(`${competitorsN} competitor change${competitorsN === 1 ? "" : "s"}`);
   const preheader = (preheaderBits.length ? preheaderBits.join(", ") + ". " : "A quiet month. ")
-    + (hr.length ? `Plus HR items for ${p.employee_states.join(", ")}.` : "");
+    // Names only the states that actually render an HR block (post-gating),
+    // not the whole employee-state list.
+    + (hr.length ? `Plus HR items for ${hr.map(x => x.state).join(", ")}.` : "");
 
   const buckets = (rows: Row[]) => {
     const hit = rows.filter(justHit).length;
