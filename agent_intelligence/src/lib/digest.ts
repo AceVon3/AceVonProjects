@@ -458,9 +458,21 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
         <div style="${t(10, 16, `font-weight:700;letter-spacing:.12em;`)}">${it.labelHtml}</div>
         <div style="${t(14, 22, `color:${BODY};padding-top:3px;`)}">${esc(it.text)}</div>
       </td></tr>`).join("")}`).join("")}
-      <tr><td style="padding:12px 0 0;${t(13, 20, `color:${MUTED};`)}">Full state briefings: <a href="${APP_URL}/compliance" style="color:${BLUE};text-decoration:none;font-weight:700;">${APP_URL.replace("https://", "")}/compliance</a></td></tr>
+      <tr><td style="padding:12px 0 0;${t(13, 20, `color:${MUTED};`)}"><a href="${APP_URL}/compliance" style="color:${BLUE};text-decoration:none;font-weight:700;">View the rest of your HR AI summaries that apply to your office &rarr;</a></td></tr>
     </table>
-  </td></tr>` : ""}
+  </td></tr>` : `
+  <!-- HR summaries regenerate ~twice a year (Ryan, 2026-08-24), so most
+       months have no HR news items — this standing pointer to the full
+       summaries renders INSTEAD of the section so the HR hub stays one
+       click away every month. -->
+  <tr><td class="sheet" style="padding:44px 36px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f4f6f9;">
+      <tr><td style="padding:16px 18px;font-family:${F};">
+        <div style="${t(10, 14, `font-weight:700;letter-spacing:.12em;color:${LABEL};`)}">HR &amp; COMPLIANCE</div>
+        <div style="${t(14, 22, `padding-top:4px;`)}"><a href="${APP_URL}/compliance" style="color:${BLUE};text-decoration:none;font-weight:700;">View your HR AI summaries that apply to your office &rarr;</a></div>
+      </td></tr>
+    </table>
+  </td></tr>`}
 
   <tr><td class="sheet" style="padding:40px 36px 34px;">
     <div style="border-top:1px solid ${HAIR};padding-top:18px;${t(12, 20, `color:${MUTED};`)}">
