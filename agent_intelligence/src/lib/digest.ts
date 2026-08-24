@@ -172,7 +172,26 @@ const KIND_CUT: Kind = { label: "CUT", labelColor: BLUE };
 const KIND_PROSPECT: Kind = { label: "PROSPECT", labelColor: RED_DEEP };
 const KIND_DEFEND: Kind = { label: "DEFEND", labelColor: BLUE };
 
-function filingRow(f: Row, kind: Kind, first: boolean): string {
+// Timing pill (Ryan, 2026-08-24): every row states its clock loudly —
+// amber = the change is APPROACHING (act before it lands), blue = it is
+// already IN EFFECT. Bulletproof inline-block span, no images, colors from
+// the app's amber/blue convention. Same-day renders as "TAKES EFFECT TODAY".
+function timingPill(effective: string, anchor: string): string {
+  const days = Math.round(
+    (Date.parse(`${effective}T00:00:00Z`) - Date.parse(`${anchor}T00:00:00Z`)) / 86_400_000,
+  );
+  const pill = (bg: string, fg: string, text: string) =>
+    `<span style="display:inline-block;border-radius:6px;padding:2px 8px;background:${bg};` +
+    `font-family:${F};font-size:10px;line-height:16px;font-weight:700;letter-spacing:.08em;color:${fg};">${text}</span>`;
+  if (days > 0) {
+    const when = days === 1 ? "TOMORROW" : days === 0 ? "TODAY" : `IN ${days} DAYS`;
+    return pill("#FCF1E3", "#8A5A10", `TAKES EFFECT ${esc(fmtDate(effective)).toUpperCase()} &middot; ${when}`);
+  }
+  if (days === 0) return pill("#FCF1E3", "#8A5A10", "TAKES EFFECT TODAY");
+  return pill("#E5F0FA", "#1B6CA8", `IN EFFECT &middot; SINCE ${esc(fmtDate(effective)).toUpperCase()}`);
+}
+
+function filingRow(f: Row, kind: Kind, first: boolean, anchor: string): string {
   const numColor = f.overall_rate_impact >= 0 ? RED : BLUE;
   const ph = fmtPh(f.total_policyholders);
   const sub = f.sub_type ? cleanSubtypeLabel(f.sub_type) : "";
@@ -183,7 +202,8 @@ function filingRow(f: Row, kind: Kind, first: boolean): string {
           <tr>
             <td class="lbl" width="392" style="width:392px;font-family:${F};">
               <div style="${t(17, 22, `font-weight:700;color:${INK};`)}">${esc(f.brand)}</div>
-              <div style="${t(13, 20, `color:${DETAIL};padding-top:2px;`)}">${esc(product)} &middot; ${esc(f.state)} &middot; effective ${fmtDate(f.effective_date)}${ph ? ` &middot; ${ph}` : ""}</div>
+              <div style="${t(13, 20, `color:${DETAIL};padding-top:2px;`)}">${esc(product)} &middot; ${esc(f.state)}${ph ? ` &middot; ${ph}` : ""}</div>
+              <div style="padding-top:5px;">${timingPill(f.effective_date, anchor)}</div>
             </td>
             <td width="136" align="right" valign="top" style="width:136px;font-family:${F};">
               <div class="num" style="${t(21, 24, `font-weight:700;letter-spacing:-.015em;color:${numColor};`)}">${fmtImpact(f.overall_rate_impact)}</div>
@@ -202,7 +222,7 @@ function sectionHeaderRow(title: string, count: number | null): string {
       <tr><td style="border-top:2px solid ${INK};padding-top:10px;${t(17, 22, `font-weight:700;letter-spacing:-.01em;color:${INK};`)}">${title}${countSpan}</td></tr>`;
 }
 
-function sectionHtml(title: string, takeaway: string, rows: Row[], cap: number, appPath: string, kind: Kind, first: boolean): string {
+function sectionHtml(title: string, takeaway: string, rows: Row[], cap: number, appPath: string, kind: Kind, first: boolean, anchor: string): string {
   if (rows.length === 0) return "";
   const shown = rows.slice(0, cap);
   const more = rows.length - shown.length;
@@ -213,7 +233,7 @@ function sectionHtml(title: string, takeaway: string, rows: Row[], cap: number, 
   <tr><td class="sheet" style="padding:${first ? 44 : 36}px 36px 0;">
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
       ${sectionHeaderRow(esc(title), rows.length)}
-      ${shown.map((f, i) => filingRow(f, kind, i === 0)).join("")}
+      ${shown.map((f, i) => filingRow(f, kind, i === 0, anchor)).join("")}
       <tr><td style="padding:10px 0 0;${t(13, 20, `color:${MUTED};`)}">${esc(takeaway)}${moreLink}</td></tr>
     </table>
   </td></tr>`;
@@ -403,20 +423,20 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
 
   ${sectionHtml("Your carriers raised rates",
     mineRaises.length ? `Retention risk — your book may shop. ${buckets(mineRaises)}` : "",
-    mineRaises, 6, "/my-carriers", KIND_RAISED, true)}
+    mineRaises, 6, "/my-carriers", KIND_RAISED, true, anchor)}
   ${sectionHtml("Your carriers cut rates",
     mineCuts.length ? `A price advantage you can sell. ${buckets(mineCuts)}` : "",
-    mineCuts, 6, "/my-carriers", KIND_CUT, mineRaises.length === 0)}
+    mineCuts, 6, "/my-carriers", KIND_CUT, mineRaises.length === 0, anchor)}
   ${mineNeutral > 0 ? `
   <tr><td class="sheet" style="padding:12px 36px 0;">
     <div style="${t(13, 20, `color:${MUTED};`)}">Your carriers also filed ${mineNeutral} rate-neutral change${mineNeutral === 1 ? "" : "s"} (0.0%) in your states this month.</div>
   </td></tr>` : ""}
   ${sectionHtml("Competitors raised rates",
     prospect.length ? `Their customers are likely to shop. ${buckets(prospect)}` : "",
-    prospect, 8, "/prospect", KIND_PROSPECT, mineRaises.length === 0 && mineCuts.length === 0)}
+    prospect, 8, "/prospect", KIND_PROSPECT, mineRaises.length === 0 && mineCuts.length === 0, anchor)}
   ${sectionHtml("Competitors cut rates",
     defend.length ? `Your customers may see cheaper quotes. ${buckets(defend)}` : "",
-    defend, 6, "/defend", KIND_DEFEND, false)}
+    defend, 6, "/defend", KIND_DEFEND, false, anchor)}
 
   ${hrBlocks.length ? `
   <tr><td class="sheet" style="padding:44px 36px 0;">
