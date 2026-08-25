@@ -18,7 +18,7 @@ import path from "node:path";
 
 import TopBar from "@/components/TopBar";
 import { BRANDS, DEFEND_THRESHOLD, PROSPECT_THRESHOLD } from "@/lib/constants";
-import { STATES } from "@/lib/states";
+import { MARKETED_STATE_COUNT, STATES } from "@/lib/states";
 
 export const dynamic = "force-dynamic";
 
@@ -89,12 +89,16 @@ export default function MethodologyPage(): React.JSX.Element {
                 double-count one of these brands are excluded.
               </li>
               <li className={liCls}>
-                <strong>{coveredStates.length} states currently covered</strong>{" "}
-                for personal auto and homeowners filings. All 50 states appear
-                in setup; states without data coverage are intentionally not
-                selectable rather than silently returning empty results.
-                Coverage depth varies with what each state&rsquo;s regulator
-                makes public.
+                {/* Same pin the landing markets (MARKETED_STATE_COUNT), with
+                    the live count stated alongside so the two surfaces
+                    explain each other instead of contradicting. */}
+                <strong>{MARKETED_STATE_COUNT} states covered</strong> for
+                personal auto and homeowners filings — {coveredStates.length}{" "}
+                live today, with Florida coming online. All 50 states appear
+                in setup; states whose data isn&rsquo;t live yet are
+                intentionally not selectable rather than silently returning
+                empty results. Coverage depth varies with what each
+                state&rsquo;s regulator makes public.
               </li>
             </ul>
           </section>

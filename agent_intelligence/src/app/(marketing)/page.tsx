@@ -9,12 +9,10 @@ import {
   PROSPECT_THRESHOLD,
 } from "@/lib/constants";
 
-// Marketing state count, pinned to 49 by Ryan (2026-08-13) — COVERED_STATES
-// currently holds 48 (all but FL + WY). Switch back to COVERED_STATES.length
-// once the data catches up, so the number stays truthful automatically.
-const MARKETED_STATE_COUNT = 49;
-
 import LandingAuthActions from "@/components/LandingAuthActions";
+// The 49 pin lives in the shared states lib now, so methodology and setup
+// draw the same number this page markets (with their own live/rollout nuance).
+import { MARKETED_STATE_COUNT } from "@/lib/states";
 
 import "./landing.css";
 

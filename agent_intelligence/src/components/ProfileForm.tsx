@@ -639,9 +639,10 @@ export default function ProfileForm(): React.JSX.Element {
             THIS picker, which gates on rate-filing coverage. */}
         <p className="text-11 mb-2 text-ink-3" data-testid="licensed-coverage-note">
           We cover all 50 states. Rate-change signals (Prospect &amp; Defend)
-          are live in {STATES.filter(s => s.data_coverage).length} of them —{" "}
-          {STATES.filter(s => !s.data_coverage).map(s => s.name).join(", ")}
-          {" "}coming soon — and only those are selectable here.
+          are live in {STATES.filter(s => s.data_coverage).length} of them
+          today — {STATES.filter(s => !s.data_coverage).map(s => s.name).join(", ")}
+          {" "}are next as coverage rolls out — and only live states are
+          selectable here.
         </p>
         <StateChipRow
           selected={state.licensed_states}
@@ -832,7 +833,7 @@ function StateList({
                 />
                 {s.name}
                 {disabled && (
-                  <span className="text-[9px] rounded-full px-[5px] py-px bg-soft text-ink-3">
+                  <span className="text-10 rounded-full px-[5px] py-px bg-soft text-ink-3">
                     Soon
                   </span>
                 )}

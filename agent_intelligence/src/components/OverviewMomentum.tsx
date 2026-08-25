@@ -21,8 +21,12 @@ function rowText(r: CarrierMomentum): string {
 
 export default function OverviewMomentum({
   rows,
+  error = false,
 }: {
   rows: CarrierMomentum[] | null; // null = /api/positioning still loading
+  // Fetch failed: show an explicit couldn't-load state, never the empty
+  // state — "no competitor filings" is a factual claim, not an error fallback.
+  error?: boolean;
 }): React.JSX.Element {
   return (
     <div
@@ -34,7 +38,12 @@ export default function OverviewMomentum({
         <div className="text-12 text-ink-3">trailing 12 mo</div>
       </div>
 
-      {rows === null ? (
+      {error ? (
+        <div className="text-13 text-ink-2 my-auto" data-testid="ov-momentum-error">
+          Carrier momentum couldn&rsquo;t load this time. Your other signals are
+          unaffected — refresh to retry.
+        </div>
+      ) : rows === null ? (
         <div className="flex flex-col gap-2.5" data-testid="ov-momentum-skeleton" aria-hidden="true">
           {[72, 58, 64, 50].map((w, i) => (
             <div key={i} className="h-[14px] rounded bg-skeleton animate-pulse" style={{ width: `${w}%` }} />

@@ -3,6 +3,14 @@
 // the flag (no other code changes). `validated` reflects AM Best cross-check
 // and is only meaningful where data_coverage is true.
 
+// Marketing state count, pinned to 49 by Ryan (2026-08-13) — data_coverage
+// currently sums to 48; the pin counts Florida, whose import path is in
+// progress. Every user-facing surface that names the coverage number
+// (landing, methodology, setup) imports THIS constant and adds its own
+// live/rollout nuance, so marketing and in-app copy can never flatly
+// contradict each other. Switch back to a derived count once FL lands.
+export const MARKETED_STATE_COUNT = 49;
+
 export type StateRecord = {
   readonly code: string;
   readonly name: string;

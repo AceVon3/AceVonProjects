@@ -114,8 +114,10 @@ export default function CheckoutPage(): React.JSX.Element {
                   agent community or launch email work here.
                 </p>
               )}
+              {/* Honest sequencing note — no payment step exists in this
+                  funnel (no card fields ever), so never promise one. */}
               <p className="co-paynote">
-                Payment details are collected after your code is checked.
+                Apply your code first — launch codes cover the full subscription.
               </p>
             </div>
           ) : (

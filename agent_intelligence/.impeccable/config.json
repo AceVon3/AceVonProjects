@@ -38,6 +38,15 @@
         ],
         "createdAt": "2026-08-25T13:34:21.481Z",
         "reason": "Incumbent footer copyright tint on the always-navy band; landing neutrals are navy tints per DESIGN.md"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/app/(marketing)/landing.css"
+        ],
+        "createdAt": "2026-08-25T14:27:33.770Z",
+        "reason": "Hero signal panel mirrors the app's real row anatomy; the 3px category left-accent is the documented incumbent design-system signal (FilingsTable/RecentChanges)"
       }
     ]
   }

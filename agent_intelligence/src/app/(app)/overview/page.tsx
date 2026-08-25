@@ -36,9 +36,11 @@ export default function OverviewPage(): React.JSX.Element {
   const [error, setError] = useState<string>("");
   // Feeds Carrier Momentum only. Fetched separately so it never blocks the
   // summary row (approved amendment) — the module skeletons until it lands;
-  // on failure the card degrades to its empty state rather than erroring
-  // the page.
+  // on failure the card shows an explicit couldn't-load state (never the
+  // empty state: "no competitor filings" is a factual claim we can't make
+  // on an error path).
   const [positioning, setPositioning] = useState<PositioningResult | null>(null);
+  const [momentumFailed, setMomentumFailed] = useState(false);
 
   useEffect(() => {
     const p = loadProfile();
@@ -89,18 +91,15 @@ export default function OverviewPage(): React.JSX.Element {
 
     // Carrier Momentum's data — same positioning result the /positioning page
     // uses, fetched independently so the summary row never waits on it. A
-    // failure degrades the module to its empty state instead of erroring the
-    // whole page.
+    // failure flags the module's couldn't-load state instead of erroring the
+    // whole page (and instead of faking an empty result).
     fetch(`/api/positioning?${new URLSearchParams(common).toString()}`)
       .then(async r => {
         if (!r.ok) throw new Error(`positioning: HTTP ${r.status}`);
         return r.json() as Promise<{ asOf: string; result: PositioningResult }>;
       })
       .then(d => setPositioning(d.result))
-      .catch(() => setPositioning({
-        agentCarriers: [], competitorBrands: [], anchoredCells: [], unanchoredCells: [],
-        totals: { anchoredCellCount: 0, unanchoredCellCount: 0, comparable: 0, higherConfidence: 0, thin: 0, insufficient: 0 },
-      }));
+      .catch(() => setMomentumFailed(true));
   }, [router]);
 
   const recentChanges = useMemo(() => {
@@ -191,7 +190,7 @@ export default function OverviewPage(): React.JSX.Element {
             same caption pattern Recent Signals uses. */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <OverviewNext30 rows={next30} />
-          <OverviewMomentum rows={momentum} />
+          <OverviewMomentum rows={momentum} error={momentumFailed} />
         </div>
         <p className="text-13 text-ink-3 mt-3 mb-7">
           Filed rate changes, not price levels — effective dates from state filings.

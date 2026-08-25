@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { formatEffectiveDate, formatRateImpact } from "@/lib/format";
 import type { BiggestMover } from "@/lib/overview";
+import { RETENTION_WINDOW_MONTHS } from "@/lib/retention";
 
 type Props = {
   prospectCount: number;
@@ -98,7 +99,10 @@ export default function OverviewCards({
           carrier CUT (<= -2%). Both reconcile with the /my-carriers tab via
           the shared retention.ts helpers. */}
       <div className={CARD} data-testid="ov-card-my-carrier">
-        <div className={KICKER}>My carriers</div>
+        {/* The alert window differs from the neighboring 12-month card —
+            say so in the kicker (undisclosed windows read as contradictions
+            next to the visible rows on /my-carriers). */}
+        <div className={KICKER}>My carriers · last {RETENTION_WINDOW_MONTHS} months</div>
         <StatLine
           count={retentionCount}
           colorClass="text-brand-red"

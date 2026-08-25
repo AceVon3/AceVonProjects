@@ -12,7 +12,7 @@ import { Coverage, coverageGapNote } from "@/lib/coverage";
 import { FilterState, applyFilters, defaultFilters } from "@/lib/filters";
 import { formatRateImpact } from "@/lib/format";
 import { AgentProfile, loadProfile } from "@/lib/profile";
-import { OPPORTUNITY_THRESHOLD, RETENTION_THRESHOLD, computeOpportunity, computeRetentionRisk } from "@/lib/retention";
+import { OPPORTUNITY_THRESHOLD, RETENTION_THRESHOLD, RETENTION_WINDOW_MONTHS, computeOpportunity, computeRetentionRisk } from "@/lib/retention";
 
 type Phase = "loading" | "ready" | "error";
 
@@ -192,7 +192,8 @@ export default function MyCarriersPage(): React.JSX.Element {
             </span>
             <span className="text-13 text-ink-2">
               retention risk alert{retention.count === 1 ? "" : "s"} — your{" "}
-              {isCaptive ? "carrier" : "carriers"} raised ≥ +{RETENTION_THRESHOLD}%
+              {isCaptive ? "carrier" : "carriers"} raised ≥ +{RETENTION_THRESHOLD}%{" "}
+              in the last {RETENTION_WINDOW_MONTHS} months
             </span>
           </div>
           <div className="bg-surface border border-card-line rounded-card shadow-card px-5 py-4 flex items-baseline gap-3">
@@ -204,7 +205,8 @@ export default function MyCarriersPage(): React.JSX.Element {
             </span>
             <span className="text-13 text-ink-2">
               opportunity alert{opportunity.count === 1 ? "" : "s"} — your{" "}
-              {isCaptive ? "carrier" : "carriers"} cut ≤ {OPPORTUNITY_THRESHOLD}%
+              {isCaptive ? "carrier" : "carriers"} cut ≤ {OPPORTUNITY_THRESHOLD}%{" "}
+              in the last {RETENTION_WINDOW_MONTHS} months
             </span>
           </div>
         </div>
