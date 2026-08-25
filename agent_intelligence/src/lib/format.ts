@@ -69,25 +69,27 @@ export function computeWindowBadge(
   const days = Math.round((e - a) / 86_400_000);
   const weeks = Math.round(days / 7);
   const absWeeks = Math.abs(weeks);
+  // "1 week" / "3 weeks" — every badge below interpolates through this.
+  const wk = (n: number) => `${n} ${n === 1 ? "week" : "weeks"}`;
 
   if (mode === "prospect") {
-    if (days > 6 && weeks >= 1) return { color: "green", text: `In ${weeks} weeks` };
+    if (days > 6 && weeks >= 1) return { color: "green", text: `In ${wk(weeks)}` };
     if (days >= 0 && days <= 6) return { color: "amber", text: "Effective this week" };
-    if (days < 0 && days >= -56) return { color: "blue", text: `In effect ${absWeeks} weeks` };
+    if (days < 0 && days >= -56) return { color: "blue", text: `In effect ${wk(absWeeks)}` };
     return { color: "gray", text: "In effect (older)" };
   }
   if (mode === "defend") {
-    if (days > 6 && weeks >= 1) return { color: "red", text: `Risk window opens in ${weeks} weeks` };
+    if (days > 6 && weeks >= 1) return { color: "red", text: `Risk window opens in ${wk(weeks)}` };
     if (days >= 0 && days <= 6) return { color: "red", text: "Risk window open now" };
     // Already in effect. The "your customers may shop" framing is stated once
     // in the page header, so the per-row badge stays factual (how long ago the
     // cut landed) rather than repeating the callout on every row.
-    return { color: "amber", text: `In effect ${absWeeks} weeks` };
+    return { color: "amber", text: `In effect ${wk(absWeeks)}` };
   }
   // my-carriers — neutral throughout
-  if (days > 6 && weeks >= 1) return { color: "gray", text: `In ${weeks} weeks` };
+  if (days > 6 && weeks >= 1) return { color: "gray", text: `In ${wk(weeks)}` };
   if (days >= 0 && days <= 6) return { color: "gray", text: "Effective this week" };
-  return { color: "gray", text: `In effect ${absWeeks} weeks` };
+  return { color: "gray", text: `In effect ${wk(absWeeks)}` };
 }
 
 // Status badge: derived from rate_activity. rate_change_pending → amber

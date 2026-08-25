@@ -174,7 +174,9 @@ export default function PositioningDumbbell({
 
       {comparableCount > 0 && headline ? (
         <p className="text-15 font-semibold text-ink mt-2.5 mb-1 max-w-[62ch] tracking-tight02">
-          {agentLabel}&rsquo;s filed {line === "Personal Auto" ? "Auto" : line} changes ran {relation} the
+          {/* "Your carriers’" not "Your carriers’s" — plural labels take a
+              bare apostrophe. */}
+          {agentLabel}{agentLabel.endsWith("s") ? "’" : "’s"} filed {line === "Personal Auto" ? "Auto" : line} changes ran {relation} the
           market average in {scope}. The widest gap is{" "}
           <span className="tabular-nums whitespace-nowrap">
             {headline.state} ({fmt(headline.you)} vs {fmt(headline.market)})

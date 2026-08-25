@@ -56,15 +56,23 @@ export default function FilterBar({
   const [openPanel, setOpenPanel] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Close on click-outside.
+  // Close on click-outside and on Escape (keyboard users need the same
+  // exit the mouse gets).
   useEffect(() => {
     function onDocMouseDown(e: MouseEvent) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
         setOpenPanel(null);
       }
     }
+    function onDocKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpenPanel(null);
+    }
     document.addEventListener("mousedown", onDocMouseDown);
-    return () => document.removeEventListener("mousedown", onDocMouseDown);
+    document.addEventListener("keydown", onDocKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onDocMouseDown);
+      document.removeEventListener("keydown", onDocKeyDown);
+    };
   }, []);
 
   function update<K extends keyof FilterState>(key: K, value: FilterState[K]) {
@@ -254,7 +262,7 @@ function Chip({
         {label}
         <span
           aria-hidden
-          className={`text-[9px] ${narrowed ? "text-brand-red" : "text-ink-3"}`}
+          className={`text-10 ${narrowed ? "text-brand-red" : "text-ink-3"}`}
         >
           {open ? "▲" : "▼"}
         </span>

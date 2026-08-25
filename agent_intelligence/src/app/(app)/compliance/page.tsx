@@ -88,9 +88,9 @@ export default function CompliancePage(): React.JSX.Element {
 
   const summaryIndex = useMemo(() => buildSummaryIndex(), []);
 
-  // Only render cards for employee states that are inside our data coverage
-  // (the 8 covered states). Non-covered employee states are silently dropped
-  // for now — could add a "coming soon for these states" hint later.
+  // Only render cards for employee states inside compliance coverage —
+  // nationwide since the 50-state expansion (2026-07), so today this
+  // passes every state through; the filter stays as the safety valve.
   const renderedStates = useMemo(() => {
     if (!profile) return [];
     return profile.employee_states.filter(s => COVERED.has(s));

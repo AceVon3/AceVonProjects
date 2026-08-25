@@ -159,7 +159,7 @@ export default function PositioningPage(): React.JSX.Element {
                 expansion is the only place the underlying filings behind the
                 averages can be audited. */}
             <details data-testid="detailed-comparisons" className="group">
-              <summary className="list-none cursor-pointer select-none text-13 text-ink-2 bg-surface border border-card-line rounded-card shadow-card px-5 py-3 hover:bg-surface-2">
+              <summary className="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none text-13 text-ink-2 bg-surface border border-card-line rounded-card shadow-card px-5 py-3 hover:bg-surface-2">
                 <span className="group-open:hidden">Show the detailed comparisons, carrier by carrier</span>
                 <span className="hidden group-open:inline">Hide the detailed comparisons</span>
                 <span className="float-right text-ink-3 group-open:hidden">▾</span>

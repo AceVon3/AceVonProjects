@@ -184,13 +184,15 @@ export default function FilingsTable({
           style={{ tableLayout: "fixed", borderCollapse: "collapse" }}
         >
           {showActionCol ? (
-            // Defend: Threat · Effective · Status · Impact · Action
+            // Defend: Threat · Effective · Status · Impact · Action. Status
+            // gets 14% (not 11%) so "Rate in effect; state review still open"
+            // wraps to two comfortable lines instead of four cramped ones.
             <colgroup>
               <col style={{ width: "34%" }} />
               <col style={{ width: "19%" }} />
-              <col style={{ width: "11%" }} />
+              <col style={{ width: "14%" }} />
               <col style={{ width: "12%" }} />
-              <col style={{ width: "24%" }} />
+              <col style={{ width: "21%" }} />
             </colgroup>
           ) : (
             // Prospect / My Carriers: Carrier · Effective · Status · Impact · Policyholders
@@ -283,6 +285,17 @@ export default function FilingsTable({
                       <span data-testid="row-brand" className="text-15 font-[650] text-ink">
                         {f.brand}
                       </span>
+                      {/* Phones see only this column before scrolling — the
+                          rate impact must not live off-screen. Inline next to
+                          the brand (ml-auto would pin it past the viewport,
+                          since this cell is wider than a phone). Hidden at
+                          sm+ where the real Impact column is visible. */}
+                      <span
+                        data-testid="row-impact-inline"
+                        className={`sm:hidden text-15 font-bold tabular-nums ${impactCls}`}
+                      >
+                        {formatRateImpact(f.overall_rate_impact)}
+                      </span>
                       {isMine && (
                         <span
                           data-testid="mine-pill"
@@ -348,7 +361,6 @@ export default function FilingsTable({
                         aria-label="Multi-entity rollup details"
                         data-testid="entity-spread-dot"
                         className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-soft text-ink-2 text-10 italic ml-1 cursor-help"
-                        style={{ fontFamily: "Georgia, serif" }}
                       >
                         i
                       </span>
