@@ -317,7 +317,7 @@ export default function LandingPage(): React.JSX.Element {
                 </p>
               </div>
             </div>
-            <Link className="sec-cta reveal" href="/setup">
+            <Link className="sec-cta reveal" href="/compliance">
               Browse the Compliance Hub <span aria-hidden="true">→</span>
             </Link>
           </div>
@@ -420,8 +420,8 @@ export default function LandingPage(): React.JSX.Element {
                 <h3>Set up your profile</h3>
                 <p>
                   Captive or independent, the states you&apos;re licensed in, the
-                  carriers you sell. Two minutes, stored in your browser — no
-                  account to create.
+                  carriers you sell. Two minutes — create your free account,
+                  set your states, done.
                 </p>
               </div>
               <div className="tl-item reveal">
@@ -478,7 +478,7 @@ export default function LandingPage(): React.JSX.Element {
         <section className="price-sec" id="pricing">
           <div className="wrap">
             <div className="sec-head reveal">
-              <div className="kicker">Pricing</div>
+              <div className="eyebrow">Pricing</div>
               <h2 className="sec-title">One plan. Everything included.</h2>
               <p className="sec-sub">
                 Every signal, every state you work, and the full HR &amp;
@@ -498,7 +498,7 @@ export default function LandingPage(): React.JSX.Element {
               <ul className="price-feats">
                 <li>Prospect &amp; Defend lists for every state you sell in</li>
                 <li>Competitive positioning — you vs. the market, carrier by carrier</li>
-                <li>Rate-filing coverage across 49 states, refreshed monthly</li>
+                <li>Rate-filing coverage across {MARKETED_STATE_COUNT} states, refreshed monthly</li>
                 <li>50-state HR &amp; Compliance Hub for running your agency</li>
                 <li>My Carriers monitoring &amp; retention alerts</li>
               </ul>

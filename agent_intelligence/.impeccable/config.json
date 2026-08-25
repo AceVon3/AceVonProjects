@@ -1,0 +1,44 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "src/app/(marketing)/landing.css"
+        ],
+        "createdAt": "2026-08-25T13:33:12.226Z",
+        "reason": "DESIGN.md Overview: landing .lp is a deliberately separate logo-derived system; no shared tokens with the app scale"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          "src/app/(marketing)/landing.css"
+        ],
+        "createdAt": "2026-08-25T13:33:12.318Z",
+        "reason": "DESIGN.md Shapes: landing runs its own radius scale (16px cards, 11px/13px buttons) by design"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#a9a9c0",
+        "files": [
+          "src/app/(marketing)/landing.css"
+        ],
+        "createdAt": "2026-08-25T13:34:21.371Z",
+        "reason": "Incumbent footer text tint on the always-navy band; landing neutrals are navy tints per DESIGN.md"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#8484a0",
+        "files": [
+          "src/app/(marketing)/landing.css"
+        ],
+        "createdAt": "2026-08-25T13:34:21.481Z",
+        "reason": "Incumbent footer copyright tint on the always-navy band; landing neutrals are navy tints per DESIGN.md"
+      }
+    ]
+  }
+}

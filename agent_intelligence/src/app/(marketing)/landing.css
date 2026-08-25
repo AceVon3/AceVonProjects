@@ -726,8 +726,12 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--brand);
-  color: #fff;
+  /* Ink, not brand red: the One Alarm Rule reserves red for action and
+     identity — a step ordinal is neither. (ink flips light in dark theme,
+     so the disc stays visible on the dark surface; bg gives the numeral
+     its contrast in both.) */
+  background: var(--ink);
+  color: var(--bg);
   font-weight: 800;
   font-size: 1rem;
   display: grid;
@@ -764,7 +768,9 @@ html[data-lp-theme="dark"] .lp .theme-btn .moon {
   font-size: clamp(2rem, 3.6vw, 2.7rem);
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--brand);
+  /* One Alarm Rule: coverage stats are proof, not signals — ink carries
+     the weight; red stays scarce for the hero panel's rate numbers. */
+  color: var(--ink);
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
@@ -1046,7 +1052,8 @@ html.lp-js .lp .reveal.in {
   content: "✓";
   position: absolute;
   left: 4px;
-  color: var(--brand);
+  /* Quiet checks (One Alarm Rule): the list confirms, it doesn't alarm. */
+  color: var(--ink-soft);
   font-weight: 700;
 }
 .lp .price-cta { width: 100%; justify-content: center; }

@@ -55,9 +55,8 @@
       "label": { "displayName": "Label / Kicker", "purpose": "11px uppercase, +0.4–0.8px tracking, ink-3. Opens every card and table section." }
     },
     "shadows": [
-      { "name": "card-target", "value": "0 1px 3px rgba(20,20,43,0.05), 0 14px 32px -18px rgba(20,20,43,0.22)", "purpose": "Resting cards — the landing's two-part shadow (contact edge + soft drop), adopted app-wide going forward (confirmed 2026-08-24)." },
-      { "name": "card-legacy", "value": "0 2px 8px rgba(20,20,43,0.05)", "purpose": "What the app's shadow-card token renders today; migrate on touch, don't mass-edit." },
-      { "name": "popover", "value": "0 8px 28px rgba(20,20,43,0.14)", "purpose": "Floating layers — tooltips, popovers, menus." },
+      { "name": "card", "value": "0 1px 3px rgba(20,20,43,0.05), 0 14px 32px -18px rgba(20,20,43,0.22)", "purpose": "Resting cards — the shared two-part shadow (contact edge + soft drop); the app's shadow-card token since 2026-08-25 and the landing's --shadow-card." },
+      { "name": "popover", "value": "0 8px 28px rgba(20,20,43,0.14)", "purpose": "Floating layers — tooltips, popovers, menus — and the hover-lift state of fully-clickable cards." },
       { "name": "lp-sm", "value": "0 1px 2px rgba(20,20,43,0.05), 0 1px 3px rgba(20,20,43,0.05)", "purpose": "Landing buttons and small raised elements." }
     ],
     "motion": [

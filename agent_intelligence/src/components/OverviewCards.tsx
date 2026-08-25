@@ -125,7 +125,9 @@ export default function OverviewCards({
         <Link
           href={biggestMover.mode === "prospect" ? "/prospect" : "/defend"}
           data-testid="ov-card-mover"
-          className={`${CARD} no-underline group`}
+          // The one fully-clickable card in the row earns a hover lift
+          // (firmer shadow on interaction — DESIGN.md elevation doctrine).
+          className={`${CARD} no-underline group transition-shadow hover:shadow-popover`}
         >
           <div className="flex items-baseline justify-between">
             <div className={KICKER.replace(" mb-3", " mb-2")}>Biggest mover</div>

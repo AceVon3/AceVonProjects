@@ -177,12 +177,11 @@ Breakpint behavior is Tailwind-default (`md:` 768px is the main hinge — rail o
 
 ## Elevation & Depth
 
-Depth doctrine (confirmed 2026-08-24): **firmer shadows everywhere** — surfaces should feel physical at rest, not whispered. The landing already lives this (`0 1px 3px rgba(20,20,43,0.05), 0 14px 32px -18px rgba(20,20,43,0.22)`); the app's current `shadow-card` (`0 2px 8px rgba(20,20,43,0.05)`) is the legacy floor and should migrate toward the landing's two-part shadow (a tight contact line plus a soft distant drop) as surfaces get touched. Popovers already assert themselves at `0 8px 28px rgba(20,20,43,0.14)`.
+Depth doctrine (confirmed 2026-08-24, applied to the app's `shadow-card` token 2026-08-25): **firmer shadows everywhere** — surfaces feel physical at rest, not whispered. App and landing now share one shadow language: a tight contact line plus a soft distant drop. Interactive surfaces go firmer still on hover (the Biggest Mover card lifts to the popover shadow).
 
 ### Shadow Vocabulary
-- **Card, target** (`box-shadow: 0 1px 3px rgba(20,20,43,0.05), 0 14px 32px -18px rgba(20,20,43,0.22)`): resting cards — the landing's card shadow, adopted app-wide going forward.
-- **Card, legacy app token** (`box-shadow: 0 2px 8px rgba(20,20,43,0.05)`): what `shadow-card` renders today; migrate on touch, don't mass-edit.
-- **Popover** (`box-shadow: 0 8px 28px rgba(20,20,43,0.14)`): floating layers — tooltips, popovers, menus.
+- **Card** (`box-shadow: 0 1px 3px rgba(20,20,43,0.05), 0 14px 32px -18px rgba(20,20,43,0.22)`): resting cards — the `shadow-card` token in `tailwind.config.ts` and the landing's `--shadow-card`.
+- **Popover** (`box-shadow: 0 8px 28px rgba(20,20,43,0.14)`): floating layers — tooltips, popovers, menus — and the hover-lift state of fully-clickable cards.
 
 ### Named Rules
 **The Physical Surface Rule.** Shadows are navy-tinted (rgba(20,20,43,…)), never pure black, and always two jobs: a contact edge plus a soft drop. Flat gray boxes read as government forms — the confirmed anti-reference.

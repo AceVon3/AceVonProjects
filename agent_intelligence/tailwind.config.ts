@@ -90,7 +90,10 @@ const config: Config = {
         badge: "7px",
       },
       boxShadow: {
-        card:    "0 2px 8px rgba(20,20,43,0.05)",
+        // Two-part card shadow (contact edge + soft drop) — the landing's
+        // shadow language adopted app-wide per the DESIGN.md elevation
+        // doctrine (firmer shadows everywhere, decided 2026-08-24).
+        card:    "0 1px 3px rgba(20,20,43,0.05), 0 14px 32px -18px rgba(20,20,43,0.22)",
         popover: "0 8px 28px rgba(20,20,43,0.14)",
       },
       borderWidth: {

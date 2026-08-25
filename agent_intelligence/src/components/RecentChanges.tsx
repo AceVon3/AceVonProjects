@@ -103,6 +103,9 @@ export default function RecentChanges({ rows }: Props): React.JSX.Element {
                     className={[
                       "flex items-center justify-between gap-4 px-[22px] py-4",
                       "border-l-[3px] cursor-pointer transition-colors hover:bg-surface-2",
+                      // Inset red-ring focus (the app's focus language); an
+                      // outline would be clipped by the card's overflow-hidden.
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-red/40",
                       CATEGORY_BORDER[r.classification],
                       isLast ? "" : "border-b border-b-line",
                     ].join(" ")}
@@ -111,7 +114,9 @@ export default function RecentChanges({ rows }: Props): React.JSX.Element {
                       <div className="text-15 font-[650] text-ink truncate">
                         {r.filing.brand}
                       </div>
-                      <div className="text-13 text-ink-2 mt-0.5 truncate">
+                      {/* Wraps below sm so the effective date survives on
+                          phones; truncation was eating it entirely. */}
+                      <div className="text-13 text-ink-2 mt-0.5 truncate max-sm:whitespace-normal">
                         {r.filing.line_of_business} · {when}
                       </div>
                     </div>
