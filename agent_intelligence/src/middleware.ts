@@ -36,9 +36,14 @@ export default authConfigured
 
 export const config = {
   // Clerk's recommended matcher: everything except static assets and _next
-  // internals, plus all API routes.
+  // internals, plus all API routes — EXCEPT /api/digest/*. Those endpoints
+  // (run/review/approve/unsubscribe) authenticate via their own HMAC link
+  // tokens, never a Clerk session. Left in the matcher, clerkMiddleware fires
+  // a session-handshake redirect on them; for the "Approve & send" form POST
+  // from a signed-in browser that handshake 405s and the send never runs
+  // (observed 2026-09-08). Excluding them from the matcher is the fix.
   matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
+    "/((?!_next|api/digest|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(?!api/digest)(api|trpc)(.*)",
   ],
 };
