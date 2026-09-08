@@ -472,6 +472,32 @@ export function buildDigest(p: DigestProfile, opts: DigestOpts = {}): Digest {
       defend, 6, "/defend", KIND_DEFEND, anchor)}
   </table>
 
+  ${mineN + competitorsN === 0 ? `
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td style="padding:26px 0 0;">
+      ${card(`
+      <tr><td style="padding:16px;">
+        <div style="font:600 13px/1.6 ${FONT};color:${INK};">
+          It looks like there were no rate changes in your state${p.agent.licensed_states.length === 1 ? "" : "s"} this month for you, or your competitors.
+        </div>
+      </td></tr>`)}
+    </td></tr>
+  </table>` : ""}
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td style="padding:26px 0 0;">
+      ${card(`
+      <tr><td style="padding:14px 16px;">
+        <div style="font:600 12.5px/1.6 ${FONT};color:${INK};">
+          Do you think the information at <a href="${APP_URL}" style="color:${BLUE};text-decoration:none;">agencyman.ai</a> is helpful?
+        </div>
+        <div style="font:400 12px/1.6 ${FONT};color:${INK2};">
+          Please share it with other agents who may find it helpful!
+        </div>
+      </td></tr>`)}
+    </td></tr>
+  </table>
+
   ${hrHtml}
 
   <div style="margin-top:26px;padding:0 2px;font:400 11px/1.6 ${FONT};color:${INK3};">
