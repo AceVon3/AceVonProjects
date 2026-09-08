@@ -38,8 +38,17 @@ export async function GET(req: NextRequest) {
            </button>
            <span style="font-size:12px;color:#6B7080;">Nothing has been sent yet.</span>
          </form>`
-      : `<div style="font:600 14px 'Segoe UI',sans-serif;color:${run.status === "sent" ? "#1B7F4B" : "#8A5A10"};">
-           This batch was already ${run.status === "sent" ? "approved and sent" : "discarded"}.
+      : run.status === "sent"
+      ? `<form method="POST" action="/api/digest/approve" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+           <input type="hidden" name="run" value="${esc(runDate)}"><input type="hidden" name="t" value="${esc(token)}">
+           <span style="font:600 14px 'Segoe UI',sans-serif;color:#1B7F4B;">This batch was approved and sent.</span>
+           <button name="action" value="send" style="background:#F1F2F7;color:#4A4E63;border:1px solid #DDE1EA;border-radius:10px;padding:10px 18px;font:600 13px 'Segoe UI',sans-serif;cursor:pointer;">
+             Retry unsent / failed
+           </button>
+           <span style="font-size:12px;color:#6B7080;">Only recipients not yet sent this batch are attempted — no duplicates.</span>
+         </form>`
+      : `<div style="font:600 14px 'Segoe UI',sans-serif;color:#8A5A10;">
+           This batch was already discarded.
          </div>`;
 
   const cards = run.items.map((it, n) => `

@@ -6,11 +6,13 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-import { getRun, markRun, recordSend, verifyRunToken } from "@/lib/digestDb";
+import { getDigestStates, getRun, markRun, recordSend, verifyRunToken } from "@/lib/digestDb";
 import { sendEmail } from "@/lib/resendSend";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function page(title: string, body: string, status = 200): NextResponse {
   return new NextResponse(
@@ -39,32 +41,44 @@ export async function POST(req: NextRequest) {
   }
   const run = await getRun(runDate);
   if (!run) return page("Not found", `No staged run for ${runDate}.`, 404);
-  if (run.status !== "staged") {
-    return page("Already resolved", `This batch was already ${run.status}. Nothing was sent now.`);
+  if (run.status === "discarded") {
+    return page("Batch discarded", "This batch was discarded. Re-stage to build a fresh one.");
   }
 
   if (action === "discard") {
+    if (run.status === "sent") {
+      return page("Already sent", "This batch was already sent, so it can't be discarded.");
+    }
     await markRun(runDate, "discarded");
     return page("Batch discarded", "Nothing was sent. Re-run staging to build a fresh batch.");
   }
   if (action !== "send") return page("Unknown action", "Use the buttons on the review page.", 400);
 
-  let sent = 0, failed = 0, skipped = 0;
+  // Send (status 'staged') or RETRY (status 'sent' — e.g. to clear rate-limit
+  // failures from a prior approval). Per-recipient idempotency keyed on
+  // digest_state.last_run_date guarantees a retry NEVER re-sends to anyone
+  // already sent this run, and the loop throttles under Resend's 10 req/s.
+  const isRetry = run.status === "sent";
+  const states = await getDigestStates();
+  let sent = 0, failed = 0, skipped = 0, already = 0;
   const failures: string[] = [];
   for (const it of run.items) {
     if (!it.email) { skipped++; continue; }
+    const st = states.get(it.user_id);
+    if (st?.last_run_date === runDate) { already++; continue; } // already sent THIS run
+    if (st?.unsubscribed_at) { skipped++; continue; }
     const err = await sendEmail(it.email, it.subject, it.html);
+    await sleep(150); // stay comfortably under Resend's 10 req/s
     if (err) { failed++; failures.push(`${it.email}: ${err}`); continue; }
     await recordSend(it.user_id, runDate, it.snapshot);
     sent++;
   }
-  // 'sent' even with partial failures — recordSend ran per success, so a
-  // re-stage next run rebuilds only what makes sense; never double-send by
-  // re-approving the same batch.
   await markRun(runDate, "sent");
   return page(
-    "Digest sent",
-    `<b>${sent}</b> sent · ${skipped} skipped (no email) · ${failed} failed.` +
-      (failures.length ? `<br><br><span style="font-size:12px;color:#8A1B1F;">${failures.slice(0, 5).join("<br>")}</span>` : ""),
+    isRetry ? "Retry complete" : "Digest sent",
+    `<b>${sent}</b> sent` +
+      (already ? ` · ${already} already sent (skipped)` : "") +
+      ` · ${skipped} skipped (no email / unsubscribed) · ${failed} failed.` +
+      (failures.length ? `<br><br><span style="font-size:12px;color:#8A1B1F;">${failures.slice(0, 8).join("<br>")}</span>` : ""),
   );
 }
