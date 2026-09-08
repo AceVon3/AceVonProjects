@@ -44,6 +44,8 @@ export const config = {
   // (observed 2026-09-08). Excluding them from the matcher is the fix.
   matcher: [
     "/((?!_next|api/digest|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(?!api/digest)(api|trpc)(.*)",
+    // Next's route parser rejects a lookahead at position 1, so the exclusion
+    // lives INSIDE the group: all /api/* and /trpc/* except /api/digest/*.
+    "/(api/(?!digest/).*|trpc/.*)",
   ],
 };
