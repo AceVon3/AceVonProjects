@@ -872,9 +872,11 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # rows from already-cached filings, zero new SERFF spend; max NWPP
     # +55.2% = earthquake-buydown endorsement, PDF-verified).
     raw = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
-    ok = raw == 10634
+    # 10634 -> 10882 at the 26aug refresh import (2026-09-08): +248 raw across
+    # the 48-state refresh + tail campaign + chase (GA +27, TX +12, VA +12...).
+    ok = raw == 10882
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 10634, got {raw}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (1) scraped filings_raw rows: expected 10882, got {raw}")
 
     null_brand = con.execute("SELECT COUNT(*) FROM filings_raw WHERE brand IS NULL").fetchone()[0]
     ok = null_brand == 0
@@ -883,9 +885,10 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
 
     rolled = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     # 6104 -> 6642 at the 26h2 refresh import (2026-08-10): +538 rolled.
-    ok = rolled == 6690  # +48 NC (49 raw, one 2-row rollup)
+    # 6690 -> 6836 at the 26aug refresh import (2026-09-08): +146 rolled.
+    ok = rolled == 6836
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 6690, got {rolled}")
+    print(f"  [{'OK' if ok else 'FAIL'}] (3) scraped filings (rolled) rows: expected 6836, got {rolled}")
 
     # (4) GECC-134661852 Personal Auto spot-check
     raw_n = con.execute(
@@ -907,10 +910,15 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
         checks = [
             ("raw rows == 2",                 raw_n == 2,                    raw_n),
             ("rolled to 1 record",            True,                          1),
-            ("overall_rate_impact ~ 50.88",   abs(impact - 50.88) < 0.05,    round(impact, 4)),
+            # Re-keyed 2026-09-08 (26aug import): NV APPROVED GEICO's filing
+            # AMENDED — asked 30.489/56.469 eff 03/26, approved 13.222/36.291
+            # eff 08/12 (B24 pending-recheck re-download; one of NV's 4
+            # Approved flips). Same entities/premiums/policyholders; the
+            # approved number is the customer-facing product.
+            ("overall_rate_impact ~ 31.32",   abs(impact - 31.32) < 0.05,    round(impact, 4)),
             ("entity_count == 2",             n_ent == 2,                    n_ent),
-            ("min_entity_impact == 30.49",    abs(mn - 30.49) < 0.005,       mn),
-            ("max_entity_impact == 56.47",    abs(mx - 56.47) < 0.005,       mx),
+            ("min_entity_impact == 13.222",   abs(mn - 13.222) < 0.005,      mn),
+            ("max_entity_impact == 36.291",   abs(mx - 36.291) < 0.005,      mx),
             ("brand == GEICO",                brand == "GEICO",              brand),
             ("state == NV",                   state == "NV",                 state),
         ]
@@ -991,10 +999,14 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # 2289 at the 26h2 refresh import (2026-08-10): 1794 - 18 aged (as_of
     # slide 08-04 -> 08-10) + 513 refresh-active rows, exact vs the HEAD
     # (B22-era) db at both as_ofs. Re-derive at every import.
-    ok = active == 2306  # +17 NC active, zero as_of slide (same-day re-key)
+    # 2271 at the 26aug refresh import (2026-09-08): 2307 - 174 as_of slide
+    # (08-10 -> 09-08 aging) + 138 refresh-active adds - 0 drops, exact vs the
+    # HEAD (NC-era) db at both as_ofs (the 2306-vs-2307 baseline wobble is the
+    # known as_of/xlsx-mtime pin-slide class). Re-derive at every import.
+    ok = active == 2271
     failed |= not ok
     print(f"  [{'OK' if ok else 'FAIL'}] (9) scraped active-window filings (as of {as_of}): "
-          f"expected 2306, got {active}")
+          f"expected 2271, got {active}")
 
     anchor = con.execute(
         """SELECT serff_tracking_number, brand, state, overall_rate_impact
@@ -1019,16 +1031,16 @@ def verify(con: sqlite3.Connection, rolled_count: int, multi_count: int) -> None
     # (2026-08-03 CA import: AMBEST_STATES is empty, expect exactly zero).
     raw_scraped = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='serff_scraped'").fetchone()[0]
     raw_ambest = con.execute("SELECT COUNT(*) FROM filings_raw WHERE source='ambest_sourced'").fetchone()[0]
-    ok = raw_scraped == 10634 and raw_ambest == 0
+    ok = raw_scraped == 10882 and raw_ambest == 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 10634 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (11) filings_raw source tags: 10882 serff_scraped "
           f"+ 0 ambest_sourced (got {raw_scraped} / {raw_ambest})")
 
     f_scraped = con.execute("SELECT COUNT(*) FROM filings WHERE source='serff_scraped'").fetchone()[0]
     f_ambest = con.execute("SELECT COUNT(*) FROM filings WHERE source='ambest_sourced'").fetchone()[0]
-    ok = f_scraped == 6690 and f_ambest == 0
+    ok = f_scraped == 6836 and f_ambest == 0
     failed |= not ok
-    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 6690 serff_scraped "
+    print(f"  [{'OK' if ok else 'FAIL'}] (12) filings source tags: 6836 serff_scraped "
           f"+ 0 ambest_sourced (got {f_scraped} / {f_ambest})")
 
     # ---- AM Best-specific checks (own invariants) ----

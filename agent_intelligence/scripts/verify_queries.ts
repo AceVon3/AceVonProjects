@@ -29,6 +29,17 @@ type MyCarriersCase = {
   expected: number;
 };
 
+// Re-keyed 2026-09-08: 26aug refresh import (48 states refreshed + tail
+// campaign + chase). Every moved pin fully attributed vs the HEAD (NC-era)
+// db: (a) as_of slide 08-10 -> 09-08 aged 1-13 rows per case; (b) NV AMENDED
+// APPROVALS re-valued three standing rows (B24 pending-recheck flips: GECC-
+// 134661852 50.9 -> 31.3, LBPM-134825266 10.0 -> 6.9, USAA-134941475 16.4 ->
+// 13.8 — all stay above the +5 prospect threshold, so counts move only via
+// aging); (c) refresh adds: ALSE-135060300 NV HO +22.7 (prospect cases),
+// CFPC-135072385 ID -6.0 / GMMX-135067792 OR -5.0 / NWPP-G135051837 UT -7.0
+// (+ SFMA-135061730 ID -4.0 indep-only) lifted the all-8 defend counts, and
+// SFMA-135009774/135009835 AZ (+2.1/-0.7) joined my-carriers. Zero
+// unexplained drops (the only my-carriers removal is the LBPM re-value).
 // Re-keyed 2026-07-27: AL import (43rd state) — all three moved pins trace to
 // ONE aged filing: ALSE-134500694 Allstate WA -2.9% (eff 2025-07-24) left the
 // +5-day slide window -> captive-SF defend 26->25, independent defend 35->34,
@@ -54,8 +65,8 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm"],
       licensed_states: ["AZ", "NV"],
     } satisfies CaptiveProfile,
-    expected_prospect: 22,
-    expected_defend: 14,
+    expected_prospect: 21,
+    expected_defend: 13,
   },
   {
     label: "Captive Allstate, AZ+NV",
@@ -66,7 +77,7 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       licensed_states: ["AZ", "NV"],
     } satisfies CaptiveProfile,
     expected_prospect: 19,
-    expected_defend: 13,
+    expected_defend: 12,
   },
   {
     label: "Captive State Farm, all 8 states",
@@ -76,11 +87,11 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm"],
       licensed_states: ALL_8,
     } satisfies CaptiveProfile,
-    expected_prospect: 54,
+    expected_prospect: 46,
     // Re-keyed 2026-07-30 (TX import / B20 fold-in): 25 -> 26. The +1 is UT
     // ALSE-134657702 Allstate Personal Auto -7.0% eff 2025-10-14 — a B20
     // new-product override save (non-own-brand, so it lands in SF Defend).
-    expected_defend: 46,
+    expected_defend: 47,
   },
   {
     label: "Independent, AZ+NV",
@@ -89,8 +100,8 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
       authorized_brands: ["State Farm", "Allstate", "GEICO"], // brands don't matter for Prospect/Defend (independents see all 13)
       licensed_states: ["AZ", "NV"],
     } satisfies IndependentProfile,
-    expected_prospect: 25,
-    expected_defend: 16,
+    expected_prospect: 24,
+    expected_defend: 15,
   },
   {
     label: "Independent, all 8 states",
@@ -105,8 +116,8 @@ const PROSPECT_DEFEND_CASES: ProspectDefendCase[] = [
     // import itself cannot move these counts). Prior note:
     // Re-keyed 2026-07-30: 46 -> 45. -1 = CO SFMA-134532940 SF Personal Auto
     // +13.4% eff 2025-07-29 aged out by the 3-day as_of slide (07-27 -> 07-30).
-    expected_prospect: 65,
-    expected_defend: 54,
+    expected_prospect: 57,
+    expected_defend: 56,
   },
 ];
 
@@ -118,7 +129,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
       authorized_brands: ["State Farm", "Travelers"],
       licensed_states: ["AZ", "NV"],
     },
-    expected: 14,
+    expected: 15,
   },
   {
     label: "Independent, sells SF + Travelers + Progressive, AZ+CO+NV",
@@ -130,7 +141,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
     // Re-keyed 2026-07-30: 24 -> 21. -3 = the CO State Farm Personal Auto trio
     // (SFMA-134532992/134532940/134532998, all eff 2025-07-29) aged out by the
     // 3-day as_of slide. Nothing added: no TX/B20 rows touch this scope.
-    expected: 27,
+    expected: 28,
   },
   {
     label: "Independent, sells Allstate + Liberty Mutual + Safeco, all 8 states",
@@ -143,7 +154,7 @@ const MY_CARRIERS_CASES: MyCarriersCase[] = [
     // added 6 rows to this brand/state slice; 5 are exactly-0% (suppressed by
     // the rate-neutral filter) — the +1 is UT ALSE-134657702 Allstate Personal
     // Auto -7.0% eff 2025-10-14 (a new-product override save, 17,653 ph).
-    expected: 97,
+    expected: 86,
   },
 ];
 
