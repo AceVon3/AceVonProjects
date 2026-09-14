@@ -14,6 +14,11 @@ export default function CoveragePage(): React.JSX.Element {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    // Hidden until launch — direct hits redirect out unless the flag is set.
+    if (process.env.NEXT_PUBLIC_COVERAGE_COMPARE !== "1") {
+      router.replace("/overview");
+      return;
+    }
     const p = loadProfile();
     if (!p) {
       router.replace("/setup");

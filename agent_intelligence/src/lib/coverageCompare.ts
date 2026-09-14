@@ -208,10 +208,10 @@ const HOME: Line = {
     "Current (2025–2026) US homeowners (HO-3) offerings. High-confidence values trace to filed forms (State Farm HW-2136 via the OK DOI; Allstate AP1 via the NV DOI; Allstate's own state extended-cost table) or carrier sites; Farmers/Liberty lean on carrier copy, Insurify, and — for Liberty — Safeco's filed forms (tagged). Most HO limits are declarations-level and don't vary cleanly by state on public data.",
   features: [
     { id: "dwelling-erc", name: "Dwelling — extended replacement cost", description: "Pays above the dwelling limit to rebuild after a total loss", cells: {
-      statefarm: { category: "endorsement", value: "+20% buffer", confidence: "high", note: "Option ID; ~20%. Guaranteed/unlimited RC not offered." },
-      allstate: { category: "endorsement", value: "+120% buffer", confidence: "high", note: "BSREL; 120% std (125% AR/NC/NY, 150% CA/CT). Not on 'Select' packages in some states." },
-      farmers: { category: "endorsement", value: "+25% / Guaranteed", confidence: "high", note: "Extended RC up to +25%; Guaranteed RC (no cap) also available." },
-      liberty: { category: "endorsement", value: "Offered · buffer DNPA", confidence: "medium", safecoDerived: true, note: "Extended + Guaranteed RC offered; Liberty-direct buffer not published (Safeco deluxe ~50%)." },
+      statefarm: { category: "endorsement", value: "120% of Cov A", confidence: "high", note: "Option ID (Increased Dwelling Limit) ≈ +20% above the dwelling limit. Guaranteed/unlimited RC not offered." },
+      allstate: { category: "endorsement", value: "120% of Cov A", confidence: "high", note: "BSREL — 120% of Coverage A standard (125% AR/NC/NY, 150% CA/CT). Not on 'Select' packages in some states." },
+      farmers: { category: "endorsement", value: "125% of Cov A · Guaranteed", confidence: "high", note: "Extended RC ≈ +25%; Guaranteed RC (no cap) also available." },
+      liberty: { category: "endorsement", value: "Offered · % DNPA", confidence: "medium", safecoDerived: true, note: "Extended + Guaranteed RC offered; Liberty-direct buffer not published (Safeco deluxe ~50%)." },
     } },
     { id: "other-structures", name: "Other Structures (Cov B)", description: "Detached garage, fence, shed — % of dwelling", cells: {
       statefarm: { category: "included", value: "10% of Cov A", confidence: "high", note: "Minimum 10%, increasable (nested under Coverage A)." },
@@ -332,7 +332,7 @@ export function resolveCell(line: Line, feature: Feature, carrier: Carrier, cell
 
   // home
   if (feature.id === "dwelling-erc" && carrier.id === "allstate") {
-    out.value = `+${ALLSTATE_ERC_BUFFER[state] ?? "120%"} buffer`;
+    out.value = `${ALLSTATE_ERC_BUFFER[state] ?? "120%"} of Cov A`;
     if (ALLSTATE_ERC_SELECT_EXCL.includes(state)) out.stateFlag = `Excluded on 'Select' packages in ${sn}.`;
   } else if (feature.id === "hurricane") {
     if (!COASTAL_STATES.includes(state)) {

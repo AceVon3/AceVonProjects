@@ -48,8 +48,12 @@ function buildItems(agentType: AgentType | null): NavItem[] {
     // says these are rate changes, NOT price levels (decided 2026-07-06).
     { label: "Competitive Positioning", href: "/positioning", icon: "ti-arrows-left-right" },
     // Coverage Compare — factual auto/home coverage-feature comparison vs
-    // competitors (a Defend/Prospect companion; curated + public-sourced data).
-    { label: "Coverage Compare", href: "/coverage", icon: "ti-shield-check" },
+    // competitors (a Defend/Prospect companion). Behind
+    // NEXT_PUBLIC_COVERAGE_COMPARE until launch, so it stays hidden in
+    // production even when the app is deployed for other work.
+    ...(process.env.NEXT_PUBLIC_COVERAGE_COMPARE === "1"
+      ? ([{ label: "Coverage Compare", href: "/coverage", icon: "ti-shield-check" }] as NavItem[])
+      : []),
     // Brand Health (v2) — composite brand scores from the monthly snapshot.
     { label: "Brand Health", href: "/brand-health", icon: "ti-activity" },
     { label: "Compliance", href: "/compliance", icon: "ti-gavel" },
