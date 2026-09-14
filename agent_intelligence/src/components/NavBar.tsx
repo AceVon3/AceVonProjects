@@ -47,6 +47,9 @@ function buildItems(agentType: AgentType | null): NavItem[] {
     // "Competitive Positioning", not "Pricing" — the page's load-bearing band
     // says these are rate changes, NOT price levels (decided 2026-07-06).
     { label: "Competitive Positioning", href: "/positioning", icon: "ti-arrows-left-right" },
+    // Coverage Compare — factual auto/home coverage-feature comparison vs
+    // competitors (a Defend/Prospect companion; curated + public-sourced data).
+    { label: "Coverage Compare", href: "/coverage", icon: "ti-shield-check" },
     // Brand Health (v2) — composite brand scores from the monthly snapshot.
     { label: "Brand Health", href: "/brand-health", icon: "ti-activity" },
     { label: "Compliance", href: "/compliance", icon: "ti-gavel" },
