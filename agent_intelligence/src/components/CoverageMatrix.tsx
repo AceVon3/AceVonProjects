@@ -18,6 +18,7 @@ import {
   stateName,
 } from "@/lib/coverageCompare";
 import type { AgentProfile } from "@/lib/profile";
+import { STATES } from "@/lib/states";
 
 type Counts = { high: number; medium: number; low: number; dnpa: number; safeco: number; total: number };
 const emptyCounts = (): Counts => ({ high: 0, medium: 0, low: 0, dnpa: 0, safeco: 0, total: 0 });
@@ -88,6 +89,13 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
 
   const line = LINES[lineKey];
   const carriers = useMemo(() => anchorCarriers(line, profile.authorized_brands), [line, profile.authorized_brands]);
+
+  // State dropdown spans all 50 states (the load-bearing rules — CA bans, FL/KY/SC
+  // glass mandates, TX wind/hail, coastal hurricane — live outside the licensable
+  // set), with the agent's own licensed states pulled to the top for quick reach.
+  const licensedSet = useMemo(() => new Set(profile.licensed_states), [profile.licensed_states]);
+  const yourStates = useMemo(() => STATES.filter((s) => licensedSet.has(s.code)), [licensedSet]);
+  const otherStates = useMemo(() => STATES.filter((s) => !licensedSet.has(s.code)), [licensedSet]);
 
   // Grid shows a manageable subset (your carrier + a few); reset to that on a
   // line switch. The head-to-head below can still pick any two carriers.
@@ -222,11 +230,22 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
             className="min-h-10 min-w-[210px] cursor-pointer rounded-lg border border-line-2 bg-surface px-3 py-2 text-14 text-ink"
           >
             <option value="">All states (national baseline)</option>
-            {profile.licensed_states.map((s) => (
-              <option key={s} value={s}>
-                {stateName(s)}
-              </option>
-            ))}
+            {yourStates.length ? (
+              <optgroup label="Your licensed states">
+                {yourStates.map((s) => (
+                  <option key={s.code} value={s.code}>
+                    {s.name}
+                  </option>
+                ))}
+              </optgroup>
+            ) : null}
+            <optgroup label="All states">
+              {otherStates.map((s) => (
+                <option key={s.code} value={s.code}>
+                  {s.name}
+                </option>
+              ))}
+            </optgroup>
           </select>
         </label>
         <label className="flex flex-col gap-1.5">

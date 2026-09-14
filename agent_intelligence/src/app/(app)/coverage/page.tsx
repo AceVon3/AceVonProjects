@@ -36,7 +36,7 @@ export default function CoveragePage(): React.JSX.Element {
       <div className="max-w-[1120px] mx-auto px-4 md:px-8 py-[30px]">
         <p className="text-13 text-ink-2 max-w-[640px] mt-0 mb-4 leading-relaxed">
           How your carrier&rsquo;s coverage stacks up against competitors, feature by feature. Switch between auto and home,
-          filter to one of your states, or search a coverage — then read across the row.
+          filter to any state, or search a coverage — then read across the row.
         </p>
         <CoverageMatrix profile={profile} />
       </div>
