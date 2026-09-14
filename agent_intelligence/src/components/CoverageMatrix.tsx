@@ -5,7 +5,7 @@
 // chip + confidence + source); the agent reads across the row. Data + resolve
 // logic live in @/lib/coverageCompare (client-safe, no DB).
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   LINES,
@@ -84,9 +84,26 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
   const [verifyOnly, setVerifyOnly] = useState<boolean>(false);
   const [cmpA, setCmpA] = useState<string>(""); // head-to-head company A (default: your carrier)
   const [cmpB, setCmpB] = useState<string>(""); // head-to-head company B (default: a competitor)
+  const [visibleIds, setVisibleIds] = useState<string[]>([]); // carriers shown in the grid
 
   const line = LINES[lineKey];
   const carriers = useMemo(() => anchorCarriers(line, profile.authorized_brands), [line, profile.authorized_brands]);
+
+  // Grid shows a manageable subset (your carrier + a few); reset to that on a
+  // line switch. The head-to-head below can still pick any two carriers.
+  const anchorIds = useMemo(() => carriers.filter((c) => c.anchor).map((c) => c.carrier.id), [carriers]);
+  useEffect(() => {
+    setVisibleIds(carriers.slice(0, 5).map((c) => c.carrier.id));
+  }, [carriers]);
+  const effectiveVisibleIds = visibleIds.length ? visibleIds : carriers.slice(0, 5).map((c) => c.carrier.id);
+  const visibleCarriers = carriers.filter((c) => effectiveVisibleIds.includes(c.carrier.id));
+  const toggleCarrier = (id: string) => {
+    if (anchorIds.includes(id)) return; // your carrier stays pinned
+    setVisibleIds((prev) => {
+      const base = prev.length ? prev : carriers.slice(0, 5).map((c) => c.carrier.id);
+      return base.includes(id) ? base.filter((x) => x !== id) : [...base, id];
+    });
+  };
 
   // Confidence counts for the current line, overall and per displayed carrier.
   const stats = useMemo(() => {
@@ -118,11 +135,11 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
 
   const features = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const ids = carriers.map((c) => c.carrier.id);
+    const ids = visibleCarriers.map((c) => c.carrier.id);
     let fs = q ? line.features.filter((f) => `${f.name} ${f.description}`.toLowerCase().includes(q)) : line.features;
     if (verifyOnly) fs = fs.filter((f) => ids.some((id) => isUncertain(f.cells[id])));
     return fs;
-  }, [line, query, verifyOnly, carriers]);
+  }, [line, query, verifyOnly, visibleCarriers]);
 
   // Head-to-head: pick company A (default = your carrier) vs B (default = a
   // competitor). Advantages are read factually from category strength.
@@ -390,6 +407,32 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
         </div>
       ) : null}
 
+      {/* Carrier picker — which columns show in the grid. Your carrier is
+          pinned; toggle competitors on/off to keep the row readable. */}
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-card-line bg-surface px-4 py-3 shadow-sm">
+        <span className="mr-1 text-11 font-bold uppercase tracking-wider text-ink-2">Carriers in grid</span>
+        {carriers.map(({ carrier, anchor }) => {
+          const on = effectiveVisibleIds.includes(carrier.id);
+          return (
+            <button
+              key={carrier.id}
+              onClick={() => toggleCarrier(carrier.id)}
+              disabled={anchor}
+              aria-pressed={on}
+              title={anchor ? "Your carrier — always shown" : on ? "Hide from grid" : "Show in grid"}
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-12 font-semibold ${
+                on ? "border-line-2 bg-soft text-ink" : "border-line-2 bg-surface text-ink-3"
+              } ${anchor ? "cursor-default" : "cursor-pointer"}`}
+            >
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: on ? carrier.color : "transparent", border: on ? "none" : `1px solid ${carrier.color}` }} />
+              {carrier.name}
+              {anchor ? <span className="text-10 font-bold uppercase tracking-wide text-brand-red">You</span> : null}
+            </button>
+          );
+        })}
+        <span className="ml-auto text-11 text-ink-3">{visibleCarriers.length} of {carriers.length} shown</span>
+      </div>
+
       {/* Table */}
       <div className="overflow-x-auto rounded-2xl border border-card-line bg-surface shadow-sm">
         <table className="w-full min-w-[960px] border-separate border-spacing-0">
@@ -399,7 +442,7 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
                 <div className="h-1" />
                 <div className="p-3.5 text-12 font-bold text-ink">Coverage</div>
               </th>
-              {carriers.map(({ carrier, anchor }) => (
+              {visibleCarriers.map(({ carrier, anchor }) => (
                 <th
                   key={carrier.id}
                   className={`border-b border-card-line p-0 text-left align-top ${anchor ? "bg-red-fill/50" : ""}`}
@@ -429,7 +472,7 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
                   <div className="text-13 font-bold text-ink">{feat.name}</div>
                   <div className="mt-0.5 text-12 leading-snug text-ink-2">{feat.description}</div>
                 </th>
-                {carriers.map(({ carrier, anchor }) => {
+                {visibleCarriers.map(({ carrier, anchor }) => {
                   const cell = feat.cells[carrier.id];
                   if (!cell) {
                     return (
@@ -491,7 +534,7 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
         <span className="font-semibold text-ink-mid">Verified pass — confirm before use.</span> {line.footnote} Framing follows a
         filing-comparison layout; the data is independently sourced, not copied from any carrier&rsquo;s internal tool. Always confirm
         against the customer&rsquo;s policy and state. A factual comparison — not a rating, recommendation, or legal/financial advice.
-        Proof-slice: 4 of 13 carriers.
+        Coverage set: {carriers.length} of 13 carriers.
       </p>
     </div>
   );

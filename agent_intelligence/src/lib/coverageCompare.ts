@@ -78,6 +78,10 @@ const AUTO: Line = {
     { id: "statefarm", name: "State Farm", color: "#C42127", unavailableStates: ["MA", "RI"] },
     { id: "geico", name: "GEICO", color: "#1B7F4B" },
     { id: "progressive", name: "Progressive", color: "#8A5A10" },
+    { id: "travelers", name: "Travelers", color: "#B4472D" },
+    { id: "nationwide", name: "Nationwide", color: "#0F7B8A" },
+    { id: "usaa", name: "USAA", color: "#14477A" },
+    { id: "amfam", name: "American Family", color: "#6E4B9E" },
   ],
   glossary: [
     ["Available", "Offered as an optional add-on / endorsement on top of the base policy."],
@@ -191,6 +195,10 @@ const HOME: Line = {
     { id: "allstate", name: "Allstate", color: "#1B6CA8" },
     { id: "farmers", name: "Farmers", color: "#8A5A10" },
     { id: "liberty", name: "Liberty Mutual", color: "#1B7F4B" },
+    { id: "travelers", name: "Travelers", color: "#B4472D" },
+    { id: "nationwide", name: "Nationwide", color: "#0F7B8A" },
+    { id: "usaa", name: "USAA", color: "#14477A" },
+    { id: "amfam", name: "American Family", color: "#6E4B9E" },
   ],
   glossary: [
     ["Extended replacement cost", "Pays a set % above your dwelling limit if rebuild costs run over. 'Guaranteed' = no cap."],
@@ -299,6 +307,175 @@ const HOME: Line = {
     } },
   ],
 };
+
+// --- expansion carriers (Travelers, Nationwide, USAA, American Family) -----
+// Layered onto AUTO/HOME below so the original verified cells stay untouched.
+// Only cells with real public data are listed; anything omitted renders as
+// "Data not publicly available" (very common for these carriers' home limits).
+const uA = src("usaa.com", "https://www.usaa.com/insurance/vehicles/auto/coverage/");
+const tA = src("travelers.com", "https://www.travelers.com/car-insurance/coverage");
+const nA = src("nationwide.com", "https://www.nationwide.com/personal/insurance/auto/coverages/");
+const aA = src("amfam.com", "https://www.amfam.com/insurance/car/coverages");
+const uH = src("usaa.com", "https://www.usaa.com/insurance/property/homeowners/coverage/");
+const tH = src("travelers.com", "https://www.travelers.com/home-insurance/coverage");
+const nH = src("nationwide.com", "https://www.nationwide.com/personal/insurance/homeowners/pages/coverage");
+const aH = src("amfam.com", "https://www.amfam.com/insurance/home/coverages");
+const usnewsUsaa = src("usnews.com", "https://www.usnews.com/insurance/homeowners-insurance/usaa");
+const nerdAmfam = src("nerdwallet.com", "https://www.nerdwallet.com/insurance/homeowners/american-family-home-insurance-review");
+
+const AUTO_EXT: Record<string, Record<string, Cell>> = {
+  "accident-forgiveness": {
+    usaa: { category: "available", confidence: "high", note: "Earned free after ~5 claim-free yrs, or purchased; one at-fault. Not all states.", source: uA },
+    travelers: { category: "available", confidence: "high", note: "Via the Responsible Driver Plan (Premier tier adds a decreasing deductible). Not all states.", source: tA },
+    nationwide: { category: "available", confidence: "high", note: '"Accident Forgiveness" waives the surcharge after a first at-fault. Select states.', source: nA },
+    amfam: { category: "available", confidence: "high", note: "Earned or purchased; shields premium after a first at-fault. Eligibility varies by state.", source: aA },
+  },
+  "new-car-replacement": {
+    usaa: { category: "none", confidence: "high", note: "No new-car replacement; \"Car Replacement Assistance\" pays ACV + 20% instead.", source: src("wallethub.com", "https://wallethub.com/answers/ci/usaa-new-car-replacement-2140759458/") },
+    travelers: { category: "available", confidence: "high", note: '"Premier New Car Replacement" — same make/model within the first 5 model years.', source: tA },
+    nationwide: { category: "available", confidence: "medium", note: '"New Car Replacement Plus" / "Vehicle Value Upgrade" (to 100% MSRP); ~0–5 yr, varies by state.', source: nA },
+    amfam: { category: "available", confidence: "medium", note: "New vehicles only; replaces if totaled within the first year. Not on a product page.", source: aA },
+  },
+  gap: {
+    usaa: { category: "available", confidence: "high", note: '"Car Replacement Assistance" (ACV + 20%, not leased) + "Total Loss Protection" (USAA-financed, up to $50k).', source: uA },
+    travelers: { category: "available", confidence: "high", note: '"Loan/Lease Gap" — ACV vs balance; original owner, dealer-purchased; needs coll + comp.', source: tA },
+    nationwide: { category: "available", confidence: "high", note: "Gap on collision; vehicles ≤6 yrs; select states. Deductible not covered.", source: nA },
+    amfam: { category: "available", confidence: "high", note: '"Lease or Loan" (gap) — ACV vs balance on a total loss.', source: aA },
+  },
+  roadside: {
+    usaa: { category: "available", confidence: "high", note: "24/7 tow, tire, jump, fuel, winch, lockout.", source: uA },
+    travelers: { category: "available", confidence: "high", note: "Basic (15-mi tow) or Premier (100-mi tow + trip interruption + $500 PP).", source: src("travelers.com", "https://www.travelers.com/car-insurance/coverage/roadside-assistance") },
+    nationwide: { category: "available", confidence: "high", note: "Basic or Plus (adds trip-interruption/lodging). 24/7.", source: nA },
+    amfam: { category: "available", confidence: "high", note: '"24/7 Emergency Roadside Service"; also bundled in "Travel Peace of Mind".', source: aA },
+  },
+  rental: {
+    usaa: { category: "available", confidence: "high", note: "Rental while your car is unusable after a covered loss.", source: uA },
+    travelers: { category: "available", confidence: "high", note: "Reimburses rental after a covered loss (24+ hrs out of service).", source: tA },
+    nationwide: { category: "available", confidence: "high", note: "Rental/transportation while repaired after a covered loss.", source: nA },
+    amfam: { category: "available", confidence: "high", note: "Rental during repair or after a total loss.", source: aA },
+  },
+  rideshare: {
+    usaa: { category: "available", confidence: "high", note: '"Rideshare gap protection" — covers the gap while waiting for a request. Not all states.', source: uA },
+    travelers: { category: "available", confidence: "high", note: '"Limited Ridesharing" endorsement — app-on/pre-passenger period. Not all states.', source: tA },
+    nationwide: { category: "none", confidence: "medium", note: "No rideshare / TNC endorsement.", source: src("forbes.com", "https://www.forbes.com/advisor/car-insurance/nationwide-car-insurance-review/") },
+    amfam: { category: "available", confidence: "medium", note: 'Rideshare add-on fills the "Stage 1" gap (app on, no passenger). Not every state.', source: aA },
+  },
+  "diminishing-deductible": {
+    usaa: { category: "none", confidence: "medium", note: "No diminishing-deductible program (uses deductible waivers instead).", source: src("wallethub.com", "https://wallethub.com/answers/ci/does-usaa-waive-deductibles-2140845275/") },
+    travelers: { category: "available", confidence: "medium", note: "Bundled in the Premier Responsible Driver Plan (decreasing deductible), not standalone.", source: src("insurify.com", "https://insurify.com/car-insurance/companies/travelers/") },
+    nationwide: { category: "available", confidence: "high", note: '"Vanishing Deductible" — −$100/yr safe driving, up to $500; an at-fault resets it to $100.', source: src("nationwide.com", "https://www.nationwide.com/personal/insurance/auto/coverages/types/vanishing-deductible") },
+    amfam: { category: "available", confidence: "high", note: "$100 credit at enrollment, then $100/yr ($50 on 6-mo terms) up to max; resets after a claim.", source: src("amfam.com", "https://www.amfam.com/insurance/car/diminishing-deductible-auto") },
+  },
+  "oem-parts": {
+    travelers: { category: "none", confidence: "low", note: "No standalone OEM endorsement marketed; behavior governed by state repair law.", source: src("freeadvice.com", "https://www.freeadvice.com/insurance/does-travelers-offer-oem-parts-coverage/") },
+    amfam: { category: "available", confidence: "high", note: "Elects OEM over aftermarket parts when available (not a guarantee).", source: src("amfam.com", "https://www.amfam.com/insurance/car/coverages/oem-coverage") },
+  },
+  telematics: {
+    usaa: { category: "available", confidence: "high", note: '"SafePilot" app — up to 30% at renewal.', excludeStates: ["AZ", "HI", "ND", "NH", "NY", "SD", "VT", "WV", "WY"], source: src("usaa.com", "https://www.usaa.com/insurance/vehicles/auto/safepilot/") },
+    travelers: { category: "available", confidence: "high", note: '"IntelliDrive" app — up to 30%. Limited in a few states.', source: tA },
+    nationwide: { category: "available", confidence: "high", note: '"SmartRide" (behavior, up to ~40%) + "SmartMiles" (pay-per-mile).', source: nA },
+    amfam: { category: "available", confidence: "high", note: '"KnowYourDrive" — "DriveMyWay" (10–35%) + "MilesMyWay" (low-mileage).', source: aA },
+  },
+  glass: {
+    usaa: { category: "varies", confidence: "high", note: "Comp covers glass; deductible waived for windshield repair.", source: uA },
+    travelers: { category: "varies", confidence: "high", note: "Glass-deductible buy-down (e.g. to $50); full $0 varies by state.", source: tA },
+    nationwide: { category: "varies", confidence: "medium", note: "Comp covers glass; deductible waived for windshield repair.", source: nA },
+    amfam: { category: "varies", confidence: "medium", note: "Glass under comp (Safelite); deductible usually waived for repair.", source: aA },
+  },
+  "custom-parts": {
+    travelers: { category: "available", confidence: "medium", note: '"Comprehensive Coverage G — Custom Equipment" option (per a Maine DOI filing); limit set at purchase.', source: src("maine.gov", "https://www.maine.gov/pfr/insurance/") },
+    nationwide: { category: "available", confidence: "medium", note: '"Custom Equipment" endorsed onto comp/collision; limit selectable.', source: nA },
+  },
+  "emergency-travel": {
+    travelers: { category: "available", confidence: "high", note: "Trip interruption via Premier Roadside — $200/day up to $600, 100+ mi, 24+ hrs out of service.", source: src("travelers.com", "https://www.travelers.com/car-insurance/coverage/roadside-assistance") },
+    amfam: { category: "available", confidence: "high", note: '"Travel Peace of Mind" — lodging/meals/transport when >100 mi from home; up to $600 ($100/$100/$50 a day).', source: src("amfam.com", "https://www.amfam.com/insurance/car/coverages/travel-peace-of-mind") },
+  },
+  "mechanical-breakdown": {
+    usaa: { category: "none", confidence: "high", note: "No mechanical breakdown insurance.", source: src("wallethub.com", "https://wallethub.com/answers/ci/usaa-mechanical-breakdown-insurance-1000105-2140738411/") },
+    travelers: { category: "none", confidence: "medium", note: "No mechanical breakdown insurance.", source: tA },
+    nationwide: { category: "none", confidence: "medium", note: "No mechanical breakdown insurance (offers car-key/pet perks instead).", source: nA },
+    amfam: { category: "none", confidence: "medium", note: "No auto MBI (markets a non-insurance vehicle service plan separately).", source: aA },
+  },
+};
+
+const HOME_EXT: Record<string, Record<string, Cell>> = {
+  "dwelling-erc": {
+    usaa: { category: "endorsement", value: "125% of Cov A", confidence: "high", note: '"Home Protector" — +25% above Cov A for dwelling & other structures. Not guaranteed/uncapped.', source: usnewsUsaa },
+    travelers: { category: "endorsement", value: "125–150% of Cov A · Guaranteed", confidence: "high", note: "Extended RC ~+25%/+50%; Platinum Plus adds +100% (200%) or Guaranteed (uncapped) + cash-out.", source: tH },
+    nationwide: { category: "endorsement", value: "Up to 200% of Cov A", confidence: "high", note: '"Dwelling Replacement Cost" endorsement pays up to 2× Cov A; no true guaranteed RC.', source: nH },
+    amfam: { category: "included", value: "Included · buffer DNPA", confidence: "medium", note: "Extended RC included when insured to full rebuild cost; buffer % not published. Guaranteed not confirmed.", source: nerdAmfam },
+  },
+  "other-structures": {
+    amfam: { category: "included", value: "~10% of Cov A", confidence: "medium", note: "NerdWallet default.", source: nerdAmfam },
+  },
+  "personal-property": {
+    amfam: { category: "included", value: "~50–70% of Cov A", confidence: "medium", note: "NerdWallet default.", source: nerdAmfam },
+  },
+  "pp-loss": {
+    usaa: { category: "included", value: "RCV included", confidence: "high", note: "Replacement cost on personal property standard (not ACV) — a USAA distinction; military gear no-deductible.", source: usnewsUsaa },
+    travelers: { category: "endorsement", value: "ACV base · RCV optional", confidence: "high", note: '"Contents Replacement Cost" endorsement upgrades to RCV (built into Platinum).', source: tH },
+    nationwide: { category: "endorsement", value: "ACV base · RCV optional", confidence: "high", note: '"Brand New Belongings" endorsement pays RCV; base contents ACV.', source: nH },
+    amfam: { category: "endorsement", value: "ACV base · RCV optional", confidence: "medium", note: '"Personal property replacement cost" add-on (base ACV).', source: nerdAmfam },
+  },
+  "loss-of-use": {
+    amfam: { category: "included", value: "~20% of Cov A", confidence: "medium", note: "NerdWallet default; month cap not published.", source: nerdAmfam },
+  },
+  liability: {
+    usaa: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Options incl. $100k/$300k; higher via umbrella.", source: usnewsUsaa },
+    travelers: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Standard selectable limits; higher via umbrella.", source: tH },
+    nationwide: { category: "included", value: "$100k–$500k", confidence: "low", note: "Typical selectable limits; exact menu not published.", source: nH },
+    amfam: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Standard options.", source: nerdAmfam },
+  },
+  medpay: {
+    amfam: { category: "included", value: "$1k–$5k", confidence: "medium", note: "Standard options.", source: nerdAmfam },
+  },
+  windhail: {
+    travelers: { category: "varies", value: "1–5% of Cov A", confidence: "medium", note: "Separate wind/hail % in many states; options vary.", source: tH },
+  },
+  hurricane: {
+    travelers: { category: "varies", value: "Offered (coastal)", confidence: "medium", note: "Separate named-storm % in coastal states; specifics vary.", source: tH },
+  },
+  multipolicy: {
+    usaa: { category: "included", value: "Up to ~10%", confidence: "medium", note: "Modest bundle savings (auto already low).", source: src("usaa.com", "https://www.usaa.com/insurance/bundle-save/") },
+    travelers: { category: "included", value: "Offered · % DNPA", confidence: "medium", note: "Home+auto bundle; exact % not published (~5–15% typical).", source: tH },
+    nationwide: { category: "included", value: "Up to ~20%", confidence: "medium", note: "Home+auto bundle; ~15–20%, varies by state.", source: nH },
+    amfam: { category: "included", value: "Up to ~40%", confidence: "medium", note: "NerdWallet bundle figure (AmFam publishes none); varies by state.", source: nerdAmfam },
+  },
+  "water-backup": {
+    usaa: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Optional endorsement (plumbing/sewer backup, sump overflow); limit selectable.", source: usnewsUsaa },
+    travelers: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: '"Water Backup & Sump Pump Overflow" endorsement (in Platinum Plus); limit selectable.', source: tH },
+    nationwide: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Sump-pump overflow + drain/sewer backup; limit selectable.", source: nH },
+    amfam: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: '"Sewer/Septic Back-up & Sump Overflow"; up to policy limits. Not in MN.', source: aH },
+  },
+  "service-line": {
+    travelers: { category: "endorsement", value: "~$10k", confidence: "medium", note: '"Buried Utility Lines" coverage; ~$10k / $500 ded typical.', source: tH },
+    nationwide: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Buried service lines (water/gas/electric/sewer); limit not published.", source: nH },
+    amfam: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Buried water/sewer/power lines; limit not published.", source: aH },
+  },
+  "equip-breakdown": {
+    travelers: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: '"Travelers Home Protection" equipment breakdown (via BoilerRe); limit not published.', source: tH },
+    nationwide: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Home systems/appliances breakdown; limit not published.", source: nH },
+    amfam: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Appliances/home systems; $500 deductible; overall limit not published.", source: aH },
+  },
+  ordinance: {
+    travelers: { category: "included", value: "Up to 10% of Cov A", confidence: "medium", note: "~10% of Cov A, increasable.", source: tH },
+    nationwide: { category: "included", value: "~10% of Cov A", confidence: "medium", note: "Code-upgrade coverage; ~10% typical, increasable.", source: nH },
+  },
+  roof: {
+    travelers: { category: "varies", value: "RCV; ACV schedule on older roofs", confidence: "medium", note: "RCV for newer roofs; age/condition affects settlement; ACV schedule in some states.", source: tH },
+    nationwide: { category: "varies", value: "RCV; \"Better Roof Replacement\" upgrade", confidence: "high", note: '"Better Roof Replacement" pays for upgraded materials; base RCV-vs-ACV/age schedule varies by state.', source: nH },
+    amfam: { category: "varies", value: "ACV schedule >15 yr (HO 88 02)", confidence: "medium", note: '"Roof Surface Payment Schedule" (form HO 88 02): composition/synthetic/solar roofs >15 yrs settle ACV. Varies by state.', source: src("doi.nv.gov", "https://doi.nv.gov/uploadedFiles/doinvgov/_public-documents/Consumers/Home/American_Family/HO_88_02_01_14.pdf") },
+  },
+};
+
+function applyExt(line: Line, ext: Record<string, Record<string, Cell>>): void {
+  for (const f of line.features) {
+    const add = ext[f.id];
+    if (add) Object.assign(f.cells, add);
+  }
+}
+applyExt(AUTO, AUTO_EXT);
+applyExt(HOME, HOME_EXT);
 
 export const LINES: Record<LineKey, Line> = { auto: AUTO, home: HOME };
 
