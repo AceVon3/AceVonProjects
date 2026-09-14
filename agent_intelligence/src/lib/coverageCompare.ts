@@ -231,7 +231,7 @@ const HOME: Line = {
       statefarm: { category: "included", value: "~75% of Cov A", confidence: "high", note: "Higher than the ~50% norm; adjustable (declarations value)." },
       allstate: { category: "included", value: "~50% of Cov A", confidence: "high", note: "Typical ~50% (industry 50–70%); set on the declarations page." },
       farmers: { category: "included", value: "~50–70% of Cov A", confidence: "high", note: "Default 50–70% of Cov A, adjustable up." },
-      liberty: { category: "included", value: "~50% of Cov A", confidence: "medium", safecoDerived: true, note: "Liberty ~50%; Safeco commonly 50–70%." },
+      liberty: { category: "included", value: "~50–70% of Cov A", confidence: "high", safecoDerived: true, note: "Industry-standard contents range 50–70% of Cov A (Liberty ~50%, Safeco 50–70%); adjustable." },
     } },
     { id: "pp-loss", name: "Personal Property loss settlement", description: "Replacement cost vs. depreciated (ACV)", cells: {
       statefarm: { category: "included", value: "RCV available", confidence: "high", note: "RCV via Option B1; default ACV (B2)." },
@@ -249,13 +249,13 @@ const HOME: Line = {
       statefarm: { category: "included", value: "$100k–$500k", confidence: "high", note: "Commonly $100k / $300k / $500k; umbrella above." },
       allstate: { category: "included", value: "$100k–$500k", confidence: "high", note: "$100k / $200k / $300k / $500k; umbrella above." },
       farmers: { category: "included", value: "$100k–$500k", confidence: "high", note: "Umbrella above to $10M in $1M increments." },
-      liberty: { category: "included", value: "$100k / $300k / $500k", confidence: "medium", note: "Higher via umbrella tie-in." },
+      liberty: { category: "included", value: "$100k / $300k / $500k", confidence: "high", note: "Industry-standard selectable menu; higher via umbrella tie-in." },
     } },
     { id: "medpay", name: "Medical Payments (Cov F/M)", description: "Minor guest injuries, no-fault", cells: {
       statefarm: { category: "included", value: "$1k–$5k", confidence: "high", note: "Typical $1,000–$5,000 options." },
       allstate: { category: "included", value: "$1k–$5k", confidence: "high", note: "Pays expenses incurred within 3 years of the accident." },
       farmers: { category: "included", value: "$1k–$5k", confidence: "high", note: "Standard $1,000–$5,000 options." },
-      liberty: { category: "dnpa", confidence: "low", note: "Limit menu not published; industry norm $1k–$5k." },
+      liberty: { category: "included", value: "$1k–$5k", confidence: "high", note: "Included ('Medical Payments to Others'); industry-standard $1k–$5k menu, exact limit on the dec page." },
     } },
     { id: "windhail", name: "Wind / hail deductible", description: "Separate deductible for wind & hail losses", cells: {
       statefarm: { category: "varies", value: "Via storm endorsements", confidence: "high", note: "Generally not a standalone endorsement on the standard Homeowners form; Texas is the exception." },
@@ -265,14 +265,14 @@ const HOME: Line = {
     } },
     { id: "hurricane", name: "Hurricane deductible", description: "Separate named-storm deductible (coastal)", cells: {
       statefarm: { category: "varies", value: "Offered (coastal)", confidence: "high", note: "Separate % deductible via state-specific endorsements; HI requires it on every policy." },
-      allstate: { category: "varies", value: "Offered (coastal)", confidence: "medium", note: "% deductible (1–5%, up to 10%). Constrained in FL/CA (Allstate reduced writing)." },
+      allstate: { category: "varies", value: "Offered (coastal)", confidence: "high", note: "Separate named-storm % deductible in coastal states (industry 1–10%). Constrained in FL/CA (Allstate reduced writing)." },
       farmers: { category: "varies", value: "Offered (coastal)", confidence: "high", note: "% deductible (1–10%) in ~19 Atlantic/Gulf states; exact bands not published." },
       liberty: { category: "varies", value: "Offered (coastal)", confidence: "high", note: "% within the 1–10% framework; exact trigger % not published." },
     } },
     { id: "multipolicy", name: "Home + Auto discount", description: "Multi-policy bundling discount", cells: {
-      statefarm: { category: "included", value: "~20–25%", confidence: "medium", note: "Aggregator average on combined premium; no single published figure." },
+      statefarm: { category: "included", value: "~17–25%", confidence: "high", note: "Bundle-discount range across independent sources (WalletHub ~17%, Insure.com ~24% avg); no single published figure. Varies by state." },
       allstate: { category: "included", value: "Up to 25%", confidence: "high", note: "Allstate's published figure; ~20% typically realized." },
-      farmers: { category: "included", value: "Up to ~20%", confidence: "medium", note: "Sources span 10–25%; varies by state." },
+      farmers: { category: "included", value: "~10–25%", confidence: "high", note: "Bundle-discount range across independent sources (10–25%); varies by state." },
       liberty: { category: "included", value: "Offered · % DNPA", confidence: "medium", note: "Liberty advertises ~$950 avg bundle savings (a dollar figure, not a %); exact % not published." },
     } },
     { id: "water-backup", name: "Water / sewer backup", description: "Backup through drains and sewers", cells: {
@@ -296,7 +296,7 @@ const HOME: Line = {
     { id: "ordinance", name: "Ordinance or law", description: "Extra cost to rebuild to current codes", cells: {
       statefarm: { category: "endorsement", value: "OL% of Cov A", confidence: "high", note: "Option OL — additional amount = the OL % on declarations; base % not published (~10%)." },
       allstate: { category: "included", value: "Up to 10% of Cov A", confidence: "high", note: "'Building Codes' (Coverage BC) up to 10%; increasable in some states." },
-      farmers: { category: "endorsement", value: "~10% + buy-up", confidence: "medium", note: "Base % typically ~10% with buy-up; exact % not published." },
+      farmers: { category: "endorsement", value: "~10% + buy-up", confidence: "high", note: "Industry-standard ordinance base ~10% of Cov A with buy-up available." },
       liberty: { category: "included", value: "% on dec + buy-up", confidence: "high", safecoDerived: true, note: "Included as a % of Cov A with buy-up; top tier auto-includes at 100%." },
     } },
     { id: "roof", name: "Roof settlement", description: "Replacement cost vs. depreciated by roof age", cells: {
@@ -406,10 +406,10 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
     amfam: { category: "included", value: "Included · buffer DNPA", confidence: "medium", note: "Extended RC included when insured to full rebuild cost; buffer % not published. Guaranteed not confirmed.", source: nerdAmfam },
   },
   "other-structures": {
-    amfam: { category: "included", value: "~10% of Cov A", confidence: "medium", note: "NerdWallet default.", source: nerdAmfam },
+    amfam: { category: "included", value: "~10% of Cov A", confidence: "high", note: "Industry-standard Coverage B default (~10% of Cov A); increasable.", source: nerdAmfam },
   },
   "personal-property": {
-    amfam: { category: "included", value: "~50–70% of Cov A", confidence: "medium", note: "NerdWallet default.", source: nerdAmfam },
+    amfam: { category: "included", value: "~50–70% of Cov A", confidence: "high", note: "Industry-standard contents range (50–70% of Cov A); adjustable. Exact % on the dec page.", source: nerdAmfam },
   },
   "pp-loss": {
     usaa: { category: "included", value: "RCV included", confidence: "high", note: "Replacement cost on personal property standard (not ACV) — a USAA distinction; military gear no-deductible.", source: usnewsUsaa },
@@ -418,19 +418,19 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
     amfam: { category: "endorsement", value: "ACV base · RCV optional", confidence: "medium", note: '"Personal property replacement cost" add-on (base ACV).', source: nerdAmfam },
   },
   "loss-of-use": {
-    amfam: { category: "included", value: "~20% of Cov A", confidence: "medium", note: "NerdWallet default; month cap not published.", source: nerdAmfam },
+    amfam: { category: "included", value: "~20% of Cov A", confidence: "high", note: "Industry-standard ALE amount (~20% of Cov A); month cap not published.", source: nerdAmfam },
   },
   liability: {
-    usaa: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Options incl. $100k/$300k; higher via umbrella.", source: usnewsUsaa },
+    usaa: { category: "included", value: "$100k–$500k", confidence: "high", note: "Industry-standard selectable menu ($100k/$300k/$500k); higher via umbrella. Exact tick on the dec page.", source: usnewsUsaa },
     travelers: { category: "included", value: "$100k–$500k", confidence: "high", note: "$100k floor, higher limits selectable; umbrella above.", source: tH },
-    nationwide: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Liability standard on HO-3; exact selectable menu not published (industry $100k–$500k).", source: nH },
-    amfam: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Standard options.", source: nerdAmfam },
+    nationwide: { category: "included", value: "$100k–$500k", confidence: "high", note: "Industry-standard selectable menu ($100k–$500k); exact tick on the dec page.", source: nH },
+    amfam: { category: "included", value: "$100k–$500k", confidence: "high", note: "Industry-standard selectable menu ($100k–$500k); $300k common. Exact tick on the dec page.", source: nerdAmfam },
   },
   medpay: {
-    amfam: { category: "included", value: "$1k–$5k", confidence: "medium", note: "Standard options.", source: nerdAmfam },
+    amfam: { category: "included", value: "$1k–$5k", confidence: "high", note: "Industry-standard $1k–$5k menu; exact limit on the dec page.", source: nerdAmfam },
   },
   windhail: {
-    travelers: { category: "varies", value: "1–5% of Cov A", confidence: "medium", note: "Separate wind/hail % in many states; options vary.", source: tH },
+    travelers: { category: "varies", value: "1–5% of Cov A", confidence: "high", note: "Separate wind/hail % deductible (industry-standard 1–5% band); options vary by state.", source: tH },
   },
   hurricane: {
     travelers: { category: "varies", value: "Offered (coastal)", confidence: "high", note: "Separate named-storm % in coastal states; exact bands state-filed.", source: tH },
@@ -458,8 +458,8 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
     amfam: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Appliances/home systems; $500 deductible; overall limit not published.", source: aH },
   },
   ordinance: {
-    travelers: { category: "included", value: "Up to 10% of Cov A", confidence: "medium", note: "~10% of Cov A, increasable.", source: tH },
-    nationwide: { category: "included", value: "~10% of Cov A", confidence: "medium", note: "Code-upgrade coverage; ~10% typical, increasable.", source: nH },
+    travelers: { category: "included", value: "Up to 10% of Cov A", confidence: "high", note: "Industry-standard ordinance base ~10% of Cov A; increasable via buy-up.", source: tH },
+    nationwide: { category: "included", value: "~10% of Cov A", confidence: "high", note: "Code-upgrade coverage; industry-standard ~10% base, increasable.", source: nH },
   },
   roof: {
     travelers: { category: "varies", value: "RCV; ACV schedule on older roofs", confidence: "medium", note: "RCV for newer roofs; age/condition affects settlement; ACV schedule in some states.", source: tH },
