@@ -273,7 +273,7 @@ const HOME: Line = {
       statefarm: { category: "included", value: "~20–25%", confidence: "medium", note: "Aggregator average on combined premium; no single published figure." },
       allstate: { category: "included", value: "Up to 25%", confidence: "high", note: "Allstate's published figure; ~20% typically realized." },
       farmers: { category: "included", value: "Up to ~20%", confidence: "medium", note: "Sources span 10–25%; varies by state." },
-      liberty: { category: "included", value: "Up to ~15%", confidence: "medium", note: "Some cite up to 10%; where state law allows." },
+      liberty: { category: "included", value: "Offered · % DNPA", confidence: "medium", note: "Liberty advertises ~$950 avg bundle savings (a dollar figure, not a %); exact % not published." },
     } },
     { id: "water-backup", name: "Water / sewer backup", description: "Backup through drains and sewers", cells: {
       statefarm: { category: "endorsement", value: "$10k–$20k tiers", confidence: "high", note: "Optional endorsement; limits commonly $10k–$20k with a separate deductible. Doesn't cover the sewer line itself." },
@@ -423,7 +423,7 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
   liability: {
     usaa: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Options incl. $100k/$300k; higher via umbrella.", source: usnewsUsaa },
     travelers: { category: "included", value: "$100k–$500k", confidence: "high", note: "$100k floor, higher limits selectable; umbrella above.", source: tH },
-    nationwide: { category: "included", value: "$100k–$500k", confidence: "low", note: "Typical selectable limits; exact menu not published.", source: nH },
+    nationwide: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Liability standard on HO-3; exact selectable menu not published (industry $100k–$500k).", source: nH },
     amfam: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Standard options.", source: nerdAmfam },
   },
   medpay: {
@@ -438,7 +438,7 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
   multipolicy: {
     usaa: { category: "included", value: "~6%", confidence: "medium", note: "Home+auto bundle averages ~6% (Policygenius); auto already low.", source: src("policygenius.com", "https://www.policygenius.com/homeowners-insurance/reviews/usaa/") },
     travelers: { category: "included", value: "Up to ~12%", confidence: "high", note: "Home+auto bundle; carrier publishes no %, Policygenius cites up to ~12%.", source: tH },
-    nationwide: { category: "included", value: "Up to ~20%", confidence: "medium", note: "Home+auto bundle; ~15–20%, varies by state.", source: nH },
+    nationwide: { category: "included", value: "Up to ~20%", confidence: "high", note: "Home+auto bundle up to ~20% (ValuePenguin); ~13% average (Policygenius). Varies by state.", source: nH },
     amfam: { category: "included", value: "Up to ~23%", confidence: "medium", note: "AmFam-advertised 23% home+auto bundle (per Insurify); varies by state.", source: src("insurify.com", "https://insurify.com/homeowners-insurance/companies/american-family/") },
   },
   "water-backup": {
