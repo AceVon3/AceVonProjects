@@ -135,7 +135,7 @@ const AUTO: Line = {
     } },
     { id: "diminishing-deductible", name: "Diminishing deductible", description: "Deductible drops for each claim-free period", cells: {
       allstate: { category: "available", confidence: "high", note: '"Deductible Rewards" — $100 + $100/accident-free yr, up to $500.', source: src("allstate.com", "https://www.allstate.com/auto-insurance/car-coverages") },
-      statefarm: { category: "none", confidence: "medium", note: "No claim-free deductible-reduction program.", source: src("insurify.com", "https://insurify.com/car-insurance/companies/state-farm/") },
+      statefarm: { category: "none", confidence: "high", note: "No claim-free deductible-reduction program.", source: src("insurify.com", "https://insurify.com/car-insurance/companies/state-farm/") },
       geico: { category: "none", confidence: "high", note: "No diminishing/vanishing deductible program.", source: src("geico.com", "https://www.geico.com/information/aboutinsurance/auto/") },
       progressive: { category: "available", confidence: "high", note: '"Deductible Savings Bank" — −$50 per claim-free 6-month period.', source: src("progressive.com", "https://www.progressive.com/auto/insurance-coverages/") },
     } },
@@ -153,13 +153,13 @@ const AUTO: Line = {
     } },
     { id: "glass", name: "Full glass / windshield", description: "Low- or no-deductible glass repair & replacement", mandate: { mandatory: ["FL", "KY", "SC"], mustOffer: ["AZ", "CT", "MA", "MN", "NY"] }, cells: {
       allstate: { category: "varies", confidence: "high", note: "Glass under comp; deductible waived when repaired; claims via Safelite.", source: src("allstate.com", "https://www.allstate.com/claims/auto-motorcycle/windshield-glass") },
-      statefarm: { category: "varies", confidence: "medium", note: "Follows state law; $0-deductible glass where required.", source: src("wallethub.com", "https://wallethub.com/answers/ci/state-farm-glass-coverage-1000040-2140732836/") },
-      geico: { category: "varies", confidence: "medium", note: "Deductible waived for repairs; optional no-deductible glass in some states.", source: src("geico.com", "https://www.geico.com/auto-insurance/type-of-car-insurance-coverage/") },
+      statefarm: { category: "varies", confidence: "high", note: "Comp deductible waived for windshield repair; replacement keeps the deductible; $0 where state law requires.", source: src("statefarm.com", "https://www.statefarm.com/claims/auto/windshield-repair") },
+      geico: { category: "varies", confidence: "high", note: "Deductible waived for repairs; optional no-deductible glass in some states.", source: src("geico.com", "https://www.geico.com/auto-insurance/type-of-car-insurance-coverage/") },
       progressive: { category: "varies", confidence: "high", note: "Repairable cracks no-deductible; $0 replacement where required.", source: src("progressive.com", "https://www.progressive.com/answers/free-windshield-replacement-states/") },
     } },
     { id: "custom-parts", name: "Custom parts & equipment", description: "Covers aftermarket add-ons (stereo, wheels, paint)", cells: {
       allstate: { category: "available", confidence: "high", note: '"CPE endorsement" — limit higher of $1,000 or Declarations; + Sound System Coverage.', source: src("allstate.com", "https://www.allstate.com/resources/car-insurance/insuring-modified-classic-cars") },
-      statefarm: { category: "available", confidence: "low", note: "Custom items must be declared/endorsed. No State Farm built-in limit confirmed.", source: src("freeadvice.com", "https://www.freeadvice.com/insurance/does-state-farm-offer-custom-parts-and-equipment-coverage/") },
+      statefarm: { category: "available", confidence: "medium", note: "Custom items must be declared/endorsed. No State Farm built-in limit confirmed.", source: src("freeadvice.com", "https://www.freeadvice.com/insurance/does-state-farm-offer-custom-parts-and-equipment-coverage/") },
       geico: { category: "available", confidence: "high", note: "Aftermarket wheels/stereo/paint; you set a limit. $1,000 built-in in some states.", source: src("geico.com", "https://www.geico.com/information/aboutinsurance/auto/") },
       progressive: { category: "available", confidence: "high", note: '"CPE" — stereo, wheels, nav, paint; typical limit ~$5,000.', source: src("progressive.com", "https://www.progressive.com/auto/insurance-coverages/") },
     } },
@@ -228,45 +228,45 @@ const HOME: Line = {
       liberty: { category: "included", value: "10% of Cov A", confidence: "high", safecoDerived: true, note: "Standard 10%; increasable (Safeco form)." },
     } },
     { id: "personal-property", name: "Personal Property (Cov C)", description: "Contents coverage — % of dwelling", cells: {
-      statefarm: { category: "included", value: "~75% of Cov A", confidence: "medium", note: "Higher than the ~50% norm; adjustable (declarations value)." },
-      allstate: { category: "included", value: "~50% of Cov A", confidence: "medium", note: "Typical ~50%, customizable." },
-      farmers: { category: "included", value: "~50–70% of Cov A", confidence: "medium", note: "Common default ~50%, adjustable up." },
+      statefarm: { category: "included", value: "~75% of Cov A", confidence: "high", note: "Higher than the ~50% norm; adjustable (declarations value)." },
+      allstate: { category: "included", value: "~50% of Cov A", confidence: "high", note: "Typical ~50% (industry 50–70%); set on the declarations page." },
+      farmers: { category: "included", value: "~50–70% of Cov A", confidence: "high", note: "Default 50–70% of Cov A, adjustable up." },
       liberty: { category: "included", value: "~50% of Cov A", confidence: "medium", safecoDerived: true, note: "Liberty ~50%; Safeco commonly 50–70%." },
     } },
     { id: "pp-loss", name: "Personal Property loss settlement", description: "Replacement cost vs. depreciated (ACV)", cells: {
       statefarm: { category: "included", value: "RCV available", confidence: "high", note: "RCV via Option B1; default ACV (B2)." },
       allstate: { category: "endorsement", value: "ACV base · RCV optional", confidence: "high", note: "Customer chooses ACV or RCV." },
-      farmers: { category: "endorsement", value: "ACV base · RCV optional", confidence: "medium", note: "RCV available; included at higher Smart Plan tiers." },
+      farmers: { category: "endorsement", value: "ACV base · RCV optional", confidence: "high", note: "RCV available; built into higher Smart Plan tiers." },
       liberty: { category: "endorsement", value: "ACV base · RCV optional", confidence: "high", note: "RCV via 'Personal Property Replacement Cost' endorsement." },
     } },
     { id: "loss-of-use", name: "Loss of Use / ALE (Cov D)", description: "Living expenses while the home is unlivable", cells: {
       statefarm: { category: "included", value: "Up to 24 months", confidence: "high", note: "ALE capped at 24 months; % of Cov A is a declarations value." },
       allstate: { category: "included", value: "Up to 12 months", confidence: "high", note: "Base ALE capped at 12 months (some states extend); ~20–30% of Cov A." },
-      farmers: { category: "included", value: "~20% of Cov A", confidence: "medium", note: "Amount ~20%; time cap not published." },
+      farmers: { category: "included", value: "~20% of Cov A", confidence: "high", note: "Amount ~20%; time cap not published." },
       liberty: { category: "included", value: "Up to 24 months", confidence: "high", safecoDerived: true, note: "Safeco form caps ALE at 24 months; exact % not published." },
     } },
     { id: "liability", name: "Personal Liability (Cov E/L)", description: "Lawsuits for injury or damage you're liable for", cells: {
-      statefarm: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Commonly $100k / $300k / $500k." },
-      allstate: { category: "included", value: "$100k–$500k", confidence: "medium", note: "$100k / $200k / $300k / $500k; umbrella above." },
+      statefarm: { category: "included", value: "$100k–$500k", confidence: "high", note: "Commonly $100k / $300k / $500k; umbrella above." },
+      allstate: { category: "included", value: "$100k–$500k", confidence: "high", note: "$100k / $200k / $300k / $500k; umbrella above." },
       farmers: { category: "included", value: "$100k–$500k", confidence: "high", note: "Umbrella above to $10M in $1M increments." },
       liberty: { category: "included", value: "$100k / $300k / $500k", confidence: "medium", note: "Higher via umbrella tie-in." },
     } },
     { id: "medpay", name: "Medical Payments (Cov F/M)", description: "Minor guest injuries, no-fault", cells: {
-      statefarm: { category: "included", value: "$1k–$5k", confidence: "medium", note: "Typical $1,000–$5,000 options." },
-      allstate: { category: "included", value: "$1k–$5k", confidence: "medium", note: "Pays expenses incurred within 3 years of the accident." },
+      statefarm: { category: "included", value: "$1k–$5k", confidence: "high", note: "Typical $1,000–$5,000 options." },
+      allstate: { category: "included", value: "$1k–$5k", confidence: "high", note: "Pays expenses incurred within 3 years of the accident." },
       farmers: { category: "included", value: "$1k–$5k", confidence: "high", note: "Standard $1,000–$5,000 options." },
       liberty: { category: "dnpa", confidence: "low", note: "Limit menu not published; industry norm $1k–$5k." },
     } },
     { id: "windhail", name: "Wind / hail deductible", description: "Separate deductible for wind & hail losses", cells: {
       statefarm: { category: "varies", value: "Via storm endorsements", confidence: "high", note: "Generally not a standalone endorsement on the standard Homeowners form; Texas is the exception." },
-      allstate: { category: "varies", value: "~1–5% of Cov A", confidence: "medium", note: "Separate wind/hail deductible in wind-exposed states; may be mandatory coastal." },
+      allstate: { category: "varies", value: "~1–5% of Cov A", confidence: "high", note: "Separate % wind/hail deductible in wind-exposed states; often mandatory coastal." },
       farmers: { category: "varies", value: "1–5% of insured value", confidence: "high", note: "Separate % deductible; flat-dollar option in low-risk areas." },
       liberty: { category: "varies", value: "1–10% of insured value", confidence: "high", note: "Percentage deductibles typically 1–10%; state schedules vary." },
     } },
     { id: "hurricane", name: "Hurricane deductible", description: "Separate named-storm deductible (coastal)", cells: {
       statefarm: { category: "varies", value: "Offered (coastal)", confidence: "high", note: "Separate % deductible via state-specific endorsements; HI requires it on every policy." },
       allstate: { category: "varies", value: "Offered (coastal)", confidence: "medium", note: "% deductible (1–5%, up to 10%). Constrained in FL/CA (Allstate reduced writing)." },
-      farmers: { category: "varies", value: "Offered (coastal)", confidence: "medium", note: "% deductible in ~19 Atlantic/Gulf states; exact bands not published." },
+      farmers: { category: "varies", value: "Offered (coastal)", confidence: "high", note: "% deductible (1–10%) in ~19 Atlantic/Gulf states; exact bands not published." },
       liberty: { category: "varies", value: "Offered (coastal)", confidence: "high", note: "% within the 1–10% framework; exact trigger % not published." },
     } },
     { id: "multipolicy", name: "Home + Auto discount", description: "Multi-policy bundling discount", cells: {
@@ -276,19 +276,19 @@ const HOME: Line = {
       liberty: { category: "included", value: "Up to ~15%", confidence: "medium", note: "Some cite up to 10%; where state law allows." },
     } },
     { id: "water-backup", name: "Water / sewer backup", description: "Backup through drains and sewers", cells: {
-      statefarm: { category: "endorsement", value: "Up to ~$30k", confidence: "medium", note: "Optional endorsement; $10k–$30k tiers. Doesn't cover the sewer line itself." },
-      allstate: { category: "endorsement", value: "$5k–$25k tiers", confidence: "medium", note: "Optional endorsement; selectable tiers." },
-      farmers: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Optional endorsement; limit menu not published (industry $5k–$25k)." },
+      statefarm: { category: "endorsement", value: "$10k–$20k tiers", confidence: "high", note: "Optional endorsement; limits commonly $10k–$20k with a separate deductible. Doesn't cover the sewer line itself." },
+      allstate: { category: "endorsement", value: "$5k–$25k tiers", confidence: "high", note: "Optional endorsement; selectable $5k–$25k tiers with a separate deductible." },
+      farmers: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Optional endorsement; limit menu not published (industry $5k–$25k)." },
       liberty: { category: "endorsement", value: "Up to $50k", confidence: "high", safecoDerived: true, note: "Optional endorsement; Safeco up to $50,000 in most states." },
     } },
     { id: "service-line", name: "Service line coverage", description: "Buried utility lines to the home", cells: {
-      statefarm: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Optional endorsement; State Farm-specific limit not published." },
+      statefarm: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Optional endorsement (buried utility lines); State Farm-specific limit not published." },
       allstate: { category: "endorsement", value: "Up to ~$10k", confidence: "medium", note: "Optional endorsement; separate deductible. Not in every state." },
       farmers: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Available as endorsement; limit not published." },
       liberty: { category: "endorsement", value: "Up to $12k", confidence: "high", safecoDerived: true, note: "Optional endorsement; Safeco up to $12,000." },
     } },
     { id: "equip-breakdown", name: "Equipment breakdown", description: "HVAC, appliances, home systems failure", cells: {
-      statefarm: { category: "endorsement", value: "~$50k · $500 ded", confidence: "medium", note: "'Home Systems Protection' endorsement; ~$50,000, ~$500 deductible." },
+      statefarm: { category: "endorsement", value: "~$50k · $500 ded", confidence: "high", note: "'Home Systems Protection' endorsement; ~$50,000, ~$500 deductible." },
       allstate: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Add-on endorsement; per-occurrence limit not published (industry $50k–$100k)." },
       farmers: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Available as endorsement; limit not published." },
       liberty: { category: "endorsement", value: "Up to $50k · $500 ded", confidence: "medium", note: "'Home Systems & Appliance Breakdown' endorsement; up to $50,000, $500 deductible." },
@@ -301,7 +301,7 @@ const HOME: Line = {
     } },
     { id: "roof", name: "Roof settlement", description: "Replacement cost vs. depreciated by roof age", cells: {
       statefarm: { category: "varies", value: "RCV; ACV on older roofs", confidence: "medium", note: "Default RCV; a roof-ACV endorsement attaches in hail/coastal states & for older roofs." },
-      allstate: { category: "varies", value: "RCV <16 yrs; schedule after", confidence: "medium", note: "Roof surfaces on a payment schedule — RCV under ~16 yrs, depreciation at 16+." },
+      allstate: { category: "varies", value: "RCV; schedule via state endorsement", confidence: "medium", note: "Base forms settle at replacement cost; a roof payment-schedule/depreciation applies via state endorsement (age threshold varies)." },
       farmers: { category: "varies", value: "RCV; schedule on older roofs", confidence: "medium", note: "RCV standard; ACV/payment schedule on older roofs. Exact table not published." },
       liberty: { category: "varies", value: "RCV/ACV by roof age", confidence: "high", safecoDerived: true, note: "'Roof Surfaces Payment Schedule' endorsement; exact table not published." },
     } },
@@ -333,8 +333,8 @@ const AUTO_EXT: Record<string, Record<string, Cell>> = {
   "new-car-replacement": {
     usaa: { category: "none", confidence: "high", note: "No new-car replacement; \"Car Replacement Assistance\" pays ACV + 20% instead.", source: src("wallethub.com", "https://wallethub.com/answers/ci/usaa-new-car-replacement-2140759458/") },
     travelers: { category: "available", confidence: "high", note: '"Premier New Car Replacement" — same make/model within the first 5 model years.', source: tA },
-    nationwide: { category: "available", confidence: "medium", note: '"New Car Replacement Plus" / "Vehicle Value Upgrade" (to 100% MSRP); ~0–5 yr, varies by state.', source: nA },
-    amfam: { category: "available", confidence: "medium", note: "New vehicles only; replaces if totaled within the first year. Not on a product page.", source: aA },
+    nationwide: { category: "available", confidence: "high", note: '"New Car Replacement Plus" (up to 110% MSRP, ~0–2 yr) + "Vehicle Value Upgrade" (100% MSRP); varies by state, not leases.', source: nA },
+    amfam: { category: "available", confidence: "high", note: "Brand-new vehicles only; replaces a totaled car within the first year (~12 months).", source: aA },
   },
   gap: {
     usaa: { category: "available", confidence: "high", note: '"Car Replacement Assistance" (ACV + 20%, not leased) + "Total Loss Protection" (USAA-financed, up to $50k).', source: uA },
@@ -358,16 +358,16 @@ const AUTO_EXT: Record<string, Record<string, Cell>> = {
     usaa: { category: "available", confidence: "high", note: '"Rideshare gap protection" — covers the gap while waiting for a request. Not all states.', source: uA },
     travelers: { category: "available", confidence: "high", note: '"Limited Ridesharing" endorsement — app-on/pre-passenger period. Not all states.', source: tA },
     nationwide: { category: "none", confidence: "medium", note: "No rideshare / TNC endorsement.", source: src("forbes.com", "https://www.forbes.com/advisor/car-insurance/nationwide-car-insurance-review/") },
-    amfam: { category: "available", confidence: "medium", note: 'Rideshare add-on fills the "Stage 1" gap (app on, no passenger). Not every state.', source: aA },
+    amfam: { category: "available", confidence: "high", note: 'Rideshare add-on fills the "Stage 1" gap (app on, awaiting request); ~19 states, not nationwide.', source: aA },
   },
   "diminishing-deductible": {
-    usaa: { category: "none", confidence: "medium", note: "No diminishing-deductible program (uses deductible waivers instead).", source: src("wallethub.com", "https://wallethub.com/answers/ci/does-usaa-waive-deductibles-2140845275/") },
-    travelers: { category: "available", confidence: "medium", note: "Bundled in the Premier Responsible Driver Plan (decreasing deductible), not standalone.", source: src("insurify.com", "https://insurify.com/car-insurance/companies/travelers/") },
+    usaa: { category: "none", confidence: "high", note: "No diminishing-deductible program (uses deductible waivers instead).", source: src("wallethub.com", "https://wallethub.com/answers/ci/does-usaa-waive-deductibles-2140845275/") },
+    travelers: { category: "available", confidence: "high", note: "Decreasing deductible bundled in the Premier Responsible Driver Plan, not standalone.", excludeStates: ["CA"], source: src("insurify.com", "https://insurify.com/car-insurance/companies/travelers/") },
     nationwide: { category: "available", confidence: "high", note: '"Vanishing Deductible" — −$100/yr safe driving, up to $500; an at-fault resets it to $100.', source: src("nationwide.com", "https://www.nationwide.com/personal/insurance/auto/coverages/types/vanishing-deductible") },
     amfam: { category: "available", confidence: "high", note: "$100 credit at enrollment, then $100/yr ($50 on 6-mo terms) up to max; resets after a claim.", source: src("amfam.com", "https://www.amfam.com/insurance/car/diminishing-deductible-auto") },
   },
   "oem-parts": {
-    travelers: { category: "none", confidence: "low", note: "No standalone OEM endorsement marketed; behavior governed by state repair law.", source: src("freeadvice.com", "https://www.freeadvice.com/insurance/does-travelers-offer-oem-parts-coverage/") },
+    travelers: { category: "none", confidence: "medium", note: "No standalone OEM endorsement marketed; behavior governed by state repair law.", source: src("freeadvice.com", "https://www.freeadvice.com/insurance/does-travelers-offer-oem-parts-coverage/") },
     amfam: { category: "available", confidence: "high", note: "Elects OEM over aftermarket parts when available (not a guarantee).", source: src("amfam.com", "https://www.amfam.com/insurance/car/coverages/oem-coverage") },
   },
   telematics: {
@@ -379,12 +379,12 @@ const AUTO_EXT: Record<string, Record<string, Cell>> = {
   glass: {
     usaa: { category: "varies", confidence: "high", note: "Comp covers glass; deductible waived for windshield repair.", source: uA },
     travelers: { category: "varies", confidence: "high", note: "Glass-deductible buy-down (e.g. to $50); full $0 varies by state.", source: tA },
-    nationwide: { category: "varies", confidence: "medium", note: "Comp covers glass; deductible waived for windshield repair.", source: nA },
-    amfam: { category: "varies", confidence: "medium", note: "Glass under comp (Safelite); deductible usually waived for repair.", source: aA },
+    nationwide: { category: "varies", confidence: "high", note: "Comp covers glass; deductible waived for windshield repair.", source: nA },
+    amfam: { category: "varies", confidence: "high", note: "Glass under comp (Safelite); deductible usually waived for repair.", source: aA },
   },
   "custom-parts": {
     travelers: { category: "available", confidence: "medium", note: '"Comprehensive Coverage G — Custom Equipment" option (per a Maine DOI filing); limit set at purchase.', source: src("maine.gov", "https://www.maine.gov/pfr/insurance/") },
-    nationwide: { category: "available", confidence: "medium", note: '"Custom Equipment" endorsed onto comp/collision; limit selectable.', source: nA },
+    nationwide: { category: "available", confidence: "high", note: '"Custom Equipment" endorsed onto comp/collision; limit selectable.', source: nA },
   },
   "emergency-travel": {
     travelers: { category: "available", confidence: "high", note: "Trip interruption via Premier Roadside — $200/day up to $600, 100+ mi, 24+ hrs out of service.", source: src("travelers.com", "https://www.travelers.com/car-insurance/coverage/roadside-assistance") },
@@ -392,7 +392,7 @@ const AUTO_EXT: Record<string, Record<string, Cell>> = {
   },
   "mechanical-breakdown": {
     usaa: { category: "none", confidence: "high", note: "No mechanical breakdown insurance.", source: src("wallethub.com", "https://wallethub.com/answers/ci/usaa-mechanical-breakdown-insurance-1000105-2140738411/") },
-    travelers: { category: "none", confidence: "medium", note: "No mechanical breakdown insurance.", source: tA },
+    travelers: { category: "none", confidence: "high", note: "No mechanical breakdown insurance.", source: tA },
     nationwide: { category: "none", confidence: "medium", note: "No mechanical breakdown insurance (offers car-key/pet perks instead).", source: nA },
     amfam: { category: "none", confidence: "medium", note: "No auto MBI (markets a non-insurance vehicle service plan separately).", source: aA },
   },
@@ -422,7 +422,7 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
   },
   liability: {
     usaa: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Options incl. $100k/$300k; higher via umbrella.", source: usnewsUsaa },
-    travelers: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Standard selectable limits; higher via umbrella.", source: tH },
+    travelers: { category: "included", value: "$100k–$500k", confidence: "high", note: "$100k floor, higher limits selectable; umbrella above.", source: tH },
     nationwide: { category: "included", value: "$100k–$500k", confidence: "low", note: "Typical selectable limits; exact menu not published.", source: nH },
     amfam: { category: "included", value: "$100k–$500k", confidence: "medium", note: "Standard options.", source: nerdAmfam },
   },
@@ -433,29 +433,29 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
     travelers: { category: "varies", value: "1–5% of Cov A", confidence: "medium", note: "Separate wind/hail % in many states; options vary.", source: tH },
   },
   hurricane: {
-    travelers: { category: "varies", value: "Offered (coastal)", confidence: "medium", note: "Separate named-storm % in coastal states; specifics vary.", source: tH },
+    travelers: { category: "varies", value: "Offered (coastal)", confidence: "high", note: "Separate named-storm % in coastal states; exact bands state-filed.", source: tH },
   },
   multipolicy: {
-    usaa: { category: "included", value: "Up to ~10%", confidence: "medium", note: "Modest bundle savings (auto already low).", source: src("usaa.com", "https://www.usaa.com/insurance/bundle-save/") },
-    travelers: { category: "included", value: "Offered · % DNPA", confidence: "medium", note: "Home+auto bundle; exact % not published (~5–15% typical).", source: tH },
+    usaa: { category: "included", value: "~6%", confidence: "medium", note: "Home+auto bundle averages ~6% (Policygenius); auto already low.", source: src("policygenius.com", "https://www.policygenius.com/homeowners-insurance/reviews/usaa/") },
+    travelers: { category: "included", value: "Up to ~12%", confidence: "high", note: "Home+auto bundle; carrier publishes no %, Policygenius cites up to ~12%.", source: tH },
     nationwide: { category: "included", value: "Up to ~20%", confidence: "medium", note: "Home+auto bundle; ~15–20%, varies by state.", source: nH },
-    amfam: { category: "included", value: "Up to ~40%", confidence: "medium", note: "NerdWallet bundle figure (AmFam publishes none); varies by state.", source: nerdAmfam },
+    amfam: { category: "included", value: "Up to ~23%", confidence: "medium", note: "AmFam-advertised 23% home+auto bundle (per Insurify); varies by state.", source: src("insurify.com", "https://insurify.com/homeowners-insurance/companies/american-family/") },
   },
   "water-backup": {
     usaa: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Optional endorsement (plumbing/sewer backup, sump overflow); limit selectable.", source: usnewsUsaa },
     travelers: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: '"Water Backup & Sump Pump Overflow" endorsement (in Platinum Plus); limit selectable.', source: tH },
     nationwide: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Sump-pump overflow + drain/sewer backup; limit selectable.", source: nH },
-    amfam: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: '"Sewer/Septic Back-up & Sump Overflow"; up to policy limits. Not in MN.', source: aH },
+    amfam: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: '"Sewer/Septic Back-up & Sump Overflow"; up to policy limits. Not in MN.', source: aH },
   },
   "service-line": {
-    travelers: { category: "endorsement", value: "~$10k", confidence: "medium", note: '"Buried Utility Lines" coverage; ~$10k / $500 ded typical.', source: tH },
+    travelers: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Buried-utility-lines endorsement not confirmed on public pages; limit not published.", source: tH },
     nationwide: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Buried service lines (water/gas/electric/sewer); limit not published.", source: nH },
-    amfam: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Buried water/sewer/power lines; limit not published.", source: aH },
+    amfam: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Buried water/sewer/power lines; limit not published.", source: aH },
   },
   "equip-breakdown": {
     travelers: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: '"Travelers Home Protection" equipment breakdown (via BoilerRe); limit not published.', source: tH },
     nationwide: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Home systems/appliances breakdown; limit not published.", source: nH },
-    amfam: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Appliances/home systems; $500 deductible; overall limit not published.", source: aH },
+    amfam: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Appliances/home systems; $500 deductible; overall limit not published.", source: aH },
   },
   ordinance: {
     travelers: { category: "included", value: "Up to 10% of Cov A", confidence: "medium", note: "~10% of Cov A, increasable.", source: tH },
@@ -464,7 +464,7 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
   roof: {
     travelers: { category: "varies", value: "RCV; ACV schedule on older roofs", confidence: "medium", note: "RCV for newer roofs; age/condition affects settlement; ACV schedule in some states.", source: tH },
     nationwide: { category: "varies", value: "RCV; \"Better Roof Replacement\" upgrade", confidence: "high", note: '"Better Roof Replacement" pays for upgraded materials; base RCV-vs-ACV/age schedule varies by state.', source: nH },
-    amfam: { category: "varies", value: "ACV schedule >15 yr (HO 88 02)", confidence: "medium", note: '"Roof Surface Payment Schedule" (form HO 88 02): composition/synthetic/solar roofs >15 yrs settle ACV. Varies by state.', source: src("doi.nv.gov", "https://doi.nv.gov/uploadedFiles/doinvgov/_public-documents/Consumers/Home/American_Family/HO_88_02_01_14.pdf") },
+    amfam: { category: "varies", value: "ACV base; RCV by roof age/type", confidence: "high", note: 'Roofs settle ACV by default (age/condition/material); RCV optional if eligible. NV form HO 88 02: composition/synthetic/solar >15 yrs settle ACV (state-specific).', source: src("amfam.com", "https://www.amfam.com/insurance/home/coverages/roof-insurance-coverage") },
   },
 };
 

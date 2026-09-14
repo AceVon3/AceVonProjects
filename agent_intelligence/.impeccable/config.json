@@ -47,6 +47,42 @@
         ],
         "createdAt": "2026-08-25T14:27:33.770Z",
         "reason": "Hero signal panel mirrors the app's real row anatomy; the 3px category left-accent is the documented incumbent design-system signal (FilingsTable/RecentChanges)"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#B4472D",
+        "files": [
+          "src/lib/coverageCompare.ts"
+        ],
+        "createdAt": "2026-09-14T00:00:00.000Z",
+        "reason": "Travelers brand identity color — carrier column swatch in Coverage Compare, not app chrome; a carrier's own brand red must be its literal hex (same pattern as the sanctioned Allstate #1B6CA8 / State Farm #C42127 swatches, which coincide with palette tokens)"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#0F7B8A",
+        "files": [
+          "src/lib/coverageCompare.ts"
+        ],
+        "createdAt": "2026-09-14T00:00:00.000Z",
+        "reason": "Nationwide brand identity color — carrier column swatch in Coverage Compare, not app chrome; carrier brand color must be its literal hex"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#14477A",
+        "files": [
+          "src/lib/coverageCompare.ts"
+        ],
+        "createdAt": "2026-09-14T00:00:00.000Z",
+        "reason": "USAA brand identity color — carrier column swatch in Coverage Compare, not app chrome; carrier brand color must be its literal hex"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#6E4B9E",
+        "files": [
+          "src/lib/coverageCompare.ts"
+        ],
+        "createdAt": "2026-09-14T00:00:00.000Z",
+        "reason": "American Family brand identity color — carrier column swatch in Coverage Compare, not app chrome; carrier brand color must be its literal hex"
       }
     ]
   }
