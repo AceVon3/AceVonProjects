@@ -385,7 +385,7 @@ const AUTO_EXT: Record<string, Record<string, Cell>> = {
     usaa: { category: "none", confidence: "high", note: "No mechanical breakdown insurance.", source: src("wallethub.com", "https://wallethub.com/answers/ci/usaa-mechanical-breakdown-insurance-1000105-2140738411/") },
     travelers: { category: "none", confidence: "high", note: "No mechanical breakdown insurance.", source: tA },
     nationwide: { category: "none", confidence: "high", note: "No mechanical breakdown insurance — absent from Nationwide's own auto coverage list; ValuePenguin & WalletHub concur.", source: nA },
-    amfam: { category: "none", confidence: "medium", note: "No auto MBI (markets a non-insurance vehicle service plan separately).", source: aA },
+    amfam: { category: "none", confidence: "high", note: "No mechanical breakdown insurance — absent from AmFam's own auto coverage list; ValuePenguin concurs.", source: aA },
   },
 };
 
