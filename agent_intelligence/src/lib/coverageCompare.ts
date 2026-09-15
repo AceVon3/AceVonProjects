@@ -283,8 +283,8 @@ const HOME: Line = {
     { id: "equip-breakdown", name: "Equipment breakdown", description: "HVAC, appliances, home systems failure", cells: {
       statefarm: { category: "endorsement", value: "~$50k · $500 ded", confidence: "high", note: "'Home Systems Protection' endorsement; ~$50,000, ~$500 deductible." },
       allstate: { category: "none", confidence: "high", note: "Not offered — equipment breakdown is absent from both Policygenius's and ValuePenguin's Allstate optional-coverage lists.", source: src("valuepenguin.com", "https://www.valuepenguin.com/allstate-homeowners-insurance-review") },
-      farmers: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Available as endorsement; limit not published." },
-      liberty: { category: "endorsement", value: "Up to $50k · $500 ded", confidence: "medium", note: "'Home Systems & Appliance Breakdown' endorsement; up to $50,000, $500 deductible." },
+      farmers: { category: "none", confidence: "high", note: "Not offered — absent from Farmers' own optional-coverages list and Policygenius's comprehensive add-on list.", source: src("farmers.com", "https://www.farmers.com/home/homeowners/coverage/") },
+      liberty: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "'Home Systems and Appliance Breakdown' endorsement — named on Liberty's own coverage page; limit/deductible not published.", source: src("libertymutual.com", "https://www.libertymutual.com/property/homeowners-insurance/coverage") },
     } },
     { id: "ordinance", name: "Ordinance or law", description: "Extra cost to rebuild to current codes", cells: {
       statefarm: { category: "endorsement", value: "OL% of Cov A", confidence: "high", note: "Option OL — additional amount = the OL % on declarations; base % not published (~10%)." },
