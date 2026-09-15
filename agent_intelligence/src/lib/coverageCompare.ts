@@ -444,7 +444,9 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
     amfam: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Buried water/sewer/power lines; limit not published.", source: aH },
   },
   "equip-breakdown": {
-    travelers: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: '"Travelers Home Protection" equipment breakdown (via BoilerRe); limit not published.', source: tH },
+    // Travelers omitted — not marketed as a consumer coverage (absent from
+    // travelers.com, Policygenius, no dedicated page); only a filing-level
+    // BoilerRe trace. Renders "Data not publicly available" instead of a claim.
     nationwide: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Home systems/appliances breakdown; limit not published.", source: nH },
     amfam: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Appliances/home systems; $500 deductible; overall limit not published.", source: aH },
   },
