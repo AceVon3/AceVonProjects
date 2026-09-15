@@ -152,7 +152,7 @@ const AUTO: Line = {
     } },
     { id: "custom-parts", name: "Custom parts & equipment", description: "Covers aftermarket add-ons (stereo, wheels, paint)", cells: {
       allstate: { category: "available", confidence: "high", note: '"CPE endorsement" — limit higher of $1,000 or Declarations; + Sound System Coverage.', source: src("allstate.com", "https://www.allstate.com/resources/car-insurance/insuring-modified-classic-cars") },
-      statefarm: { category: "available", confidence: "medium", note: "Custom items must be declared/endorsed. No State Farm built-in limit confirmed.", source: src("freeadvice.com", "https://www.freeadvice.com/insurance/does-state-farm-offer-custom-parts-and-equipment-coverage/") },
+      statefarm: { category: "available", confidence: "high", note: "State Farm 'Custom parts/equipment coverage' — optional coverage for aftermarket add-ons; must be added. No published built-in limit.", source: src("statefarm.com", "https://www.statefarm.com/simple-insights/auto-and-vehicles/sports-car-insurance") },
       geico: { category: "available", confidence: "high", note: "Aftermarket wheels/stereo/paint; you set a limit. $1,000 built-in in some states.", source: src("geico.com", "https://www.geico.com/information/aboutinsurance/auto/") },
       progressive: { category: "available", confidence: "high", note: '"CPE" — stereo, wheels, nav, paint; typical limit ~$5,000.', source: src("progressive.com", "https://www.progressive.com/auto/insurance-coverages/") },
     } },
@@ -372,7 +372,9 @@ const AUTO_EXT: Record<string, Record<string, Cell>> = {
     amfam: { category: "varies", confidence: "high", note: "Glass under comp (Safelite); deductible usually waived for repair.", source: aA },
   },
   "custom-parts": {
-    travelers: { category: "available", confidence: "medium", note: '"Comprehensive Coverage G — Custom Equipment" option (per a Maine DOI filing); limit set at purchase.', source: src("maine.gov", "https://www.maine.gov/pfr/insurance/") },
+    // Travelers omitted — not marketed on travelers.com or in reviews; only a
+    // single Maine DOI filing hints at it, too thin to claim it's offered, so
+    // it renders "Data not publicly available" rather than a false "Available".
     nationwide: { category: "available", confidence: "high", note: '"Custom Equipment" endorsed onto comp/collision; limit selectable.', source: nA },
   },
   "emergency-travel": {
