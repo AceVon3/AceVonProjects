@@ -105,6 +105,7 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
   const [cmpA, setCmpA] = useState<string>(""); // head-to-head company A (default: your carrier)
   const [cmpB, setCmpB] = useState<string>(""); // head-to-head company B (default: a competitor)
   const [visibleIds, setVisibleIds] = useState<string[]>([]); // carriers shown in the grid
+  const [highlightId, setHighlightId] = useState<string>(""); // matrix row flashed from a head-to-head click
 
   const line = LINES[lineKey];
   const carriers = useMemo(() => anchorCarriers(line, profile.authorized_brands), [line, profile.authorized_brands]);
@@ -177,7 +178,7 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
 
   const h2h = useMemo(() => {
     if (A.id === B.id) return null;
-    type Item = { name: string; reason: string; weight: number; major: boolean };
+    type Item = { id: string; name: string; reason: string; weight: number; major: boolean };
     const adv: Item[] = [];
     const dis: Item[] = [];
     let comparable = 0;
@@ -198,7 +199,7 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
         continue;
       }
       const w = materiality(f.id);
-      const item = (reason: string): Item => ({ name: f.name, reason, weight: w, major: w >= KEY_COVERAGE_MIN });
+      const item = (reason: string): Item => ({ id: f.id, name: f.name, reason, weight: w, major: w >= KEY_COVERAGE_MIN });
       if (na > nb) {
         adv.push(item(`${A.name} ${VERB[rA.category]}; ${B.name} ${VERB[rB.category]}`));
         continue;
@@ -225,6 +226,72 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
     dis.sort(byWeight);
     return { adv, dis, comparable, unknown };
   }, [line, A, B, stateCode]);
+
+  // State story: when a state is picked, call out where its rules actually swing
+  // the A-vs-B matchup (a coverage banned/added in-state) or add a local rule.
+  // Reads national vs in-state resolution and reports only real changes.
+  const stateNotes = useMemo(() => {
+    if (!stateCode || A.id === B.id) return [];
+    const sn = stateName(stateCode);
+    const strip = (s?: string) => (s ? s.replace(/\.$/, "") : "");
+    const rankOf = (c: Category) => RANK[c];
+    const edges: string[] = [];
+    const risks: string[] = [];
+    const rules: string[] = [];
+    const tweaks: string[] = [];
+    const seen = new Set<string>();
+    const add = (bucket: string[], text: string) => {
+      if (!seen.has(text)) { seen.add(text); bucket.push(text); }
+    };
+    for (const f of line.features) {
+      const ac = f.cells[A.id];
+      const bc = f.cells[B.id];
+      const label = f.name.toLowerCase();
+      const aNat = ac ? resolveCell(line, f, A, ac, "") : null;
+      const aSt = ac ? resolveCell(line, f, A, ac, stateCode) : null;
+      const bNat = bc ? resolveCell(line, f, B, bc, "") : null;
+      const bSt = bc ? resolveCell(line, f, B, bc, stateCode) : null;
+      const lost = (nat: typeof aNat, st: typeof aSt) =>
+        !!nat && !!st && rankOf(nat.category) != null && rankOf(st.category) != null && rankOf(st.category)! < rankOf(nat.category)!;
+      const aLost = lost(aNat, aSt);
+      const bLost = lost(bNat, bSt);
+      const aFlag = aSt?.stateFlag;
+      const bFlag = bSt?.stateFlag;
+      if (aLost && !bLost && aFlag) {
+        add(risks, `In ${sn}, ${A.name} can't offer ${label} (${strip(aFlag)}) — ${B.name} still does.`);
+      } else if (bLost && !aLost && bFlag) {
+        add(edges, `In ${sn}, ${A.name} gains an edge on ${label} — ${B.name} can't offer it (${strip(bFlag)}).`);
+      } else if (aLost && bLost && (aFlag || bFlag)) {
+        add(rules, `In ${sn}, neither ${A.name} nor ${B.name} offers ${label} (${strip(aFlag || bFlag)}).`);
+      } else if (aFlag || bFlag) {
+        add(rules, `${f.name}: ${strip(aFlag || bFlag)}.`);
+      } else {
+        const aTweak = aNat && aSt && (aSt.value !== aNat.value || aSt.note !== aNat.note);
+        const bTweak = bNat && bSt && (bSt.value !== bNat.value || bSt.note !== bNat.note);
+        if (aTweak) add(tweaks, `In ${sn}, ${A.name}'s ${label}: ${strip(aSt!.note || aSt!.value)}.`);
+        else if (bTweak) add(tweaks, `In ${sn}, ${B.name}'s ${label}: ${strip(bSt!.note || bSt!.value)}.`);
+      }
+    }
+    return [...edges, ...risks, ...rules, ...tweaks].slice(0, 6);
+  }, [line, A, B, stateCode]);
+
+  // Click a head-to-head advantage → make sure both compared carriers are in the
+  // grid, then flash their row. The effect scrolls after the row has rendered.
+  const focusFeature = (id: string): void => {
+    setVisibleIds((prev) => {
+      const base = prev.length ? prev : carriers.slice(0, 5).map((c) => c.carrier.id);
+      const add = [A.id, B.id].filter((x) => !base.includes(x));
+      return add.length ? [...base, ...add] : base;
+    });
+    setHighlightId(id);
+  };
+  useEffect(() => {
+    if (!highlightId) return;
+    const el = document.getElementById(`cov-row-${highlightId}`);
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const t = setTimeout(() => setHighlightId(""), 1900);
+    return () => clearTimeout(t);
+  }, [highlightId]);
 
   return (
     <div className="space-y-4">
@@ -331,11 +398,32 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
         </div>
         {h2h ? (
           <>
-            <p className="mb-3 text-12 text-ink-mid">
-              <b className="text-ink">{A.name}</b> leads on {h2h.adv.length} · <b className="text-ink">{B.name}</b> leads on{" "}
-              {h2h.dis.length} · comparable on {h2h.comparable}
-              {h2h.unknown ? ` · ${h2h.unknown} without public data to compare` : ""}.
-            </p>
+            {(() => {
+              const a = h2h.adv.length;
+              const b = h2h.dis.length;
+              const tie = h2h.comparable;
+              const total = a + b + tie || 1;
+              const headline =
+                a > b ? `${A.name} leads ${a}–${b}` : b > a ? `${B.name} leads ${b}–${a}` : `${A.name} & ${B.name} even ${a}–${b}`;
+              return (
+                <div className="mb-3">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    <span className="text-16 font-extrabold tracking-tight text-ink">{headline}</span>
+                    <span className="text-12 text-ink-3">across {total} compared coverage{total === 1 ? "" : "s"}{h2h.unknown ? ` · ${h2h.unknown} without public data` : ""}</span>
+                  </div>
+                  <div className="mt-2 flex h-2 w-full max-w-[420px] overflow-hidden rounded-full bg-soft" role="img" aria-label={`${A.name} wins ${a}, ties ${tie}, ${B.name} wins ${b}`}>
+                    <div className="bg-green-text" style={{ width: `${(a / total) * 100}%` }} />
+                    <div className="bg-gray-fill" style={{ width: `${(tie / total) * 100}%` }} />
+                    <div className="bg-brand-red" style={{ width: `${(b / total) * 100}%` }} />
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 text-11 text-ink-2">
+                    <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-green-text" />{A.name} {a}</span>
+                    <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-gray-fill" />Comparable {tie}</span>
+                    <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-brand-red" />{B.name} {b}</span>
+                  </div>
+                </div>
+              );
+            })()}
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <div className="mb-2 text-11 font-bold uppercase tracking-wide text-green-text">{A.name} advantages</div>
@@ -345,7 +433,14 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
                       <li key={x.name} className="flex gap-2 text-12 leading-snug text-ink-mid">
                         <span className="font-bold text-green-text">+</span>
                         <span>
-                          <span className="font-semibold text-ink">{x.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => focusFeature(x.id)}
+                            className="cursor-pointer border-0 bg-transparent p-0 text-12 font-semibold text-ink underline decoration-dotted decoration-line-2 underline-offset-2 hover:decoration-ink-2"
+                            title="Show this coverage in the grid"
+                          >
+                            {x.name}
+                          </button>
                           {x.major ? (
                             <span className="ml-1.5 rounded bg-gray-fill px-1 py-px text-10 font-bold uppercase tracking-wide text-gray-text">
                               Key coverage
@@ -368,7 +463,14 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
                       <li key={x.name} className="flex gap-2 text-12 leading-snug text-ink-mid">
                         <span className="font-bold text-red-text">–</span>
                         <span>
-                          <span className="font-semibold text-ink">{x.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => focusFeature(x.id)}
+                            className="cursor-pointer border-0 bg-transparent p-0 text-12 font-semibold text-ink underline decoration-dotted decoration-line-2 underline-offset-2 hover:decoration-ink-2"
+                            title="Show this coverage in the grid"
+                          >
+                            {x.name}
+                          </button>
                           {x.major ? (
                             <span className="ml-1.5 rounded bg-gray-fill px-1 py-px text-10 font-bold uppercase tracking-wide text-gray-text">
                               Key coverage
@@ -384,6 +486,21 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
                 )}
               </div>
             </div>
+            {stateNotes.length ? (
+              <div className="mt-4 rounded-xl border border-amber-border bg-amber-fill/40 p-3">
+                <div className="mb-1.5 text-11 font-bold uppercase tracking-wide text-amber-text">
+                  What changes in {stateName(stateCode)}
+                </div>
+                <ul className="space-y-1">
+                  {stateNotes.map((n) => (
+                    <li key={n} className="flex gap-2 text-12 leading-snug text-ink-mid">
+                      <span aria-hidden className="text-amber-text">→</span>
+                      <span>{n}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             <p className="mt-3 text-11 text-ink-3">
               Ordered by coverage impact — the differences that move a customer decision first. Advantages compare whether a
               coverage is included, an add-on, or not offered — and, where amounts are directly comparable (limits, durations,
@@ -525,7 +642,11 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
           </thead>
           <tbody>
             {features.map((feat) => (
-              <tr key={feat.id} className="group">
+              <tr
+                key={feat.id}
+                id={`cov-row-${feat.id}`}
+                className={`group scroll-mt-24 ${highlightId === feat.id ? "[&>*]:!bg-amber-fill [&>*]:transition-colors" : "[&>*]:transition-colors"}`}
+              >
                 <th className="border-b border-line p-3.5 text-left align-top">
                   <div className="text-13 font-bold text-ink">{feat.name}</div>
                   <div className="mt-0.5 text-12 leading-snug text-ink-2">{feat.description}</div>
