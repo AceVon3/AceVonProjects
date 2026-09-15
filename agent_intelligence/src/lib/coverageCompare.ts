@@ -439,7 +439,7 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
     amfam: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: '"Sewer/Septic Back-up & Sump Overflow"; up to policy limits. Not in MN.', source: aH },
   },
   "service-line": {
-    travelers: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Buried-utility-lines endorsement not confirmed on public pages; limit not published.", source: tH },
+    travelers: { category: "none", confidence: "high", note: "Not offered — absent from Travelers' own optional-coverages list and Policygenius's 12-item add-on list.", source: tH },
     nationwide: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Buried service lines (water/gas/electric/sewer); limit not published.", source: nH },
     amfam: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Buried water/sewer/power lines; limit not published.", source: aH },
   },
