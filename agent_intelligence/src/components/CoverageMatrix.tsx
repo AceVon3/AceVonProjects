@@ -77,6 +77,25 @@ const AMOUNT_FEATURES = new Set<string>([
   "liability", "medpay", "multipolicy", "water-backup", "service-line", "equip-breakdown",
 ]);
 
+// Materiality weight per feature — how much a win/loss on it actually moves a
+// customer's decision. Big total-loss / catastrophic coverages outrank
+// convenience add-ons, so the head-to-head lists the persuasive differences
+// first instead of in feature order. Anything at or above KEY_COVERAGE_MIN is
+// flagged "Key coverage".
+const MATERIALITY: Record<string, number> = {
+  // auto
+  gap: 9, "new-car-replacement": 9, "accident-forgiveness": 7, rideshare: 7,
+  "mechanical-breakdown": 6, "diminishing-deductible": 6, rental: 5, glass: 5,
+  telematics: 5, roadside: 4, "oem-parts": 4, "emergency-travel": 3, "custom-parts": 3,
+  // home
+  "dwelling-erc": 10, roof: 9, liability: 9, hurricane: 8, windhail: 8, ordinance: 8,
+  "water-backup": 7, "pp-loss": 7, "personal-property": 6, "loss-of-use": 6,
+  "equip-breakdown": 5, "service-line": 5, "other-structures": 4, multipolicy: 4, medpay: 3,
+};
+const MATERIALITY_DEFAULT = 5;
+const KEY_COVERAGE_MIN = 8;
+const materiality = (id: string): number => MATERIALITY[id] ?? MATERIALITY_DEFAULT;
+
 export default function CoverageMatrix({ profile }: { profile: AgentProfile }): React.JSX.Element {
   const [lineKey, setLineKey] = useState<LineKey>("auto");
   const [stateCode, setStateCode] = useState<string>("");
@@ -158,8 +177,9 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
 
   const h2h = useMemo(() => {
     if (A.id === B.id) return null;
-    const adv: { name: string; reason: string }[] = [];
-    const dis: { name: string; reason: string }[] = [];
+    type Item = { name: string; reason: string; weight: number; major: boolean };
+    const adv: Item[] = [];
+    const dis: Item[] = [];
     let comparable = 0;
     let unknown = 0;
     for (const f of line.features) {
@@ -177,12 +197,14 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
         unknown++;
         continue;
       }
+      const w = materiality(f.id);
+      const item = (reason: string): Item => ({ name: f.name, reason, weight: w, major: w >= KEY_COVERAGE_MIN });
       if (na > nb) {
-        adv.push({ name: f.name, reason: `${A.name} ${VERB[rA.category]}; ${B.name} ${VERB[rB.category]}` });
+        adv.push(item(`${A.name} ${VERB[rA.category]}; ${B.name} ${VERB[rB.category]}`));
         continue;
       }
       if (na < nb) {
-        dis.push({ name: f.name, reason: `${B.name} ${VERB[rB.category]}; ${A.name} ${VERB[rA.category]}` });
+        dis.push(item(`${B.name} ${VERB[rB.category]}; ${A.name} ${VERB[rA.category]}`));
         continue;
       }
       // Categories equal — break the tie on amount where it's comparable.
@@ -190,13 +212,17 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
         const pa = parseAmount(rA.value);
         const pb = parseAmount(rB.value);
         if (pa && pb && pa.unit === pb.unit && pa.n !== pb.n) {
-          if (pa.n > pb.n) adv.push({ name: f.name, reason: `${A.name} ${rA.value} vs ${B.name} ${rB.value}` });
-          else dis.push({ name: f.name, reason: `${B.name} ${rB.value} vs ${A.name} ${rA.value}` });
+          if (pa.n > pb.n) adv.push(item(`${A.name} ${rA.value} vs ${B.name} ${rB.value}`));
+          else dis.push(item(`${B.name} ${rB.value} vs ${A.name} ${rA.value}`));
           continue;
         }
       }
       comparable++;
     }
+    // Most-material first; .sort is stable so equal weights keep feature order.
+    const byWeight = (a: Item, b: Item) => b.weight - a.weight;
+    adv.sort(byWeight);
+    dis.sort(byWeight);
     return { adv, dis, comparable, unknown };
   }, [line, A, B, stateCode]);
 
@@ -319,7 +345,13 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
                       <li key={x.name} className="flex gap-2 text-12 leading-snug text-ink-mid">
                         <span className="font-bold text-green-text">+</span>
                         <span>
-                          <span className="font-semibold text-ink">{x.name}</span> — {x.reason}.
+                          <span className="font-semibold text-ink">{x.name}</span>
+                          {x.major ? (
+                            <span className="ml-1.5 rounded bg-gray-fill px-1 py-px text-10 font-bold uppercase tracking-wide text-gray-text">
+                              Key coverage
+                            </span>
+                          ) : null}{" "}
+                          — {x.reason}.
                         </span>
                       </li>
                     ))}
@@ -336,7 +368,13 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
                       <li key={x.name} className="flex gap-2 text-12 leading-snug text-ink-mid">
                         <span className="font-bold text-red-text">–</span>
                         <span>
-                          <span className="font-semibold text-ink">{x.name}</span> — {x.reason}.
+                          <span className="font-semibold text-ink">{x.name}</span>
+                          {x.major ? (
+                            <span className="ml-1.5 rounded bg-gray-fill px-1 py-px text-10 font-bold uppercase tracking-wide text-gray-text">
+                              Key coverage
+                            </span>
+                          ) : null}{" "}
+                          — {x.reason}.
                         </span>
                       </li>
                     ))}
@@ -347,9 +385,10 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
               </div>
             </div>
             <p className="mt-3 text-11 text-ink-3">
-              Advantages compare whether a coverage is included, an add-on, or not offered — and, where amounts are directly
-              comparable (limits, durations, percentages), which carrier offers more. Cells with no public data or different units
-              are left out. Verify against the policy before quoting.
+              Ordered by coverage impact — the differences that move a customer decision first. Advantages compare whether a
+              coverage is included, an add-on, or not offered — and, where amounts are directly comparable (limits, durations,
+              percentages), which carrier offers more. Cells with no public data or different units are left out. Verify against
+              the policy before quoting.
             </p>
           </>
         ) : (
