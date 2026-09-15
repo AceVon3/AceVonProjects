@@ -276,13 +276,13 @@ const HOME: Line = {
     } },
     { id: "service-line", name: "Service line coverage", description: "Buried utility lines to the home", cells: {
       statefarm: { category: "endorsement", value: "Limit DNPA", confidence: "high", note: "Optional endorsement (buried utility lines); State Farm-specific limit not published." },
-      allstate: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Offered in some states with a separate deductible; not independently confirmed this session (Allstate page unreachable, Policygenius omits it) and the limit isn't published." },
+      allstate: { category: "none", confidence: "high", note: "Not offered — service line is absent from both Policygenius's and ValuePenguin's Allstate optional-coverage lists.", source: src("valuepenguin.com", "https://www.valuepenguin.com/allstate-homeowners-insurance-review") },
       farmers: { category: "none", confidence: "high", note: "Not offered — absent from Farmers' own optional-coverages list and Policygenius's 20+-item add-on list; the earlier single-source claim didn't hold.", source: src("farmers.com", "https://www.farmers.com/home/homeowners/coverage/") },
       liberty: { category: "endorsement", value: "Up to $12k", confidence: "high", safecoDerived: true, note: "Optional endorsement; Safeco up to $12,000." },
     } },
     { id: "equip-breakdown", name: "Equipment breakdown", description: "HVAC, appliances, home systems failure", cells: {
       statefarm: { category: "endorsement", value: "~$50k · $500 ded", confidence: "high", note: "'Home Systems Protection' endorsement; ~$50,000, ~$500 deductible." },
-      allstate: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Add-on endorsement; per-occurrence limit not published (industry $50k–$100k)." },
+      allstate: { category: "none", confidence: "high", note: "Not offered — equipment breakdown is absent from both Policygenius's and ValuePenguin's Allstate optional-coverage lists.", source: src("valuepenguin.com", "https://www.valuepenguin.com/allstate-homeowners-insurance-review") },
       farmers: { category: "endorsement", value: "Limit DNPA", confidence: "medium", note: "Available as endorsement; limit not published." },
       liberty: { category: "endorsement", value: "Up to $50k · $500 ded", confidence: "medium", note: "'Home Systems & Appliance Breakdown' endorsement; up to $50,000, $500 deductible." },
     } },
