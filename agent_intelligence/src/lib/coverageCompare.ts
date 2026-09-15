@@ -90,7 +90,6 @@ const AUTO: Line = {
     ["New car replacement", "Pays for a comparable new car after a total loss on a near-new vehicle."],
     ["Gap / loan-lease payoff", "Covers the loan/lease balance above the car's value after a total loss."],
     ["Diminishing deductible", "Reduces your deductible for each claim-free period."],
-    ["OEM parts", "A guarantee that repairs use original-manufacturer parts."],
     ["Telematics discount", "Usage-based program (app or device) that discounts safe driving."],
     ["Data not publicly available", "Not published; confirm on a quote or policy form."],
   ],
@@ -130,7 +129,7 @@ const AUTO: Line = {
     { id: "rideshare", name: "Rideshare coverage", description: "Extends your policy while driving for Uber / Lyft", cells: {
       allstate: { category: "available", confidence: "high", note: '"Ride for Hire" — covers Phase 1 + the deductible gap.', source: src("allstate.com", "https://www.allstate.com/auto-insurance/ride-for-hire") },
       statefarm: { category: "available", confidence: "high", note: "Extends the personal policy incl. app-on/waiting. Varies by state.", source: src("statefarm.com", "https://www.statefarm.com/insurance/auto/coverage-options") },
-      geico: { category: "varies", confidence: "medium", note: 'A "hybrid" policy; sources conflict on underwritten vs partner-brokered.', excludeStates: ["AK", "GA", "KY", "MI", "NV", "NJ", "NY", "NC", "TX", "UT"], source: src("insurify.com", "https://insurify.com/car-insurance/companies/geico/") },
+      geico: { category: "none", confidence: "high", note: "No rideshare endorsement on the personal auto policy — GEICO routes drivers to a separate hybrid (personal + rideshare) commercial policy, and only in some states.", source: src("insurify.com", "https://insurify.com/car-insurance/companies/geico/") },
       progressive: { category: "varies", confidence: "high", note: "Optional add-on covering Period 1. Most but not all states.", source: src("progressive.com", "https://www.progressive.com/auto/insurance-coverages/") },
     } },
     { id: "diminishing-deductible", name: "Diminishing deductible", description: "Deductible drops for each claim-free period", cells: {
@@ -138,12 +137,6 @@ const AUTO: Line = {
       statefarm: { category: "none", confidence: "high", note: "No claim-free deductible-reduction program.", source: src("insurify.com", "https://insurify.com/car-insurance/companies/state-farm/") },
       geico: { category: "none", confidence: "high", note: "No diminishing/vanishing deductible program.", source: src("geico.com", "https://www.geico.com/information/aboutinsurance/auto/") },
       progressive: { category: "available", confidence: "high", note: '"Deductible Savings Bank" — −$50 per claim-free 6-month period.', source: src("progressive.com", "https://www.progressive.com/auto/insurance-coverages/") },
-    } },
-    { id: "oem-parts", name: "OEM parts option", description: "Repairs guaranteed to use original-manufacturer parts", cells: {
-      allstate: { category: "none", confidence: "medium", note: "No OEM-guarantee endorsement; ACR1 contract permits non-OEM parts.", source: src("allstate.com", "https://www.allstate.com/auto-insurance/car-coverages") },
-      statefarm: { category: "none", confidence: "high", note: "No OEM endorsement; may request OEM at added cost. IN/MN require notice.", source: src("statefarm.com", "https://www.statefarm.com/claims/auto/replacement-parts") },
-      geico: { category: "none", confidence: "medium", note: "No buyable OEM endorsement; aftermarket on older/higher-mileage cars.", source: src("geico.com", "https://www.geico.com/information/aboutinsurance/auto/") },
-      progressive: { category: "none", confidence: "high", note: "OEM for motorcycles, not cars; auto defaults to aftermarket.", source: src("progressive.com", "https://www.progressive.com/answers/aftermarket-parts-and-insurance/") },
     } },
     { id: "telematics", name: "Telematics discount", description: "Safe-driving app / device discount program", cells: {
       allstate: { category: "available", confidence: "high", note: '"Drivewise" + "Milewise" (pay-per-mile).', excludeStates: ["CA", "AK"], source: src("allstate.com", "https://www.allstate.com/drive-wise") },
@@ -365,10 +358,6 @@ const AUTO_EXT: Record<string, Record<string, Cell>> = {
     travelers: { category: "available", confidence: "high", note: "Decreasing deductible bundled in the Premier Responsible Driver Plan, not standalone.", excludeStates: ["CA"], source: src("insurify.com", "https://insurify.com/car-insurance/companies/travelers/") },
     nationwide: { category: "available", confidence: "high", note: '"Vanishing Deductible" — −$100/yr safe driving, up to $500; an at-fault resets it to $100.', source: src("nationwide.com", "https://www.nationwide.com/personal/insurance/auto/coverages/types/vanishing-deductible") },
     amfam: { category: "available", confidence: "high", note: "$100 credit at enrollment, then $100/yr ($50 on 6-mo terms) up to max; resets after a claim.", source: src("amfam.com", "https://www.amfam.com/insurance/car/diminishing-deductible-auto") },
-  },
-  "oem-parts": {
-    travelers: { category: "none", confidence: "medium", note: "No standalone OEM endorsement marketed; behavior governed by state repair law.", source: src("freeadvice.com", "https://www.freeadvice.com/insurance/does-travelers-offer-oem-parts-coverage/") },
-    amfam: { category: "available", confidence: "high", note: "Elects OEM over aftermarket parts when available (not a guarantee).", source: src("amfam.com", "https://www.amfam.com/insurance/car/coverages/oem-coverage") },
   },
   telematics: {
     usaa: { category: "available", confidence: "high", note: '"SafePilot" app — up to 30% at renewal.', excludeStates: ["AZ", "HI", "ND", "NH", "NY", "SD", "VT", "WV", "WY"], source: src("usaa.com", "https://www.usaa.com/insurance/vehicles/auto/safepilot/") },

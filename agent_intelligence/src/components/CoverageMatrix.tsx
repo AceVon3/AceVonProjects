@@ -86,7 +86,7 @@ const MATERIALITY: Record<string, number> = {
   // auto
   gap: 9, "new-car-replacement": 9, "accident-forgiveness": 7, rideshare: 7,
   "mechanical-breakdown": 6, "diminishing-deductible": 6, rental: 5, glass: 5,
-  telematics: 5, roadside: 4, "oem-parts": 4, "emergency-travel": 3, "custom-parts": 3,
+  telematics: 5, roadside: 4, "emergency-travel": 3, "custom-parts": 3,
   // home
   "dwelling-erc": 10, roof: 9, liability: 9, hurricane: 8, windhail: 8, ordinance: 8,
   "water-backup": 7, "pp-loss": 7, "personal-property": 6, "loss-of-use": 6,
