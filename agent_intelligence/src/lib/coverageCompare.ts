@@ -212,7 +212,7 @@ const HOME: Line = {
       statefarm: { category: "endorsement", value: "120% of Cov A", confidence: "high", note: "Option ID (Increased Dwelling Limit) ≈ +20% above the dwelling limit. Guaranteed/unlimited RC not offered." },
       allstate: { category: "endorsement", value: "120% of Cov A", confidence: "high", note: "BSREL — 120% of Coverage A standard (125% AR/NC/NY, 150% CA/CT). Not on 'Select' packages in some states." },
       farmers: { category: "endorsement", value: "125% of Cov A · Guaranteed", confidence: "high", note: "Extended RC ≈ +25%; Guaranteed RC (no cap) also available." },
-      liberty: { category: "endorsement", value: "Offered · % DNPA", confidence: "medium", safecoDerived: true, note: "Extended + Guaranteed RC offered; Liberty-direct buffer not published (Safeco deluxe ~50%)." },
+      liberty: { category: "endorsement", value: "Offered · % DNPA", confidence: "high", note: "Extended + Guaranteed replacement cost both offered (Policygenius); the buffer % isn't published (Safeco deluxe runs ~50%).", source: src("policygenius.com", "https://www.policygenius.com/homeowners-insurance/reviews/liberty-mutual/") },
     } },
     { id: "other-structures", name: "Other Structures (Cov B)", description: "Detached garage, fence, shed — % of dwelling", cells: {
       statefarm: { category: "included", value: "10% of Cov A", confidence: "high", note: "Minimum 10%, increasable (nested under Coverage A)." },
@@ -394,7 +394,7 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
     usaa: { category: "endorsement", value: "125% of Cov A", confidence: "high", note: '"Home Protector" — +25% above Cov A for dwelling & other structures. Not guaranteed/uncapped.', source: usnewsUsaa },
     travelers: { category: "endorsement", value: "125–150% of Cov A · Guaranteed", confidence: "high", note: "Extended RC ~+25%/+50%; Platinum Plus adds +100% (200%) or Guaranteed (uncapped) + cash-out.", source: tH },
     nationwide: { category: "endorsement", value: "Up to 200% of Cov A", confidence: "high", note: '"Dwelling Replacement Cost" endorsement pays up to 2× Cov A; no true guaranteed RC.', source: nH },
-    amfam: { category: "included", value: "Included · buffer DNPA", confidence: "medium", note: "Extended RC included when insured to full rebuild cost; buffer % not published. Guaranteed not confirmed.", source: nerdAmfam },
+    amfam: { category: "dnpa", confidence: "medium", note: "AmFam's own materials describe standard replacement cost only; an extended/guaranteed RC buffer isn't confirmed by AmFam or independent reviews.", source: src("amfam.com", "https://www.amfam.com/insurance/home/coverages/dwelling-coverage") },
   },
   "other-structures": {
     amfam: { category: "included", value: "~10% of Cov A", confidence: "high", note: "Industry-standard Coverage B default (~10% of Cov A); increasable.", source: nerdAmfam },
