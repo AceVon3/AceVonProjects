@@ -266,7 +266,7 @@ const HOME: Line = {
       statefarm: { category: "included", value: "~17–25%", confidence: "high", note: "Bundle-discount range across independent sources (WalletHub ~17%, Insure.com ~24% avg); no single published figure. Varies by state." },
       allstate: { category: "included", value: "Up to 25%", confidence: "high", note: "Allstate's published figure; ~20% typically realized." },
       farmers: { category: "included", value: "~10–25%", confidence: "high", note: "Bundle-discount range across independent sources (10–25%); varies by state." },
-      liberty: { category: "included", value: "Offered · % DNPA", confidence: "medium", note: "Liberty advertises ~$950 avg bundle savings (a dollar figure, not a %); exact % not published." },
+      liberty: { category: "included", value: "~$950/yr avg", confidence: "high", note: "Liberty's own advertised average bundle savings (a dollar figure, not a %); actual savings vary by customer.", source: src("libertymutual.com", "https://www.libertymutual.com/home-insurance") },
     } },
     { id: "water-backup", name: "Water / sewer backup", description: "Backup through drains and sewers", cells: {
       statefarm: { category: "endorsement", value: "$10k–$20k tiers", confidence: "high", note: "Optional endorsement; limits commonly $10k–$20k with a separate deductible. Doesn't cover the sewer line itself." },
@@ -406,7 +406,7 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
     usaa: { category: "included", value: "RCV included", confidence: "high", note: "Replacement cost on personal property standard (not ACV) — a USAA distinction; military gear no-deductible.", source: usnewsUsaa },
     travelers: { category: "endorsement", value: "ACV base · RCV optional", confidence: "high", note: '"Contents Replacement Cost" endorsement upgrades to RCV (built into Platinum).', source: tH },
     nationwide: { category: "endorsement", value: "ACV base · RCV optional", confidence: "high", note: '"Brand New Belongings" endorsement pays RCV; base contents ACV.', source: nH },
-    amfam: { category: "endorsement", value: "ACV base · RCV optional", confidence: "medium", note: '"Personal property replacement cost" add-on (base ACV).', source: nerdAmfam },
+    amfam: { category: "endorsement", value: "ACV base · RCV optional", confidence: "high", note: "'Personal property replacement cost' is an optional add-on that removes depreciation (NerdWallet & Policygenius concur), so the base settlement is ACV.", source: src("policygenius.com", "https://www.policygenius.com/homeowners-insurance/reviews/american-family/") },
   },
   "loss-of-use": {
     amfam: { category: "included", value: "~20% of Cov A", confidence: "high", note: "Industry-standard ALE amount (~20% of Cov A); month cap not published.", source: nerdAmfam },
@@ -427,7 +427,7 @@ const HOME_EXT: Record<string, Record<string, Cell>> = {
     travelers: { category: "varies", value: "Offered (coastal)", confidence: "high", note: "Separate named-storm % in coastal states; exact bands state-filed.", source: tH },
   },
   multipolicy: {
-    usaa: { category: "included", value: "~6%", confidence: "medium", note: "Home+auto bundle averages ~6% (Policygenius); auto already low.", source: src("policygenius.com", "https://www.policygenius.com/homeowners-insurance/reviews/usaa/") },
+    usaa: { category: "included", value: "~6–10%", confidence: "high", note: "Home+auto bundle: up to ~10% off property (ValuePenguin), ~6% average (Policygenius); USAA auto is already low.", source: src("valuepenguin.com", "https://www.valuepenguin.com/usaa-insurance-review") },
     travelers: { category: "included", value: "Up to ~12%", confidence: "high", note: "Home+auto bundle; carrier publishes no %, Policygenius cites up to ~12%.", source: tH },
     nationwide: { category: "included", value: "Up to ~20%", confidence: "high", note: "Home+auto bundle up to ~20% (ValuePenguin); ~13% average (Policygenius). Varies by state.", source: nH },
     amfam: { category: "included", value: "Up to ~23%", confidence: "medium", note: "AmFam-advertised 23% home+auto bundle (per Insurify); varies by state.", source: src("insurify.com", "https://insurify.com/homeowners-insurance/companies/american-family/") },
