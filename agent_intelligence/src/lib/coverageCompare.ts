@@ -350,7 +350,7 @@ const AUTO_EXT: Record<string, Record<string, Cell>> = {
   rideshare: {
     usaa: { category: "available", confidence: "high", note: '"Rideshare gap protection" — covers the gap while waiting for a request. Not all states.', source: uA },
     travelers: { category: "available", confidence: "high", note: '"Limited Ridesharing" endorsement — app-on/pre-passenger period. Not all states.', source: tA },
-    nationwide: { category: "none", confidence: "medium", note: "No rideshare / TNC endorsement.", source: src("forbes.com", "https://www.forbes.com/advisor/car-insurance/nationwide-car-insurance-review/") },
+    nationwide: { category: "none", confidence: "high", note: "No rideshare endorsement on the personal auto policy — Nationwide routes drivers to standalone/commercial rideshare coverage.", source: src("forbes.com", "https://www.forbes.com/advisor/car-insurance/nationwide-car-insurance-review/") },
     amfam: { category: "available", confidence: "high", note: 'Rideshare add-on fills the "Stage 1" gap (app on, awaiting request); ~19 states, not nationwide.', source: aA },
   },
   "diminishing-deductible": {
@@ -384,7 +384,7 @@ const AUTO_EXT: Record<string, Record<string, Cell>> = {
   "mechanical-breakdown": {
     usaa: { category: "none", confidence: "high", note: "No mechanical breakdown insurance.", source: src("wallethub.com", "https://wallethub.com/answers/ci/usaa-mechanical-breakdown-insurance-1000105-2140738411/") },
     travelers: { category: "none", confidence: "high", note: "No mechanical breakdown insurance.", source: tA },
-    nationwide: { category: "none", confidence: "medium", note: "No mechanical breakdown insurance (offers car-key/pet perks instead).", source: nA },
+    nationwide: { category: "none", confidence: "high", note: "No mechanical breakdown insurance — absent from Nationwide's own auto coverage list; ValuePenguin & WalletHub concur.", source: nA },
     amfam: { category: "none", confidence: "medium", note: "No auto MBI (markets a non-insurance vehicle service plan separately).", source: aA },
   },
 };
