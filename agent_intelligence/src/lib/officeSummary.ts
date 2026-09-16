@@ -19,8 +19,9 @@ import {
   stateReviewLines,
   StateReviewLine,
 } from "./briefing";
+import { primaryOffice } from "./profile";
 import type { AgentProfile, PayType } from "./profile";
-import { retirementMandateInfo, retirementSizeLine } from "./retirementMandates";
+import { retirementMandateInfo } from "./retirementMandates";
 
 function emp(n: number): string {
   return `${n} ${n === 1 ? "employee" : "employees"}`;
@@ -81,42 +82,60 @@ export function stateReviews(
   return orderedBriefingStates(employeeStates, homeState).map(s => ({
     state: s,
     name: stateName(s),
-    lines: [
-      ...stateReviewLines(s, employeeCount),
-      // The retirement-plan mandate row renders only in the OFFICE state's
-      // briefing (2026-09-16), so only the office state gets its pointer.
-      ...(s === homeState ? retirementReviewLines(s, employeeCount) : []),
-    ],
+    lines: stateReviewLines(s, employeeCount),
   }));
 }
 
-// The office state's retirement-mandate pointer: the size line for mandate
-// states (live or scheduled), a one-line status for the rest. Same voice as
-// every other review line — the agent's number against the state's line,
-// never a determination.
-export function retirementReviewLines(state: string, n: number): StateReviewLine[] {
+// The office state's retirement-mandate blurb for the top "Worth reviewing"
+// list (2026-09-16, per Ryan). One or two sentences in the same voice as the
+// other pointers — the rule's line, the agent's number, the neutral
+// above/below comparison — never a determination. The Review link resolves
+// only when the office state's briefing (and so its retirement row) renders.
+export function retirementPointer(state: string, n: number): RelevancePointer | null {
   const info = retirementMandateInfo(state);
-  if (!info) return [];
-  const sizeLine = retirementSizeLine(state, n);
-  const target = "retirement";
-  if (sizeLine) {
-    const when = info.status === "mandate-pending" ? " Scheduled, not yet in effect —" : "";
-    return [{ key: "retirement", text: `${sizeLine}${when ? `${when} see the retirement section for the launch date.` : ""}`, targetSection: target }];
-  }
+  if (!info) return null;
+  const name = stateName(state);
+  const key = "retirement";
+  const targetSection = "retirement";
+  const you = `you have ${emp(n)}`;
+
   if (info.status === "mandate-live" || info.status === "mandate-pending") {
-    return [{
-      key: "retirement",
-      text: `${info.program} ${info.status === "mandate-pending" ? "is enacted but not yet in effect" : "is in effect"} — its line is not a simple headcount, so the retirement section is the one to review.`,
-      targetSection: target,
-    }];
+    const scheduled = info.status === "mandate-pending";
+    if (info.threshold !== null) {
+      const t = info.threshold;
+      const where = n >= t ? "at or above" : "below";
+      const reach = t === 1
+        ? "employers from the first employee"
+        : `employers with ${t}+ employees`;
+      return {
+        key,
+        targetSection,
+        text: scheduled
+          ? `${name} has enacted a retirement plan mandate (${info.program}) that is not yet in effect — it will reach ${reach} without their own plan, and ${you}, ${where} that line. The retirement section has the launch date and penalties.`
+          : `${name} requires ${reach} without their own retirement plan to join ${info.program}, with per-employee penalties for not doing so — ${you}, ${where} the ${t}-employee line. Counting rules vary, so the retirement section is worth a look.`,
+      };
+    }
+    // WA: an hours test rather than a headcount.
+    return {
+      key,
+      targetSection,
+      text: scheduled
+        ? `${name} has enacted a retirement plan mandate (${info.program}) that is not yet in effect — its line is an hours test rather than a headcount, so the retirement section is the one to review for the launch date and where ${you} sits.`
+        : `${name}'s retirement plan mandate (${info.program}) is in effect — its line is an hours test rather than a headcount, so the retirement section is the one to review.`,
+    };
   }
-  return [{
-    key: "retirement",
-    text: info.status === "voluntary"
-      ? `${stateName(state)} has no employer retirement mandate — ${info.program} is optional at any size.`
-      : `${stateName(state)} has no state retirement-plan mandate for private employers.`,
-    targetSection: target,
-  }];
+  if (info.status === "voluntary") {
+    return {
+      key,
+      targetSection,
+      text: `${name} has no employer retirement plan mandate — ${info.program} is optional at any size. The retirement section has the details.`,
+    };
+  }
+  return {
+    key,
+    targetSection,
+    text: `${name} has no state retirement plan mandate for private employers today — the retirement section notes what has been proposed.`,
+  };
 }
 
 // --- Out-of-state remote registration guide (2026-07) ------------------------
@@ -168,6 +187,12 @@ export function briefingSectionAnchorId(
 ): string | null {
   const primary = primaryBriefingState(employeeStates, homeState);
   if (!primary) return null;
+  // The retirement row is not in sectionsForState — it renders only in the
+  // OFFICE state's briefing, so it links only when the primary IS the office
+  // state (i.e. the office state is among the employee states).
+  if (sectionKey === "retirement") {
+    return primary === homeState ? `briefing-${primary}-retirement` : null;
+  }
   // Tie the link to the PRIMARY state's actual sections: only link if that
   // state renders a section with this key (e.g. ID has no "pfml" section, so
   // the size → PFML pointer won't link for an ID-primary agent).
@@ -221,6 +246,12 @@ export function relevancePointers(p: AgentProfile): RelevancePointer[] {
       text: `You have ${emp(p.remote_count)} working remotely — where remote staff live can change which state's rules reach them, so it's worth reviewing per state.`,
     });
   }
+
+  // Office state's retirement plan mandate → the retirement row in the
+  // office state's briefing (2026-09-16).
+  const office = primaryOffice(p)?.state ?? "";
+  const retirement = office ? retirementPointer(office, p.employee_count) : null;
+  if (retirement) items.push(retirement);
 
   return items;
 }

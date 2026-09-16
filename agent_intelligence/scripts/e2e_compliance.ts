@@ -460,6 +460,9 @@ async function main(): Promise<void> {
   check("row is collapsed by default", (await retireToggle.getAttribute("aria-expanded")) === "false");
   check("collapsed header shows the status pill",
     await retireToggle.locator('[data-testid="retirement-status-pill"]').isVisible());
+  check("collapsed header marks the row as a NEW category",
+    await retireToggle.locator('[data-testid="retirement-new-pill"]').isVisible()
+      && /new/i.test((await retireToggle.locator('[data-testid="retirement-new-pill"]').textContent()) ?? ""));
   await retireToggle.click();
   await page.waitForTimeout(120);
   check("row expands on click", (await retireToggle.getAttribute("aria-expanded")) === "true");
@@ -489,12 +492,24 @@ async function main(): Promise<void> {
   }
   await retireToggle.click(); // collapse again for the counts below
   await page.waitForTimeout(120);
-  // Office-summary pointer for the office state links into the row.
-  const retirePointerLink = summary.locator('[data-testid="state-review-block"][data-state="WA"] [data-testid="state-review-pointer"][data-key="retirement"] [data-testid="state-review-link"]');
-  check("office summary WA block carries a retirement pointer linking to #briefing-WA-retirement",
-    (await retirePointerLink.count()) === 1 && (await retirePointerLink.getAttribute("href")) === "#briefing-WA-retirement");
-  check("OR block in the office summary has NO retirement pointer",
-    (await summary.locator('[data-testid="state-review-block"][data-state="OR"] [data-testid="state-review-pointer"][data-key="retirement"]').count()) === 0);
+  // "Worth reviewing" blurb (top pointer list) for the office state, linking
+  // into the row; the per-state blocks carry NO retirement line (said once).
+  const retirePointer = relevance.locator('[data-testid="relevance-pointer"][data-key="retirement"]');
+  check("'Worth reviewing' list carries exactly one retirement blurb", (await retirePointer.count()) === 1);
+  const retirePointerText = (await retirePointer.textContent()) ?? "";
+  check("retirement blurb names the office state and the agent's N",
+    /Washington/.test(retirePointerText) && /\b5 employees\b/.test(retirePointerText), { retirePointerText });
+  check("retirement blurb links to #briefing-WA-retirement",
+    (await retirePointer.locator('[data-testid="relevance-link"]').getAttribute("href")) === "#briefing-WA-retirement");
+  check("no per-state block carries a retirement line",
+    (await summary.locator('[data-testid="state-review-pointer"][data-key="retirement"]').count()) === 0);
+  // Clicking the blurb expands the row (was collapsed above) and scrolls to it.
+  await retirePointer.locator('[data-testid="relevance-link"]').click();
+  await page.waitForTimeout(400);
+  check("clicking the blurb EXPANDS the retirement row",
+    (await retireToggle.getAttribute("aria-expanded")) === "true");
+  await retireToggle.click(); // collapse again
+  await page.waitForTimeout(120);
 
   // -- Relevance pointers as in-page links to briefing sections ------------
   console.log("\nRelevance links (WA briefing renders → size/salary/hourly link; remote does not)");
@@ -580,6 +595,9 @@ async function main(): Promise<void> {
   const noReadyRelevance = summaryNoReady.locator('[data-testid="office-summary-relevance"]');
   check("relevance pointers still present",
     (await noReadyRelevance.locator('[data-testid="relevance-pointer"]').count()) >= 1);
+  check("retirement blurb re-keys to OR and links to #briefing-OR-retirement",
+    (await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-key="retirement"] [data-testid="relevance-link"]').getAttribute("href")) === "#briefing-OR-retirement"
+      && /Oregon/.test((await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-key="retirement"]').textContent()) ?? ""));
   check("salary pointer links to the OR briefing salary section",
     (await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-key="salary"] [data-testid="relevance-link"]').getAttribute("href")) === "#briefing-OR-salary");
   check("size pointer stays plain text (OR has no 'pfml' section key — no dead link)",

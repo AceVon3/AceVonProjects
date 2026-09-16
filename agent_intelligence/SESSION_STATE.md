@@ -25,10 +25,15 @@ keyed off the PRIMARY OFFICE STATE ONLY (Ryan's call — not employee states).
   body answers in order: THE RULE (summary + exempt-if + conditions), YOUR
   OFFICE SIZE (size line in the size-gate voice; WA gets the hours-test
   variant), WHEN IT BECOMES A RULE / TIMING & DEADLINES, PENALTIES, note,
-  Verified date + official sources. Office-summary per-state block gets a
-  `retirement` pointer for the office state only (`retirementReviewLines`
-  in officeSummary.ts), linking to `#briefing-{ST}-retirement`. The
-  standalone panel from the first pass was deleted.
+  Verified date + official sources. Collapsed header carries a green NEW
+  tag (third pass, Ryan) ahead of the status pill. The top "Worth reviewing
+  for your office" list gets a one-bullet retirement blurb for the office
+  state (`retirementPointer` in officeSummary.ts — live/scheduled/voluntary/
+  none variants, N vs the line, never a determination) whose Review link
+  resolves via `briefingSectionAnchorId` only when the office state is
+  among the employee states; the per-state blocks carry NO retirement line
+  (said once). The standalone panel from the first pass was deleted.
+  Reviewed on localhost by Ryan before the final commit.
 - **Consistency fix:** briefing.ts VT programs gate 5→2.
 - **Gates:** tsc, lint, `verify_retirement.ts` (new: 50-state coverage,
   official-host sources, status/threshold consistency, determination

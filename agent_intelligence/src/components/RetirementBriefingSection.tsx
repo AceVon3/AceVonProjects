@@ -107,6 +107,14 @@ export default function RetirementBriefingSection({
         >
           <span className="flex items-center gap-2 flex-wrap">
             <span className="text-15 font-[650] text-ink">Retirement plan mandate</span>
+            {/* New-category marker (added 2026-09): stays on the COLLAPSED
+                header so the row reads as new before anyone expands it. */}
+            <span
+              data-testid="retirement-new-pill"
+              className="inline-flex items-center text-10 font-bold uppercase tracking-wider04 rounded-full px-2 py-0.5 bg-green-fill text-green-text"
+            >
+              New
+            </span>
             {info && (
               <span
                 data-testid="retirement-status-pill"
