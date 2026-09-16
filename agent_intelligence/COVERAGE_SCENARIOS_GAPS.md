@@ -2,11 +2,24 @@
 
 The `scenarios` line in `src/lib/coverageCompare.ts` answers "when someone other
 than the named insured drives, or the insured drives a car they don't own, what
-changes — by carrier." **Every carrier cell currently holds the same baseline
-answer**, drawn from the standard ISO Personal Auto Policy (PP 00 01) that
-carriers broadly follow. **None of it is individually verified against a
-carrier's actual form or a state's law.** This file is the per-carrier /
-per-state research backlog.
+changes — by carrier." Most carrier cells hold a shared baseline drawn from the
+standard ISO Personal Auto Policy (PP 00 01) that carriers broadly follow, **not
+yet individually verified**. This file is the per-carrier / per-state research
+backlog.
+
+### Verification progress
+
+- **State Farm — VERIFIED** against the actual Car Policy form **9847C**
+  (2024) on 8 of 10 scenarios (permissive use, unlisted household driver,
+  borrowed car, rental personal / business-abroad / other-driver, P2P, excluded
+  vehicles). Those cells are now **high** with form-section citations. Still open
+  for State Farm: **named-driver exclusion** (a separate state endorsement, not
+  in the base booklet) and **regular use** (an underwriting threshold — the form
+  covers permissive users regardless of frequency, so it's a rating/misrep
+  matter, not a coverage line).
+- **All other 7 carriers** (Allstate, GEICO, Progressive, Travelers, Nationwide,
+  USAA, American Family) — still on the shared baseline; pull each carrier's auto
+  policy form the same way (a sample-policy PDF or SERFF form filing).
 
 Carriers in scope (all 8): **Allstate, State Farm, GEICO, Progressive,
 Travelers, Nationwide, USAA, American Family.**
@@ -19,9 +32,10 @@ Travelers, Nationwide, USAA, American Family.**
 | 🔴 low | No reliable baseline; shown as a caution | Research before treating as anything but "Data not publicly available" |
 | ⚪ dnpa ("Unknown") | Genuinely not determinable from public sources | Pull the carrier form; do not guess |
 
-There are **no high-confidence (carrier-verified) cells in this line yet** — so
-every one of the 80 cells (10 scenarios × 8 carriers) needs verification. The
-list below is organized by what specifically to check, not 80 identical rows.
+State Farm is the first carrier verified (8 of its 10 cells are now high). The
+remaining ~72 cells (the other 7 carriers, plus State Farm's 2 open scenarios)
+still need verification. The list below is organized by what specifically to
+check, not by identical rows.
 
 ## Fully unknown (dnpa) — highest priority, currently shows "Unknown"
 
