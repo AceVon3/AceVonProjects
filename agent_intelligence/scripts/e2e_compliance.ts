@@ -249,17 +249,18 @@ async function main(): Promise<void> {
   check("OR briefing is ready (50-state expansion)", stateBlocks.find(s => s.state === "OR")?.ready === "true");
   check("AZ briefing is ready (50-state expansion)", stateBlocks.find(s => s.state === "AZ")?.ready === "true");
 
-  // WA has the 6 briefing sections, all grounded.
+  // WA has the 6 briefing sections + the retirement row (office state), all
+  // grounded.
   const waBlock = page.locator('[data-testid="briefing-state"][data-state="WA"]');
   const sections = waBlock.locator('[data-testid="briefing-section"]');
-  check("WA briefing has 6 sections", (await sections.count()) === 6, { n: await sections.count() });
+  check("WA briefing has 7 sections (6 + retirement row)", (await sections.count()) === 7, { n: await sections.count() });
   const grounded = await waBlock.locator('[data-testid="briefing-section"][data-grounded="true"]').count();
-  check("all 6 WA sections are grounded", grounded === 6, { grounded });
+  check("all 7 WA sections are grounded", grounded === 7, { grounded });
 
   // -- Accordion: collapsed by default, keyboard-operable, caution pill ------
   console.log("\nBriefing accordion (collapsed by default; expand/collapse; caution pill)");
   const toggles = waBlock.locator('[data-testid="briefing-section-toggle"]');
-  check("each section has a real toggle button", (await toggles.count()) === 6);
+  check("each section has a real toggle button", (await toggles.count()) === 7);
   const allCollapsed = await toggles.evaluateAll(
     els => els.every(e => e.getAttribute("aria-expanded") === "false"));
   check("all sections collapsed by default (aria-expanded=false)", allCollapsed);
@@ -347,7 +348,7 @@ async function main(): Promise<void> {
 
   // Per-section "as of {date}" present on the grounded sections.
   const asofCount = await waBlock.locator('[data-testid="section-asof"]').count();
-  check("per-section 'as of' date shown on every grounded section", asofCount === 6, { asofCount });
+  check("per-section 'as of' date shown on every grounded section (6 + retirement Verified)", asofCount === 7, { asofCount });
   const asofText = (await waBlock.locator('[data-testid="section-asof"]').first().textContent()) ?? "";
   check("'as of' shows a YYYY-MM-DD date", /Figures as of \d{4}-\d{2}-\d{2}/.test(asofText), { asofText });
 
@@ -438,47 +439,62 @@ async function main(): Promise<void> {
   check("guide defers the determination (confirm with payroll provider / professional)",
     /confirm with your payroll provider or a tax professional/i.test(regText));
 
-  // -- State retirement-plan mandate section (2026-09) ---------------------
-  // Keyed off the PRIMARY OFFICE STATE only (WA here), never employee
-  // states: one section, data-state = office state, status resolved from
-  // the verified 50-state data, size line carries the agent's N and the
-  // state's employee line, and no determination language anywhere.
-  console.log("\nRetirement mandate section (office WA, N=5)");
-  const retire = page.locator('[data-testid="retirement-mandate"]');
-  check("retirement section renders exactly once (office state only)", (await retire.count()) === 1);
-  check("retirement section is keyed to the office state (WA)",
-    (await retire.getAttribute("data-state")) === "WA");
-  const retireStatus = await retire.getAttribute("data-status");
-  check("retirement status resolved from data (not 'unknown')",
-    !!retireStatus && retireStatus !== "unknown", { retireStatus });
+  // -- Retirement-plan mandate accordion row (2026-09) ---------------------
+  // Renders ONLY inside the PRIMARY OFFICE STATE's briefing (WA here), never
+  // in the other employee states' blocks. Collapsed like its siblings; when
+  // expanded it answers four things in order — the rule, office size vs the
+  // state's line (relevance-pointing), timing/scheduled status, penalties —
+  // with a Verified date + official sources, and no determination language.
+  console.log("\nRetirement mandate accordion row (office WA, N=5)");
+  const retireRows = page.locator('[data-testid="briefing-section"][data-section="retirement"]');
+  check("exactly one retirement row on the page (office state only)", (await retireRows.count()) === 1);
+  const retire = waBlock.locator('[data-testid="briefing-section"][data-section="retirement"]');
+  check("the retirement row lives in the WA (office) briefing", (await retire.count()) === 1);
+  check("OR block has NO retirement row",
+    (await page.locator('[data-testid="briefing-state"][data-state="OR"] [data-testid="briefing-section"][data-section="retirement"]').count()) === 0);
+  check("AZ block has NO retirement row",
+    (await page.locator('[data-testid="briefing-state"][data-state="AZ"] [data-testid="briefing-section"][data-section="retirement"]').count()) === 0);
   const retireExpected = retirementMandateInfo("WA");
-  check("rendered status matches the data module", retireStatus === retireExpected?.status);
-  check("status pill present", (await retire.locator('[data-testid="retirement-status"]').count()) === 1);
+  check("row status matches the data module", (await retire.getAttribute("data-status")) === retireExpected?.status);
+  const retireToggle = retire.locator('[data-testid="briefing-section-toggle"]');
+  check("row is collapsed by default", (await retireToggle.getAttribute("aria-expanded")) === "false");
+  check("collapsed header shows the status pill",
+    await retireToggle.locator('[data-testid="retirement-status-pill"]').isVisible());
+  await retireToggle.click();
+  await page.waitForTimeout(120);
+  check("row expands on click", (await retireToggle.getAttribute("aria-expanded")) === "true");
+  const retireContent = retire.locator('[data-testid="briefing-section-content"]');
+  check("expanded content visible", await retireContent.isVisible());
+  for (const block of ["retirement-rule", "retirement-size", "retirement-timing", "retirement-penalties"]) {
+    check(`expanded row has the '${block}' block`, (await retireContent.locator(`[data-testid="${block}"]`).count()) === 1);
+  }
   check("≥1 official source link rendered",
-    (await retire.locator('[data-testid="retirement-source"]').count()) >= 1);
+    (await retireContent.locator('[data-testid="briefing-source"]').count()) >= 1);
   const retireText = (await retire.textContent()) ?? "";
-  check("section names the office state", /Washington/.test(retireText));
-  check("section carries the confirm-with-a-professional hedge",
-    /confirm with a qualified professional/i.test(retireText));
-  check("retirement section NEVER uses determination language",
+  check("row carries a Verified YYYY-MM-DD date", /Verified \d{4}-\d{2}-\d{2}/.test(retireText));
+  check("retirement row NEVER uses determination language",
     !DETERMINATION.some(re => re.test(retireText)),
     { matched: DETERMINATION.filter(re => re.test(retireText)).map(String) });
-  const retireLine = retire.locator('[data-testid="retirement-size-line"]');
   const retireIsMandate = retireExpected?.status === "mandate-live" || retireExpected?.status === "mandate-pending";
-  if (retireIsMandate && retireExpected?.threshold !== null) {
-    check("mandate state: size line renders with N=5 and the state's line",
-      (await retireLine.count()) === 1
-        && /5 employees/.test((await retireLine.textContent()) ?? "")
-        && new RegExp(`${retireExpected!.threshold}-employee line`).test((await retireLine.textContent()) ?? ""));
-    check("mandate state: penalties row rendered",
-      (await retire.locator('[data-testid="retirement-penalties"]').count()) === 1);
+  const retireLine = retireContent.locator('[data-testid="retirement-size-line"]');
+  if (retireIsMandate) {
+    check("mandate state: size block states the agent's N (5)",
+      (await retireLine.count()) === 1 && /\b5 employees\b/.test((await retireLine.textContent()) ?? ""));
+    if (retireExpected?.status === "mandate-pending") {
+      check("scheduled mandate: timing block says it is scheduled, not yet in effect",
+        /Scheduled, not yet in effect/.test((await retireContent.locator('[data-testid="retirement-timing"]').textContent()) ?? ""));
+    }
   } else {
     check("non-mandate state: no size line", (await retireLine.count()) === 0);
   }
-  // Layout: sits between the office summary and the briefing band.
-  const yRetire = await yOf('[data-testid="retirement-mandate"]');
-  check("layout order: summary → retirement mandate → not-legal/tax band",
-    ySummary < yRetire && yRetire < yBand, { ySummary, yRetire, yBand });
+  await retireToggle.click(); // collapse again for the counts below
+  await page.waitForTimeout(120);
+  // Office-summary pointer for the office state links into the row.
+  const retirePointerLink = summary.locator('[data-testid="state-review-block"][data-state="WA"] [data-testid="state-review-pointer"][data-key="retirement"] [data-testid="state-review-link"]');
+  check("office summary WA block carries a retirement pointer linking to #briefing-WA-retirement",
+    (await retirePointerLink.count()) === 1 && (await retirePointerLink.getAttribute("href")) === "#briefing-WA-retirement");
+  check("OR block in the office summary has NO retirement pointer",
+    (await summary.locator('[data-testid="state-review-block"][data-state="OR"] [data-testid="state-review-pointer"][data-key="retirement"]').count()) === 0);
 
   // -- Relevance pointers as in-page links to briefing sections ------------
   console.log("\nRelevance links (WA briefing renders → size/salary/hourly link; remote does not)");
@@ -555,11 +571,12 @@ async function main(): Promise<void> {
   const summaryNoReady = page.locator('[data-testid="office-summary"]');
   check("office summary still renders (ready variant — profile complete)",
     (await summaryNoReady.getAttribute("data-variant")) === "ready");
-  // Retirement section follows the OFFICE state (OR), not the employee list.
-  check("retirement section re-keys to the new office state (OR)",
-    (await page.locator('[data-testid="retirement-mandate"]').getAttribute("data-state")) === "OR");
-  check("OR retirement status matches the data module",
-    (await page.locator('[data-testid="retirement-mandate"]').getAttribute("data-status")) === retirementMandateInfo("OR")?.status);
+  // Retirement row follows the OFFICE state (OR now), not the employee list.
+  check("retirement row re-keys to the new office state (OR)",
+    (await page.locator('[data-testid="briefing-state"][data-state="OR"] [data-testid="briefing-section"][data-section="retirement"]').count()) === 1
+      && (await page.locator('[data-testid="briefing-section"][data-section="retirement"]').count()) === 1);
+  check("OR retirement row status matches the data module",
+    (await page.locator('#briefing-OR-retirement').getAttribute("data-status")) === retirementMandateInfo("OR")?.status);
   const noReadyRelevance = summaryNoReady.locator('[data-testid="office-summary-relevance"]');
   check("relevance pointers still present",
     (await noReadyRelevance.locator('[data-testid="relevance-pointer"]').count()) >= 1);
@@ -619,8 +636,8 @@ async function main(): Promise<void> {
   const idBlock = page.locator('[data-testid="briefing-state"][data-state="ID"]');
   check("ID briefing renders (ready)", (await idBlock.getAttribute("data-ready")) === "true");
   const idKeys = await sectionKeysFor("ID");
-  check("ID sections = wage/salary/leave/atwill/btax (5, no wacares)",
-    JSON.stringify(idKeys) === JSON.stringify(["wage", "salary", "leave", "atwill", "btax"]), { idKeys });
+  check("ID sections = wage/salary/leave/retirement/atwill/btax (no wacares; retirement row = office state)",
+    JSON.stringify(idKeys) === JSON.stringify(["wage", "salary", "leave", "retirement", "atwill", "btax"]), { idKeys });
   check("ID has NO WA Cares section",
     (await idBlock.locator('[data-testid="briefing-section"][data-section="wacares"]').count()) === 0);
   check("ID at-will is GROUNDED (not coming-soon)",
@@ -637,8 +654,8 @@ async function main(): Promise<void> {
   const utBlock = page.locator('[data-testid="briefing-state"][data-state="UT"]');
   check("UT briefing renders (ready)", (await utBlock.getAttribute("data-ready")) === "true");
   const utKeys = await sectionKeysFor("UT");
-  check("UT sections = wage/salary/leave/atwill/btax (5, no wacares)",
-    JSON.stringify(utKeys) === JSON.stringify(["wage", "salary", "leave", "atwill", "btax"]), { utKeys });
+  check("UT sections = wage/salary/leave/retirement/atwill/btax (no wacares; retirement row = office state)",
+    JSON.stringify(utKeys) === JSON.stringify(["wage", "salary", "leave", "retirement", "atwill", "btax"]), { utKeys });
   // GAP-FILL (2026-07): UT at-will is now GROUNDED — doctrine via Hansen v.
   // America Online (official Utah courts HTML opinion) + UALD exception
   // pages. The section must render real content with both halves, replacing
@@ -664,8 +681,8 @@ async function main(): Promise<void> {
   // 50-state expansion: AZ renders its own config-driven briefing now.
   check("AZ renders its own briefing (ready, 50-state expansion)",
     mixOrder.find(s => s.state === "AZ")?.ready === "true");
-  check("WA keeps its 6-section set (incl. WA Cares)",
-    (await sectionKeysFor("WA")).length === 6
+  check("WA keeps its 6-section set + retirement row (incl. WA Cares)",
+    (await sectionKeysFor("WA")).length === 7
       && (await page.locator('[data-testid="briefing-state"][data-state="WA"] [data-testid="briefing-section"][data-section="wacares"]').count()) === 1);
   check("ID shows its 5-section set in the same multi-state page",
     (await sectionKeysFor("ID")).length === 5);

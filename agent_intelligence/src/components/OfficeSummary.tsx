@@ -205,8 +205,13 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
 
           // A state's Review link renders only when its briefing actually has
           // the target section (same rule as the per-line links below).
+          // The retirement row is not in sectionsForState — it renders only
+          // in the office state's briefing, so its link resolves only there.
           const reviewAnchor = (state: string, targetSection?: string) =>
-            targetSection && sectionsForState(state).some(s => s.key === targetSection)
+            targetSection && (
+              sectionsForState(state).some(s => s.key === targetSection)
+              || (targetSection === "retirement" && state === primaryState)
+            )
               ? `briefing-${state}-${targetSection}`
               : null;
 

@@ -20,6 +20,7 @@ import {
   StateReviewLine,
 } from "./briefing";
 import type { AgentProfile, PayType } from "./profile";
+import { retirementMandateInfo, retirementSizeLine } from "./retirementMandates";
 
 function emp(n: number): string {
   return `${n} ${n === 1 ? "employee" : "employees"}`;
@@ -80,8 +81,42 @@ export function stateReviews(
   return orderedBriefingStates(employeeStates, homeState).map(s => ({
     state: s,
     name: stateName(s),
-    lines: stateReviewLines(s, employeeCount),
+    lines: [
+      ...stateReviewLines(s, employeeCount),
+      // The retirement-plan mandate row renders only in the OFFICE state's
+      // briefing (2026-09-16), so only the office state gets its pointer.
+      ...(s === homeState ? retirementReviewLines(s, employeeCount) : []),
+    ],
   }));
+}
+
+// The office state's retirement-mandate pointer: the size line for mandate
+// states (live or scheduled), a one-line status for the rest. Same voice as
+// every other review line — the agent's number against the state's line,
+// never a determination.
+export function retirementReviewLines(state: string, n: number): StateReviewLine[] {
+  const info = retirementMandateInfo(state);
+  if (!info) return [];
+  const sizeLine = retirementSizeLine(state, n);
+  const target = "retirement";
+  if (sizeLine) {
+    const when = info.status === "mandate-pending" ? " Scheduled, not yet in effect —" : "";
+    return [{ key: "retirement", text: `${sizeLine}${when ? `${when} see the retirement section for the launch date.` : ""}`, targetSection: target }];
+  }
+  if (info.status === "mandate-live" || info.status === "mandate-pending") {
+    return [{
+      key: "retirement",
+      text: `${info.program} ${info.status === "mandate-pending" ? "is enacted but not yet in effect" : "is in effect"} — its line is not a simple headcount, so the retirement section is the one to review.`,
+      targetSection: target,
+    }];
+  }
+  return [{
+    key: "retirement",
+    text: info.status === "voluntary"
+      ? `${stateName(state)} has no employer retirement mandate — ${info.program} is optional at any size.`
+      : `${stateName(state)} has no state retirement-plan mandate for private employers.`,
+    targetSection: target,
+  }];
 }
 
 // --- Out-of-state remote registration guide (2026-07) ------------------------

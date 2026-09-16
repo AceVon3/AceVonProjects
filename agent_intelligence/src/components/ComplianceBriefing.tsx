@@ -1,5 +1,10 @@
 "use client";
 
+import { Fragment } from "react";
+
+import RetirementBriefingSection, {
+  RETIREMENT_SECTION_KEY,
+} from "@/components/RetirementBriefingSection";
 import {
   BriefingSectionDef,
   deriveAnnualFromWeekly,
@@ -210,17 +215,29 @@ function BriefingAccordionItem({
 function ReadyBriefing({
   state,
   employeeCount,
+  isHomeState,
   expanded,
   onToggle,
 }: {
   state: string;
   employeeCount: number;
+  isHomeState: boolean;
   expanded: Record<string, boolean>;
   onToggle: (id: string) => void;
 }): React.JSX.Element {
   // Only the sections that apply to THIS state, in its declared order.
   const sections = sectionsForState(state);
   const salaryWarning = salaryWarningForState(state);
+  // The retirement-mandate row renders ONLY in the primary office state's
+  // briefing (2026-09-16), slotted after the state-programs row (or after
+  // leave when the state has no programs row) so it sits with the other
+  // employer-mandate content.
+  const retirementAfter = isHomeState
+    ? Math.max(
+        sections.findIndex(s => s.key === "programs"),
+        sections.findIndex(s => s.key === "leave" || s.key === "pfml"),
+      )
+    : -1;
   return (
     <section
       data-testid="briefing-state"
@@ -235,16 +252,25 @@ function ReadyBriefing({
       </div>
 
       <div className="divide-y divide-line">
-        {sections.map(sec => (
-          <BriefingAccordionItem
-            key={sec.key}
-            state={state}
-            sec={sec}
-            employeeCount={employeeCount}
-            salaryWarning={salaryWarning}
-            isOpen={!!expanded[`briefing-${state}-${sec.key}`]}
-            onToggle={onToggle}
-          />
+        {sections.map((sec, i) => (
+          <Fragment key={sec.key}>
+            <BriefingAccordionItem
+              state={state}
+              sec={sec}
+              employeeCount={employeeCount}
+              salaryWarning={salaryWarning}
+              isOpen={!!expanded[`briefing-${state}-${sec.key}`]}
+              onToggle={onToggle}
+            />
+            {i === retirementAfter && (
+              <RetirementBriefingSection
+                state={state}
+                employeeCount={employeeCount}
+                isOpen={!!expanded[`briefing-${state}-${RETIREMENT_SECTION_KEY}`]}
+                onToggle={onToggle}
+              />
+            )}
+          </Fragment>
         ))}
       </div>
     </section>
@@ -300,6 +326,7 @@ export default function ComplianceBriefing({
               key={state}
               state={state}
               employeeCount={employeeCount}
+              isHomeState={state === homeState}
               expanded={expanded}
               onToggle={onToggle}
             />

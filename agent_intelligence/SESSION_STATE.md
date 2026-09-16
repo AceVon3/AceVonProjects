@@ -17,17 +17,25 @@ keyed off the PRIMARY OFFICE STATE ONLY (Ryan's call — not employee states).
   in NRS 353D), NY (none in GBL art. 43). Known soft spots flagged in `note`
   fields: MN size-tier dates (portal-only), VA fall-2026 dates (program
   guidance, not statute), MO launch status.
-- **UI: `RetirementMandatePanel.tsx`** between the office summary and the
-  briefing band; status pill, size line in the briefing's size-gate voice
-  (N vs the state line, always "verify"), exemption/deadlines/penalties
-  rows, source links + verified date, professional hedge. WA renders with no
-  size line (hours test, not headcount).
+- **UI: `RetirementBriefingSection.tsx`** — an accordion ROW inside the
+  office state's briefing (Ryan's call, second pass: "another drop down
+  section included in the current ones", not a standalone card). Slots
+  after the state-programs row (or leave). Collapsed header carries a
+  status pill (in effect / scheduled / voluntary / no mandate); expanded
+  body answers in order: THE RULE (summary + exempt-if + conditions), YOUR
+  OFFICE SIZE (size line in the size-gate voice; WA gets the hours-test
+  variant), WHEN IT BECOMES A RULE / TIMING & DEADLINES, PENALTIES, note,
+  Verified date + official sources. Office-summary per-state block gets a
+  `retirement` pointer for the office state only (`retirementReviewLines`
+  in officeSummary.ts), linking to `#briefing-{ST}-retirement`. The
+  standalone panel from the first pass was deleted.
 - **Consistency fix:** briefing.ts VT programs gate 5→2.
 - **Gates:** tsc, lint, `verify_retirement.ts` (new: 50-state coverage,
   official-host sources, status/threshold consistency, determination
   blocklist, size-line arithmetic, CA anchor), verify_office_summary,
-  verify_briefing_language, e2e_compliance (+ retirement checks) ALL PASS
-  on a port-3013 dev server (local .env.local has AUTH_ENFORCED=1 → start
+  verify_briefing_language, e2e_compliance (+ retirement-row checks: office
+  state only, collapsed by default, four blocks, pointer link; WA/ID/UT
+  section counts now include the row) ALL PASS on a port-3013 dev server (local .env.local has AUTH_ENFORCED=1 → start
   e2e servers with AUTH_ENFORCED=0 or protected routes 404 non-browser).
 - **Annual recheck candidates:** ME/VT/NJ/MN penalty step-ups, HI/WA launch
   dates, PA/MI live bills, AK re-introduction.

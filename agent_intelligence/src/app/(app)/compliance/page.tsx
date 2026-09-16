@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import ComplianceBriefing from "@/components/ComplianceBriefing";
 import ComplianceCard from "@/components/ComplianceCard";
 import OfficeSummary from "@/components/OfficeSummary";
-import RetirementMandatePanel from "@/components/RetirementMandatePanel";
 import TopBar from "@/components/TopBar";
 import {
   COMPLIANCE_SUMMARIES,
@@ -130,17 +129,6 @@ export default function CompliancePage(): React.JSX.Element {
             load-bearing out-of-state remote flag. Sits ABOVE the briefing's
             "not legal/tax advice" band per the layout. */}
         {profile && <OfficeSummary profile={profile} onJump={revealSection} />}
-
-        {/* State retirement-plan mandate (2026-09) — keyed off the PRIMARY
-            OFFICE STATE only, not employee states. Product copy verified
-            against official program pages; the agent's headcount is read
-            against the state's employee line in the size-gate voice. */}
-        {profile && (
-          <RetirementMandatePanel
-            state={primaryOffice(profile)?.state ?? ""}
-            employeeCount={profile.employee_count}
-          />
-        )}
 
         {/* Office briefing — personalized, ordered by primary state, with the
             load-bearing "not legal/tax advice" band. Reuses the same grounded
