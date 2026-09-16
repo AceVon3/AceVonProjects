@@ -9,8 +9,10 @@ backlog.
 
 ### Verification progress
 
-- **State Farm — VERIFIED** against the actual **Washington** Car Policy form
-  **9847C** (2024) on 8 of 10 scenarios (permissive use, unlisted household driver,
+- **State Farm — VERIFIED** against two actual filed forms — **Washington** Car
+  Policy **9847C** (2024) and **Oregon** Car Policy **9837B**, which agree on the
+  core (the P2P exclusion is explicit in WA, general "rented to others" in OR) —
+  on 8 of 10 scenarios (permissive use, unlisted household driver,
   borrowed car, rental personal / business-abroad / other-driver, P2P, excluded
   vehicles). Those cells are now **high** with form-section citations. Still open
   for State Farm: **named-driver exclusion** (a separate state endorsement, not
@@ -22,12 +24,14 @@ backlog.
   policy form the same way (a sample-policy PDF or SERFF form filing).
 
 > **State-scope caveat:** carrier policy forms are filed **per state** (different
-> form numbers, and state-mandated PIP/UM/exclusion language). The State Farm
-> verification used the **Washington** 9847C form. Its core provisions
-> (permissive-user-covered, non-owned-excess, physical-damage-if-carried,
-> territory, P2P exclusion, 31-day rule) are State Farm's standard nationwide,
-> but the state-variable items are not confirmed outside WA. Ideally verify the
-> form for the agent's own state; the tool's state filter is where per-state
+> form numbers, and state-mandated PIP/UM/exclusion language). State Farm was
+> verified against two states — **WA 9847C** and **OR 9837B** — which agree on
+> the core (permissive-user-covered, non-owned-excess, physical-damage-if-carried,
+> territory, 31-day rule), strong evidence these are State Farm's standard
+> nationwide. The one observed difference: the P2P exclusion is explicit in WA and
+> the older general "rented to others" wording in OR (same outcome). State-variable
+> items (PIP/UM, permissive-use step-downs, driver-exclusion validity) still need
+> the agent's own state form; the tool's state filter is where per-state
 > resolution would eventually live.
 
 Carriers in scope (all 8): **Allstate, State Farm, GEICO, Progressive,
