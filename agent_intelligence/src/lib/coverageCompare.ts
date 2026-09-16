@@ -495,7 +495,7 @@ const S_IDS = ["allstate", "statefarm", "geico", "progressive", "travelers", "na
 // Same baseline cell for every carrier — honest for a near-universal PAP rule,
 // with the per-carrier caveat carried in the note. Override individually once a
 // carrier's form is verified.
-const sf9847c = src("State Farm Car Policy form 9847C", "https://www.statefarm.com/content/dam/sf-library/en-us/pca-endorsement/auto/9847C.pdf");
+const sf9847c = src("State Farm WA Car Policy form 9847C (2024)", "https://www.statefarm.com/content/dam/sf-library/en-us/pca-endorsement/auto/9847C.pdf");
 const papCell = (cell: Cell, overrides: Record<string, Cell> = {}): Record<string, Cell> => ({
   ...Object.fromEntries(S_IDS.map((id) => [id, cell])),
   ...overrides,
@@ -516,7 +516,7 @@ const SCENARIOS: Line = {
     ["Data not publicly available", "Not determinable from public sources; flagged for carrier-form research."],
   ],
   footnote:
-    "Driver & vehicle scenarios — what changes when someone other than the named insured drives, or the insured drives a car they don't own. Baseline answers reflect the standard ISO Personal Auto Policy (PP 00 01) that carriers broadly follow; each carrier's actual form and state-law overrides are NOT individually verified (a medium dot means 'standard-PAP baseline, confirm per carrier'). A factual comparison, not legal advice — confirm against the policy and state.",
+    "Driver & vehicle scenarios — what changes when someone other than the named insured drives, or the insured drives a car they don't own. Baseline answers reflect the standard ISO Personal Auto Policy (PP 00 01) that carriers broadly follow; each carrier's actual form and state-law overrides are NOT individually verified (a medium dot means 'standard-PAP baseline, confirm per carrier'). State Farm's high cells are verified against its Washington form 9847C (2024); those core provisions are State Farm's standard nationwide, but state-mandated items (PIP/UM, permissive-use step-downs, driver-exclusion validity) can differ by state. A factual comparison, not legal advice — confirm against the policy and state.",
   features: [
     { id: "permissive-use", name: "Permissive use — friend borrows your car", description: "A non-household friend drives your car with your permission.", cells: papCell({
       category: "included", value: "Covered · owner's policy is primary", confidence: "medium",

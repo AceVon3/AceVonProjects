@@ -9,8 +9,8 @@ backlog.
 
 ### Verification progress
 
-- **State Farm — VERIFIED** against the actual Car Policy form **9847C**
-  (2024) on 8 of 10 scenarios (permissive use, unlisted household driver,
+- **State Farm — VERIFIED** against the actual **Washington** Car Policy form
+  **9847C** (2024) on 8 of 10 scenarios (permissive use, unlisted household driver,
   borrowed car, rental personal / business-abroad / other-driver, P2P, excluded
   vehicles). Those cells are now **high** with form-section citations. Still open
   for State Farm: **named-driver exclusion** (a separate state endorsement, not
@@ -20,6 +20,15 @@ backlog.
 - **All other 7 carriers** (Allstate, GEICO, Progressive, Travelers, Nationwide,
   USAA, American Family) — still on the shared baseline; pull each carrier's auto
   policy form the same way (a sample-policy PDF or SERFF form filing).
+
+> **State-scope caveat:** carrier policy forms are filed **per state** (different
+> form numbers, and state-mandated PIP/UM/exclusion language). The State Farm
+> verification used the **Washington** 9847C form. Its core provisions
+> (permissive-user-covered, non-owned-excess, physical-damage-if-carried,
+> territory, P2P exclusion, 31-day rule) are State Farm's standard nationwide,
+> but the state-variable items are not confirmed outside WA. Ideally verify the
+> form for the agent's own state; the tool's state filter is where per-state
+> resolution would eventually live.
 
 Carriers in scope (all 8): **Allstate, State Farm, GEICO, Progressive,
 Travelers, Nationwide, USAA, American Family.**
