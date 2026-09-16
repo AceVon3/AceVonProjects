@@ -19,6 +19,7 @@ import {
 } from "@/lib/coverageCompare";
 import type { AgentProfile } from "@/lib/profile";
 import { STATES } from "@/lib/states";
+import ScenarioExplorer from "./ScenarioExplorer";
 
 type Counts = { high: number; medium: number; low: number; dnpa: number; safeco: number; total: number };
 const emptyCounts = (): Counts => ({ high: 0, medium: 0, low: 0, dnpa: 0, safeco: 0, total: 0 });
@@ -31,6 +32,7 @@ const CHIP: Record<Category, { cls: string; label: string }> = {
   available: { cls: "bg-blue-fill text-blue-text", label: "Available" },
   endorsement: { cls: "bg-blue-fill text-blue-text", label: "Endorsement" },
   varies: { cls: "bg-amber-fill text-amber-text", label: "Varies by state" },
+  stepdown: { cls: "bg-amber-fill text-amber-text", label: "Reduced limits" },
   none: { cls: "bg-gray-fill text-gray-text", label: "Not offered" },
   dnpa: { cls: "border border-dashed border-line-2 text-ink-3", label: "Data not public" },
 };
@@ -44,12 +46,13 @@ const CONF_LABEL: Record<Confidence, string> = { high: "High — carrier / filed
 
 // Feature "strength" for the head-to-head summary — based on coverage CATEGORY
 // only (reliable), never fuzzy numeric-value comparison. dnpa = unknown, skipped.
-const RANK: Record<Category, number | null> = { included: 3, available: 2, endorsement: 2, varies: 1, none: 0, dnpa: null };
+const RANK: Record<Category, number | null> = { included: 3, available: 2, endorsement: 2, varies: 1, stepdown: 1, none: 0, dnpa: null };
 const VERB: Record<Category, string> = {
   included: "includes it standard",
   available: "offers it (add-on)",
   endorsement: "offers it (add-on)",
   varies: "offers it in some states",
+  stepdown: "covers it at reduced limits",
   none: "doesn't offer it",
   dnpa: "has no public data",
 };
@@ -297,7 +300,7 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
     <div className="space-y-4">
       {/* Line toggle */}
       <div className="inline-flex gap-0.5 rounded-xl border border-card-line bg-soft p-1" role="tablist" aria-label="Insurance line">
-        {(["auto", "home"] as LineKey[]).map((k) => (
+        {(["auto", "home", "scenarios"] as LineKey[]).map((k) => (
           <button
             key={k}
             role="tab"
@@ -307,7 +310,7 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
               lineKey === k ? "bg-surface text-ink shadow-sm" : "text-ink-mid"
             }`}
           >
-            <span aria-hidden>{k === "auto" ? "🚗" : "🏠"}</span>
+            <span aria-hidden>{k === "auto" ? "🚗" : k === "home" ? "🏠" : "🧑‍🤝‍🧑"}</span>
             {LINES[k].label}
           </button>
         ))}
@@ -366,7 +369,13 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
         </button>
       </div>
 
-      {/* Head-to-head advantage summary */}
+      {/* Scenario-first explorer — "I'm in situation X, show me carriers". Only
+          on the Who's Covered line, where the rich per-carrier detail lives. */}
+      {lineKey === "scenarios" ? <ScenarioExplorer line={line} carriers={carriers} /> : null}
+
+      {/* Head-to-head advantage summary — not shown for the scenarios line
+          (its "who's covered" statuses aren't a better/worse ranking). */}
+      {lineKey !== "scenarios" && (
       <div className="rounded-2xl border border-card-line bg-surface p-4 shadow-sm">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span className="text-11 font-bold uppercase tracking-wider text-ink-2">Head-to-head</span>
@@ -512,6 +521,7 @@ export default function CoverageMatrix({ profile }: { profile: AgentProfile }): 
           <p className="text-12 text-ink-2">Pick two different carriers to compare.</p>
         )}
       </div>
+      )}
 
       {/* Confidence summary + "needs verification" filter */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl border border-card-line bg-surface px-4 py-3 text-12 shadow-sm">

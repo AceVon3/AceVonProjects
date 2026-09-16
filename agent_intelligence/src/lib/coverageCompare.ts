@@ -17,11 +17,24 @@ export type Category =
   | "available" // optional add-on / endorsement (auto vocabulary)
   | "endorsement" // optional add-on (home vocabulary)
   | "varies" // availability/terms set by state
+  | "stepdown" // covered, but at reduced (step-down) limits — Who's-Covered scenarios
   | "none" // not offered
   | "dnpa"; // data not publicly available
 
 export type Confidence = "high" | "medium" | "low";
-export type LineKey = "auto" | "home";
+export type LineKey = "auto" | "home" | "scenarios";
+
+// Rich per-carrier detail for the "Who's Covered" driver/vehicle scenarios.
+// Optional — only scenario cells populate it; auto/home cells never do.
+export type ScenarioDetail = {
+  extends?: ("BI" | "PD" | "MedPIP" | "UMUIM" | "collision" | "comprehensive")[]; // which coverages follow the driver/vehicle
+  limits?: string; // "Full policy limits" | "State minimum" | "Step-down to $X"
+  deductible?: string; // "Your own deductible" | "Waived" | "Applies"
+  primacy?: "primary" | "excess" | "n/a"; // pays first vs. only after another policy is exhausted
+  endorsement?: string; // an endorsement that changes the answer
+  stateExceptions?: string; // where state law / carrier form differs
+  seeAlso?: "rental" | "rideshare"; // link to an existing feature — never duplicate it
+};
 
 export type Cell = {
   category: Category;
@@ -31,6 +44,7 @@ export type Cell = {
   source?: { label: string; url: string };
   safecoDerived?: boolean; // Liberty Mutual figures sourced from Safeco's filed forms
   excludeStates?: string[]; // states where this feature is NOT available (resolved by the state filter)
+  scenario?: ScenarioDetail; // Who's-Covered rich detail; unset on auto/home cells
 };
 
 export type Feature = {
@@ -470,7 +484,90 @@ function applyExt(line: Line, ext: Record<string, Record<string, Cell>>): void {
 applyExt(AUTO, AUTO_EXT);
 applyExt(HOME, HOME_EXT);
 
-export const LINES: Record<LineKey, Line> = { auto: AUTO, home: HOME };
+// --- SCENARIOS ("Who's Covered / Driver & Vehicle Scenarios") --------------
+// Answers "when someone other than the named insured drives, or the insured
+// drives a car they don't own, what changes — by carrier." Baseline answers
+// reflect the standard ISO Personal Auto Policy (PP 00 01) that carriers
+// broadly follow; each carrier's actual form + state-law overrides are NOT
+// individually verified (see COVERAGE_SCENARIOS_GAPS.md). Do not read a cell as
+// carrier-confirmed unless its confidence is high.
+const S_IDS = ["allstate", "statefarm", "geico", "progressive", "travelers", "nationwide", "usaa", "amfam"];
+// Same baseline cell for every carrier — honest for a near-universal PAP rule,
+// with the per-carrier caveat carried in the note. Override individually once a
+// carrier's form is verified.
+const papCell = (cell: Cell): Record<string, Cell> => Object.fromEntries(S_IDS.map((id) => [id, cell]));
+
+const SCENARIOS: Line = {
+  key: "scenarios",
+  label: "Who's Covered",
+  carriers: AUTO.carriers,
+  legend: ["included", "stepdown", "varies", "none", "dnpa"],
+  glossary: [
+    ["Permissive use", "Someone outside your household drives your car with your permission."],
+    ["Step-down", "Coverage still applies but at reduced limits — often the state minimum — for certain drivers."],
+    ["Non-owned auto", "A car the insured drives but doesn't own and that isn't furnished for their regular use."],
+    ["Primary vs. excess", "Primary pays first; excess pays only after the other applicable policy is exhausted."],
+    ["Named-driver exclusion", "An endorsement that removes a specific driver from all coverage while they drive."],
+    ["Regular use", "A car available to a driver often enough that the policy expects it to be listed."],
+    ["Data not publicly available", "Not determinable from public sources; flagged for carrier-form research."],
+  ],
+  footnote:
+    "Driver & vehicle scenarios — what changes when someone other than the named insured drives, or the insured drives a car they don't own. Baseline answers reflect the standard ISO Personal Auto Policy (PP 00 01) that carriers broadly follow; each carrier's actual form and state-law overrides are NOT individually verified (a medium dot means 'standard-PAP baseline, confirm per carrier'). A factual comparison, not legal advice — confirm against the policy and state.",
+  features: [
+    { id: "permissive-use", name: "Permissive use — friend borrows your car", description: "A non-household friend drives your car with your permission.", cells: papCell({
+      category: "included", value: "Covered · owner's policy is primary", confidence: "medium",
+      note: "Standard PAP: a permissive driver is covered on the owner's policy as primary. Whether limits step down to state minimum for non-listed drivers varies by carrier/state — not verified. Per ISO PP 00 01.",
+      scenario: { extends: ["BI", "PD", "MedPIP", "collision", "comprehensive"], limits: "Full policy limits (a few carriers/states apply a permissive-use step-down to state minimum — unverified)", deductible: "Same as the owned auto", primacy: "primary", stateExceptions: "Some carriers file permissive-use step-down endorsements in certain states." },
+    }) },
+    { id: "unlisted-household", name: "Unlisted household driver", description: "A resident relative or roommate not listed on the policy drives the car.", cells: papCell({
+      category: "varies", value: "Relatives usually insured · misrep risk if undisclosed", confidence: "low",
+      note: "Resident relatives are 'family members' (insureds) under the PAP; but carriers require household drivers be listed or excluded, and an undisclosed one can draw a surcharge or a misrepresentation defense. Carrier/state handling not verified.",
+      scenario: { extends: ["BI", "PD", "MedPIP", "collision", "comprehensive"], limits: "Policy limits if treated as an insured; disputes possible if undisclosed", deductible: "Same as the owned auto", primacy: "primary", stateExceptions: "Some states limit an insurer's ability to deny for a non-excluded resident driver." },
+    }) },
+    { id: "named-exclusion", name: "Named-driver exclusion", description: "How an excluded driver is handled, and which states restrict exclusions.", cells: papCell({
+      category: "varies", value: "Excluded driver = no coverage · state-restricted", confidence: "medium",
+      note: "A named-driver-exclusion endorsement removes ALL coverage (liability, and usually collision/comp and UM/UIM) while the excluded person drives. Several states prohibit or restrict exclusions. Exact carrier form and state list not verified.",
+      scenario: { extends: [], limits: "None while the excluded driver operates the car", deductible: "n/a", primacy: "n/a", stateExceptions: "Prohibited or restricted in several states (e.g., NY, NC, MI, VA) — verify per state." },
+    }) },
+    { id: "regular-use", name: "Occasional vs. regular use by a non-listed driver", description: "When 'occasional' use by an unlisted driver becomes 'regular' and triggers a listing requirement or exclusion.", cells: papCell({
+      category: "dnpa", value: "Unknown — carrier underwriting rule", confidence: "low",
+      note: "No universal threshold: regular use by an undisclosed driver can trigger a listed-driver requirement or a misrepresentation/exclusion, but the line between occasional and regular is a carrier underwriting rule, not public. Needs carrier research.",
+      scenario: { limits: "Unknown", deductible: "Unknown", primacy: "n/a", stateExceptions: "Interacts with state misrepresentation and resident-driver rules." },
+    }) },
+    { id: "borrowed-car", name: "You drive a borrowed (non-owned) car", description: "The insured drives someone else's car (not a rental) with permission.", cells: papCell({
+      category: "included", value: "Covered · excess over owner · your deductible", confidence: "medium",
+      note: "Standard PAP: your liability follows you as EXCESS over the car owner's policy, and your collision/comp extend to the borrowed car (excess, your deductible) if you carry them. Excluded if the car is furnished for your regular use or owned by a resident relative. Carrier form not verified. Per ISO PP 00 01.",
+      scenario: { extends: ["BI", "PD", "MedPIP", "UMUIM", "collision", "comprehensive"], limits: "Your policy limits (excess over the owner's primary)", deductible: "Your own deductible", primacy: "excess", endorsement: "Broadened/extended non-owned auto endorsements widen this on some policies.", stateExceptions: "Household-member-vehicle and regular-use exclusions apply." },
+    }) },
+    { id: "rental-personal", name: "You drive a rental car (personal use, US/Canada)", description: "The insured rents a car for personal use in the US or Canada.", cells: papCell({
+      category: "included", value: "Covered like your own car · your deductible", confidence: "medium",
+      note: "Standard PAP treats a rental as a non-owned auto: liability extends (excess) and collision/comp extend if you carry them (your deductible applies). Loss of use, diminished value, and admin/towing fees may be limited or need a rental endorsement; day limits and specifics vary by carrier — not verified. Physical-damage extension requires you to carry collision. Distinct from Rental Reimbursement.",
+      scenario: { extends: ["BI", "PD", "MedPIP", "UMUIM", "collision", "comprehensive"], limits: "Your policy limits", deductible: "Your own deductible applies", primacy: "excess", endorsement: "Primary where you have no other applicable coverage. A rental/CDW endorsement can waive the deductible and add loss of use.", stateExceptions: "Loss-of-use and admin-fee treatment varies by carrier.", seeAlso: "rental" },
+    }) },
+    { id: "rental-excluded-use", name: "Rental — business use or outside US/Canada", description: "The insured drives a rental for business, or anywhere outside the US and Canada.", cells: papCell({
+      category: "none", value: "Not covered (territory / business use)", confidence: "medium",
+      note: "The standard PAP's territory is the US, its territories/possessions, Puerto Rico, and Canada — driving a rental outside that (e.g., Mexico, overseas) is not covered. Business/commercial use of a rental generally falls outside personal-auto coverage. Carrier specifics not verified.",
+      scenario: { extends: [], limits: "None outside the policy territory / for business use", deductible: "n/a", primacy: "n/a", stateExceptions: "Buy the rental company's coverage or a local admitted policy abroad." },
+    }) },
+    { id: "rental-other-driver", name: "Rental driven by someone other than you", description: "A spouse, friend, or unlisted driver drives the rental the insured rented.", cells: papCell({
+      category: "varies", value: "Resident family yes · non-family friend no", confidence: "medium",
+      note: "Under the standard PAP, your rental (non-owned) coverage extends to you and resident family members driving it; a non-family friend is generally NOT covered by your policy on the rental — the rental company's coverage or the friend's own policy would apply. Carrier specifics not verified.",
+      scenario: { extends: ["BI", "PD", "MedPIP", "collision", "comprehensive"], limits: "Your limits for you / resident family; none for a non-family driver", deductible: "Your own deductible", primacy: "excess", stateExceptions: "Confirm additional-driver rules on the rental agreement too." },
+    }) },
+    { id: "p2p-sharing", name: "Peer-to-peer car sharing (Turo, Getaround)", description: "Renting your car out, or renting someone's car, on a P2P platform — as owner and as renter.", cells: papCell({
+      category: "none", value: "As owner: excluded · as renter: platform covers", confidence: "medium",
+      note: "Renting your car OUT on Turo/Getaround is excluded by personal auto policies (livery / business-use exclusion) — the platform's coverage applies. As a RENTER, personal-policy extension to a P2P vehicle is inconsistent and often excluded; the platform's protection plan is the primary source. Carrier positions not verified. Distinct from Rideshare.",
+      scenario: { extends: [], limits: "None from the personal policy (as owner); platform-dependent (as renter)", deductible: "Platform-set", primacy: "n/a", endorsement: "No standard personal-auto endorsement covers renting your car out.", stateExceptions: "A few states have P2P-specific insurance statutes.", seeAlso: "rideshare" },
+    }) },
+    { id: "excluded-vehicles", name: "Company car, heavy vehicles & non-owned trailers", description: "A vehicle furnished for your regular use (company car), vehicles over a weight threshold, and non-owned trailers.", cells: papCell({
+      category: "none", value: "Regular-use / heavy vehicles excluded", confidence: "medium",
+      note: "Standard PAP: a vehicle furnished or available for your regular use (e.g., a company car) is EXCLUDED from non-owned coverage; heavier vehicles (roughly over 10,000 lbs GVW) used in business and certain vehicle types fall outside 'your covered auto'; non-owned-trailer physical damage is limited. Carrier/endorsement specifics not verified.",
+      scenario: { extends: [], limits: "Excluded for regular-use/company and over-GVW vehicles", deductible: "n/a", primacy: "n/a", endorsement: "An 'extended non-owned coverage' / 'drive-other-car' endorsement can add a company car.", stateExceptions: "GVW and vehicle-type definitions vary by form." },
+    }) },
+  ],
+};
+
+export const LINES: Record<LineKey, Line> = { auto: AUTO, home: HOME, scenarios: SCENARIOS };
 
 // --- resolve logic --------------------------------------------------------
 export type ResolvedCell = {
@@ -499,6 +596,10 @@ export function resolveCell(line: Line, feature: Feature, carrier: Carrier, cell
     }
     return out;
   }
+
+  // scenarios: no state-resolve rules yet — the state story lives in
+  // scenario.stateExceptions and is surfaced by the explorer, not the filter.
+  if (line.key !== "home") return out;
 
   // home
   if (feature.id === "dwelling-erc" && carrier.id === "allstate") {
