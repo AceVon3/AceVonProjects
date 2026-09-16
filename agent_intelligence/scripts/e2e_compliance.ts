@@ -26,6 +26,7 @@ import { Page, chromium } from "playwright";
 
 import { NO_REMOTE_LAW_STATES } from "../src/lib/briefing";
 import { COMPLIANCE_SUMMARIES } from "../src/lib/complianceData";
+import { retirementMandateInfo } from "../src/lib/retirementMandates";
 
 const BASE = process.env.E2E_BASE ?? "http://localhost:3000";
 
@@ -437,6 +438,48 @@ async function main(): Promise<void> {
   check("guide defers the determination (confirm with payroll provider / professional)",
     /confirm with your payroll provider or a tax professional/i.test(regText));
 
+  // -- State retirement-plan mandate section (2026-09) ---------------------
+  // Keyed off the PRIMARY OFFICE STATE only (WA here), never employee
+  // states: one section, data-state = office state, status resolved from
+  // the verified 50-state data, size line carries the agent's N and the
+  // state's employee line, and no determination language anywhere.
+  console.log("\nRetirement mandate section (office WA, N=5)");
+  const retire = page.locator('[data-testid="retirement-mandate"]');
+  check("retirement section renders exactly once (office state only)", (await retire.count()) === 1);
+  check("retirement section is keyed to the office state (WA)",
+    (await retire.getAttribute("data-state")) === "WA");
+  const retireStatus = await retire.getAttribute("data-status");
+  check("retirement status resolved from data (not 'unknown')",
+    !!retireStatus && retireStatus !== "unknown", { retireStatus });
+  const retireExpected = retirementMandateInfo("WA");
+  check("rendered status matches the data module", retireStatus === retireExpected?.status);
+  check("status pill present", (await retire.locator('[data-testid="retirement-status"]').count()) === 1);
+  check("≥1 official source link rendered",
+    (await retire.locator('[data-testid="retirement-source"]').count()) >= 1);
+  const retireText = (await retire.textContent()) ?? "";
+  check("section names the office state", /Washington/.test(retireText));
+  check("section carries the confirm-with-a-professional hedge",
+    /confirm with a qualified professional/i.test(retireText));
+  check("retirement section NEVER uses determination language",
+    !DETERMINATION.some(re => re.test(retireText)),
+    { matched: DETERMINATION.filter(re => re.test(retireText)).map(String) });
+  const retireLine = retire.locator('[data-testid="retirement-size-line"]');
+  const retireIsMandate = retireExpected?.status === "mandate-live" || retireExpected?.status === "mandate-pending";
+  if (retireIsMandate && retireExpected?.threshold !== null) {
+    check("mandate state: size line renders with N=5 and the state's line",
+      (await retireLine.count()) === 1
+        && /5 employees/.test((await retireLine.textContent()) ?? "")
+        && new RegExp(`${retireExpected!.threshold}-employee line`).test((await retireLine.textContent()) ?? ""));
+    check("mandate state: penalties row rendered",
+      (await retire.locator('[data-testid="retirement-penalties"]').count()) === 1);
+  } else {
+    check("non-mandate state: no size line", (await retireLine.count()) === 0);
+  }
+  // Layout: sits between the office summary and the briefing band.
+  const yRetire = await yOf('[data-testid="retirement-mandate"]');
+  check("layout order: summary → retirement mandate → not-legal/tax band",
+    ySummary < yRetire && yRetire < yBand, { ySummary, yRetire, yBand });
+
   // -- Relevance pointers as in-page links to briefing sections ------------
   console.log("\nRelevance links (WA briefing renders → size/salary/hourly link; remote does not)");
   const linkFor = (key: string) =>
@@ -512,6 +555,11 @@ async function main(): Promise<void> {
   const summaryNoReady = page.locator('[data-testid="office-summary"]');
   check("office summary still renders (ready variant — profile complete)",
     (await summaryNoReady.getAttribute("data-variant")) === "ready");
+  // Retirement section follows the OFFICE state (OR), not the employee list.
+  check("retirement section re-keys to the new office state (OR)",
+    (await page.locator('[data-testid="retirement-mandate"]').getAttribute("data-state")) === "OR");
+  check("OR retirement status matches the data module",
+    (await page.locator('[data-testid="retirement-mandate"]').getAttribute("data-status")) === retirementMandateInfo("OR")?.status);
   const noReadyRelevance = summaryNoReady.locator('[data-testid="office-summary-relevance"]');
   check("relevance pointers still present",
     (await noReadyRelevance.locator('[data-testid="relevance-pointer"]').count()) >= 1);

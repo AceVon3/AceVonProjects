@@ -342,8 +342,10 @@ const STATE_CONFIG: Record<string, StateBriefingConfig> = {
   },
   VT: {
     programsLabel: "VT Saves",
-    programsSizeGate: gate(5, n =>
-      `VT Saves retirement registration applies at 5+ employees without a retirement plan. You have ${emp(n)} — ${sit(n, 5)} the 5-employee line. Counting rules vary — verify your obligation.`),
+    // Lowered from 5 to 2 W-2 employees by Treasurer rule, effective
+    // February 2026 (vermonttreasurer.gov, verified 2026-09-16).
+    programsSizeGate: gate(2, n =>
+      `VT Saves retirement registration applies at 2+ W-2 employees without a retirement plan (lowered from 5 in February 2026). You have ${emp(n)} — ${sit(n, 2)} the 2-employee line. Counting rules vary — verify your obligation.`),
     hasStateLeave: true,
     leaveLabel: "Earned sick time",
   },

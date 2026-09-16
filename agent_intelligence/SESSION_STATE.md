@@ -1,4 +1,40 @@
-﻿# Session checkpoint — 2026-07-14 (compliance 50-state arc) · 50-STATE COMPLIANCE SHIPPED + PER-STATE GATES + 3 TAX-GUIDANCE SURFACES (all deployed to Vercel)
+﻿# Session checkpoint — 2026-09-16 (HR: state retirement-plan mandates) · 50-STATE HARVEST + /compliance SECTION (committed, not deployed)
+
+New /compliance section for the state auto-IRA / "Secure Choice" mandates,
+keyed off the PRIMARY OFFICE STATE ONLY (Ryan's call — not employee states).
+
+- **DATA: `src/lib/retirementMandates.ts`** — all 50 states, product copy
+  verified 2026-09-16 against official sources (statutes, treasurer/program
+  pages, legislature bill records; most program portals 403 automated
+  fetches, so statutes were used). 15 live mandates (CA CO CT DE IL MD ME MN
+  NJ NV NY OR RI VA VT), 2 enacted-not-live (HI late-Dec-2026, WA by
+  2027-07-01 with no penalties before 2030), 5 voluntary (MA MO MS NM UT),
+  28 none. 2026 changes captured: NJ 25→10 (P.L.2025 c.379, eff 2026-04-01;
+  deadlines 2026-12-01 / 2027-02-17), VA 25→5 (2026 cc.84/85, eff
+  2026-07-01), VT 5→2 (Treasurer rule, Feb 2026; penalty → $75 2026-10-01),
+  CT first dollar penalties (PA 25-30), MS voluntary program enacted. Three
+  mandates carry NO dollar penalty: MD (fee-waiver incentive only), NV (none
+  in NRS 353D), NY (none in GBL art. 43). Known soft spots flagged in `note`
+  fields: MN size-tier dates (portal-only), VA fall-2026 dates (program
+  guidance, not statute), MO launch status.
+- **UI: `RetirementMandatePanel.tsx`** between the office summary and the
+  briefing band; status pill, size line in the briefing's size-gate voice
+  (N vs the state line, always "verify"), exemption/deadlines/penalties
+  rows, source links + verified date, professional hedge. WA renders with no
+  size line (hours test, not headcount).
+- **Consistency fix:** briefing.ts VT programs gate 5→2.
+- **Gates:** tsc, lint, `verify_retirement.ts` (new: 50-state coverage,
+  official-host sources, status/threshold consistency, determination
+  blocklist, size-line arithmetic, CA anchor), verify_office_summary,
+  verify_briefing_language, e2e_compliance (+ retirement checks) ALL PASS
+  on a port-3013 dev server (local .env.local has AUTH_ENFORCED=1 → start
+  e2e servers with AUTH_ENFORCED=0 or protected routes 404 non-browser).
+- **Annual recheck candidates:** ME/VT/NJ/MN penalty step-ups, HI/WA launch
+  dates, PA/MI live bills, AK re-introduction.
+
+---
+
+# Session checkpoint — 2026-07-14 (compliance 50-state arc) · 50-STATE COMPLIANCE SHIPPED + PER-STATE GATES + 3 TAX-GUIDANCE SURFACES (all deployed to Vercel)
 
 The compliance feature went 3-state → 50-state across one arc (2026-07-09..14),
 plus three new guidance surfaces. All LIVE on agent-intelligence-sigma.vercel.app.
