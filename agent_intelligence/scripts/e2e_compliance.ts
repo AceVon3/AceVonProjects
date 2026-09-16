@@ -494,8 +494,10 @@ async function main(): Promise<void> {
   await page.waitForTimeout(120);
   // "Worth reviewing" blurb (top pointer list) for the office state, linking
   // into the row; the per-state blocks carry NO retirement line (said once).
-  const retirePointer = relevance.locator('[data-testid="relevance-pointer"][data-key="retirement"]');
-  check("'Worth reviewing' list carries exactly one retirement blurb", (await retirePointer.count()) === 1);
+  const retirePointer = relevance.locator('[data-testid="relevance-pointer"][data-key="retirement-WA"]');
+  check("'Worth reviewing' list carries exactly one retirement blurb (one office)",
+    (await retirePointer.count()) === 1
+      && (await relevance.locator('[data-testid="relevance-pointer"][data-key^="retirement-"]').count()) === 1);
   const retirePointerText = (await retirePointer.textContent()) ?? "";
   check("retirement blurb names the office state and the agent's N",
     /Washington/.test(retirePointerText) && /\b5 employees\b/.test(retirePointerText), { retirePointerText });
@@ -596,8 +598,9 @@ async function main(): Promise<void> {
   check("relevance pointers still present",
     (await noReadyRelevance.locator('[data-testid="relevance-pointer"]').count()) >= 1);
   check("retirement blurb re-keys to OR and links to #briefing-OR-retirement",
-    (await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-key="retirement"] [data-testid="relevance-link"]').getAttribute("href")) === "#briefing-OR-retirement"
-      && /Oregon/.test((await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-key="retirement"]').textContent()) ?? ""));
+    (await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-key="retirement-OR"] [data-testid="relevance-link"]').getAttribute("href")) === "#briefing-OR-retirement"
+      && /Oregon/.test((await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-key="retirement-OR"]').textContent()) ?? ""));
+
   check("salary pointer links to the OR briefing salary section",
     (await noReadyRelevance.locator('[data-testid="relevance-pointer"][data-key="salary"] [data-testid="relevance-link"]').getAttribute("href")) === "#briefing-OR-salary");
   check("size pointer stays plain text (OR has no 'pfml' section key — no dead link)",
@@ -608,6 +611,55 @@ async function main(): Promise<void> {
     check(`OR link target #${id} resolves to a rendered section (not a dead link)`,
       (await page.locator(`#${id}[data-testid="briefing-section"]`).count()) === 1);
   }
+
+  // -- Multi-office agency (2026-09-16): offices in WA (primary) + NV, with
+  // NV NOT listed under employee states. NV must still get a briefing card
+  // (an office there is staff there), BOTH office states get the retirement
+  // row, two blurbs render (each linking to its own state's row), the NV
+  // size line words the headcount as split across offices, and non-office
+  // employee states (AZ) get no row.
+  console.log("\nMulti-office (offices WA + NV; employees WA + AZ; N=12)");
+  await setProfileAndOpen(page, {
+    ...PROFILE,
+    home_state: undefined,
+    offices: [
+      { label: "Spokane", street: "1 Main St", city: "Spokane", state: "WA", zip: "99206" },
+      { label: "Las Vegas", street: "2 Strip Blvd", city: "Las Vegas", state: "NV", zip: "89101" },
+    ],
+    employee_count: 12,
+    employee_states: ["WA", "AZ"],
+  });
+  const nvBlock = page.locator('[data-testid="briefing-state"][data-state="NV"]');
+  check("NV gets a briefing card even though it is not an employee state (office there)",
+    (await nvBlock.count()) === 1 && (await nvBlock.getAttribute("data-ready")) === "true");
+  check("primary office state (WA) still renders first",
+    (await page.$$eval('[data-testid="briefing-state"]', els => els[0]?.getAttribute("data-state"))) === "WA");
+  const rowStates = await page.$$eval('[data-testid="briefing-section"][data-section="retirement"]',
+    els => els.map(e => e.closest('[data-testid="briefing-state"]')?.getAttribute("data-state")));
+  check("retirement rows render in BOTH office states (WA + NV) and nowhere else",
+    JSON.stringify([...rowStates].sort()) === JSON.stringify(["NV", "WA"]), { rowStates });
+  check("AZ (employee state, no office) has NO retirement row", !rowStates.includes("AZ"));
+  check("NV row status is the live mandate from the data module",
+    (await page.locator('#briefing-NV-retirement').getAttribute("data-status")) === retirementMandateInfo("NV")?.status);
+  const multiRelevance = page.locator('[data-testid="office-summary-relevance"]');
+  const blurbKeys = await multiRelevance.locator('[data-testid="relevance-pointer"][data-key^="retirement-"]')
+    .evaluateAll(els => els.map(e => e.getAttribute("data-key")));
+  check("two retirement blurbs, primary office first (WA then NV)",
+    JSON.stringify(blurbKeys) === JSON.stringify(["retirement-WA", "retirement-NV"]), { blurbKeys });
+  check("NV blurb links to #briefing-NV-retirement",
+    (await multiRelevance.locator('[data-key="retirement-NV"] [data-testid="relevance-link"]').getAttribute("href")) === "#briefing-NV-retirement");
+  const nvBlurb = (await multiRelevance.locator('[data-key="retirement-NV"]').textContent()) ?? "";
+  check("NV blurb words the headcount as split across offices and names the in-state count",
+    /12 employees across your offices/.test(nvBlurb) && /staff in Nevada/.test(nvBlurb), { nvBlurb });
+  await page.locator('#briefing-NV-retirement [data-testid="briefing-section-toggle"]').click();
+  await page.waitForTimeout(150);
+  const nvSize = (await page.locator('#briefing-NV-retirement [data-testid="retirement-size-line"]').textContent()) ?? "";
+  check("NV row size line: 12 across offices, at or above the 6-employee line on the total, verify in-state",
+    /12 employees across your offices/.test(nvSize) && /at or above the 6-employee line on the total/.test(nvSize)
+      && /staff working in Nevada/.test(nvSize), { nvSize });
+  const multiText = (await page.locator('[data-testid="office-summary"]').textContent()) ?? "";
+  check("multi-office summary NEVER uses determination language",
+    !DETERMINATION.some(re => re.test(multiText)));
 
   // -- Graceful upgrade path: old profile missing the new fields ------------
   console.log("\nUpgrade path: profile saved before pay_type/remote_count existed");

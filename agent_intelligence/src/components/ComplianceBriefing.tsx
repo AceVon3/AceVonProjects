@@ -17,8 +17,12 @@ import {
 } from "@/lib/briefing";
 
 type Props = {
+  // The states to brief on (employee states + office states, see
+  // complianceStates in officeSummary.ts).
   employeeStates: string[];
   homeState: string;
+  // Every state with an office — each gets the retirement-mandate row.
+  officeStates: string[];
   employeeCount: number;
   // Controlled accordion state (lifted to the page so the office-summary
   // "Worth reviewing" links can expand a section before scrolling to it).
@@ -215,24 +219,26 @@ function BriefingAccordionItem({
 function ReadyBriefing({
   state,
   employeeCount,
-  isHomeState,
+  isOfficeState,
+  multiOffice,
   expanded,
   onToggle,
 }: {
   state: string;
   employeeCount: number;
-  isHomeState: boolean;
+  isOfficeState: boolean;
+  multiOffice: boolean;
   expanded: Record<string, boolean>;
   onToggle: (id: string) => void;
 }): React.JSX.Element {
   // Only the sections that apply to THIS state, in its declared order.
   const sections = sectionsForState(state);
   const salaryWarning = salaryWarningForState(state);
-  // The retirement-mandate row renders ONLY in the primary office state's
-  // briefing (2026-09-16), slotted after the state-programs row (or after
-  // leave when the state has no programs row) so it sits with the other
-  // employer-mandate content.
-  const retirementAfter = isHomeState
+  // The retirement-mandate row renders in EVERY office state's briefing
+  // (2026-09-16; multi-office agencies get one per office state), slotted
+  // after the state-programs row (or after leave when the state has no
+  // programs row) so it sits with the other employer-mandate content.
+  const retirementAfter = isOfficeState
     ? Math.max(
         sections.findIndex(s => s.key === "programs"),
         sections.findIndex(s => s.key === "leave" || s.key === "pfml"),
@@ -266,6 +272,7 @@ function ReadyBriefing({
               <RetirementBriefingSection
                 state={state}
                 employeeCount={employeeCount}
+                multiOffice={multiOffice}
                 isOpen={!!expanded[`briefing-${state}-${RETIREMENT_SECTION_KEY}`]}
                 onToggle={onToggle}
               />
@@ -297,11 +304,13 @@ function ComingSoonBriefing({ state }: { state: string }): React.JSX.Element {
 export default function ComplianceBriefing({
   employeeStates,
   homeState,
+  officeStates,
   employeeCount,
   expanded,
   onToggle,
 }: Props): React.JSX.Element {
   const ordered = orderedBriefingStates(employeeStates, homeState);
+  const multiOffice = officeStates.length > 1;
 
   return (
     <div data-testid="compliance-briefing" className="mb-6">
@@ -326,7 +335,8 @@ export default function ComplianceBriefing({
               key={state}
               state={state}
               employeeCount={employeeCount}
-              isHomeState={state === homeState}
+              isOfficeState={officeStates.includes(state)}
+              multiOffice={multiOffice}
               expanded={expanded}
               onToggle={onToggle}
             />

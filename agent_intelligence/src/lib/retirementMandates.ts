@@ -41,6 +41,7 @@
 //     incentive only), NV (no penalty in NRS 353D), NY (none in GBL art. 43)
 
 import type { StateCode } from "./resourceUrls";
+import { STATES } from "./states";
 
 export type MandateStatus =
   | "mandate-live"
@@ -572,7 +573,11 @@ function emp(n: number): string {
 // briefing size gates: states the line, the agent's number, the neutral
 // above/below comparison, and defers the conclusion. NEVER "this applies to
 // you" / "you are exempt". Returns null when the state has no headcount line.
-export function retirementSizeLine(state: string, n: number): string | null {
+//
+// `multiOffice`: the agency has offices in more than one state, so the
+// profile's total headcount is split across states — the line says so and
+// points at the in-state count as the one that matters.
+export function retirementSizeLine(state: string, n: number, multiOffice = false): string | null {
   const info = retirementMandateInfo(state);
   if (!info || info.threshold === null) return null;
   if (info.status !== "mandate-live" && info.status !== "mandate-pending") return null;
@@ -582,5 +587,15 @@ export function retirementSizeLine(state: string, n: number): string | null {
     ? `${info.program} reaches employers from the first employee`
     : `${info.program} registration applies at ${t}+ employees`;
   const tense = info.status === "mandate-pending" ? " once the program launches" : "";
-  return `${lineText}${tense} (for employers without a qualified retirement plan of their own). You have ${emp(n)} — ${where} the ${t}-employee line. Counting rules vary — verify your obligation.`;
+  const you = multiOffice
+    ? `You have ${emp(n)} across your offices — ${where} the ${t}-employee line on the total; the count that matters is staff working in ${stateNameOf(state)}, so verify against that number.`
+    : `You have ${emp(n)} — ${where} the ${t}-employee line. Counting rules vary — verify your obligation.`;
+  return `${lineText}${tense} (for employers without a qualified retirement plan of their own). ${you}`;
+}
+
+// Local name lookup (avoids importing briefing.ts, which imports this module's
+// consumers) — STATES is the canonical list.
+const NAME = new Map<string, string>(STATES.map(s => [s.code, s.name]));
+function stateNameOf(code: string): string {
+  return NAME.get(code) ?? code;
 }

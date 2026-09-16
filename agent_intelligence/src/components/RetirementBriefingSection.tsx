@@ -68,11 +68,15 @@ export const RETIREMENT_SECTION_KEY = "retirement";
 export default function RetirementBriefingSection({
   state,
   employeeCount,
+  multiOffice = false,
   isOpen,
   onToggle,
 }: {
   state: string;
   employeeCount: number;
+  // Offices in more than one state → the headcount line words the total as
+  // split across offices and points at the in-state count.
+  multiOffice?: boolean;
   isOpen: boolean;
   onToggle: (id: string) => void;
 }): React.JSX.Element {
@@ -82,7 +86,7 @@ export default function RetirementBriefingSection({
   const info = retirementMandateInfo(state);
   const status: MandateStatus | "unknown" = info?.status ?? "unknown";
   const isMandate = status === "mandate-live" || status === "mandate-pending";
-  const sizeLine = retirementSizeLine(state, employeeCount);
+  const sizeLine = retirementSizeLine(state, employeeCount, multiOffice);
   const name = stateName(state);
 
   return (
@@ -185,8 +189,10 @@ export default function RetirementBriefingSection({
                   className="rounded-md bg-blue-fill text-blue-text text-12 px-3 py-2 leading-[1.45]"
                 >
                   {info.program} uses {info.counting}. You have{" "}
-                  {employeeCount} {employeeCount === 1 ? "employee" : "employees"}; where that sits
-                  against the hours test depends on your staff&rsquo;s schedules — verify your obligation.
+                  {employeeCount} {employeeCount === 1 ? "employee" : "employees"}
+                  {multiOffice ? " across your offices" : ""}; where that sits against the hours
+                  test depends on {multiOffice ? `your ${name} staff's` : "your staff's"} schedules
+                  — verify your obligation.
                 </div>
               ) : (
                 <p className="m-0 text-13 text-ink-2">

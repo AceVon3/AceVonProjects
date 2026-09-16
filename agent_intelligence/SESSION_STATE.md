@@ -30,10 +30,18 @@ keyed off the PRIMARY OFFICE STATE ONLY (Ryan's call — not employee states).
   for your office" list gets a one-bullet retirement blurb for the office
   state (`retirementPointer` in officeSummary.ts — live/scheduled/voluntary/
   none variants, N vs the line, never a determination) whose Review link
-  resolves via `briefingSectionAnchorId` only when the office state is
-  among the employee states; the per-state blocks carry NO retirement line
-  (said once). The standalone panel from the first pass was deleted.
-  Reviewed on localhost by Ryan before the final commit.
+  resolves via `stateSectionAnchorId`; the per-state blocks carry NO
+  retirement line (said once). The standalone panel from the first pass
+  was deleted. Reviewed on localhost by Ryan before the final commit.
+- **MULTI-OFFICE (fourth pass, Ryan's use case):** the row + blurb render
+  for EVERY office state (`officeStates(profile)`, primary first), and an
+  office state not listed under employee states still gets a briefing card
+  (`complianceStates(profile)` = employee states ∪ office states — used by
+  the page's card grid, the briefing, and the office-summary blocks).
+  Employee-only states get no row. With >1 office the size lines word the
+  total as split across offices and point at the in-state count
+  (`retirementSizeLine(state, n, multiOffice)`). e2e: two-office scenario
+  (offices WA+NV, employees WA+AZ, N=12).
 - **Consistency fix:** briefing.ts VT programs gate 5→2.
 - **Gates:** tsc, lint, `verify_retirement.ts` (new: 50-state coverage,
   official-host sources, status/threshold consistency, determination

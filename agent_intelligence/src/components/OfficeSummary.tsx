@@ -6,6 +6,7 @@ import { sectionsForState, stateName } from "@/lib/briefing";
 import {
   briefingCoverageLabel,
   briefingSectionAnchorId,
+  complianceStates,
   outOfCoverageEmployeeStates,
   outOfStateEmployeeStates,
   payTypeLabel,
@@ -13,6 +14,7 @@ import {
   shouldFlagOutOfStateRemote,
   shouldShowRegistrationGuide,
   stateReviews,
+  stateSectionAnchorId,
 } from "@/lib/officeSummary";
 import {
   NO_WAGE_INCOME_TAX_STATES,
@@ -86,6 +88,8 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
   // The primary office is the agency's home state — sourced from offices[0]
   // now that there is no standalone home_state field.
   const primaryState = primaryOffice(profile)?.state ?? "";
+  // States the page briefs on: employee states + every office state.
+  const briefed = complianceStates(profile);
 
   return (
     <section
@@ -142,8 +146,12 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
             // section actually renders for this profile. briefingSectionAnchorId
             // returns null otherwise — so a link can never point at an absent
             // section, and a no-target pointer (e.g. remote) has no Review link.
+            // State-pinned pointers (per-office retirement blurbs) resolve
+            // against THAT state's briefing; the rest against the primary.
             const anchorId = pt.targetSection
-              ? briefingSectionAnchorId(profile.employee_states, primaryState, pt.targetSection)
+              ? pt.targetState
+                ? stateSectionAnchorId(briefed, pt.targetState, pt.targetSection)
+                : briefingSectionAnchorId(briefed, primaryState, pt.targetSection)
               : null;
             return (
               <li
@@ -195,7 +203,7 @@ export default function OfficeSummary({ profile, onJump }: Props): React.JSX.Ele
             a near-identical sentence per state. */}
         {(() => {
           const reviews = stateReviews(
-            profile.employee_states,
+            briefed,
             primaryState,
             profile.employee_count,
           );

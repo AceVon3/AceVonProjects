@@ -19,7 +19,6 @@ import {
   stateReviewLines,
   StateReviewLine,
 } from "./briefing";
-import { primaryOffice } from "./profile";
 import type { AgentProfile, PayType } from "./profile";
 import { retirementMandateInfo } from "./retirementMandates";
 
@@ -86,18 +85,44 @@ export function stateReviews(
   }));
 }
 
-// The office state's retirement-mandate blurb for the top "Worth reviewing"
+// --- Office states (multi-office agencies, 2026-09-16) -----------------------
+//
+// Every state with an office, primary first, deduped. The retirement row and
+// blurb render for EACH of these (a state auto-IRA mandate keys off having
+// staff in that state, and an office there means staff there).
+export function officeStates(p: AgentProfile): string[] {
+  const out: string[] = [];
+  for (const o of p.offices ?? []) {
+    if (o?.state && !out.includes(o.state)) out.push(o.state);
+  }
+  return out;
+}
+
+// The states the /compliance page briefs on: the employee work/live states
+// PLUS any office state the agent didn't also list under employees — an
+// office in a state is staff in that state, so it gets a briefing card (and
+// with it the retirement row) rather than silently nothing.
+export function complianceStates(p: AgentProfile): string[] {
+  const out = [...(p.employee_states ?? [])];
+  for (const s of officeStates(p)) if (!out.includes(s)) out.push(s);
+  return out;
+}
+
+// An office state's retirement-mandate blurb for the top "Worth reviewing"
 // list (2026-09-16, per Ryan). One or two sentences in the same voice as the
 // other pointers — the rule's line, the agent's number, the neutral
-// above/below comparison — never a determination. The Review link resolves
-// only when the office state's briefing (and so its retirement row) renders.
-export function retirementPointer(state: string, n: number): RelevancePointer | null {
+// above/below comparison — never a determination. One blurb per office
+// state; `multiOffice` words the headcount as a total split across offices.
+export function retirementPointer(state: string, n: number, multiOffice = false): RelevancePointer | null {
   const info = retirementMandateInfo(state);
   if (!info) return null;
   const name = stateName(state);
-  const key = "retirement";
+  const key = `retirement-${state}`;
   const targetSection = "retirement";
-  const you = `you have ${emp(n)}`;
+  const targetState = state;
+  const you = multiOffice
+    ? `you have ${emp(n)} across your offices (the count that matters is staff in ${name})`
+    : `you have ${emp(n)}`;
 
   if (info.status === "mandate-live" || info.status === "mandate-pending") {
     const scheduled = info.status === "mandate-pending";
@@ -110,6 +135,7 @@ export function retirementPointer(state: string, n: number): RelevancePointer | 
       return {
         key,
         targetSection,
+        targetState,
         text: scheduled
           ? `${name} has enacted a retirement plan mandate (${info.program}) that is not yet in effect — it will reach ${reach} without their own plan, and ${you}, ${where} that line. The retirement section has the launch date and penalties.`
           : `${name} requires ${reach} without their own retirement plan to join ${info.program}, with per-employee penalties for not doing so — ${you}, ${where} the ${t}-employee line. Counting rules vary, so the retirement section is worth a look.`,
@@ -119,6 +145,7 @@ export function retirementPointer(state: string, n: number): RelevancePointer | 
     return {
       key,
       targetSection,
+      targetState,
       text: scheduled
         ? `${name} has enacted a retirement plan mandate (${info.program}) that is not yet in effect — its line is an hours test rather than a headcount, so the retirement section is the one to review for the launch date and where ${you} sits.`
         : `${name}'s retirement plan mandate (${info.program}) is in effect — its line is an hours test rather than a headcount, so the retirement section is the one to review.`,
@@ -128,12 +155,14 @@ export function retirementPointer(state: string, n: number): RelevancePointer | 
     return {
       key,
       targetSection,
+      targetState,
       text: `${name} has no employer retirement plan mandate — ${info.program} is optional at any size. The retirement section has the details.`,
     };
   }
   return {
     key,
     targetSection,
+    targetState,
     text: `${name} has no state retirement plan mandate for private employers today — the retirement section notes what has been proposed.`,
   };
 }
@@ -174,6 +203,18 @@ export function primaryBriefingState(
   return orderedBriefingStates(employeeStates, homeState).find(isBriefingReady) ?? null;
 }
 
+// The DOM id of a state-pinned section (the per-office retirement rows): the
+// row renders in every office state's briefing, so the link resolves when
+// that state is briefing-ready and among the states the page briefs on.
+export function stateSectionAnchorId(
+  briefedStates: string[],
+  state: string,
+  sectionKey: string,
+): string | null {
+  if (!briefedStates.includes(state) || !isBriefingReady(state)) return null;
+  return `briefing-${state}-${sectionKey}`;
+}
+
 // The DOM id of a briefing section for in-page jumping — or null when that
 // section does NOT render for this profile. This is the single source of truth
 // the office-summary links use, so a link's presence is tied to the exact
@@ -187,12 +228,6 @@ export function briefingSectionAnchorId(
 ): string | null {
   const primary = primaryBriefingState(employeeStates, homeState);
   if (!primary) return null;
-  // The retirement row is not in sectionsForState — it renders only in the
-  // OFFICE state's briefing, so it links only when the primary IS the office
-  // state (i.e. the office state is among the employee states).
-  if (sectionKey === "retirement") {
-    return primary === homeState ? `briefing-${primary}-retirement` : null;
-  }
   // Tie the link to the PRIMARY state's actual sections: only link if that
   // state renders a section with this key (e.g. ID has no "pfml" section, so
   // the size → PFML pointer won't link for an ID-primary agent).
@@ -203,8 +238,14 @@ export function briefingSectionAnchorId(
 // A relevance pointer. `targetSection` is the briefing section key it points at
 // (when one exists); the component turns it into an in-page link only if that
 // section actually renders. `remote` has no briefing section, so it carries no
-// target and stays plain text.
-export type RelevancePointer = { key: string; text: string; targetSection?: string };
+// target and stays plain text. `targetState` pins the link to a specific
+// state's briefing (the per-office retirement blurbs) instead of the primary.
+export type RelevancePointer = {
+  key: string;
+  text: string;
+  targetSection?: string;
+  targetState?: string;
+};
 
 // Relevance-pointing only: each item states a fact + the agent's own number, or
 // points at a section to review. NONE may say a rule applies / doesn't apply,
@@ -247,11 +288,14 @@ export function relevancePointers(p: AgentProfile): RelevancePointer[] {
     });
   }
 
-  // Office state's retirement plan mandate → the retirement row in the
-  // office state's briefing (2026-09-16).
-  const office = primaryOffice(p)?.state ?? "";
-  const retirement = office ? retirementPointer(office, p.employee_count) : null;
-  if (retirement) items.push(retirement);
+  // One retirement-mandate blurb per OFFICE state (primary first), each
+  // pointing at that state's retirement row (2026-09-16).
+  const offices = officeStates(p);
+  const multi = offices.length > 1;
+  for (const st of offices) {
+    const pt = retirementPointer(st, p.employee_count, multi);
+    if (pt) items.push(pt);
+  }
 
   return items;
 }

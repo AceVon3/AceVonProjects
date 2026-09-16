@@ -16,6 +16,7 @@ import {
   ResourceKey,
   StateCode,
 } from "@/lib/resourceUrls";
+import { complianceStates, officeStates } from "@/lib/officeSummary";
 import { AgentProfile, loadProfile, primaryOffice } from "@/lib/profile";
 import { STATES } from "@/lib/states";
 
@@ -88,12 +89,14 @@ export default function CompliancePage(): React.JSX.Element {
 
   const summaryIndex = useMemo(() => buildSummaryIndex(), []);
 
-  // Only render cards for employee states inside compliance coverage —
+  // Only render cards for briefed states inside compliance coverage —
   // nationwide since the 50-state expansion (2026-07), so today this
   // passes every state through; the filter stays as the safety valve.
+  // Briefed states = employee work/live states + every office state
+  // (2026-09-16: an office in a state is staff in that state).
   const renderedStates = useMemo(() => {
     if (!profile) return [];
-    return profile.employee_states.filter(s => COVERED.has(s));
+    return complianceStates(profile).filter(s => COVERED.has(s));
   }, [profile]);
 
   if (phase === "loading") {
@@ -136,8 +139,9 @@ export default function CompliancePage(): React.JSX.Element {
             accordion; the office-summary links expand + scroll into them. */}
         {profile && (
           <ComplianceBriefing
-            employeeStates={profile.employee_states}
+            employeeStates={complianceStates(profile)}
             homeState={primaryOffice(profile)?.state ?? ""}
+            officeStates={officeStates(profile)}
             employeeCount={profile.employee_count}
             expanded={expanded}
             onToggle={toggleSection}
