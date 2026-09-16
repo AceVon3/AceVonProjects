@@ -19,8 +19,19 @@ backlog.
   in the base booklet) and **regular use** (an underwriting threshold — the form
   covers permissive users regardless of frequency, so it's a rating/misrep
   matter, not a coverage line).
-- **All other 7 carriers** (Allstate, GEICO, Progressive, Travelers, Nationwide,
-  USAA, American Family) — still on the shared baseline; pull each carrier's auto
+- **GEICO — VERIFIED** against its **Washington** Family Auto Policy **A30WA
+  (12-22)** on 8 of 10 scenarios. It agrees with State Farm on the core
+  (permissive-covered/no-step-down, non-owned = you+relatives only & excess,
+  physical-damage-if-carried, US/Canada territory, P2P-owner excluded — GEICO
+  also names peer-to-peer explicitly). **Differences found:** (1) GEICO's Other
+  Insurance clause is broadly *excess over any other applicable insurance* rather
+  than State Farm's explicit "primary on your car"; (2) GEICO excludes a vehicle
+  *regularly rented* daily/weekly/monthly unless declared (excl. 19), and
+  leased-<6-months / business-owned vehicles unless declared (excl. 18, 21) —
+  where State Farm uses a 31-day-possession rule. Named-driver exclusion and
+  regular-use stay medium (as with State Farm).
+- **Remaining 6 carriers** (Allstate, Progressive, Travelers, Nationwide, USAA,
+  American Family) — still on the shared baseline; pull each carrier's auto
   policy form the same way (a sample-policy PDF or SERFF form filing).
 
 > **State-scope caveat:** carrier policy forms are filed **per state** (different
@@ -45,10 +56,10 @@ Travelers, Nationwide, USAA, American Family.**
 | 🔴 low | No reliable baseline; shown as a caution | Research before treating as anything but "Data not publicly available" |
 | ⚪ dnpa ("Unknown") | Genuinely not determinable from public sources | Pull the carrier form; do not guess |
 
-State Farm is the first carrier verified (8 of its 10 cells are now high). The
-remaining ~72 cells (the other 7 carriers, plus State Farm's 2 open scenarios)
-still need verification. The list below is organized by what specifically to
-check, not by identical rows.
+State Farm and GEICO are verified (8 of 10 scenarios each, now high). The
+remaining ~64 cells (the other 6 carriers, plus the 2 open scenarios each for
+State Farm and GEICO) still need verification. The list below is organized by
+what specifically to check, not by identical rows.
 
 ## Fully unknown (dnpa) — highest priority, currently shows "Unknown"
 
