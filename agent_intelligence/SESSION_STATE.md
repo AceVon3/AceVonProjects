@@ -1,4 +1,4 @@
-﻿# Session checkpoint — 2026-09-16 (HR: state retirement-plan mandates) · 50-STATE HARVEST + /compliance SECTION (committed, not deployed)
+﻿# Session checkpoint — 2026-09-16 (HR: state retirement-plan mandates) · 50-STATE HARVEST + /compliance ROW — DEPLOYED (agent-intel/master 3bfb64d, Vercel success 15:54Z, prod + agencyman.ai verified serving it)
 
 New /compliance section for the state auto-IRA / "Secure Choice" mandates,
 keyed off the PRIMARY OFFICE STATE ONLY (Ryan's call — not employee states).
