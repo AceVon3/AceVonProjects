@@ -19,3 +19,10 @@ __pycache__/
 
 # Secrets — sports_tracker config has credentials; never commit
 sports_tracker/config.json
+
+# Live WAF session token (human-blessed SERFF session) — never commit
+Insurance Rate Data Scraper/output/waf_session.json
+
+# Embedded repos (own GitHub remote) — tracked separately, ignored by parent
+Insurance Office Tracker/
+speed_training_site/
