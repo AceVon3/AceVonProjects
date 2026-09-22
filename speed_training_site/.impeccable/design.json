@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-22T00:00:00Z",
+  "title": "Design System: SPEED Training Site",
+  "provenance": {
+    "world": "The Operations Binder",
+    "seed": "9a6af889",
+    "mode": "scan (recorded from the shipped build)",
+    "comps": "none; code-led",
+    "rasters": "none produced; only imagery is the product's existing CloudFront logo",
+    "finishReview": "ship, after two fix rounds",
+    "tokenSource": "src/app/globals.css :root (tailwind.config.ts mirrors by name)"
+  },
+  "extensions": {
+    "colorMeta": {
+      "binder": { "role": "neutral", "displayName": "Binder Vinyl", "canonical": "#1b2a4a", "tonalRamp": ["#080d18", "#10192e", "#1b2a4a", "#2c4070", "#4a5f92", "#7f92bf", "#b9c6e4", "#e6ebf6"] },
+      "binder-deep": { "role": "neutral", "displayName": "Binder Deep", "canonical": "#10192e", "tonalRamp": ["#05080f", "#0b1121", "#10192e", "#1b2a4a", "#2c4070", "#5c74a8", "#9fb0d6", "#dde4f3"] },
+      "binder-edge": { "role": "secondary", "displayName": "Binder Edge (Navy tab)", "canonical": "#2c4070", "tonalRamp": ["#0b1121", "#172642", "#2c4070", "#3d569a", "#5b74bd", "#8299d1", "#b3c2e6", "#e0e6f5"] },
+      "on-binder": { "role": "neutral", "displayName": "On Binder", "canonical": "#ffffff", "tonalRamp": ["#1b2a4a", "#3a4a6c", "#5c6c8f", "#8291b2", "#a9b5d0", "#cfd7e8", "#eaeef7", "#ffffff"] },
+      "on-binder-2": { "role": "neutral", "displayName": "On Binder Muted", "canonical": "#b9c6e4", "tonalRamp": ["#2a3654", "#41507a", "#5b6f9f", "#7a8dbb", "#98a9d1", "#b9c6e4", "#d7dff0", "#f0f3fa"] },
+      "paper": { "role": "neutral", "displayName": "Bond Paper", "canonical": "#ffffff", "tonalRamp": ["#15171c", "#454b5a", "#626878", "#aeb5c4", "#d3d7e0", "#e7e9ef", "#f3f4f7", "#ffffff"] },
+      "paper-2": { "role": "neutral", "displayName": "Sheet Protector", "canonical": "#f3f4f7", "tonalRamp": ["#22242c", "#4a4e5b", "#767b8a", "#a3a8b6", "#c9cdd7", "#e3e5ec", "#f3f4f7", "#fbfbfd"] },
+      "rule": { "role": "neutral", "displayName": "Rule", "canonical": "#d3d7e0", "tonalRamp": ["#1f2229", "#3f4451", "#636a7a", "#8b93a5", "#aeb5c4", "#d3d7e0", "#e7e9ef", "#f6f7fa"] },
+      "rule-2": { "role": "neutral", "displayName": "Rule Strong (dot leaders)", "canonical": "#aeb5c4", "tonalRamp": ["#1a1d24", "#363b48", "#565d6e", "#7b8395", "#aeb5c4", "#c8cdd8", "#e2e5ec", "#f4f5f8"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#15171c", "tonalRamp": ["#15171c", "#2b2f39", "#454b5a", "#626878", "#868c9b", "#aeb5c4", "#d3d7e0", "#f3f4f7"] },
+      "ink-2": { "role": "neutral", "displayName": "Ink Body", "canonical": "#454b5a", "tonalRamp": ["#15171c", "#2b2f39", "#454b5a", "#5c6374", "#7a8194", "#a0a6b6", "#c8ccd7", "#eceef2"] },
+      "ink-3": { "role": "neutral", "displayName": "Ink Caption", "canonical": "#626878", "tonalRamp": ["#1c1f27", "#353a47", "#4c5262", "#626878", "#7f8597", "#a3a8b7", "#c9cdd8", "#edeff3"] },
+      "saffron": { "role": "primary", "displayName": "Saffron (action tab)", "canonical": "#f2b233", "tonalRamp": ["#3f2a05", "#7a520a", "#b07a12", "#d79a12", "#f2b233", "#f6c04f", "#f9d68a", "#fdefd0"] },
+      "saffron-hover": { "role": "primary", "displayName": "Saffron Hover", "canonical": "#f6c04f", "tonalRamp": ["#3f2a05", "#7a520a", "#b07a12", "#d79a12", "#f2b233", "#f6c04f", "#f9d68a", "#fdefd0"], "note": "Literal on .btn--primary:hover in globals.css, not a :root variable." },
+      "saffron-deep": { "role": "primary", "displayName": "Saffron Deep (stars)", "canonical": "#d79a12", "tonalRamp": ["#33230a", "#6a4a0c", "#9d700f", "#d79a12", "#e9b23a", "#f2c66a", "#f7dca0", "#fcf0d6"] },
+      "tape-stock": { "role": "neutral", "displayName": "Tape Stock", "canonical": "#f7f7f4", "tonalRamp": ["#232320", "#4b4b46", "#77776f", "#a4a49b", "#cbcbc4", "#e4e4df", "#f7f7f4", "#fdfdfb"], "note": "Literal on .tape in globals.css, not a :root variable." },
+      "tab-red": { "role": "secondary", "displayName": "Tab Red (FAQ)", "canonical": "#c8352b", "tonalRamp": ["#2e0b09", "#5f1712", "#8f241d", "#c8352b", "#dc5b52", "#e98a83", "#f3bcb7", "#fbe6e4"] },
+      "tab-green": { "role": "secondary", "displayName": "Tab Green (Results)", "canonical": "#2f6f4e", "tonalRamp": ["#0c1d14", "#183826", "#22503a", "#2f6f4e", "#468f69", "#6fb08c", "#a6d1b8", "#e0f0e7"] },
+      "tab-blue": { "role": "secondary", "displayName": "Tab Blue (Workshop, focus)", "canonical": "#2d63c9", "tonalRamp": ["#0b1a36", "#163370", "#214b9c", "#2d63c9", "#5583d8", "#84a5e4", "#b7cbf0", "#e4ecf9"] },
+      "tab-slate": { "role": "secondary", "displayName": "Tab Slate (Contact)", "canonical": "#5b6b8c", "tonalRamp": ["#181c25", "#2f3749", "#454f6a", "#5b6b8c", "#7887a6", "#9aa6be", "#c1c9d9", "#e8ebf2"], "note": "Literal in globals.css and page.tsx, not a :root variable; promote to --slate before reuse." }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Cover headline only; balanced wrap, max 14ch." },
+      "display-close": { "displayName": "Display Close", "purpose": "The closing 'Start today' line on the Contact page, one step down from Display; max 22ch. Set inline in page.tsx." },
+      "headline": { "displayName": "Headline", "purpose": "One per page, directly under the printed divider edge; max 20ch." },
+      "title": { "displayName": "Title", "purpose": "Sub-blocks within a page (Contents, Getting started, Also in the binder)." },
+      "lede": { "displayName": "Lede", "purpose": "The paragraph under each headline; ink-2, max 60ch." },
+      "body": { "displayName": "Body", "purpose": "FAQ answers and running copy; ink-2, max 66-68ch; tnum + ss01 on." },
+      "button": { "displayName": "Button", "purpose": "Every .btn label (800, 1.02rem, 0.01em)." },
+      "button-compact": { "displayName": "Button Compact", "purpose": "Wrapping contact buttons at <=400px (0.94rem)." },
+      "link-small": { "displayName": "Link Small", "purpose": "The 'Other volumes' inline link list in the Contents sheet (700, 0.92rem)." },
+      "small": { "displayName": "Small (typed)", "purpose": "Courier 0.85rem: Contents page numbers, table item codes, memo footers. Same step in Archivo 800 is the numbered-step digit." },
+      "label": { "displayName": "Label", "purpose": "Uppercase tracked labels: tape (800, 0.06em), tab (800, 0.14em), table headers (700, 0.12em), tickets (700, 0.08em)." },
+      "label-big": { "displayName": "Label Big", "purpose": "The stat tape on the cover (.tape--big, 800, 0.82rem, 0.06em)." },
+      "memo": { "displayName": "Memo (typed)", "purpose": "Testimonial cards in Courier Prime." },
+      "running": { "displayName": "Running header (typed)", "purpose": "Page running header, captions, item codes, Contents page numbers." }
+    },
+    "overlays": [
+      { "name": "shade-07", "value": "rgba(0,0,0,0.07)", "purpose": "Binding-edge shade down the left of each page (.page::before), fading to 0." },
+      { "name": "shade-28", "value": "rgba(0,0,0,0.28)", "purpose": "Dark dots of the pebbled vinyl grain (body::before)." },
+      { "name": "shade-35", "value": "rgba(0,0,0,0.35)", "purpose": "Tape thickness and the printed divider stub." },
+      { "name": "shade-40", "value": "rgba(0,0,0,0.4)", "purpose": "Ring's dark shroud stroke and base-plate outline (SVG)." },
+      { "name": "shade-45", "value": "rgba(0,0,0,0.45)", "purpose": "Ring's drop-shadow onto the page." },
+      { "name": "shade-50", "value": "rgba(0,0,0,0.5)", "purpose": "Rivets on the ring plate; the sleeve's drop." },
+      { "name": "shade-60", "value": "rgba(0,0,0,0.6)", "purpose": "Working shadow: spine inset, button rest and hover, tab rest." },
+      { "name": "shade-70", "value": "rgba(0,0,0,0.7)", "purpose": "Deep stop: hole inset, active tab." },
+      { "name": "shade-75", "value": "rgba(0,0,0,0.75)", "purpose": "Page stack's drop onto the vinyl; darkest shadow in the world." },
+      { "name": "shade-opaque", "value": "#000", "purpose": "Only as the solid stop of the mobile tab strip's mask-image; never a paint color." },
+      { "name": "light-08", "value": "rgba(255,255,255,0.08)", "purpose": "1px inset highlight along a page's top edge." },
+      { "name": "light-12", "value": "rgba(255,255,255,0.12)", "purpose": "Sleeve sheen mid-stop." },
+      { "name": "light-16", "value": "rgba(255,255,255,0.16)", "purpose": "Light dots of the vinyl grain; office-light falloff from the top of the cover." },
+      { "name": "light-45", "value": "rgba(255,255,255,0.45)", "purpose": "Chrome ring's specular highlight (dashed SVG stroke)." },
+      { "name": "light-55", "value": "rgba(255,255,255,0.55)", "purpose": "Laminate sheen peak on tape; sleeve sheen start; active tab's 3px edge line." },
+      { "name": "light-70", "value": "rgba(255,255,255,0.7)", "purpose": "Sleeve's 1px inner rim." },
+      { "name": "light-85", "value": "rgba(255,255,255,0.85)", "purpose": "Divider stub's die-cut label window." },
+      { "name": "light-90", "value": "rgba(255,255,255,0.9)", "purpose": "Punched hole's reinforcement ring; tape's top-edge highlight." }
+    ],
+    "radii": [
+      { "name": "none", "value": "0", "purpose": "Paper: pages, sleeves, memos, tables, checkboxes." },
+      { "name": "numeral", "value": "1px", "purpose": "Reversed ink block inside a tape label." },
+      { "name": "hairline", "value": "2px", "purpose": "Ticket chips, Contents swatches, focus outline, active tab edge line." },
+      { "name": "button-bind", "value": "4px", "purpose": "Button's binding-side corners." },
+      { "name": "divider", "value": "8px", "purpose": "Divider stub, mobile tab top, scrollbar thumb." },
+      { "name": "tab", "value": "10px", "purpose": "Desktop tab's free edge." },
+      { "name": "button-lead", "value": "14px", "purpose": "Button's leading-edge corners." },
+      { "name": "round", "value": "50%", "purpose": "Punched holes." }
+    ],
+    "shadows": [
+      { "name": "page-stack", "value": "0 1px 0 rgba(255,255,255,0.08) inset, 2px 3px 0 -1px #eceef3, 4px 6px 0 -2px #dfe2ea, 6px 9px 0 -3px #d0d4de, 0 22px 40px -20px rgba(0,0,0,0.75)", "purpose": "Three hard-offset sheets under every page, then a deep drop onto the vinyl." },
+      { "name": "sleeve", "value": "inset 0 0 0 1px rgba(255,255,255,0.7), 0 8px 24px -16px rgba(0,0,0,0.5)", "purpose": "Sheet protector inner highlight and shallow drop; sheen is a separate ::after gradient." },
+      { "name": "tab-rest", "value": "3px 3px 8px -4px rgba(0,0,0,0.6)", "purpose": "A divider's paper edge at rest." },
+      { "name": "tab-active", "value": "4px 6px 12px -6px rgba(0,0,0,0.7)", "purpose": "The pulled-out (current) tab." },
+      { "name": "button-rest", "value": "0 6px 14px -10px rgba(0,0,0,0.6)", "purpose": "Tab-shaped button at rest." },
+      { "name": "button-hover", "value": "0 10px 20px -12px rgba(0,0,0,0.6)", "purpose": "Button as it slides right on hover." },
+      { "name": "tape", "value": "filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35))", "purpose": "Label-maker tape thickness (filter, because the tape is clip-pathed)." },
+      { "name": "divider-edge", "value": "0 2px 3px -1px rgba(0,0,0,0.35)", "purpose": "The printed tab stub above a headline." },
+      { "name": "ring", "value": "filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.45))", "purpose": "Chrome ring over the page stack." },
+      { "name": "hole", "value": "inset 0 2px 3px rgba(0,0,0,0.7), 0 0 0 3px rgba(255,255,255,0.9)", "purpose": "Punched hole with white rim." },
+      { "name": "spine", "value": "inset -6px 0 12px -8px rgba(0,0,0,0.6)", "purpose": "Spine's inner fold shading." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The only easing token (--ease-out); every transition uses it." },
+      { "name": "check-draw", "value": "stroke-dashoffset 0.55s var(--ease-out), delay calc(var(--i) * 120ms + 120ms)", "purpose": "Checklist ticks draw in once the list is 35% in view; the page's one authored motion moment. Reduced motion: drawn instantly." },
+      { "name": "tab-slide", "value": "transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out)", "purpose": "Tab divider pulls out 6px on hover/focus/current." },
+      { "name": "button-pull", "value": "transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out), background-color 0.2s", "purpose": "Button slides right 4px on hover, 2px on active." },
+      { "name": "faq-plus", "value": "transform 0.35s var(--ease-out)", "purpose": "FAQ plus icon rotates 45deg when the details element opens." },
+      { "name": "scroll", "value": "scroll-behavior: smooth; scroll-padding-top: 6rem", "purpose": "Tab-to-section jumps; auto under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "btn-wrap", "value": "400px", "purpose": "max-width: wrapping contact buttons drop to 0.94rem." },
+      { "name": "sm", "value": "640px", "purpose": "Tailwind sm; tape may wrap and loses tilt below; running header tab name hidden below." },
+      { "name": "sheet-collapse", "value": "720px", "purpose": "max-width: coverage table drops its header and re-flows rows into a grid." },
+      { "name": "md", "value": "768px", "purpose": "Tailwind md; testimonial and back-cover grids." },
+      { "name": "lg", "value": "1024px", "purpose": "The binder frame appears: spine, rings, holes, right tab column; mobile tab strip hides." }
+    ],
+    "layout": {
+      "spine-w": "92px",
+      "tabs-w": "64px",
+      "page-max": "1240px",
+      "page-gap": "14px",
+      "page-padding": "clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 4rem) clamp(2.5rem, 5vw, 4.5rem)",
+      "page-padding-left-lg": "clamp(2.75rem, 5vw, 5rem)",
+      "ring-positions": ["18vh", "50vh", "82vh"]
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Tab-shaped saffron button for View Plans & Pricing; slides right when pulled.",
+      "html": "<a class=\"ds-btn ds-btn-primary\" href=\"#\">View Plans &amp; Pricing <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14M13 6l6 6-6 6\"/></svg></a>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; gap: 0.6rem; font-family: var(--font-archivo, Archivo, Arial, sans-serif); font-weight: 800; font-size: 1.02rem; letter-spacing: 0.01em; padding: 0.95rem 1.4rem; border: 2px solid var(--ink, #15171c); border-radius: 4px 14px 14px 4px; color: var(--ink, #15171c); background: var(--paper, #fff); text-decoration: none; box-shadow: 0 6px 14px -10px rgba(0,0,0,0.6); transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s cubic-bezier(0.16,1,0.3,1), background-color 0.2s; } .ds-btn svg { width: 1.1em; height: 1.1em; flex: 0 0 auto; } .ds-btn:hover { transform: translateX(4px); box-shadow: 0 10px 20px -12px rgba(0,0,0,0.6); } .ds-btn:active { transform: translateX(2px); } .ds-btn:focus-visible { outline: 3px solid var(--blue, #2d63c9); outline-offset: 3px; } .ds-btn-primary { background: var(--saffron, #f2b233); } .ds-btn-primary:hover { background: #f6c04f; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary tab-shaped button beside a primary; rule-2 border that firms to ink on hover.",
+      "html": "<a class=\"ds-btn ds-btn-ghost\" href=\"#\">Watch the workshop <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M6 13l6 6 6-6\"/></svg></a>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; gap: 0.6rem; font-family: var(--font-archivo, Archivo, Arial, sans-serif); font-weight: 800; font-size: 1.02rem; letter-spacing: 0.01em; padding: 0.95rem 1.4rem; border: 2px solid var(--ink, #15171c); border-radius: 4px 14px 14px 4px; color: var(--ink, #15171c); background: var(--paper, #fff); text-decoration: none; box-shadow: 0 6px 14px -10px rgba(0,0,0,0.6); transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s cubic-bezier(0.16,1,0.3,1), background-color 0.2s; } .ds-btn svg { width: 1.1em; height: 1.1em; flex: 0 0 auto; } .ds-btn:hover { transform: translateX(4px); box-shadow: 0 10px 20px -12px rgba(0,0,0,0.6); } .ds-btn:active { transform: translateX(2px); } .ds-btn:focus-visible { outline: 3px solid var(--blue, #2d63c9); outline-offset: 3px; } .ds-btn-ghost { background: transparent; border-color: var(--rule-2, #aeb5c4); color: var(--ink-2, #454b5a); } .ds-btn-ghost:hover { border-color: var(--ink, #15171c); color: var(--ink, #15171c); }"
+    },
+    {
+      "name": "Tab Dividers",
+      "kind": "nav",
+      "refersTo": "tab-divider",
+      "description": "The binder's only navigation: vertical colored tabs, the current one pulled out; Pricing is the saffron out-link.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Binder tabs\"><a class=\"ds-tab ds-tab-blue\" href=\"#\" aria-current=\"true\">Workshop</a><a class=\"ds-tab ds-tab-navy\" href=\"#\">Included</a><a class=\"ds-tab ds-tab-green\" href=\"#\">Results</a><a class=\"ds-tab ds-tab-red\" href=\"#\">FAQ</a><a class=\"ds-tab ds-tab-slate\" href=\"#\">Contact</a><a class=\"ds-tab ds-tab-saffron ds-tab-out\" href=\"#\">Pricing</a></nav>",
+      "css": ".ds-tabs { display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 12px 6px; background: #1b2a4a; width: max-content; } .ds-tab { --tab: var(--binder-edge, #2c4070); position: relative; display: flex; align-items: center; justify-content: center; height: 112px; width: 44px; background: var(--tab); color: #fff; border-radius: 0 10px 10px 0; writing-mode: vertical-rl; text-orientation: mixed; font-family: var(--font-archivo, Archivo, Arial, sans-serif); font-size: 0.74rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; box-shadow: 3px 3px 8px -4px rgba(0,0,0,0.6); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s cubic-bezier(0.16,1,0.3,1); transform: translateX(-6px); } .ds-tab:hover, .ds-tab:focus-visible { transform: translateX(0); } .ds-tab:focus-visible { outline: 3px solid var(--blue, #2d63c9); outline-offset: 3px; } .ds-tab[aria-current=\"true\"] { transform: translateX(0); width: 52px; box-shadow: 4px 6px 12px -6px rgba(0,0,0,0.7); } .ds-tab[aria-current=\"true\"]::before { content: \"\"; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; background: rgba(255,255,255,0.55); border-radius: 2px; } .ds-tab-saffron { --tab: var(--saffron, #f2b233); color: var(--ink, #15171c); } .ds-tab-red { --tab: var(--red, #c8352b); } .ds-tab-green { --tab: var(--green, #2f6f4e); } .ds-tab-blue { --tab: var(--blue, #2d63c9); } .ds-tab-navy { --tab: var(--binder-edge, #2c4070); } .ds-tab-slate { --tab: #5b6b8c; } .ds-tab-out { transform: translateX(0); margin-top: 10px; } .ds-tab-out::after { content: \"\"; position: absolute; right: 8px; top: 10px; width: 6px; height: 6px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); opacity: 0.8; }"
+    },
+    {
+      "name": "Tape Label",
+      "kind": "chip",
+      "refersTo": "tape-label",
+      "description": "Label-maker tape for a headline number: reversed ink numeral, notched ends, laminate sheen.",
+      "html": "<span class=\"ds-tape ds-tape-big ds-tape-tilt\"><b>4,000+</b><span>Agents &amp; team members nationwide</span></span>",
+      "css": ".ds-tape { position: relative; display: inline-grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 0.6em; background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,0.05) 100%), #f7f7f4; color: var(--ink, #15171c); padding: 0.3rem 1rem 0.3rem 0.95rem; font-family: var(--font-archivo, Archivo, Arial, sans-serif); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.15; white-space: nowrap; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35)); clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%); } .ds-tape::after { content: \"\"; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(100deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.55) 46%, rgba(255,255,255,0) 60%); } .ds-tape-big { font-size: 0.82rem; padding: 0.4rem 1.25rem 0.4rem 1rem; } .ds-tape b { display: inline-block; font-size: 1.55em; letter-spacing: -0.01em; font-variation-settings: 'wdth' 88; background: var(--ink, #15171c); color: #fff; padding: 0.1em 0.4em 0.12em; border-radius: 1px; } .ds-tape-tilt { transform: rotate(-1.2deg); }"
+    },
+    {
+      "name": "Checklist",
+      "kind": "custom",
+      "refersTo": "page",
+      "description": "Ruled checklist rows whose ink checks draw in (the page's one authored motion); shown here in the checked state with hover re-draw for the panel.",
+      "html": "<ul class=\"ds-checklist ds-is-checked\"><li class=\"ds-check\" style=\"--i:0\"><svg class=\"ds-check-box\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"1.5\" y=\"1.5\" width=\"21\" height=\"21\" rx=\"2\"/><path d=\"M5.5 12.5l4.5 4.5 9-10\"/></svg><span>Save time on everyday customer communication with 125+ done-for-you email templates</span></li><li class=\"ds-check\" style=\"--i:1\"><svg class=\"ds-check-box\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"1.5\" y=\"1.5\" width=\"21\" height=\"21\" rx=\"2\"/><path d=\"M5.5 12.5l4.5 4.5 9-10\"/></svg><span>Respond faster with built-in text scripts your team can use immediately</span></li><li class=\"ds-check\" style=\"--i:2\"><svg class=\"ds-check-box\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"1.5\" y=\"1.5\" width=\"21\" height=\"21\" rx=\"2\"/><path d=\"M5.5 12.5l4.5 4.5 9-10\"/></svg><span>Keep your processes intact, even when team members come and go</span></li></ul>",
+      "css": ".ds-checklist { list-style: none; margin: 0; padding: 0; max-width: 36rem; font-family: var(--font-archivo, Archivo, Arial, sans-serif); } .ds-check { display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.85rem; align-items: start; padding: 0.7rem 0; border-bottom: 1px solid var(--rule, #d3d7e0); font-size: 1.0625rem; line-height: 1.5; color: var(--ink, #15171c); } .ds-check:first-child { border-top: 1px solid var(--rule, #d3d7e0); } .ds-check-box { width: 1.5rem; height: 1.5rem; margin-top: 0.1rem; } .ds-check-box rect { fill: #fff; stroke: var(--ink, #15171c); stroke-width: 1.6; } .ds-check-box path { fill: none; stroke: var(--ink, #15171c); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 30; stroke-dashoffset: 30; transition: stroke-dashoffset 0.55s cubic-bezier(0.16,1,0.3,1); transition-delay: calc(var(--i, 0) * 120ms + 120ms); } .ds-is-checked .ds-check-box path { stroke-dashoffset: 0; } .ds-checklist:hover .ds-check-box path { stroke-dashoffset: 30; transition-delay: 0s; } @media (prefers-reduced-motion: reduce) { .ds-check-box path { stroke-dashoffset: 0; transition: none; } }"
+    },
+    {
+      "name": "Sleeve (sheet protector)",
+      "kind": "card",
+      "refersTo": "sleeve",
+      "description": "Frosted plastic sleeve with gloss over a white inner sheet; holds the Contents sheet and the video.",
+      "html": "<div class=\"ds-sleeve\"><div class=\"ds-sleeve-inner\"><h3 class=\"ds-sleeve-title\">Contents <span>Rev. 09/2026</span></h3><ol class=\"ds-toc\"><li><span class=\"ds-toc-swatch\" style=\"background:#2d63c9\"></span><a href=\"#\"><span>Watch the workshop, then run it</span></a><span class=\"ds-toc-lead\"></span><span class=\"ds-toc-pg\">Tab 1</span></li><li><span class=\"ds-toc-swatch\" style=\"background:#2f6f4e\"></span><a href=\"#\"><span>What changes, and who says so</span></a><span class=\"ds-toc-lead\"></span><span class=\"ds-toc-pg\">Tab 3</span></li><li><span class=\"ds-toc-swatch\" style=\"background:#f2b233\"></span><a href=\"#\"><span>Plans &amp; Pricing</span></a><span class=\"ds-toc-lead\"></span><span class=\"ds-toc-pg\">Cloud</span></li></ol></div></div>",
+      "css": ".ds-sleeve { position: relative; background: var(--paper-2, #f3f4f7); border: 1px solid var(--rule, #d3d7e0); padding: 1rem; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7), 0 8px 24px -16px rgba(0,0,0,0.5); max-width: 28rem; font-family: var(--font-archivo, Archivo, Arial, sans-serif); } .ds-sleeve::after { content: \"\"; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(118deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.12) 32%, rgba(255,255,255,0) 48%); } .ds-sleeve-inner { background: var(--paper, #fff); border: 1px solid var(--rule, #d3d7e0); padding: 1.25rem; } .ds-sleeve-title { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 0.75rem; font-weight: 700; font-size: 1.2rem; letter-spacing: -0.01em; line-height: 1.15; color: var(--ink, #15171c); } .ds-sleeve-title span { font-family: var(--font-courier, 'Courier Prime', 'Courier New', monospace); font-size: 0.75rem; font-weight: 400; color: var(--ink-3, #626878); } .ds-toc { list-style: none; margin: 0; padding: 0; } .ds-toc li { display: grid; grid-template-columns: 14px auto 1fr auto; align-items: baseline; gap: 0.55rem; padding: 0.5rem 0; font-size: 0.98rem; } .ds-toc a { color: var(--ink, #15171c); text-decoration: none; min-width: 0; } .ds-toc a:hover span { text-decoration: underline; } .ds-toc a:focus-visible { outline: 3px solid var(--blue, #2d63c9); outline-offset: 3px; border-radius: 2px; } .ds-toc-swatch { width: 12px; height: 12px; border-radius: 2px; align-self: center; } .ds-toc-lead { border-bottom: 2px dotted var(--rule-2, #aeb5c4); height: 0.85em; min-width: 1.5rem; } .ds-toc-pg { font-family: var(--font-courier, 'Courier Prime', 'Courier New', monospace); font-size: 0.85rem; color: var(--ink-3, #626878); }"
+    },
+    {
+      "name": "Memo (testimonial)",
+      "kind": "card",
+      "refersTo": "memo",
+      "description": "Typed testimonial card with perforated top edge and saffron-deep stars.",
+      "html": "<blockquote class=\"ds-memo\"><span class=\"ds-stars\" aria-label=\"Five stars\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z\"/></svg><svg viewBox=\"0 0 24 24\"><path d=\"M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z\"/></svg><svg viewBox=\"0 0 24 24\"><path d=\"M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z\"/></svg><svg viewBox=\"0 0 24 24\"><path d=\"M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z\"/></svg><svg viewBox=\"0 0 24 24\"><path d=\"M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z\"/></svg></span><p>Sean's workshop is an excellent use of time and money. You will not be disappointed.</p><footer><cite>&mdash; Chairman's Circle, MOA agent, Colorado</cite></footer></blockquote>",
+      "css": ".ds-memo { position: relative; margin: 0; max-width: 30rem; font-family: var(--font-courier, 'Courier Prime', 'Courier New', monospace); font-size: 1rem; line-height: 1.6; color: var(--ink, #15171c); background: var(--paper, #fff); border: 1px solid var(--rule, #d3d7e0); padding: 1.5rem 1.5rem 1.25rem; } .ds-memo::before { content: \"\"; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: repeating-linear-gradient(90deg, var(--rule-2, #aeb5c4) 0 6px, transparent 6px 12px); opacity: 0.6; } .ds-memo p { margin: 0.75rem 0 0; } .ds-memo footer { margin-top: 1rem; font-size: 0.85rem; color: var(--ink-2, #454b5a); } .ds-memo cite { font-style: normal; } .ds-stars { display: inline-flex; gap: 2px; } .ds-stars svg { width: 14px; height: 14px; fill: var(--saffron-deep, #d79a12); }"
+    },
+    {
+      "name": "Ticket Chip",
+      "kind": "chip",
+      "refersTo": "ticket",
+      "description": "Die-cut tool tag used in the coverage table (Outlook, SFConnect, ECRM).",
+      "html": "<span class=\"ds-ticket\">SFConnect</span> <span class=\"ds-ticket\">ECRM</span> <span class=\"ds-ticket\">Outlook</span>",
+      "css": ".ds-ticket { display: inline-block; font-family: var(--font-archivo, Archivo, Arial, sans-serif); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--rule-2, #aeb5c4); padding: 0.18rem 0.45rem; border-radius: 2px; color: var(--ink-2, #454b5a); background: #fff; white-space: nowrap; }"
+    },
+    {
+      "name": "Running Header + Divider Edge",
+      "kind": "custom",
+      "refersTo": "page",
+      "description": "How every content page opens: typed running header, then the printed tab stub in the section hue, then the headline.",
+      "html": "<div class=\"ds-pagehead\"><div class=\"ds-running\"><span><b>SPEED</b> Operations Manual</span><span>Tab 3 &middot; Results</span><span>Rev. 09/2026</span></div><span class=\"ds-divider\" style=\"--divider:#2f6f4e\" aria-hidden=\"true\"></span><h2 class=\"ds-h2\">What changes when your agency runs on SPEED.</h2></div>",
+      "css": ".ds-pagehead { background: var(--paper, #fff); padding: 1.5rem; max-width: 40rem; } .ds-running { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; font-family: var(--font-courier, 'Courier Prime', 'Courier New', monospace); font-size: 0.78rem; color: var(--ink-3, #626878); border-bottom: 1px solid var(--rule, #d3d7e0); padding-bottom: 0.55rem; margin-bottom: 2rem; } .ds-running b { color: var(--ink-2, #454b5a); font-weight: 700; } .ds-divider { position: relative; display: inline-block; height: 14px; width: 120px; border-radius: 0 0 8px 8px; margin-bottom: 1.25rem; background: var(--divider, var(--binder-edge, #2c4070)); box-shadow: 0 2px 3px -1px rgba(0,0,0,0.35); } .ds-divider::after { content: \"\"; position: absolute; left: 14px; right: 14px; top: 3px; bottom: 3px; border-radius: 2px; background: rgba(255,255,255,0.85); } .ds-h2 { margin: 0; font-family: var(--font-archivo, Archivo, Arial, sans-serif); font-weight: 800; font-variation-settings: 'wdth' 96; letter-spacing: -0.02em; line-height: 1.04; font-size: clamp(1.9rem, 3.3vw, 2.9rem); text-wrap: balance; max-width: 20ch; color: var(--ink, #15171c); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Operations Binder",
+    "overview": "The site is a State Farm agency's SOP binder lying open on a desk under office light. A navy vinyl cover is the frame: it carries a spine label on the left, three chrome rings clasping the page stack, and a column of colored tab dividers hanging off the right edge. Everything the visitor reads sits on white bond pages that stack with a 14px gap, each printed with a typewriter running header. The back cover is the same navy vinyl, printed white.\n\nDensity is documentary rather than promotional. Facts arrive as the binder would hold them: a Contents sheet with dot leaders, a coverage table with item codes, label-maker tape for the four headline numbers, ruled checklists whose ink checks draw in on scroll, and typewritten memo cards for testimonials. Color is almost entirely structural; the page is black ink on white with navy around it, and the five tab hues appear only where a divider, its swatch, or its printed edge would appear. One warm color, saffron, is reserved for the thing the visitor is meant to do: the Pricing tab and the View Plans & Pricing button are cut from the same stock.\n\nThe world explicitly refuses the dark hero, the stat row, and the icon-card grid of the generic course page. There are no photos, no hero background, no gradient buttons, and no icon circles. All depth is physical: sheets stacked on sheets, a sleeve's gloss, a tab's paper shadow.",
+    "keyCharacteristics": [
+      "Navy vinyl frame (spine, rings, tabs) around white bond pages; never a page floating on white",
+      "Tab dividers are the only navigation; the active tab is the one pulled out",
+      "Saffron appears only on the primary action (Pricing tab, primary button, selection highlight)",
+      "Two voices: Archivo (condensed, heavy) for everything printed on the page; Courier Prime for anything typed onto it (running headers, memos, item codes, captions)",
+      "Depth is paper: stacked-sheet shadows, sheet-protector sheen, tape laminate, chrome ring drop-shadow",
+      "One authored motion moment: the checklist ticks draw in; everything else is a short slide or rotate"
+    ],
+    "rules": [
+      { "name": "The Saffron Ledger Rule", "body": "Saffron is spent only on the primary action and its tab. A second saffron element on a page means one of them is not the primary action.", "section": "colors" },
+      { "name": "The Divider Hue Rule", "body": "Each tab hue belongs to one section and appears exactly three times: the divider on the right edge, the swatch in the Contents, and the printed edge above the section headline. Tab hues never color text, backgrounds, or icons.", "section": "colors" },
+      { "name": "The Ink-Not-Navy Rule", "body": "Text on paper is ink ({colors.ink} and its two tints), never navy. Navy is vinyl, not type; the one exception is the display headline's second clause in {colors.binder-edge}.", "section": "colors" },
+      { "name": "The Typed-vs-Printed Rule", "body": "Archivo is what the binder was printed with; Courier Prime is what was typed on afterward. Metadata (codes, revisions, page numbers, captions, quotes) is typed. Content (headlines, names, copy, buttons) is printed. Never set a headline in Courier or a running header in Archivo.", "section": "typography" },
+      { "name": "The Tape Numeral Rule", "body": "A headline number (\"4,000+\") is set inside a tape label as a reversed ink block at 1.55em, 'wdth' 88, never as loose display type. The stat row the world refuses is exactly loose display numbers.", "section": "typography" },
+      { "name": "The Material Shadow Rule", "body": "A shadow is allowed only when it names the physical thing casting it (sheet, tab, tape, ring). A shadow that exists to make a box \"pop\" is not in the world.", "section": "elevation" },
+      { "name": "The Sheen-Over-Media Rule", "body": "Anything that is not paper (video, the Contents sheet) goes inside a sleeve, and the sleeve carries the gloss. Media is never placed bare on a page.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep every content surface a white bond page inside the navy frame, opened with the running header and the printed divider edge, with 14px between pages.",
+      "Do spend saffron only on the primary action (Pricing tab, View Plans & Pricing button) and its ::selection echo.",
+      "Do set printed content in Archivo 800 'wdth' 96 and typed metadata (codes, revisions, captions, quotes) in Courier Prime; use tabular numerals.",
+      "Do put small facts on tape (.tape, reversed ink numeral) and media inside a sleeve; the sleeve carries the gloss.",
+      "Do make every list a ruled checklist or a Contents sheet with dot leaders; every tag a ticket chip; every testimonial a Courier memo with a perforated edge.",
+      "Do keep hues to their section: divider, Contents swatch, and printed stub only.",
+      "Do honor prefers-reduced-motion by showing checks already drawn and disabling smooth scroll.",
+      "Do keep the Pricing tab reachable at every viewport (pinned outside the mobile scroll run)."
+    ],
+    "donts": [
+      "Don't add a dark hero, a photo background, a stat row of loose display numbers, or an icon-card grid; the world exists to refuse them.",
+      "Don't introduce a header bar, hamburger, or menu; the tab dividers are the only navigation.",
+      "Don't color text with a tab hue or with navy (headline second clause excepted); text on paper is ink.",
+      "Don't add a shadow that is not a named material (sheet stack, tab edge, tape, ring, sleeve); no ambient card lift, no hover-raise.",
+      "Don't round paper. Pages, sleeves, memos, tables, and checkboxes stay square; only tabs, buttons, and die-cut chips carry radius.",
+      "Don't use icon packages, icon fonts, or filled circular icon badges; icons are hand-drawn 1.9-stroke SVG.",
+      "Don't show a second saffron element on any page, or a saffron ghost button.",
+      "Don't hard-code new colors; {colors.tab-slate}, {colors.saffron-hover}, and {colors.tape-stock} are the three literals the build carries outside :root and should be promoted there before any new surface reuses them.",
+      "Don't invent a new shadow or overlay alpha; pick from the recorded black (0.07–0.75) and white (0.08–0.9) stops."
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "rgba(0, 0, 0, 0.07)",
+        "createdAt": "2026-09-22T17:08:54.500Z",
+        "reason": "documenter recorded it 2026-09-22 as shade-07 in DESIGN.md Shadow & Overlay Alpha Scale and .impeccable/design.json extensions.overlays; a gradient stop the detector does not read from that section"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(0, 0, 0, 0.28)",
+        "createdAt": "2026-09-22T17:08:54.678Z",
+        "reason": "documenter recorded it 2026-09-22 as shade-28 (vinyl grain dark dots) in DESIGN.md Shadow & Overlay Alpha Scale and design.json extensions.overlays; gradient stop outside the detector's shadow field"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#000",
+        "createdAt": "2026-09-22T17:08:54.907Z",
+        "reason": "documenter recorded it 2026-09-22 as shade-opaque, the mask-image solid stop on .tabstrip__scroll, never a paint color; DESIGN.md Shadow & Overlay Alpha Scale"
+      }
+    ]
+  }
+}

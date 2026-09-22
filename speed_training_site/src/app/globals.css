@@ -1,0 +1,951 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   The Operations Binder: tokens
+   A State Farm agency's SOP binder on a desk under office light.
+   Navy vinyl cover carries the frame, white bond pages carry the
+   content, colored tab dividers carry navigation, label-maker tape
+   carries the small facts. One world, light mode by scene.
+------------------------------------------------------------------- */
+:root {
+  --binder: #1b2a4a;
+  --binder-deep: #10192e;
+  --binder-edge: #2c4070;
+  --on-binder: #ffffff;
+  --on-binder-2: #b9c6e4;
+
+  --paper: #ffffff;
+  --paper-2: #f3f4f7;
+  --paper-3: #e7e9ef;
+  --rule: #d3d7e0;
+  --rule-2: #aeb5c4;
+
+  --ink: #15171c;
+  --ink-2: #454b5a;
+  --ink-3: #626878;
+
+  --saffron: #f2b233;
+  --saffron-deep: #d79a12;
+  --red: #c8352b;
+  --green: #2f6f4e;
+  --blue: #2d63c9;
+
+  --spine-w: 92px;
+  --tabs-w: 64px;
+  --page-max: 1240px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  color: var(--ink);
+  background: var(--binder);
+  overflow-x: clip;
+  font-family: var(--font-archivo), Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "tnum" 1, "ss01" 1;
+}
+
+/* Vinyl grain on the binder cover. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 1;
+  background-image:
+    /* pebbled vinyl: a fine dot grain, offset on a second layer */
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.16) 0 0.9px, transparent 1.6px),
+    radial-gradient(circle at 3.5px 3px, rgba(0, 0, 0, 0.28) 0 0.9px, transparent 1.6px),
+    /* coarse noise so the pebbling never reads as a perfect grid */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    /* office light falling on the cover from the top */
+    radial-gradient(120% 70% at 50% 0%, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 60%);
+  background-size: 5px 5px, 5px 5px, 180px 180px, 100% 100%;
+  mix-blend-mode: overlay;
+}
+
+/* Browser surfaces belong to the world. */
+::selection {
+  background: var(--saffron);
+  color: var(--ink);
+}
+:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+* {
+  scrollbar-color: var(--binder-edge) var(--binder-deep);
+}
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--binder-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--binder-edge);
+  border: 3px solid var(--binder-deep);
+  border-radius: 8px;
+}
+a {
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1.5px;
+}
+
+/* ------------------------------------------------------------------
+   Binder frame
+------------------------------------------------------------------- */
+.binder {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 0 0 4rem 0;
+}
+@media (min-width: 1024px) {
+  .binder {
+    padding-left: var(--spine-w);
+    padding-right: var(--tabs-w);
+  }
+}
+
+.spine {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--spine-w);
+  display: none;
+  z-index: 5;
+  background: linear-gradient(90deg, var(--binder-deep) 0%, var(--binder) 55%, var(--binder-edge) 100%);
+  box-shadow: inset -6px 0 12px -8px rgba(0, 0, 0, 0.6);
+}
+@media (min-width: 1024px) {
+  .spine {
+    display: block;
+  }
+}
+.spine__label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(180deg);
+  writing-mode: vertical-rl;
+  color: var(--on-binder-2);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.9;
+}
+
+/* Chrome rings clasp the page stack from the spine. */
+.ring {
+  position: fixed;
+  left: calc(var(--spine-w) - 34px);
+  width: 64px;
+  height: 64px;
+  z-index: 6;
+  pointer-events: none;
+  display: none;
+}
+@media (min-width: 1024px) {
+  .ring {
+    display: block;
+  }
+}
+.ring svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.45));
+}
+
+/* ------------------------------------------------------------------
+   Pages
+------------------------------------------------------------------- */
+.page {
+  position: relative;
+  background: var(--paper);
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 4rem) clamp(2.5rem, 5vw, 4.5rem);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    2px 3px 0 -1px #eceef3,
+    4px 6px 0 -2px #dfe2ea,
+    6px 9px 0 -3px #d0d4de,
+    0 22px 40px -20px rgba(0, 0, 0, 0.75);
+}
+.page + .page {
+  margin-top: 14px;
+}
+/* Binding-edge shading; the punched holes are drawn once, fixed, so the
+   rings always pass through them (see .hole in page.tsx). */
+@media (min-width: 1024px) {
+  .page::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 26px;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.07), rgba(0, 0, 0, 0));
+    pointer-events: none;
+  }
+  .page {
+    padding-left: clamp(2.75rem, 5vw, 5rem);
+  }
+}
+.hole {
+  position: fixed;
+  left: calc(var(--spine-w) + 13px);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--binder-deep);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.7), 0 0 0 3px rgba(255, 255, 255, 0.9);
+  z-index: 5;
+  display: none;
+  pointer-events: none;
+}
+@media (min-width: 1024px) {
+  .hole {
+    display: block;
+  }
+}
+.page--cover {
+  background: var(--paper);
+}
+.page--back {
+  background: var(--binder-deep);
+  color: var(--on-binder);
+  box-shadow: none;
+}
+
+/* Running header printed on every page. */
+.running {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-family: var(--font-courier), "Courier New", monospace;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.55rem;
+  margin-bottom: clamp(2rem, 4vw, 3.25rem);
+}
+.running b {
+  color: var(--ink-2);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------
+   Type
+------------------------------------------------------------------- */
+.display {
+  font-weight: 800;
+  font-variation-settings: "wdth" 96;
+  letter-spacing: -0.025em;
+  line-height: 0.98;
+  font-size: clamp(2.4rem, 5.1vw, 4.5rem);
+  text-wrap: balance;
+  max-width: 14ch;
+}
+.h2 {
+  font-weight: 800;
+  font-variation-settings: "wdth" 96;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+  font-size: clamp(1.9rem, 3.3vw, 2.9rem);
+  text-wrap: balance;
+  max-width: 20ch;
+  margin-bottom: 1rem;
+}
+.h3 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  font-size: 1.2rem;
+}
+.lede {
+  font-size: clamp(1.05rem, 1.35vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 60ch;
+  text-wrap: pretty;
+}
+.body {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 66ch;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------------
+   Label-maker tape
+------------------------------------------------------------------- */
+.tape {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 0.6em;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.05) 100%),
+    #f7f7f4;
+  color: var(--ink);
+  padding: 0.3rem 1rem 0.3rem 0.95rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  white-space: nowrap;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+  /* the cutter's notched ends */
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%);
+}
+.tape::after {
+  /* laminate sheen */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.55) 46%, rgba(255, 255, 255, 0) 60%);
+}
+.tape--big {
+  font-size: 0.82rem;
+  padding: 0.4rem 1.25rem 0.4rem 1rem;
+}
+.tape b {
+  display: inline-block;
+  font-size: 1.55em;
+  letter-spacing: -0.01em;
+  font-variation-settings: "wdth" 88;
+  background: var(--ink);
+  color: #fff;
+  padding: 0.1em 0.4em 0.12em;
+  border-radius: 1px;
+}
+.tape--tilt {
+  transform: rotate(-1.2deg);
+}
+.tape--tilt2 {
+  transform: rotate(0.8deg);
+}
+@media (max-width: 640px) {
+  .tape {
+    white-space: normal;
+    max-width: 100%;
+    line-height: 1.2;
+  }
+  .tape > span {
+    min-width: 0;
+  }
+  .tape--tilt,
+  .tape--tilt2 {
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Sheet protector
+------------------------------------------------------------------- */
+.sleeve {
+  position: relative;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  padding: 1rem;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 8px 24px -16px rgba(0, 0, 0, 0.5);
+}
+.sleeve::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 32%, rgba(255, 255, 255, 0) 48%);
+}
+.sleeve__inner {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+}
+
+/* ------------------------------------------------------------------
+   Checklist (the authored motion moment)
+------------------------------------------------------------------- */
+.check {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: 0.85rem;
+  align-items: start;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.check:first-child {
+  border-top: 1px solid var(--rule);
+}
+.check__box {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.1rem;
+}
+.check__box rect {
+  fill: #fff;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+.check__box path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  transition: stroke-dashoffset 0.55s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 120ms + 120ms);
+}
+.is-checked .check__box path {
+  stroke-dashoffset: 0;
+}
+.check--num .check__box {
+  display: grid;
+  place-items: center;
+  border: 1.6px solid var(--ink);
+  font-weight: 800;
+  font-size: 0.85rem;
+  background: #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .check__box path {
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Buttons: tab-shaped, cut from the divider stock
+------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 800;
+  font-size: 1.02rem;
+  letter-spacing: 0.01em;
+  padding: 0.95rem 1.4rem;
+  border: 2px solid var(--ink);
+  border-radius: 4px 14px 14px 4px;
+  color: var(--ink);
+  background: var(--paper);
+  text-decoration: none;
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out), background-color 0.2s;
+  box-shadow: 0 6px 14px -10px rgba(0, 0, 0, 0.6);
+}
+.btn:hover {
+  transform: translateX(4px);
+  box-shadow: 0 10px 20px -12px rgba(0, 0, 0, 0.6);
+}
+.btn:active {
+  transform: translateX(2px);
+}
+.btn--primary {
+  background: var(--saffron);
+  border-color: var(--ink);
+}
+.btn--primary:hover {
+  background: #f6c04f;
+}
+.btn--ghost {
+  background: transparent;
+  border-color: var(--rule-2);
+  color: var(--ink-2);
+}
+.btn--ghost:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.btn--on-dark {
+  background: var(--saffron);
+  border-color: var(--saffron);
+}
+.btn svg {
+  width: 1.1em;
+  height: 1.1em;
+  flex: 0 0 auto;
+}
+.btn--wrap {
+  white-space: normal;
+  overflow-wrap: normal;
+  text-align: left;
+  min-width: 0;
+}
+@media (max-width: 400px) {
+  .btn--wrap {
+    font-size: 0.94rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Tab dividers (navigation)
+------------------------------------------------------------------- */
+.tabs {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--tabs-w);
+  z-index: 7;
+  display: none;
+}
+@media (min-width: 1024px) {
+  .tabs {
+    display: block;
+  }
+}
+.tabs__list {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 6px;
+}
+.tab {
+  --tab: var(--binder-edge);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 112px;
+  width: 44px;
+  margin-left: 0;
+  background: var(--tab);
+  color: #fff;
+  border-radius: 0 10px 10px 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 3px 3px 8px -4px rgba(0, 0, 0, 0.6);
+  transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+  transform: translateX(-6px);
+}
+.tab:hover,
+.tab:focus-visible {
+  transform: translateX(0);
+}
+.tab[aria-current="true"] {
+  transform: translateX(0);
+  width: 52px;
+  box-shadow: 4px 6px 12px -6px rgba(0, 0, 0, 0.7);
+}
+.tab[aria-current="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 2px;
+}
+.tab--saffron {
+  --tab: var(--saffron);
+  color: var(--ink);
+}
+.tab--red {
+  --tab: var(--red);
+}
+.tab--green {
+  --tab: var(--green);
+}
+.tab--blue {
+  --tab: var(--blue);
+}
+.tab--navy {
+  --tab: var(--binder-edge);
+}
+.tab--slate {
+  --tab: #5b6b8c;
+}
+.tab--out {
+  transform: translateX(0);
+  margin-top: 10px;
+}
+.tab--out::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.8;
+}
+.tabstrip .tab--out {
+  transform: translateY(0);
+  margin-top: 0;
+  margin-left: 6px;
+}
+.tabstrip .tab--out::after {
+  top: 6px;
+  right: 6px;
+}
+
+/* Mobile: tabs become a sticky strip across the top of the stack. */
+.tabstrip {
+  position: sticky;
+  top: 0;
+  z-index: 7;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 8px 12px 0;
+  background: var(--binder-deep);
+}
+.tabstrip__scroll {
+  position: relative;
+  display: flex;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+  /* fade the clipped edge so the run reads as scrollable */
+  mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+}
+.tabstrip__scroll::-webkit-scrollbar {
+  display: none;
+}
+.tabstrip .tab--out {
+  flex: 0 0 auto;
+  margin-bottom: 8px;
+}
+@media (min-width: 1024px) {
+  .tabstrip {
+    display: none;
+  }
+}
+.tabstrip .tab {
+  writing-mode: horizontal-tb;
+  height: 40px;
+  width: auto;
+  padding: 0 14px;
+  border-radius: 8px 8px 0 0;
+  transform: translateY(4px);
+  flex: 0 0 auto;
+}
+.tabstrip .tab[aria-current="true"] {
+  transform: translateY(0);
+  width: auto;
+}
+.tabstrip .tab[aria-current="true"]::before {
+  left: 8px;
+  right: 8px;
+  top: auto;
+  bottom: 0;
+  width: auto;
+  height: 3px;
+}
+
+/* Section header tab: the divider's colored edge printed on the page. */
+.divider {
+  position: relative;
+  display: inline-block;
+  height: 14px;
+  width: 120px;
+  border-radius: 0 0 8px 8px;
+  margin-bottom: 1.25rem;
+  background: var(--divider, var(--binder-edge));
+  box-shadow: 0 2px 3px -1px rgba(0, 0, 0, 0.35);
+}
+.divider::after {
+  /* the die-cut label window */
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 3px;
+  bottom: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* ------------------------------------------------------------------
+   Contents sheet (dot leaders) and coverage table
+------------------------------------------------------------------- */
+.toc {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.toc li {
+  display: grid;
+  grid-template-columns: 14px auto 1fr auto;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.5rem 0;
+  font-size: 0.98rem;
+}
+.toc li a {
+  color: var(--ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.toc li a:hover span {
+  text-decoration: underline;
+}
+.toc__lead {
+  border-bottom: 2px dotted var(--rule-2);
+  height: 0.85em;
+  min-width: 1.5rem;
+}
+.toc__vol {
+  margin-top: 1.1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 700;
+}
+.toc__swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  align-self: center;
+}
+.toc__pg {
+  font-family: var(--font-courier), monospace;
+  font-size: 0.85rem;
+  color: var(--ink-3);
+}
+
+.sheet {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.98rem;
+}
+.sheet th {
+  text-align: left;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 700;
+  padding: 0.55rem 0.6rem;
+  border-bottom: 2px solid var(--ink);
+}
+.sheet td {
+  padding: 0.85rem 0.6rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  color: var(--ink-2);
+}
+.sheet tr:hover td {
+  background: var(--paper-2);
+}
+.sheet td.sheet__name {
+  color: var(--ink);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sheet td.sheet__limit {
+  font-family: var(--font-courier), monospace;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  font-size: 1.02rem;
+}
+.sheet td.sheet__code {
+  font-family: var(--font-courier), monospace;
+  color: var(--ink-3);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.sheet .ticket {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--rule-2);
+  padding: 0.18rem 0.45rem;
+  border-radius: 2px;
+  color: var(--ink-2);
+  background: #fff;
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .sheet thead {
+    display: none;
+  }
+  .sheet tr {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.25rem 0.75rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .sheet td {
+    border: 0;
+    padding: 0;
+  }
+  .sheet td.sheet__code {
+    grid-column: 1;
+  }
+  .sheet td.sheet__name {
+    grid-column: 2;
+    white-space: normal;
+  }
+  .sheet td.sheet__limit {
+    grid-column: 3;
+    text-align: right;
+  }
+  .sheet td.sheet__tool {
+    grid-column: 2 / 4;
+  }
+  .sheet td.sheet__desc {
+    grid-column: 2 / 4;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Memo (testimonials) and FAQ
+------------------------------------------------------------------- */
+.memo {
+  font-family: var(--font-courier), "Courier New", monospace;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 1.5rem 1.5rem 1.25rem;
+  position: relative;
+}
+.memo::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, var(--rule-2) 0 6px, transparent 6px 12px);
+  opacity: 0.6;
+}
+.memo p {
+  text-wrap: pretty;
+}
+.memo footer {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+}
+.stars {
+  display: inline-flex;
+  gap: 2px;
+}
+.stars svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--saffron-deep);
+}
+
+.faq {
+  border-top: 2px solid var(--ink);
+}
+.faq details {
+  border-bottom: 1px solid var(--rule);
+}
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr 28px;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq summary:hover {
+  color: var(--blue);
+}
+.faq summary svg {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.35s var(--ease-out);
+}
+.faq details[open] summary svg {
+  transform: rotate(45deg);
+}
+.faq .answer {
+  padding: 0 0 1.25rem;
+  max-width: 68ch;
+}
+.faq .answer p + p {
+  margin-top: 0.7rem;
+}
+
+/* ------------------------------------------------------------------
+   Kartra video container (matches the original embed markup)
+------------------------------------------------------------------- */
+.kartra_video {
+  position: relative;
+  width: 100%;
+  min-height: 120px;
+  background: var(--binder-deep);
+}
+.kartra_video iframe,
+.kartra_video video,
+.kartra_video > div {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
